@@ -412,28 +412,10 @@ namespace ForRobot
                 });
             }
         }
-        
+
         #endregion Private functions
 
-        #region Public Static functions
-
-        /// <summary>
-        /// Хэширование строки
-        /// </summary>
-        /// <param name="str">Строка для хэширования</param>
-        /// <returns></returns>
-        public static string Sha256(string str)
-        {
-            StringBuilder Sb = new StringBuilder();
-            using (var hash = SHA256.Create())
-            {
-                Encoding enc = Encoding.UTF8;
-                byte[] result = hash.ComputeHash(Encoding.UTF8.GetBytes(str));
-                foreach (byte b in result)
-                    Sb.Append(b.ToString("x2"));
-            }
-            return Sb.ToString();
-        }
+        #region Public functions
 
         /// <summary>
         /// Ввод и сравнение пин-кодов
@@ -442,7 +424,7 @@ namespace ForRobot
         public static bool EqualsPinCode()
         {
             string pin = new ForRobot.Libr.Services.WindowsAppService().InputWindowShow();
-            return !string.IsNullOrEmpty(pin) && Sha256(pin) == ForRobot.Properties.Settings.Default.PinCode;
+            return !string.IsNullOrEmpty(pin) && ForRobot.Libr.Cryptography.Hashing.Sha256(pin) == ForRobot.Properties.Settings.Default.PinCode;
         }
 
         /// <summary>

@@ -13,7 +13,7 @@ using System.Threading;
 
 namespace ForRobot.Models.Detals
 {
-    public class Detal : ICloneable, IDisposable
+    public abstract class Detal : ICloneable, IDisposable
     {
         #region Private variables
 

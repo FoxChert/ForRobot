@@ -315,9 +315,11 @@
     <Compile Include="Libr\Clipboard\UndoRedo\UndoRedoStacks.cs" />
     <Compile Include="Libr\Collections\File3DCollection.cs" />
     <Compile Include="Libr\Collections\Model3DCollection.cs" />
+    <Compile Include="Libr\Collections\Transform3DBuilder.cs" />
     <Compile Include="Libr\Configuration\CachedConfigurationProvider.cs" />
     <Compile Include="Libr\Configuration\ConfigurationProperties\BaseDetalConfiguration.cs" />
     <Compile Include="Libr\Configuration\ConfigurationProvider.cs" />
+    <Compile Include="Libr\Cryptography\Hashing.cs" />
     <Compile Include="Libr\Factories\DetalFactory\DetalFactory.cs" />
     <Compile Include="Libr\Factories\DetalFactory\IDetalFactory.cs" />
     <Compile Include="Libr\Json\Schemas\CachedJsonSchemaProvider.cs" />
@@ -354,9 +356,13 @@
     <Compile Include="Libr\ValueChangedEventArgs.cs" />
     <Compile Include="Models\Detals\WeldingProperties.cs" />
     <Compile Include="Libr\Services\Providers\IConfigurationProvider.cs" />
-    <Compile Include="Models\File3D\AssimpFile3D.cs" />
+    <Compile Include="Models\File3D\AssimpFile.cs" />
     <Compile Include="Models\File3D\HelixFile3D.cs" />
+    <Compile Include="Models\File3D\HelixToolkit.cs" />
+    <Compile Include="Models\File3D\IFile3D.cs" />
     <Compile Include="Models\File3D\NativeFile3D.cs" />
+    <Compile Include="Models\File3D\OpenCascadeFile.cs" />
+    <Compile Include="Models\Settings\SceneConfiguration.cs" />
     <Compile Include="Themes\Colors.cs" />
     <Compile Include="Models\Settings\ApplicationInfo.cs" />
     <Compile Include="Models\Settings\PropertyColor.cs" />
