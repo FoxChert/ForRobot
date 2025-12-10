@@ -31,16 +31,44 @@ namespace ForRobot.Models.File3D
 {
     public abstract class File3D : IFile3D
     {
+        private static readonly Dictionary<string, List<IModelFileHandler>> _handlersByFormat;
+
         public string Path { get; protected set; }
         public string Name => System.IO.Path.GetFileName(this.Path);
-        public Model3DGroup Model { get; protected set; }
+        public abstract Model3DGroup Model { get; protected set; }
 
         //public abstract void Load();
         //public abstract Task LoadAsync();
 
-        public static File3D Load()
-        {
+        #region Constructors
 
+        static File3D()
+        {
+            _handlersByFormat = new Dictionary<string, List<IModelFileHandler>>(StringComparer.OrdinalIgnoreCase)
+            {
+                [".obj"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
+                [".step"] = new List<IModelFileHandler> { new OpenCascadeModelHandler() }
+            };
+        }
+
+        #endregion Constructors
+
+        public static File3D Load(string path)
+        {
+            if(!System.IO.File.Exists(path))
+                throw new FileNotFoundException("Файл не найден по пути", path);
+
+            string ext = System.IO.Path.GetExtension(path).ToLower();
+
+            if (_handlersByFormat.TryGetValue(ext, out var handlers))
+            {
+                //return handlers.FirstOrDefault();
+            }
+
+            //switch (ext)
+            //{
+            //    case
+            //}
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
