@@ -359,7 +359,7 @@
     <Compile Include="Models\File3D\AssimpFile.cs" />
     <Compile Include="Models\File3D\AssimpModelHandler.cs" />
     <Compile Include="Models\File3D\HelixFile3D.cs" />
-    <Compile Include="Models\File3D\HelixToolkit.cs" />
+    <Compile Include="Models\File3D\HelixToolkitModelHandler.cs" />
     <Compile Include="Models\File3D\IFile3D.cs" />
     <Compile Include="Models\File3D\IModelFileHandler.cs" />
     <Compile Include="Models\File3D\NativeFile3D.cs" />

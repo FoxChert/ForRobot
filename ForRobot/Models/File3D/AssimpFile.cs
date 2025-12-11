@@ -10,6 +10,6 @@ namespace ForRobot.Models.File3D
 {
     public class AssimpFile : File3D
     {
-        private static readonly HashSet<string> AssimpSupportedExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+
     }
 }

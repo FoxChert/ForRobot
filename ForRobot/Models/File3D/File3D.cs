@@ -29,16 +29,37 @@ using ForRobot.Libr.Services;
 
 namespace ForRobot.Models.File3D
 {
-    public abstract class File3D : IFile3D
+    public abstract class File3D : IFile3D, IDisposable
     {
+        #region Private variables
+
         private static readonly Dictionary<string, List<IModelFileHandler>> _handlersByFormat;
 
-        public string Path { get; protected set; }
+        private string _path;
+
+        #endregion Private variables
+
+        #region Public variables
+
+        public string Path
+        {
+            get => this._path;
+            protected set
+            {
+                this._path = value;
+                this.OnPropertyChanged(nameof(this.Path), nameof(this.Name));
+            }
+        }
         public string Name => System.IO.Path.GetFileName(this.Path);
         public abstract Model3DGroup Model { get; protected set; }
 
-        //public abstract void Load();
-        //public abstract Task LoadAsync();
+        #region Events
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        
+        #endregion Events
+
+        #endregion Public variables
 
         #region Constructors
 
@@ -46,33 +67,82 @@ namespace ForRobot.Models.File3D
         {
             _handlersByFormat = new Dictionary<string, List<IModelFileHandler>>(StringComparer.OrdinalIgnoreCase)
             {
-                [".obj"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
-                [".step"] = new List<IModelFileHandler> { new OpenCascadeModelHandler() }
+                [".stl"] = new List<IModelFileHandler> { new AssimpModelHandler() },
+                [".obj"] = new List<IModelFileHandler> { new AssimpModelHandler() },
+                [".fbx"] = new List<IModelFileHandler> { new AssimpModelHandler() },
+                [".callada"] = new List<IModelFileHandler> { new AssimpModelHandler() },
+                [".3ds"] = new List<IModelFileHandler> { new AssimpModelHandler() },
+                [".gltf"] = new List<IModelFileHandler> { new AssimpModelHandler() },
+                [".glb"] = new List<IModelFileHandler> { new AssimpModelHandler() },
+                [".ply"] = new List<IModelFileHandler> { new AssimpModelHandler() },
+                [".off"] = new List<IModelFileHandler> { new AssimpModelHandler() },
+                [".lwo"] = new List<IModelFileHandler> { new AssimpModelHandler() }
+
+                //[".obj"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
+                //[".step"] = new List<IModelFileHandler> { new OpenCascadeModelHandler() }
             };
         }
 
         #endregion Constructors
+
+        #region Private functions
+
+        private void OnPropertyChanged(params string[] propertyNames)
+        {
+            foreach (var prop in propertyNames)
+            {
+                this.OnPropertyChanged(prop);
+            }
+        }
+
+        #endregion Private functions
 
         public static File3D Load(string path)
         {
             if(!System.IO.File.Exists(path))
                 throw new FileNotFoundException("Файл не найден по пути", path);
 
-            string ext = System.IO.Path.GetExtension(path).ToLower();
+            string extension = System.IO.Path.GetExtension(path).ToLower();
 
-            if (_handlersByFormat.TryGetValue(ext, out var handlers))
-            {
-                //return handlers.FirstOrDefault();
-            }
 
-            //switch (ext)
+
+            //if (_handlersByFormat.TryGetValue(extension, out var handlers))
             //{
-            //    case
+            //    var modelFileHandler = handlers.FirstOrDefault();
+            //    //modelFile.LoadModel(path);
             //}
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        #region Implementations of IDisposable
+
+        private volatile bool _disposed = false;
+
+        ~File3D() => Dispose(false);
+
+        public void Dispose() => this.Dispose(true);
+
+        public virtual void Dispose(bool disposing)
+        {
+            if (this._disposed)
+                return;
+
+            if (disposing)
+            {
+                //this._detalFactory.ClearCache();
+                //this._undoRedoManager.ClearUndoRedoHistory();
+                //this.ModelChangedEvent -= (s, o) => GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new Libr.Behavior.HelixSceneTrackerMessage());
+                //this.ModelChangedEvent -= new ChangeService().HandleModelChanged;
+                //this.DetalChangedEvent -= new ChangeService().HandleDetalChanged_Properties;
+                //this.DetalChangedEvent -= new ChangeService().HandleDetalChanged_Modeling;
+                //this.FileChangedEvent -= new ChangeService().HandleFileChange;
+            }
+            this._disposed = true;
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
     }
 
     //public class File3D : IDisposable
@@ -88,7 +158,7 @@ namespace ForRobot.Models.File3D
     //    private Detal _currentDetal;
     //    private WeldingProperties _currentWeldingProperties;
     //    private ObservableCollection<Weld> _weldsCollection = new ObservableCollection<Weld>();
-        
+
     //    private readonly Dispatcher dispatcher;
     //    /// <summary>
     //    /// Массив допустимых для импорта форматов 3д файлов
@@ -207,7 +277,7 @@ namespace ForRobot.Models.File3D
     //    {
     //        if (!File.Exists(path))
     //            throw new FileNotFoundException("Файл не найден по пути", path);
-            
+
     //        //if (ExtensionsFilter.Count(item => System.IO.Path.GetExtension(sPath) == item) == 0)
     //        //    throw new FileFormatException("Неверный формат файла");
 
@@ -233,7 +303,7 @@ namespace ForRobot.Models.File3D
     //            return new ModelImporter().Load(model3DPath, this.dispatcher);
     //        });
     //    }
-        
+
     //    private void SetDetal(object value)
     //    {
     //        if (this._currentDetal == value)
@@ -323,7 +393,7 @@ namespace ForRobot.Models.File3D
     //        //    ProcessNode(scene.RootNode, scene, this.CurrentModel);
     //        //}
     //    }
-               
+
     //    //private void ProcessNode(Node node, Scene scene, Model3DGroup modelGroup)
     //    //{
     //    //    // Обрабатываем все меши в текущем узле
@@ -536,7 +606,7 @@ namespace ForRobot.Models.File3D
 
     //        File.WriteAllText(path, jsonString);
     //    }
-        
+
     //    /// <summary>
     //    /// Вызов события изменения свойства <see cref="Detal"/>
     //    /// </summary>
@@ -583,7 +653,7 @@ namespace ForRobot.Models.File3D
     //            throw new FileFormatException(string.Format("Неверный формат файла: {0}", extension));
 
     //        this.Path = path;
-            
+
     //        //else
     //        //    this.LoadOther(sPath);
     //        this.IsOpened = true;
@@ -642,7 +712,7 @@ namespace ForRobot.Models.File3D
     //        this.OnSave();
     //        return true;
     //    }
-        
+
     //    #region Static
 
     //    public static File3D Open()

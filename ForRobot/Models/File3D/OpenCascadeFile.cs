@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ForRobot.Models.File3D
 {
-    public class OpenCascadeFile : File3D
-    {
-    }
+    //public class OpenCascadeFile : File3D
+    //{
+    //}
 }
