@@ -34,6 +34,7 @@ namespace ForRobot.Models.File3D
         #region Private variables
 
         private static readonly Dictionary<string, List<IModelFileHandler>> _handlersByFormat;
+        //private readonly ForRobot.Libr.Clipboard.UndoRedoManager _undoRedoManager;
 
         private string _path;
 
@@ -51,12 +52,17 @@ namespace ForRobot.Models.File3D
             }
         }
         public string Name => System.IO.Path.GetFileName(this.Path);
+
+        //public bool CanUndo => this._undoRedoManager.CanUndo;
+        //public bool CanRedo => this._undoRedoManager.CanRedo;
+
         public abstract Model3DGroup Model { get; protected set; }
 
         #region Events
 
         public event PropertyChangedEventHandler PropertyChanged;
-        
+        public event EventHandler ModelChangedEvent;
+
         #endregion Events
 
         #endregion Public variables
@@ -83,6 +89,11 @@ namespace ForRobot.Models.File3D
             };
         }
 
+        public File3D()
+        {
+            this.ModelChangedEvent += (s, e) => this.OnPropertyChanged(nameof(this.Model));
+        }
+
         #endregion Constructors
 
         #region Private functions
@@ -94,26 +105,41 @@ namespace ForRobot.Models.File3D
                 this.OnPropertyChanged(prop);
             }
         }
-
+        
         #endregion Private functions
 
         public static File3D Load(string path)
         {
             if(!System.IO.File.Exists(path))
-                throw new FileNotFoundException("Файл не найден по пути", path);
+                throw new FileNotFoundException("Не удалось найти файл", path);
 
             string extension = System.IO.Path.GetExtension(path).ToLower();
 
+            File3D file = null;
 
+            if (_handlersByFormat.TryGetValue(extension, out var handlers))
+            {
+                for (int i = 0; i < handlers.Count; i++)
+                {
+                    var modelFileHandler = handlers[i];
+                    var model = modelFileHandler.LoadModel(path);
 
-            //if (_handlersByFormat.TryGetValue(extension, out var handlers))
-            //{
-            //    var modelFileHandler = handlers.FirstOrDefault();
-            //    //modelFile.LoadModel(path);
-            //}
+                    if (model == null) continue;
+
+                    file.Model = model as System.Windows.Media.Media3D.Model3DGroup;
+                }
+                //var modelFileHandler = handlers.FirstOrDefault();
+                //modelFile.LoadModel(path);
+            }
+
+            return file;
         }
 
+        //public void Undo() => this._undoRedoManager.Undo();
+        //public void Redo() => this._undoRedoManager.Redo();
+
         protected virtual void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        protected virtual void OnModelChanged() => this.ModelChangedEvent?.Invoke(this, null);
 
         #region Implementations of IDisposable
 
@@ -130,6 +156,8 @@ namespace ForRobot.Models.File3D
 
             if (disposing)
             {
+                this.ModelChangedEvent -= (s, e) => this.OnPropertyChanged(nameof(this.Model));
+                
                 //this._detalFactory.ClearCache();
                 //this._undoRedoManager.ClearUndoRedoHistory();
                 //this.ModelChangedEvent -= (s, o) => GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new Libr.Behavior.HelixSceneTrackerMessage());

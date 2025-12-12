@@ -1,15 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-
-using HelixToolkit.Wpf.SharpDX.Assimp;
+using System.Windows.Media.Media3D;
 
 namespace ForRobot.Models.File3D
 {
     public class AssimpFile : File3D
     {
+        #region Private variables
 
+        private Model3DGroup _model = new Model3DGroup();
+
+        #endregion private variables
+
+        #region Public variables
+
+        public override Model3DGroup Model
+        {
+            get => this._model;
+            protected set
+            {
+                this._model = value;
+                this.OnModelChanged();
+            }
+        }
+
+        #endregion Public variables
     }
 }

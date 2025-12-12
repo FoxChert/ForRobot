@@ -13,7 +13,7 @@ namespace ForRobot.Models.File3D
         /// <summary>
         /// 
         /// </summary>
-        public HashSet<Tuple<string, string[]>> SupportedExtensions { get; } = new HashSet<Tuple<string, string[]>>()
+        public HashSet<string[]> SupportedExtensions { get; } = new HashSet<string[]>()
         {
             new Tuple<string, string[]>("STL Files", new string[]{ ".stl" }),
             new Tuple<string, string[]>("OBJ Files", new string[]{ ".obj" }),

@@ -8,7 +8,7 @@ namespace ForRobot.Models.File3D
 {
     public class HelixToolkitModelHandler : IModelFileHandler
     {
-        public HashSet<Tuple<string, string[]>> SupportedExtensions { get; } = new HashSet<Tuple<string, string[]>>()
+        public HashSet<string[]> SupportedExtensions { get; } = new HashSet<Tuple<string[]>()
         {
             new Tuple<string, string[]>("STL Files", new string[]{ ".3ds" }),
             new Tuple<string, string[]>("STL Files", new string[]{ ".obj" }),
