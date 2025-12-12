@@ -13,6 +13,8 @@ namespace ForRobot.Models.File3D
 
         #region Public variables
 
+        public override string Filter { get; }
+
         public override Model3DGroup Model
         {
             get => this._model;

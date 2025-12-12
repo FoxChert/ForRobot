@@ -52,6 +52,7 @@ namespace ForRobot.Models.File3D
             }
         }
         public string Name => System.IO.Path.GetFileName(this.Path);
+        public abstract string Filter { get; }
 
         //public bool CanUndo => this._undoRedoManager.CanUndo;
         //public bool CanRedo => this._undoRedoManager.CanRedo;
