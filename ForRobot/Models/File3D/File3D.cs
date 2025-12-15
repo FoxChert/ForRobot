@@ -74,24 +74,24 @@ namespace ForRobot.Models.File3D
         {
             _handlersByFormat = new Dictionary<string, List<IModelFileHandler>>(StringComparer.OrdinalIgnoreCase)
             {
-                [".stl"] = new List<IModelFileHandler> { new AssimpModelHandler() },
-                [".obj"] = new List<IModelFileHandler> { new AssimpModelHandler() },
+                [".stl"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
+                [".obj"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
                 [".fbx"] = new List<IModelFileHandler> { new AssimpModelHandler() },
                 [".callada"] = new List<IModelFileHandler> { new AssimpModelHandler() },
-                [".3ds"] = new List<IModelFileHandler> { new AssimpModelHandler() },
+                [".3ds"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
                 [".gltf"] = new List<IModelFileHandler> { new AssimpModelHandler() },
                 [".glb"] = new List<IModelFileHandler> { new AssimpModelHandler() },
-                [".ply"] = new List<IModelFileHandler> { new AssimpModelHandler() },
-                [".off"] = new List<IModelFileHandler> { new AssimpModelHandler() },
-                [".lwo"] = new List<IModelFileHandler> { new AssimpModelHandler() }
-
-                //[".obj"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
+                [".ply"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
+                [".off"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
+                [".lwo"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() }
                 //[".step"] = new List<IModelFileHandler> { new OpenCascadeModelHandler() }
             };
         }
 
         public File3D()
         {
+            //this._undoRedoManager = new ForRobot.Libr.Clipboard.UndoRedoManager(new ForRobot.Libr.Clipboard.CacheClipboardProvider(), this.Path);
+
             this.ModelChangedEvent += (s, e) => this.OnPropertyChanged(nameof(this.Model));
         }
 
@@ -132,6 +132,8 @@ namespace ForRobot.Models.File3D
                 //var modelFileHandler = handlers.FirstOrDefault();
                 //modelFile.LoadModel(path);
             }
+            else
+                throw new Exception(string.Format("Расширение {0} не поддерживается", extension));
 
             return file;
         }
@@ -157,10 +159,11 @@ namespace ForRobot.Models.File3D
 
             if (disposing)
             {
-                this.ModelChangedEvent -= (s, e) => this.OnPropertyChanged(nameof(this.Model));
-                
-                //this._detalFactory.ClearCache();
                 //this._undoRedoManager.ClearUndoRedoHistory();
+                this.ModelChangedEvent -= (s, e) => this.OnPropertyChanged(nameof(this.Model));
+
+                //this._detalFactory.ClearCache();
+
                 //this.ModelChangedEvent -= (s, o) => GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new Libr.Behavior.HelixSceneTrackerMessage());
                 //this.ModelChangedEvent -= new ChangeService().HandleModelChanged;
                 //this.DetalChangedEvent -= new ChangeService().HandleDetalChanged_Properties;

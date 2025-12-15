@@ -1,4 +1,5 @@
 ﻿using System;
+//using System.Collections.Specialized;
 using ForRobot.Libr.Clipboard.UndoRedo;
 
 namespace ForRobot.Libr.Clipboard
@@ -19,7 +20,8 @@ namespace ForRobot.Libr.Clipboard
         public bool CanRedo => _stacks.RedoStack.Count > 0;
 
         public event EventHandler UndoRedoStateChanged;
-        
+        //public event NotifyCollectionChangedEventHandler UndoRedoStateChanged;
+
         #endregion Public variables
 
         public UndoRedoManager(CacheClipboardProvider clipboardProvider, string fileKey)

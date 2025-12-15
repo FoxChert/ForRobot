@@ -342,7 +342,7 @@ namespace ForRobot.Models.Detals
         #region Handle
 
         /// <summary>
-        /// Делегат изменения свойства детали
+        /// Делегат изменения свойства плиты
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
