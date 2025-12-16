@@ -4,8 +4,6 @@ using System.ComponentModel;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-using ForRobot.Libr.Collections;
-
 namespace ForRobot.Models.Detals
 {
     public static class WeldingSchemas
@@ -80,7 +78,7 @@ namespace ForRobot.Models.Detals
         /// Сборка схемы варки рёбер
         /// </summary>
         /// <param name="typeSchema">Тип схемы</param>
-        public static FullyObservableCollection<SchemaItem> BuildingSchema(SchemasTypes typeSchema, int iSumRib)
+        public static ObservableCollection<SchemaItem> BuildingSchema(SchemasTypes typeSchema, int iSumRib = 0)
         {
             switch (typeSchema)
             {
@@ -144,9 +142,9 @@ namespace ForRobot.Models.Detals
         /// </summary>
         /// <param name="iCountOfRibs">Кол-во рёбер</param>
         /// <returns></returns>
-        private static FullyObservableCollection<SchemaItem> SelectSchemaRib(int iCountOfRibs)
+        private static ObservableCollection<SchemaItem> SelectSchemaRib(int iCountOfRibs)
         {
-            FullyObservableCollection<SchemaItem> schemaRibs = new FullyObservableCollection<WeldingSchemas.SchemaItem>();
+            ObservableCollection<SchemaItem> schemaRibs = new ObservableCollection<WeldingSchemas.SchemaItem>();
             for (int i = 0; i < iCountOfRibs; i++)
             {
                 schemaRibs.Add(new WeldingSchemas.SchemaItem());
@@ -159,7 +157,7 @@ namespace ForRobot.Models.Detals
         /// </summary>
         /// <param name="iSumRib">Кол-во рёбер</param>
         /// <returns></returns>
-        private static FullyObservableCollection<SchemaItem> BuildLeftEvenOddRightEvenOdd(int iSumRib)
+        private static ObservableCollection<SchemaItem> BuildLeftEvenOddRightEvenOdd(int iSumRib)
         {
             List<SchemaItem> ribs = SelectSchemaRib(iSumRib).ToList<SchemaItem>() ;
             int i = 1;
@@ -189,7 +187,7 @@ namespace ForRobot.Models.Detals
                     i++;
                 }
             }
-            return new FullyObservableCollection<SchemaItem>(ribs);
+            return new ObservableCollection<SchemaItem>(ribs);
         }
     }
 }

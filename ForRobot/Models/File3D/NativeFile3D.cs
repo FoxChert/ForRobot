@@ -11,14 +11,14 @@ namespace ForRobot.Models.File3D
     public class NativeFile3D : File3D
     {
         #region Private variables
-
-        private readonly Dispatcher dispatcher;
-
+        
         private string _selectedWeldingSchema = WeldingSchemas.GetDescription(WeldingSchemas.SchemasTypes.LeftEvenOdd_RightEvenOdd);
 
         private Model3DGroup _model = new Model3DGroup();
 
         private Detal _currentDetal;
+
+        private FullyObservableCollection<WeldingSchemas.SchemaItem> _weldingSchema;
 
         #endregion private variables
 
@@ -51,7 +51,15 @@ namespace ForRobot.Models.File3D
 
         public Detal CurrentDetal { get => this._currentDetal; set => this.SetDetal(value); }
 
-        public FullyObservableCollection<WeldingSchemas.SchemaItem> WeldingSchema { get; private set; }
+        public FullyObservableCollection<WeldingSchemas.SchemaItem> WeldingSchema
+        {
+            get => this._weldingSchema;
+            private set
+            {
+                this._weldingSchema = value;
+                this.OnPropertyChanged(nameof(this.WeldingSchema));
+            }
+        }
 
         #endregion Public variables
 
@@ -59,7 +67,7 @@ namespace ForRobot.Models.File3D
 
         public NativeFile3D() : base()
         {
-            this.dispatcher = Dispatcher.CurrentDispatcher;
+
         }
 
         #endregion Constructors
@@ -78,10 +86,16 @@ namespace ForRobot.Models.File3D
             switch (e.PropertyName)
             {
                 case nameof(SelectedWeldingSchema):
-                    if (this._selectedWeldingSchema == ForRobot.Models.Detals.WeldingSchemas.GetDescription(ForRobot.Models.Detals.WeldingSchemas.SchemasTypes.Edit))
+                    if (this.SelectedWeldingSchema == ForRobot.Models.Detals.WeldingSchemas.GetDescription(ForRobot.Models.Detals.WeldingSchemas.SchemasTypes.Edit))
                         break;
 
-                    //this.WeldingSchema = ForRobot.Models.Detals.WeldingSchemas.BuildingSchema(ForRobot.Models.Detals.WeldingSchemas.GetSchemaType(this.SelectedWeldingSchema), this.CurrentDetal.Co);
+                    this.WeldingSchema = ForRobot.Models.Detals.WeldingSchemas.BuildingSchema(ForRobot.Models.Detals.WeldingSchemas.GetSchemaType(this.SelectedWeldingSchema), (this.CurrentDetal as Plita).RibsCount) as FullyObservableCollection<WeldingSchemas.SchemaItem>;
+                    this.WeldingSchema.CollectionChanged += (s, o) => this.OnPropertyChanged(nameof(this.WeldingSchema));
+                    this.WeldingSchema.ItemPropertyChanged += (s, o) =>
+                    {
+                        this.SelectedWeldingSchema = ForRobot.Models.Detals.WeldingSchemas.GetDescription(WeldingSchemas.SchemasTypes.Edit);
+                        this.OnPropertyChanged(nameof(this.WeldingSchema));
+                    };
                     break;
             }
         }
@@ -121,23 +135,6 @@ namespace ForRobot.Models.File3D
             this._currentDetal.ChangePropertyEvent += HandleCurrentDetalPropertyChange;
             this._currentDetal.OnChangeProperty();
         }
-
-
-        //private FullyObservableCollection<WeldingSchemas.SchemaItem> FillWeldingSchema()
-        //{
-        //    if (string.IsNullOrEmpty(this.SelectedWeldingSchema))
-        //        return null;
-
-        //    FullyObservableCollection<WeldingSchemas.SchemaItem> schema = ForRobot.Models.Detals.WeldingSchemas.BuildingSchema(ForRobot.Models.Detals.WeldingSchemas.GetSchemaType(this.SelectedWeldingSchema), base.RibsCount);
-        //    schema.ItemPropertyChanged += (s, e) =>
-        //    {
-        //        if (this.SelectedWeldingSchema != WeldingSchemas.GetDescription(WeldingSchemas.SchemasTypes.Edit))
-        //            this.SelectedWeldingSchema = ForRobot.Models.Detals.WeldingSchemas.GetDescription(WeldingSchemas.SchemasTypes.Edit);
-
-        //        this.OnChangeProperty(nameof(this.WeldingSchema));
-        //    };
-        //    return schema;
-        //}
 
         #endregion Private functions
     }
