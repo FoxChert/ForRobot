@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Windows.Media.Media3D;
 using System.Collections.Generic;
 
 using HelixToolkit.Wpf;
@@ -12,20 +13,26 @@ namespace ForRobot.Models.File3D
     public class HelixToolkitModelHandler : IModelFileHandler
     {
         /// <summary>
-        /// Хэшированная коллекция поддерживаемых расширений файлов для экспорта
+        /// Хэшированная коллекция поддерживаемых расширений файлов для импорта
         /// </summary>
-        public HashSet<string> SupportedImportExtensions => throw new NotImplementedException();
+        public HashSet<string> SupportedImportExtensions { get; } = new HashSet<string>()
+        {
+            ".3ds", ".obj", ".objz", ".off", ".lwo", ".stl", ".ply"
+        };
 
         /// <summary>
         /// Хэшированная коллекция поддерживаемых расширений файлов для экспорта
         /// </summary>
-        public HashSet<string> SupportedExportExtensions { get; } = new HashSet<string>() { ".3ds", ".obj", ".objz", ".off", ".lwo", ".stl", ".ply"  };
+        public HashSet<string> SupportedExportExtensions { get; } = new HashSet<string>()
+        {
+            ".png", ".jpg", ".obj", ".objz", ".xaml", ".xml", ".x3d", ".dae", ".stl"
+        };
         
         /// <summary>
-        /// Загрузка 3D модели из указанного файла
+        /// Выгрузка 3D модели из указанного файла
         /// </summary>
         /// <param name="filePath">Путь к файлу модели</param>
-        /// <returns>Загруженная 3D модель</returns>
+        /// <returns>3D модель</returns>
         /// <exception cref="ArgumentNullException">Если путь к файлу равен null</exception>
         /// <exception cref="FileNotFoundException">Если файл не найден</exception>
         /// <exception cref="InvalidOperationException">Если произошла ошибка при загрузке модели</exception>
@@ -36,6 +43,10 @@ namespace ForRobot.Models.File3D
 
             if (!File.Exists(filePath))
                 throw new FileNotFoundException($"Файл не найден: {filePath}");
+
+            string extension = System.IO.Path.GetExtension(filePath)?.ToLower();
+            if (string.IsNullOrEmpty(extension) || !this.SupportedImportExtensions.Contains(extension))
+                throw new Exception(string.Format("Расширение {0} не поддерживается для импорта", extension));
 
             try
             {
@@ -66,26 +77,20 @@ namespace ForRobot.Models.File3D
             string extension = System.IO.Path.GetExtension(filePath)?.ToLower();
 
             if (string.IsNullOrEmpty(extension) || !this.SupportedExportExtensions.Contains(extension))
-                throw new Exception(string.Format("Расширение {0} не поддерживается", extension));
+                throw new Exception(string.Format("Расширение {0} не поддерживается экспорта", extension));
 
             try
             {
-                using (Stream StreamFile = new FileStream(filePath, FileMode.Create))
+                var exporter = this.CreateExporterForExtension(extension);
+                using (Stream streamFile = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                 {
-
+                    exporter.Export(model as Model3D, streamFile);
                 }
             }
             catch (Exception ex)
             {
                 throw new InvalidOperationException($"Ошибка при сохранении модели в файл {filePath}", ex);
             }
-
-            //using (Stream StreamFile = new FileStream(filePath, FileMode.Create))
-            //{
-            //    //exp.Export(model, StreamFile);
-            //}
-
-            //throw new NotImplementedException();
         }
 
         /// <summary>
@@ -97,19 +102,20 @@ namespace ForRobot.Models.File3D
         {
             switch (extension)
             {
-                case ".3ds":
-                    return new Exporters.Create;
+                case ".png":
+                case ".jpeg":
+                    return new BitmapExporter();
                 case ".obj":
                 case ".objz":
                     return new ObjExporter();
-                case ".off":
-                    return new Exporters.Create;
-                case ".lwo":
-                    return new Exporters.Create;
+                case ".xaml":
+                    return new XamlExporter();
+                case ".xml":
+                    return new KerkytheaExporter();
+                case ".dae":
+                    return new ColladaExporter();
                 case ".stl":
                     return new StlExporter();
-                case ".ply":
-                    return new Exporters.Create;
                 default:
                     throw new NotSupportedException($"Экспортер для формата {extension} не реализован");
             }

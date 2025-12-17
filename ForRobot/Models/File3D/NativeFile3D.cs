@@ -11,7 +11,9 @@ namespace ForRobot.Models.File3D
     public class NativeFile3D : File3D
     {
         #region Private variables
-        
+
+        private readonly ForRobot.Libr.Factories.DetalFactory.IDetalFactory _detalFactory;
+
         private string _selectedWeldingSchema = WeldingSchemas.GetDescription(WeldingSchemas.SchemasTypes.LeftEvenOdd_RightEvenOdd);
 
         private Model3DGroup _model = new Model3DGroup();
@@ -24,7 +26,7 @@ namespace ForRobot.Models.File3D
 
         #region Public variables
 
-        public override string Filter { get; }
+        public override string Filter { get; } = "Text Files (*.txt)|*.txt|Json Files (*.json)|*.json|All Supported Files (*.txt;*.json)|*.txt;*.json";
 
         /// <summary>
         /// Выбранная схема сварки рёбер
@@ -65,9 +67,16 @@ namespace ForRobot.Models.File3D
 
         #region Constructors
 
-        public NativeFile3D() : base()
-        {
+        public NativeFile3D() { }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        public NativeFile3D(string path, ForRobot.Libr.Factories.DetalFactory.IDetalFactory detalFactory) : base(path)
+        {
+            this._detalFactory = detalFactory;
+            this.LoadJsonFile(path);
         }
 
         #endregion Constructors
@@ -116,10 +125,10 @@ namespace ForRobot.Models.File3D
         }
 
         #endregion
-
+        
         private void SetDetal(object value)
         {
-            if (this._currentDetal == value)
+            if (this._currentDetal == value) // Изменить на сравнение объеков
                 return;
 
             if (this._currentDetal != null) // Отписка событий
@@ -134,6 +143,12 @@ namespace ForRobot.Models.File3D
 
             this._currentDetal.ChangePropertyEvent += HandleCurrentDetalPropertyChange;
             this._currentDetal.OnChangeProperty();
+        }
+
+        private void LoadJsonFile(string path)
+        {
+            string jsonString = System.IO.File.ReadAllText(path);
+            this.CurrentDetal = this._detalFactory.Deserialize(jsonString);
         }
 
         #endregion Private functions

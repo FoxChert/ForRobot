@@ -6,6 +6,7 @@ namespace ForRobot.Models.File3D
 {
     public interface IFile3D : INotifyPropertyChanged
     {
+        bool IsSaved { get; }
         string Path { get; }
         Model3DGroup Model { get; }
     }

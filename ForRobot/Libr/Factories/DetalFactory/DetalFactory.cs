@@ -13,11 +13,20 @@ using ForRobot.Models.Detals;
 
 namespace ForRobot.Libr.Factories.DetalFactory
 {
+    /// <summary>
+    /// Фабрика для создания и сериализации/десериализации деталей
+    /// </summary>
     public class DetalFactory : IDetalFactory, IDisposable
     {
         private readonly IConfigurationProvider _configProvider;
         private readonly IJsonSchemaProvider _jsonSchemaProvider;
 
+        /// <summary>
+        /// Инициализирует новый экземпляр класса DetalFactory
+        /// </summary>
+        /// <param name="configProvider">Провайдер вывода свойств узлов конфигурации</param>
+        /// <param name="jsonSchemaProvider">Провайдер вывода JSON схем</param>
+        /// <exception cref="ArgumentNullException">Если любой из параметров равен null</exception>
         public DetalFactory(IConfigurationProvider configProvider, IJsonSchemaProvider jsonSchemaProvider)
         {
             this._configProvider = configProvider ?? throw new ArgumentNullException(nameof(configProvider));
@@ -26,9 +35,17 @@ namespace ForRobot.Libr.Factories.DetalFactory
 
         #region Private functions
 
+        /// <summary>
+        /// Создает деталь типа <see cref="DetalType.Plita"/> с параметрами из конфигурации
+        /// </summary>
+        /// <returns>Новая деталь типа Plita</returns>
         private Plita CreatePlita()
         {
             var plateConfig = _configProvider.GetPlitaConfig();
+
+            if (plateConfig == null)
+                throw new InvalidOperationException($"Конфигурация для детали {DetalType.Plita} не найдена");
+
             return new Plita
             {
                 ReverseDeflection = plateConfig.ReverseDeflection,
@@ -58,7 +75,12 @@ namespace ForRobot.Libr.Factories.DetalFactory
                 return JsonConvert.DeserializeObject<Plita>(jsonString, settings);
         }
 
-        private void HandleSerializeringError(object sender, ErrorEventArgs e)
+        /// <summary>
+        /// Обработчик вызова ошибки десериализации
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HandleDeserializeringError(object sender, ErrorEventArgs e)
         {
             var obj = e.CurrentObject as Detal;
             string message = string.Empty;
@@ -66,6 +88,23 @@ namespace ForRobot.Libr.Factories.DetalFactory
                 message = e.ErrorContext.Error.Message;
             else
                 message = string.Format("Ошибка десериализации объекта {0}: {1}", obj.GetType(), e.ErrorContext.Error.Message);
+            e.ErrorContext.Handled = true;
+            throw new JsonSerializationException(message);
+        }
+
+        /// <summary>
+        /// Обработчик вызова ошибки сериализации
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HandleSerializeringError(object sender, ErrorEventArgs e)
+        {
+            var obj = e.CurrentObject as Detal;
+            string message = string.Empty;
+            if (obj == null)
+                message = e.ErrorContext.Error.Message;
+            else
+                message = string.Format("Ошибка сериализации объекта {0}: {1}", obj.GetType(), e.ErrorContext.Error.Message);
             e.ErrorContext.Handled = true;
             throw new JsonSerializationException(message);
         }
