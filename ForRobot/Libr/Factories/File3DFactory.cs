@@ -6,6 +6,9 @@ using ForRobot.Libr.Services.Providers;
 
 namespace ForRobot.Libr.Factories
 {
+    /// <summary>
+    /// Файбрика создания/загрузки файлов
+    /// </summary>
     public static class File3DFactory
     {
         private static IConfigurationProvider _configurationProvider;
@@ -39,5 +42,20 @@ namespace ForRobot.Libr.Factories
                     throw new Exception(string.Format("Расширение {0} не поддерживается", extension));
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="detalType"></param>
+        /// <returns></returns>
+        public static File3D Create(string path, ForRobot.Models.Detals.DetalType detalType)
+        {
+            var detalFactory = new ForRobot.Libr.Factories.DetalFactory.DetalFactory(_configurationProvider, _jsonSchemaProvider);
+            return new NativeFile3D(path, detalType, detalFactory);
+        }
+
+        public static void SetConfigurationProvider(IConfigurationProvider configurationProvider) => _configurationProvider = configurationProvider;
+        public static void SetJsonSchemaProvider(IJsonSchemaProvider jsonSchemaProvider) => _jsonSchemaProvider = jsonSchemaProvider;
     }
 }

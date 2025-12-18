@@ -16,7 +16,7 @@ namespace ForRobot.Models.File3D
 
         private string _selectedWeldingSchema = WeldingSchemas.GetDescription(WeldingSchemas.SchemasTypes.LeftEvenOdd_RightEvenOdd);
 
-        private Model3DGroup _model = new Model3DGroup();
+        private Model3DGroup _currentModel = new Model3DGroup();
 
         private Detal _currentDetal;
 
@@ -41,12 +41,12 @@ namespace ForRobot.Models.File3D
             }
         }
 
-        public override Model3DGroup Model
+        public override Model3DGroup CurrentModel
         {
-            get => this._model;
+            get => this._currentModel;
             protected set
             {
-                this._model = value;
+                this._currentModel = value;
                 this.OnModelChanged();
             }
         }
@@ -67,7 +67,7 @@ namespace ForRobot.Models.File3D
 
         #region Constructors
 
-        public NativeFile3D() { }
+        //public NativeFile3D() { }
 
         /// <summary>
         /// 
@@ -76,7 +76,20 @@ namespace ForRobot.Models.File3D
         public NativeFile3D(string path, ForRobot.Libr.Factories.DetalFactory.IDetalFactory detalFactory) : base(path)
         {
             this._detalFactory = detalFactory;
-            this.LoadJsonFile(path);
+
+            this.PropertyChanged += HandlePropertyChange;
+
+            string jsonString = System.IO.File.ReadAllText(path);
+            this.CurrentDetal = this._detalFactory.Deserialize(jsonString);
+        }
+
+        public NativeFile3D(string path, DetalType detalType, ForRobot.Libr.Factories.DetalFactory.IDetalFactory detalFactory) : base(path)
+        {
+            this._detalFactory = detalFactory;
+
+            this.PropertyChanged += HandlePropertyChange;
+
+            this.CurrentDetal = this._detalFactory.CreateDetal(detalType);
         }
 
         #endregion Constructors
@@ -145,12 +158,40 @@ namespace ForRobot.Models.File3D
             this._currentDetal.OnChangeProperty();
         }
 
-        private void LoadJsonFile(string path)
+        #endregion Private functions
+
+        #region Public functions
+
+        public override void Save(string path)
         {
-            string jsonString = System.IO.File.ReadAllText(path);
-            this.CurrentDetal = this._detalFactory.Deserialize(jsonString);
+            string jsonString = this._detalFactory.Serialize(this.CurrentDetal);
+
+            if (jsonString == string.Empty) return;
+
+            System.IO.File.WriteAllText(path, jsonString);
         }
 
-        #endregion Private functions
+        #endregion Public functions
+
+        #region Implementations of IDisposable
+
+        private volatile bool _disposed = false;
+
+        public override void Dispose(bool disposing)
+        {
+            if (this._disposed)
+                return;
+
+            if (disposing)
+            {
+                this._detalFactory.ClearCache();
+
+                this.PropertyChanged -= HandlePropertyChange;
+            }
+            this._disposed = true;
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
     }
 }

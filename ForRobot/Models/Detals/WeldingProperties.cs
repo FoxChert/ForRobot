@@ -213,7 +213,7 @@ namespace ForRobot.Models.Detals
                 }
             };
 
-            this.WeldingSchema = ForRobot.Models.Detals.WeldingSchemas.BuildingSchema(this.SelectedWeldingSchema, Plita.MIN_RIB_COUNT);
+            this.WeldingSchema = ForRobot.Models.Detals.WeldingSchemas.BuildingSchema(this.SelectedWeldingSchema, Plita.MIN_RIB_COUNT) as FullyObservableCollection<WeldingSchemas.SchemaItem>;
         }
 
         #endregion Public variables

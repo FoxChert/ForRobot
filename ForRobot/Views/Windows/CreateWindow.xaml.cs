@@ -83,7 +83,7 @@ namespace ForRobot.Views.Windows
             }
         }
 
-        public File3D CreationFile { get; set; } = new File3D();
+        public File3D CreationFile { get; set; }
 
         /// <summary>
         /// Коллекция видов деталей
@@ -155,7 +155,7 @@ namespace ForRobot.Views.Windows
 
         private void BtnDialogOk_Click(object sender, RoutedEventArgs e)
         {
-            this.CreationFile.Path = System.IO.Path.Combine(this.Path, this.FileName);
+            //this.CreationFile.Path = System.IO.Path.Combine(this.Path, this.FileName);
             this.DialogResult = true;
         }
 

@@ -313,7 +313,8 @@
     <Compile Include="Libr\Clipboard\CacheClipboardProvider.cs" />
     <Compile Include="Libr\Clipboard\UndoRedoManager.cs" />
     <Compile Include="Libr\Clipboard\UndoRedo\UndoRedoStacks.cs" />
-    <Compile Include="Libr\Collections\File3DCollection.cs" />
+    <Compile Include="Libr\Collections\CollectionWithEvents.cs" />
+    <Compile Include="Models\File3D\File3DCollection.cs" />
     <Compile Include="Libr\Collections\Model3DCollection.cs" />
     <Compile Include="Libr\Collections\Transform3DBuilder.cs" />
     <Compile Include="Libr\Configuration\CachedConfigurationProvider.cs" />
@@ -356,7 +357,6 @@
     <Compile Include="Libr\ValueChangedEventArgs.cs" />
     <Compile Include="Models\Detals\WeldingProperties.cs" />
     <Compile Include="Libr\Services\Providers\IConfigurationProvider.cs" />
-    <Compile Include="Models\File3D\AssimpFile.cs" />
     <Compile Include="Models\File3D\AssimpModelHandler.cs" />
     <Compile Include="Libr\Factories\File3DFactory.cs" />
     <Compile Include="Models\File3D\HelixToolkitModelHandler.cs" />
@@ -364,7 +364,6 @@
     <Compile Include="Models\File3D\IModelFileHandler.cs" />
     <Compile Include="Models\File3D\MeshModelFile3D.cs" />
     <Compile Include="Models\File3D\NativeFile3D.cs" />
-    <Compile Include="Models\File3D\OpenCascadeFile.cs" />
     <Compile Include="Models\File3D\OpenCascadeModelHandler.cs" />
     <Compile Include="Models\Settings\SceneConfiguration.cs" />
     <Compile Include="Themes\Colors.cs" />
@@ -389,7 +388,6 @@
     <Compile Include="Libr\Services\ExporterService.cs" />
     <Compile Include="Libr\Services\File3DImportService.cs" />
     <Compile Include="Libr\Services\FileDialogService.cs" />
-    <Compile Include="Libr\Services\File3DService.cs" />
     <Compile Include="Libr\Services\GenerationService.cs" />
     <Compile Include="Libr\Services\ModelingService.cs" />
     <Compile Include="Libr\Services\SelectAppsOnDeviceService.cs" />

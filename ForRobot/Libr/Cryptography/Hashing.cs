@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 
 namespace ForRobot.Libr.Cryptography
 {
-    public class Hashing
+    public static class Hashing
     {
         /// <summary>
         /// Алгоритм хэширования MD5
@@ -44,15 +44,5 @@ namespace ForRobot.Libr.Cryptography
                 return builder.ToString();
             }
         }
-
-        ///// <summary>
-        ///// Ввод и сравнение пин-кодов
-        ///// </summary>
-        ///// <returns>Верный ли введенный пользователем пин-код</returns>
-        //public static bool Equals()
-        //{
-        //    string pin = new ForRobot.Libr.Services.WindowsAppService().InputWindowShow();
-        //    return !string.IsNullOrEmpty(pin) && ForRobot.Libr.Cryptography.Hashing.Sha256(pin) == ForRobot.Properties.Settings.Default.PinCode;
-        //}
     }
 }

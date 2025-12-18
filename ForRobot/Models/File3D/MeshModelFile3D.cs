@@ -7,7 +7,7 @@ namespace ForRobot.Models.File3D
     {
         #region Private variables
 
-        private Model3DGroup _model = new Model3DGroup();
+        private Model3DGroup _currentModel = new Model3DGroup();
 
         #endregion private variables
 
@@ -15,12 +15,12 @@ namespace ForRobot.Models.File3D
 
         public override string Filter { get; } = "3D Mesh Files (*.stl;*.obj;*.ply)|*.stl;*.obj;*.ply";
 
-        public override Model3DGroup Model
+        public override Model3DGroup CurrentModel
         {
-            get => this._model;
+            get => this._currentModel;
             protected set
             {
-                this._model = value;
+                this._currentModel = value;
                 this.OnModelChanged();
             }
         }
@@ -32,5 +32,14 @@ namespace ForRobot.Models.File3D
         public MeshModelFile3D(string path) : base(path) { }
 
         #endregion Constructors
+
+        #region Public functions
+
+        public override void Save(string path)
+        {
+
+        }
+
+        #endregion Public functions
     }
 }

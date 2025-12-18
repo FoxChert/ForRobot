@@ -8,7 +8,7 @@ using ForRobot.Libr.Services.Providers;
 namespace ForRobot.Libr.Json.Schemas
 {
     /// <summary>
-    /// Кэшерованная коллекция json-схем для разных видом <see cref="ForRobot.Models.Detals.DetalType"/>
+    /// Кэшерованная коллекция json-схем для разных видов <see cref="ForRobot.Models.Detals.DetalType"/>
     /// </summary>
     public class CachedJsonSchemaProvider : IJsonSchemaProvider
     {
@@ -21,8 +21,6 @@ namespace ForRobot.Libr.Json.Schemas
             _innerProvider = innerProvider ?? throw new ArgumentNullException(nameof(innerProvider));
         }
 
-        JSchema IJsonSchemaProvider.GetPlitaSchema() => GetCached("plate", () => _innerProvider.GetPlitaSchema());
-
         private T GetCached<T>(string key, Func<T> factory) where T : class
         {
             lock (_lock)
@@ -34,6 +32,8 @@ namespace ForRobot.Libr.Json.Schemas
                 return (T)_cache[key];
             }
         }
+
+        public JSchema GetPlitaSchema() => GetCached("plate", () => _innerProvider.GetPlitaSchema());
 
         public void ClearCache()
         {

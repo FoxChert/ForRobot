@@ -151,7 +151,7 @@ namespace ForRobot.ViewModels
             if (string.IsNullOrEmpty(this.FilePath) || string.IsNullOrEmpty(this.FileName))
                 return;
 
-            this.File3D.Path = Path.Combine(this.FileName, this.FilePath);
+            //this.File3D.Path = Path.Combine(this.FileName, this.FilePath);
             
             App.Current.OpenedFiles.Add(this.File3D);
             //App.Current.WindowsAppService.CloseCreateWindow();

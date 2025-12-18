@@ -17,10 +17,6 @@ namespace ForRobot.Libr.Configuration
             _innerProvider = innerProvider ?? throw new ArgumentNullException(nameof(innerProvider));
         }
 
-        public PlateConfigurationSection GetPlitaConfig() => GetCached("plate", () => _innerProvider.GetPlitaConfig());
-
-        public RobotConfigurationSection GetRobotConfig() => GetCached("robot", () => _innerProvider.GetRobotConfig());
-
         private T GetCached<T>(string key, Func<T> factory) where T : class
         {
             lock (_lock)
@@ -32,6 +28,10 @@ namespace ForRobot.Libr.Configuration
                 return (T)_cache[key];
             }
         }
+
+        public PlateConfigurationSection GetPlitaConfig() => GetCached("plate", () => _innerProvider.GetPlitaConfig());
+
+        public RobotConfigurationSection GetRobotConfig() => GetCached("robot", () => _innerProvider.GetRobotConfig());
 
         public void ClearCache()
         {

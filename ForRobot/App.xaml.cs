@@ -54,13 +54,13 @@ namespace ForRobot
 
         public static new App Current => Application.Current as App;
 
-        //public readonly ForRobot.Libr.Services.Providers.IConfigurationProvider ConfigurationProvider = new ForRobot.Libr.Configuration.ConfigurationProvider();
-        //public readonly ForRobot.Libr.Services.Providers.IJsonSchemaProvider JsonSchemaProvider = new ForRobot.Libr.Json.Schemas.JsonSchemaProvider();
-
         /// <summary>
         /// Сервис открытия окон приложения
         /// </summary>
         public readonly ForRobot.Libr.Services.IWindowsAppService WindowsAppService = new ForRobot.Libr.Services.WindowsAppService();
+
+        public readonly ForRobot.Libr.Services.Providers.IConfigurationProvider ConfigProvider = new ForRobot.Libr.Configuration.CachedConfigurationProvider(new ForRobot.Libr.Configuration.ConfigurationProvider());
+        public readonly ForRobot.Libr.Services.Providers.IJsonSchemaProvider JsonSchemaProvider = new ForRobot.Libr.Json.Schemas.CachedJsonSchemaProvider(new ForRobot.Libr.Json.Schemas.JsonSchemaProvider());
 
         /// <summary>
         /// Директория AvalonDock.config файла, в котором сохраняется макет интерфейса.
@@ -146,8 +146,11 @@ namespace ForRobot
 
                 this.Logger.Trace("Запуск приложения");
 
+                ForRobot.Libr.Factories.File3DFactory.SetConfigurationProvider(this.ConfigProvider);
+                ForRobot.Libr.Factories.File3DFactory.SetJsonSchemaProvider(this.JsonSchemaProvider);
+
                 foreach (var i in e.Args) // Исп. для открытия файла модели "с помощью"
-                    this.OpenedFiles.Add(new Models.File3D.File3D(i));
+                    this.OpenedFiles.Add(Models.File3D.File3D.Load(i));
 
                 RunApp(e.Args);
                 await Task.Run(() => StartPipeServer());
@@ -202,12 +205,14 @@ namespace ForRobot
         private void RunApp(string[] args)
         {
             // Проверка версии файла в папке с обновлением и запрос к пользователю.
+            string updatePath = Path.Combine(App.Current.UpdatePath, $"{ResourceAssembly.GetName().Name}.exe");
+
             if (Settings.AutoUpdate &&
-                File.Exists(Path.Combine(App.Current.UpdatePath, $"{ResourceAssembly.GetName().Name}.exe")) &&
-                new Version(FileVersionInfo.GetVersionInfo(Path.Combine(App.Current.UpdatePath, $"{ResourceAssembly.GetName().Name}.exe")).ProductVersion) > Assembly.GetExecutingAssembly().GetName().Version &&
-                (!Settings.InformUser || MessageBox.Show($"Обнаружено обновление до версии {FileVersionInfo.GetVersionInfo(Path.Combine(App.Current.UpdatePath, $"{ResourceAssembly.GetName().Name}.exe")).ProductVersion}\nОбновить приложение?", "Обновление интерфейса", MessageBoxButton.OKCancel, MessageBoxImage.Question, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly) == MessageBoxResult.OK))
+                File.Exists(updatePath) &&
+                new Version(FileVersionInfo.GetVersionInfo(updatePath).ProductVersion) > Assembly.GetExecutingAssembly().GetName().Version &&
+                (!Settings.InformUser || MessageBox.Show($"Обнаружено обновление до версии {FileVersionInfo.GetVersionInfo(updatePath).ProductVersion}\nОбновить приложение?", "Обновление интерфейса", MessageBoxButton.OKCancel, MessageBoxImage.Question, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly) == MessageBoxResult.OK))
             {
-                this.Logger.Trace($"Обновление приложения до версии {FileVersionInfo.GetVersionInfo(Path.Combine(App.Current.UpdatePath, $"{ResourceAssembly.GetName().Name}.exe")).ProductVersion}");
+                this.Logger.Trace($"Обновление приложения до версии {FileVersionInfo.GetVersionInfo(updatePath).ProductVersion}");
                 App.Current.UpDateApp(args);
             }
 
@@ -392,7 +397,7 @@ namespace ForRobot
                 {
                     if (File.Exists(arg))
                     {
-                        this.OpenedFiles.Add(new Models.File3D.File3D(arg));
+                        this.OpenedFiles.Add(Models.File3D.File3D.Load(arg));
                     }
                 }
             }
@@ -418,7 +423,7 @@ namespace ForRobot
         #region Public functions
 
         /// <summary>
-        /// Ввод и сравнение пин-кодов
+        /// Ввод и сравнение пин-кода с сохранённым в <see cref="ForRobot.Properties.Settings"/>
         /// </summary>
         /// <returns>Верный ли введенный пользователем пин-код</returns>
         public static bool EqualsPinCode()

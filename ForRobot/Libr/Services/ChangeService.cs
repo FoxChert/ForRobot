@@ -36,25 +36,25 @@ namespace ForRobot.Libr.Services
         /// <param name="e"></param>
         public void HandleDetalChanged_Properties(object sender, Libr.ValueChangedEventArgs<Detal> e)
         {
-            Models.File3D.File3D file3D = sender as Models.File3D.File3D;
-            RaisePropertyChanged(nameof(file3D.CurrentDetal));
+            //Models.File3D.File3D file3D = sender as Models.File3D.File3D;
+            //RaisePropertyChanged(nameof(file3D.CurrentDetal));
 
-            if (file3D.CurrentDetal is ForRobot.Models.Detals.Plita)
-            {
-                Plita plita = file3D.CurrentDetal as ForRobot.Models.Detals.Plita;
-                //RaisePropertyChanged(nameof(plita.SelectedWeldingSchema));
-                //RaisePropertyChanged(nameof(plita.WeldingSchema));
-            }
+            //if (file3D.CurrentDetal is ForRobot.Models.Detals.Plita)
+            //{
+            //    Plita plita = file3D.CurrentDetal as ForRobot.Models.Detals.Plita;
+            //    //RaisePropertyChanged(nameof(plita.SelectedWeldingSchema));
+            //    //RaisePropertyChanged(nameof(plita.WeldingSchema));
+            //}
 
-            if (e.OldValue != null)
-            {
-                //var command = new PropertyChangeCommand<Detal>(file3D,
-                //                                               nameof(File3D.CurrentDetal),
-                //                                               e.OldValue,
-                //                                               e.NewValue,
-                //                                               $"Изменение детали: {e.OldValue?.GetType().Name} -> {e.NewValue?.GetType().Name}");
-                //file3D.AddUndoCommand(command);
-            }
+            //if (e.OldValue != null)
+            //{
+            //    //var command = new PropertyChangeCommand<Detal>(file3D,
+            //    //                                               nameof(File3D.CurrentDetal),
+            //    //                                               e.OldValue,
+            //    //                                               e.NewValue,
+            //    //                                               $"Изменение детали: {e.OldValue?.GetType().Name} -> {e.NewValue?.GetType().Name}");
+            //    //file3D.AddUndoCommand(command);
+            //}
         }
 
         /// <summary>
@@ -101,13 +101,15 @@ namespace ForRobot.Libr.Services
 
         private async Task DebouncedUpdateAsync(CancellationToken cancellationToken)
         {
+            if (!(this._pendingUpdate is ForRobot.Models.File3D.NativeFile3D nativeFile))
+                return;
+
             await Task.Delay(_debounceDelayMs, cancellationToken);
 
             if (cancellationToken.IsCancellationRequested)
                 return;
-
-            File3D file = this._pendingUpdate;
-            if (file?.CurrentDetal == null) return;
+            
+            if (nativeFile?.CurrentDetal == null) return;
             try
             {
                 await Application.Current.Dispatcher.BeginInvoke(new Action(() =>
@@ -116,9 +118,9 @@ namespace ForRobot.Libr.Services
                     {
                         try
                         {
-                            var model = _modelingService.Get3DScene(file.CurrentDetal);
-                            file.CurrentModel.Children.Clear();
-                            file.CurrentModel.Children.Add(model);
+                            var model = _modelingService.Get3DScene(nativeFile.CurrentDetal);
+                            nativeFile.CurrentModel.Children.Clear();
+                            nativeFile.CurrentModel.Children.Add(model);
                         }
                         catch (Exception ex)
                         {

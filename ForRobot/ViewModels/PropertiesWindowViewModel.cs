@@ -459,14 +459,14 @@ namespace ForRobot.ViewModels
         /// </summary>
         public static void EditPinCode()
         {
-            if (App.Sha256(new Libr.Services.WindowsAppService().InputWindowShow("Введите старый пин-код")) != Properties.Settings.Default.PinCode)
+            if (ForRobot.Libr.Cryptography.Hashing.Sha256(new Libr.Services.WindowsAppService().InputWindowShow("Введите старый пин-код")) != Properties.Settings.Default.PinCode)
                 return;
 
             using (ForRobot.Views.Windows.InputWindow inputWindow = new ForRobot.Views.Windows.InputWindow("Введите новый пин-код"))
             {
                 if (inputWindow.ShowDialog() == true)
                 {
-                    Properties.Settings.Default.PinCode = ForRobot.App.Sha256(inputWindow.Answer);
+                    Properties.Settings.Default.PinCode = ForRobot.Libr.Cryptography.Hashing.Sha256(inputWindow.Answer);
                     Properties.Settings.Default.Save();
                 }
             }

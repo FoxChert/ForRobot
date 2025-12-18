@@ -6,8 +6,6 @@ namespace ForRobot.Libr.Json.Schemas
 {
     public class JsonSchemaProvider : ForRobot.Libr.Services.Providers.IJsonSchemaProvider
     {
-        public JSchema GetPlitaSchema() => SelectSchema<ForRobot.Models.Detals.Plita>();
-
         private JSchema SelectSchema<T>()
         {
             var schema = JsonManager.GetSchema<T>();
@@ -17,5 +15,7 @@ namespace ForRobot.Libr.Json.Schemas
 
             return JSchema.Parse(schema);
         }
+
+        public JSchema GetPlitaSchema() => SelectSchema<ForRobot.Models.Detals.Plita>();
     }
 }
