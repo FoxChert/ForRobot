@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Configuration;
-
-using ForRobot.Models.Detals;
 
 namespace ForRobot.Libr.Configuration.ConfigurationProperties
 {
@@ -10,8 +7,8 @@ namespace ForRobot.Libr.Configuration.ConfigurationProperties
     /// </summary>
     public class PlateConfigurationSection : BaseConfigurationSection
     {
-        public string PlitaGenerator => GetValue<string>("PlitaGenerator");
-        public string PlitaProgramName => GetValue<string>("PlitaProgramName");
+        public string PlateScriptName => GetValue<string>("plate_script_name");
+        public string PlateProgramName => GetValue<string>("plate_program_name");
 
         public decimal ReverseDeflection => GetValue<decimal>("detail_reverse_deflection");
         public decimal PlateWidth => GetValue<decimal>("base_width");
@@ -23,8 +20,8 @@ namespace ForRobot.Libr.Configuration.ConfigurationProperties
         public decimal RibsHeight => GetValue<decimal>("RibsHeight");
         public decimal RibsThickness => GetValue<decimal>("wall_thickness");
         public int RibsCount => GetValue<int>("wall_count");
-        public decimal DistanceToFirstRib => GetValue<decimal>("DistanceToFirstRib");
-        public decimal DistanceBetweenRibs => GetValue<decimal>("DistanceBetweenRibs");
+        public decimal DistanceToFirstRib => GetValue<decimal>("weld_first_dist");
+        public decimal DistanceBetweenRibs => GetValue<decimal>("weld_between_dist");
         public decimal RibsIdentToLeft => GetValue<decimal>("wall_long_dist_left");
         public decimal RibsIdentToRight => GetValue<decimal>("wall_long_dist_right");
         public decimal WeldsDissolutionLeft => GetValue<decimal>("weld_offset_left");

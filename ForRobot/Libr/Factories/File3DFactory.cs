@@ -7,25 +7,95 @@ using ForRobot.Libr.Services.Providers;
 namespace ForRobot.Libr.Factories
 {
     /// <summary>
-    /// Файбрика создания/загрузки файлов
+    /// Файбрика для создания и загрузки 3D файлов различных форматов
     /// </summary>
+    /// <remarks>
+    /// Поддерживаемые форматы:
+    /// - Меш-файлы: .stl, .obj, .ply
+    /// - Нативные файлы: .json, .txt
+    /// </remarks>
     public static class File3DFactory
     {
+        /// <summary>
+        /// Провайдер конфигурации
+        /// </summary>
         private static IConfigurationProvider _configurationProvider;
+        /// <summary>
+        /// Провайдер json-схем для валидации структуры json-строк
+        /// </summary>
         private static IJsonSchemaProvider _jsonSchemaProvider;
+        /// <summary>
+        /// Кэширование фабрики создания детали
+        /// </summary>
+        private static DetalFactory.IDetalFactory _cachedDetalFactory;
 
+        /// <summary>
+        /// Статический конструктор для инициализации провайдеров по умолчанию
+        /// </summary>
+        /// <remarks>
+        /// Выполняется один раз при первом обращении к классу
+        /// </remarks>
         static File3DFactory()
         {
-            _configurationProvider = new ForRobot.Libr.Configuration.ConfigurationProvider(); // Проверить не инициализируется ли больше 1 раза
+            InitializeDefaultProviders();
+            CreateCachedDetalFactory();
+        }
+
+        #region Private functions
+
+        private static void InitializeDefaultProviders()
+        {
+            _configurationProvider = new ForRobot.Libr.Configuration.ConfigurationProvider();
             _jsonSchemaProvider = new ForRobot.Libr.Json.Schemas.JsonSchemaProvider();
         }
 
+        private static void CreateCachedDetalFactory()
+        {
+            _cachedDetalFactory = new ForRobot.Libr.Factories.DetalFactory.DetalFactory(_configurationProvider, _jsonSchemaProvider);
+        }
+
+        /// <summary>
+        /// Валидация пути к файлу
+        /// </summary>
+        /// <param name="path">Путь к файлу для валидации</param>
+        /// <exception cref="ArgumentNullException">Если путь равен null</exception>
+        /// <exception cref="ArgumentException">Если путь пустой или состоит только из пробелов</exception>
+        private static bool ValidatePath(string path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path), "Путь к файлу не может быть null");
+            }
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentException("Путь к файлу не может быть пустым или состоять только из пробелов", nameof(path));
+            }
+
+            return true;
+        }
+
+        #endregion Private functions
+
+        #region Public functions
+
+        /// <summary>
+        /// Создание объекта File3D на основе расширения файла
+        /// </summary>
+        /// <param name="path">Путь к файлу</param>
+        /// <returns>Соответствующий объект File3D</returns>
+        /// <exception cref="ArgumentNullException">Если путь равен null</exception>
+        /// <exception cref="FileNotFoundException">Если файл не найден</exception>
+        /// <exception cref="NotSupportedException">Если формат файла не поддерживается</exception>
+        /// <exception cref="ArgumentException">Если путь пустой или состоит только из пробелов</exception>
         public static File3D Create(string path)
         {
+            ValidatePath(path);
+
             if (!File.Exists(path))
                 throw new FileNotFoundException("Не удалось найти файл", path);
 
-            string extension = System.IO.Path.GetExtension(path).ToLower();
+            string extension = System.IO.Path.GetExtension(path)?.ToLowerInvariant();
 
             switch (extension)
             {
@@ -44,18 +114,41 @@ namespace ForRobot.Libr.Factories
         }
 
         /// <summary>
-        /// 
+        /// Создание <see cref="NativeFile3D"/> с указанным типом детали
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="detalType"></param>
-        /// <returns></returns>
+        /// <param name="path">Путь к файлу</param>
+        /// <param name="detalType">Тип детали</param>
+        /// <returns>Объект NativeFile3D</returns>
+        /// <exception cref="ArgumentNullException">Если путь равен null</exception>
+        /// <exception cref="ArgumentException">Если путь пустой или состоит только из пробелов</exception>
         public static File3D Create(string path, ForRobot.Models.Detals.DetalType detalType)
         {
-            var detalFactory = new ForRobot.Libr.Factories.DetalFactory.DetalFactory(_configurationProvider, _jsonSchemaProvider);
-            return new NativeFile3D(path, detalType, detalFactory);
+            ValidatePath(path);
+
+            return new NativeFile3D(path, detalType, _cachedDetalFactory);
         }
 
-        public static void SetConfigurationProvider(IConfigurationProvider configurationProvider) => _configurationProvider = configurationProvider;
-        public static void SetJsonSchemaProvider(IJsonSchemaProvider jsonSchemaProvider) => _jsonSchemaProvider = jsonSchemaProvider;
+        /// <summary>
+        /// Установка провайдера конфигурации
+        /// </summary>
+        /// <param name="configurationProvider">Провайдер конфигурации</param>
+        /// <exception cref="ArgumentNullException">Если configurationProvider равен null</exception>
+        public static void SetConfigurationProvider(IConfigurationProvider configurationProvider)
+        {
+            _configurationProvider = configurationProvider ?? throw new ArgumentNullException(nameof(configurationProvider));
+            CreateCachedDetalFactory();
+        }
+        /// <summary>
+        /// Установка провайдера json-схем
+        /// </summary>
+        /// <param name="jsonSchemaProvider">Провайдер json-схем</param>
+        /// <exception cref="ArgumentNullException">Если jsonSchemaProvider равен null</exception>
+        public static void SetJsonSchemaProvider(IJsonSchemaProvider jsonSchemaProvider)
+        {
+            _jsonSchemaProvider = jsonSchemaProvider ?? throw new ArgumentNullException(nameof(jsonSchemaProvider));
+            CreateCachedDetalFactory();
+        }
+
+        #endregion Public functions
     }
 }

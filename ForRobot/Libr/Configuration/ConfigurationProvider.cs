@@ -47,7 +47,6 @@ namespace ForRobot.Libr.Configuration
             {
                 throw new ConfigurationErrorsException(string.Format("Конфигурация для '{0}' не является ConfigurationSection", configName));
             }
-
             return configSection;
         }
 

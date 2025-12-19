@@ -25,96 +25,12 @@ namespace ForRobot.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string PathControllerField {
-            get {
-                return ((string)(this["PathControllerField"]));
-            }
-            set {
-                this["PathControllerField"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("main_gen")]
-        public string PlitaProgramm {
-            get {
-                return ((string)(this["PlitaProgramm"]));
-            }
-            set {
-                this["PlitaProgramm"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("main_gen")]
-        public string PlitaStringerProgramm {
-            get {
-                return ((string)(this["PlitaStringerProgramm"]));
-            }
-            set {
-                this["PlitaStringerProgramm"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("main_gen")]
-        public string PlitaTreugolnikProgramm {
-            get {
-                return ((string)(this["PlitaTreugolnikProgramm"]));
-            }
-            set {
-                this["PlitaTreugolnikProgramm"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         public global::System.Collections.Specialized.StringCollection SaveRobots {
             get {
                 return ((global::System.Collections.Specialized.StringCollection)(this["SaveRobots"]));
             }
             set {
                 this["SaveRobots"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string SavePlita {
-            get {
-                return ((string)(this["SavePlita"]));
-            }
-            set {
-                this["SavePlita"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string SavePlitaStringer {
-            get {
-                return ((string)(this["SavePlitaStringer"]));
-            }
-            set {
-                this["SavePlitaStringer"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string SavePlitaTreygolnik {
-            get {
-                return ((string)(this["SavePlitaTreygolnik"]));
-            }
-            set {
-                this["SavePlitaTreygolnik"] = value;
             }
         }
         
@@ -157,60 +73,12 @@ namespace ForRobot.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string LeftColumnWidth {
-            get {
-                return ((string)(this["LeftColumnWidth"]));
-            }
-            set {
-                this["LeftColumnWidth"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string BottomRowHeight {
-            get {
-                return ((string)(this["BottomRowHeight"]));
-            }
-            set {
-                this["BottomRowHeight"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("80")]
-        public double StatusColumnWidth {
-            get {
-                return ((double)(this["StatusColumnWidth"]));
-            }
-            set {
-                this["StatusColumnWidth"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string SelectedTheme {
             get {
                 return ((string)(this["SelectedTheme"]));
             }
             set {
                 this["SelectedTheme"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool SendingGeneratedFiles {
-            get {
-                return ((bool)(this["SendingGeneratedFiles"]));
-            }
-            set {
-                this["SendingGeneratedFiles"] = value;
             }
         }
     }

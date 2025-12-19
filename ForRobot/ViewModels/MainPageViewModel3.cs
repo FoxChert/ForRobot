@@ -23,7 +23,7 @@ using GalaSoft.MvvmLight.Messaging;
 
 using HelixToolkit.Wpf;
 
-using ForRobot.Libr;
+using ForRobot.Libr.Logging;
 using ForRobot.Libr.Services;
 using ForRobot.Libr.Collections;
 using ForRobot.Models;
@@ -498,7 +498,7 @@ namespace ForRobot.ViewModels
             if (Properties.Settings.Default.SaveRobots == null)
                 Properties.Settings.Default.SaveRobots = new System.Collections.Specialized.StringCollection();
 
-            Libr.Logger.LoggingEvent += (s, o) => System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() => this.MessagesCollection.Add(new Models.AppMessage(o))));
+            Logger.LoggingEvent += (s, o) => System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() => this.MessagesCollection.Add(new Models.AppMessage(o))));
 
             // Выгрузка сохранённых соединений
             this.RobotsCollection = new FullyObservableCollection<Robot>();
@@ -856,8 +856,8 @@ namespace ForRobot.ViewModels
             if (string.IsNullOrEmpty(robot.Name))
                 robot.Name = $"Соединение {this.RobotsCollection.Count + 1}";
             
-            robot.Log += new EventHandler<ForRobot.Libr.LogEventArgs>(this.WreteLog);
-            robot.LogError += new EventHandler<ForRobot.Libr.LogErrorEventArgs>(WreteLogError);
+            robot.Log += new EventHandler<ForRobot.Libr.Logging.LogEventArgs>(this.WreteLog);
+            robot.LogError += new EventHandler<ForRobot.Libr.Logging.LogErrorEventArgs>(WreteLogError);
 
             return robot;
         }

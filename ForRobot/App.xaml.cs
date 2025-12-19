@@ -11,8 +11,6 @@ using System.Diagnostics;
 using System.Windows;
 using System.Security.Cryptography;
 
-using ForRobot.Libr;
-
 using NLog;
 
 namespace ForRobot
@@ -70,7 +68,7 @@ namespace ForRobot
         /// <summary>
         /// Общий логер
         /// </summary>
-        public Libr.Logger Logger { get; } = new Libr.Logger();
+        public Libr.Logging.Logger Logger { get; } = new Libr.Logging.Logger();
 
         /// <summary>
         /// Настройки приложения

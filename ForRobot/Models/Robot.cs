@@ -15,6 +15,7 @@ using System.Text.Json.Serialization;
 
 using ForRobot.Libr;
 using ForRobot.Libr.Client;
+using ForRobot.Libr.Logging;
 using ForRobot.Libr.Collections;
 
 namespace ForRobot.Models

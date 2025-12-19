@@ -4,7 +4,7 @@ using NLog;
 using NLog.Targets;
 using NLog.Config;
 
-namespace ForRobot.Libr
+namespace ForRobot.Libr.Logging
 {
     public class Logger
     {

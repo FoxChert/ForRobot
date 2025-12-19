@@ -2,28 +2,7 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="ForRobot.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="PathControllerField" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="PlitaProgramm" Type="System.String" Scope="User">
-      <Value Profile="(Default)">main_gen</Value>
-    </Setting>
-    <Setting Name="PlitaStringerProgramm" Type="System.String" Scope="User">
-      <Value Profile="(Default)">main_gen</Value>
-    </Setting>
-    <Setting Name="PlitaTreugolnikProgramm" Type="System.String" Scope="User">
-      <Value Profile="(Default)">main_gen</Value>
-    </Setting>
     <Setting Name="SaveRobots" Type="System.Collections.Specialized.StringCollection" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="SavePlita" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="SavePlitaStringer" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="SavePlitaTreygolnik" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="PinCode" Type="System.String" Scope="User">
@@ -35,20 +14,8 @@
     <Setting Name="IsSettingsUpgradeRequired" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="LeftColumnWidth" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="BottomRowHeight" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="StatusColumnWidth" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">80</Value>
-    </Setting>
     <Setting Name="SelectedTheme" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="SendingGeneratedFiles" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

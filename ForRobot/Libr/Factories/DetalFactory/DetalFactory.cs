@@ -208,8 +208,7 @@ namespace ForRobot.Libr.Factories.DetalFactory
 
             if (string.IsNullOrEmpty(jsonString))
                 throw new ArgumentException("Строка JSON не может быть пустой", nameof(jsonString));
-
-
+            
             var settings = new JsonSerializerSettings()
             {
                 Error = HandleSerializeringError
@@ -228,7 +227,9 @@ namespace ForRobot.Libr.Factories.DetalFactory
                 switch (detalType)
                 {
                     case DetalTypes.Plita:
-                        this.ValidationJsonString<Plita>(jsonString);
+                        if (!this.ValidationJsonString<Plita>(jsonString))
+                            return this.CreateDetal<Plita>();
+
                         return this.DeserializePlate(jsonString, settings);
 
                     default:
@@ -328,7 +329,7 @@ namespace ForRobot.Libr.Factories.DetalFactory
                 // Сбор ошибок валидации
                 jsonObject.Validate(schema, (sender, args) =>
                 {
-                    validationErrors.Add(new ValidationErrorInfo
+                    validationErrors.Add(new ValidationErrorInfo()
                     {
                         Message = args.Message,
                         Path = args.Path,
@@ -343,9 +344,9 @@ namespace ForRobot.Libr.Factories.DetalFactory
             }
             catch (JsonReaderException ex)
             {
-                var errors = new List<ValidationErrorInfo>
+                var errors = new List<ValidationErrorInfo>()
                 {
-                    new ValidationErrorInfo
+                    new ValidationErrorInfo()
                     {
                         Message = $"Deserialization failed: {ex.Message}",
                         Path = ex.Path
@@ -353,9 +354,9 @@ namespace ForRobot.Libr.Factories.DetalFactory
                 };
                 throw new JsonSchemaValidationException(schemaTitle, errors, jsonString, ex);
             }
-            catch (JsonSchemaValidationException)
+            catch (JsonSchemaValidationException ex)
             {
-                throw;
+                return false;
             }
             catch (Exception ex)
             {

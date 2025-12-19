@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ForRobot.Libr
+namespace ForRobot.Libr.Logging
 {
     /// <summary>
     /// Класс логирования событий

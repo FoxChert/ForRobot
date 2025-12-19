@@ -350,7 +350,7 @@
     <Compile Include="Libr\DocumentPaneHelper.cs" />
     <Compile Include="Libr\Json\ImageSourceConverter.cs" />
     <Compile Include="Libr\Json\PlitaWithRibsAttributesResolver.cs" />
-    <Compile Include="Libr\Logger.cs" />
+    <Compile Include="Libr\Logging\Logger.cs" />
     <Compile Include="Libr\Messages\UpdateCurrentDetalMessage.cs" />
     <Compile Include="Libr\Clipboard\UndoRedo\IUndoRedo.cs" />
     <Compile Include="Libr\Services\Providers\IJsonSchemaProvider.cs" />
@@ -510,8 +510,8 @@
     <Compile Include="Libr\Client\JsonRpcConnection.cs" />
     <Compile Include="Libr\Client\SocketStateObject.cs" />
     <Compile Include="Libr\ErrorException.cs" />
-    <Compile Include="Libr\LogErrorEventArgs.cs" />
-    <Compile Include="Libr\LogEventArgs.cs" />
+    <Compile Include="Libr\Logging\LogErrorEventArgs.cs" />
+    <Compile Include="Libr\Logging\LogEventArgs.cs" />
     <Compile Include="Libr\Font.cs" />
     <Compile Include="Models\Robot.cs" />
     <Compile Include="Models\Detals\Detal.cs" />

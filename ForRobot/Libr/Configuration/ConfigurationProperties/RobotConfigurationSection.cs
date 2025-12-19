@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 
 namespace ForRobot.Libr.Configuration.ConfigurationProperties
 {
@@ -8,7 +7,7 @@ namespace ForRobot.Libr.Configuration.ConfigurationProperties
     /// </summary>
     public class RobotConfigurationSection : BaseConfigurationSection
     {
-        public string PathForGeneration => GetValue<string>("FolderOfGeneration");
-        public string PathControllerFolder => GetValue<string>("ControlerFolder");
+        public string ControlFolderPath => GetValue<string>("control_folder_path");
+        public string PathFolderGeneration => GetValue<string>("path_folder_gen");
     }
 }

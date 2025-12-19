@@ -9,6 +9,8 @@ using Newtonsoft.Json.Linq;
 
 using StreamJsonRpc;
 
+using ForRobot.Libr.Logging;
+
 namespace ForRobot.Libr.Client
 {
     /// <summary>

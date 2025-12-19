@@ -16,6 +16,7 @@ using System.Diagnostics;
 //using Python.Runtime;
 //using Python.Runtime.Native;
 
+using ForRobot.Libr.Logging;
 using ForRobot.Models;
 using ForRobot.Models.Detals;
 

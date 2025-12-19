@@ -4,7 +4,6 @@ using System.Linq;
 using System.Windows;
 using System.Reflection;
 using System.Collections.Generic;
-using System.Configuration;
 
 using AvalonDock.Themes;
 
@@ -15,6 +14,9 @@ using HelixToolkit.Wpf;
 
 namespace ForRobot.Models.Settings
 {
+    /// <summary>
+    /// Класс представляющий настройки приложения
+    /// </summary>
     public class Settings : ICloneable
     {
         #region Private variables
@@ -33,9 +35,6 @@ namespace ForRobot.Models.Settings
 
         private Dictionary<string, System.Windows.Media.Color> _colors = new Dictionary<string, System.Windows.Media.Color>();
         
-        //private ForRobot.Libr.ConfigurationProperties.AppConfigurationSection _appConfig = ConfigurationManager.GetSection("app") as ForRobot.Libr.ConfigurationProperties.AppConfigurationSection;
-        //private ForRobot.Libr.ConfigurationProperties.RobotConfigurationSection _robotConfig = ConfigurationManager.GetSection("robot") as ForRobot.Libr.ConfigurationProperties.RobotConfigurationSection;
-
         #region Properties
 
         private bool _showCoordinateSystem = true;
@@ -108,19 +107,14 @@ namespace ForRobot.Models.Settings
         public string StartedDetalType { get; set; } = Models.Detals.DetalTypes.Plita;
 
         /// <summary>
-        /// Режим закрытия приложения. Спрашивает пользователя о закрытии и/или разрыве соединения
-        /// </summary>
-        public ModeClosingApp ModeClosingApp { get; set; } = ModeClosingApp.HaveConnected; // Устарело
-
-        /// <summary>
         /// Выбранное приложение для открытия файлов
         /// </summary>
-        public ApplicationInfo SelectedAppForOpened { get; set; }
+        public ApplicationInfo SelectedAppForOpened { get; set; } // Убрать. Открывать через "с помощью"
 
         /// <summary>
         /// Сохранённые приложения для открытия файлов
         /// </summary>
-        public List<ApplicationInfo> SavedAppsForOpened { get; set; }
+        public List<ApplicationInfo> SavedAppsForOpened { get; set; }  // Убрать. Открывать через "с помощью"
 
         #endregion Generic
 
@@ -533,7 +527,7 @@ namespace ForRobot.Models.Settings
         /// </summary>
         public string PathFolderOfGeneration { get; set; }
 
-        #endregion
+        #endregion Generation
 
         #region Robots
 
@@ -553,7 +547,7 @@ namespace ForRobot.Models.Settings
 
         #endregion Public variables
 
-        #region Constructor
+        #region Constructors
 
         public Settings()
         {
@@ -561,24 +555,11 @@ namespace ForRobot.Models.Settings
                 this.SelectedTheme = this.Themes.First();
             else
                 this.SelectedTheme = this.Themes.Where(t => t.Item1 == Properties.Settings.Default.SelectedTheme).First();
-
-            //this.PlitaProgramName = this._appConfig.PlitaProgramName;
-            //this.PlitaStringerProgramName = this._appConfig.PlitaStringerProgramName;
-            //this.PlitaTreugolnikProgramName = this._appConfig.PlitaTreugolnikProgramName;
-
-            //this.PlitaScriptName = this._appConfig.PlitaGenerator;
-            //this.PlitaStringerScriptName = this._appConfig.PlitaStringerGenerator;
-            //this.PlitaTreugolnikScriptName = this._appConfig.PlitaTreugolnikGenerator;
-
-            //this.PathFolderOfGeneration = this._robotConfig.PathForGeneration;
-
-            //this.ControlerFolder = this._robotConfig.PathControllerFolder;
-
-            //if (this.Colors == null || this.Colors.Count == 0) this.Colors = new List<File3D.PropertyColor>();
+            
             if (this.Colors.Count == 0) this.Colors = GetColors();
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Public functions
 
@@ -660,31 +641,6 @@ namespace ForRobot.Models.Settings
                     f.SetValue(null, color);
             }
         }
-
-        //public List<ForRobot.Models.File3D.PropertyColor> GetColors()
-        //{
-        //    //this.Colors = new List<Models.File3D.PropertyColor>();
-        //    //this.Colors?.Clear();
-        //    List<ForRobot.Models.File3D.PropertyColor> colors = new List<ForRobot.Models.File3D.PropertyColor>();
-        //    // Создаем экземпляр класса Colors
-        //    //var colorsInstance = new ForRobot.Models.File3D.Colors();
-
-        //    foreach (var f in typeof(ForRobot.Models.File3D.Colors).GetProperties(BindingFlags.Static | BindingFlags.Public))
-        //    {
-        //        var attribute = f.GetCustomAttributes(typeof(ForRobot.Libr.Attributes.PropertyNameAttribute), false).FirstOrDefault() as ForRobot.Libr.Attributes.PropertyNameAttribute;
-        //        if (attribute != null)
-        //        {
-        //            // Извлекаем название из атрибута
-        //            string name = attribute.PropertyName;
-
-        //            // Получаем значение цвета из свойства экземпляра
-        //            System.Windows.Media.Color colorValue = (System.Windows.Media.Color)f.GetValue(null);
-
-        //            colors.Add(new Models.File3D.PropertyColor(name, colorValue));
-        //        }
-        //    }
-        //    return colors;
-        //}
 
         public object Clone() => (Settings)this.MemberwiseClone();
 
