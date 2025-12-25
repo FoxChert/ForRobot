@@ -7,7 +7,7 @@ using System.Collections.Specialized;
 namespace ForRobot.Libr.Collections
 {
     public class FullyObservableCollection<T> : ObservableCollection<T> where T : INotifyPropertyChanged
-    {
+    {       
         #region Public variables
 
         #region Event

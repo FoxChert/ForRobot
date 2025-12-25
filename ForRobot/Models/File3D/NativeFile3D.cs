@@ -171,6 +171,30 @@ namespace ForRobot.Models.File3D
             System.IO.File.WriteAllText(path, jsonString);
         }
 
+        public void StandartParamertrs()
+        {
+            if (this.CurrentDetal == null)
+                return;
+
+            var detal = this._detalFactory.CreateDetal(DetalTypes.StringToEnum(this.CurrentDetal.DetalType));
+
+            switch (this.CurrentDetal.DetalType)
+            {
+                case DetalTypes.Plita:
+                    Plita plita = this.CurrentDetal as Plita;
+                    (detal as Plita).ScoseType = plita.ScoseType;
+                    (detal as Plita).DiferentDistance = plita.DiferentDistance;
+                    (detal as Plita).ParalleleRibs = plita.ParalleleRibs;
+                    (detal as Plita).DiferentDissolutionLeft = plita.DiferentDissolutionLeft;
+                    (detal as Plita).DiferentDissolutionRight = plita.DiferentDissolutionRight;
+                    break;
+
+                default:
+                    return;
+            }
+            this.CurrentDetal = detal;
+        }
+
         #endregion Public functions
 
         #region Implementations of IDisposable

@@ -11,14 +11,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
-//using HelixToolkit;
-using HelixToolkit.Wpf;
-using Assimp;
-//using HelixToolkit.
-
 using CommunityToolkit.Diagnostics;
 //using CommunityToolkit.
 //using CommunityToolkit.Mvvm.Input;

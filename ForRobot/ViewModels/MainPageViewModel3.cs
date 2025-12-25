@@ -332,7 +332,7 @@ namespace ForRobot.ViewModels
         //        Title = "Экспорт параметров программы",
         //        FileName = System.IO.Path.GetFileNameWithoutExtension(this.SelectedFile.Path)
         //    };
-            
+
         //    if (saveFileDialog.ShowDialog() == DialogResult.Cancel && string.IsNullOrEmpty(saveFileDialog.FileName))
         //        return;
 
@@ -383,17 +383,27 @@ namespace ForRobot.ViewModels
         //    GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new Libr.Messages.UpdateCurrentDetalMessage(this.SelectedFile.CurrentDetal));
         //}, _ => this.CanRedo); }
 
-        ///// <summary>
-        ///// Сброс параметров детали до стандартных
-        ///// </summary>
-        //public ICommand StandartParametrsCommand { get => new RelayCommand(_ =>
-        //{
-        //    this.SelectedFile.StandartParamertrs();
-        //    RaisePropertyChanged(nameof(this.SelectedFile));
-        //    RaisePropertyChanged(nameof(this.SelectedFile.CurrentDetal));
-        //    RaisePropertyChanged(nameof(this.ActiveContent));
-        //    GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new Libr.Messages.UpdateCurrentDetalMessage(this.SelectedFile.CurrentDetal));
-        //});} 
+        /// <summary>
+        /// Сброс параметров детали до стандартных
+        /// </summary>
+        public ICommand StandartParametrsCommand
+        {
+            get => new RelayCommand(_ =>
+            {
+                if (!(this.SelectedFile is ForRobot.Models.File3D.NativeFile3D nativeFile))
+                    return;
+
+                nativeFile.StandartParamertrs();
+
+                //RaisePropertyChanged(nameof(nativeFile.CurrentDetal));
+
+                //this.SelectedFile.StandartParamertrs();
+                RaisePropertyChanged(nameof(this.SelectedFile));
+                //RaisePropertyChanged(nameof(this.SelectedFile.CurrentDetal));
+                //RaisePropertyChanged(nameof(this.ActiveContent));
+                //GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new Libr.Messages.UpdateCurrentDetalMessage(this.SelectedFile.CurrentDetal));
+            });
+        }
 
         /// <summary>
         /// Показывает скрытые панели
@@ -539,7 +549,7 @@ namespace ForRobot.ViewModels
                 else
                 {
                     file3D = Models.File3D.File3D.CreateNativeFile3D(path, DetalTypes.StringToEnum(App.Current.Settings.StartedDetalType));
-                }
+                }                
 
                 if (App.Current.Settings.SaveDetalProperties)
                 {

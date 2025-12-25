@@ -30,6 +30,9 @@ namespace ForRobot.Libr.Services
 
         private List<Weld> GetPlateWelds(Plita plate)
         {
+            //if (plate.RibsCollection == null || plate.RibsCollection.Count == 0)
+            //    return null;
+
             // Преобразование реальных размеров в модельные.
             double modelPlateWidth = (double)plate.PlateWidth * (double)ScaleFactor;
             double modelPlateHeight = (double)plate.PlateThickness * (double)ScaleFactor;

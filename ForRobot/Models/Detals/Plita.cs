@@ -51,25 +51,6 @@ namespace ForRobot.Models.Detals
         /// <inheritdoc cref="Detal.DetalType"/>
         public override string DetalType { get => DetalTypes.Plita; }
 
-        ////[JsonIgnore]
-        ////[SaveAttribute]
-        ///// <summary>
-        ///// Выбранная схема сварки рёбер
-        ///// </summary>
-        //public string SelectedWeldingSchema
-        //{
-        //    get => this._selectedWeldingSchema;
-        //    set
-        //    {
-        //        this._selectedWeldingSchema = value;
-
-        //        if (this._selectedWeldingSchema != ForRobot.Models.Detals.WeldingSchemas.GetDescription(ForRobot.Models.Detals.WeldingSchemas.SchemasTypes.Edit))
-        //            this.WeldingSchema = this.FillWeldingSchema();
-
-        //        this.OnChangeProperty(nameof(this.SelectedWeldingSchema));
-        //    }
-        //}
-
         [JsonConverter(typeof(JsonCommentConverter), "Разное ли рассояние между рёбрами")]
         /// <summary>
         /// Различно ли расстояние между рёбрами => отступы и т.д.
@@ -554,19 +535,6 @@ namespace ForRobot.Models.Detals
         #endregion Private functions
 
         #region Public functions
-
-        ///// <summary>
-        ///// Десериализация класса <see cref="Plita"/> из JSON-строки
-        ///// </summary>
-        ///// <param name="sJsonString">JSON-строка</param>
-        ///// <returns></returns>
-        //public new Plita DeserializeDetal(string sJsonString = null)
-        //{
-        //    if (string.IsNullOrEmpty(sJsonString))
-        //        return new Plita();
-        //    else
-        //        return JsonConvert.DeserializeObject<Plita>(JObject.Parse(sJsonString, this._jsonLoadSettings).ToString(), this._jsonDeserializerSettings);
-        //}
 
         public FullyObservableCollection<Rib> SetRibsCollection(FullyObservableCollection<Rib> collection) => this.RibsCollection = collection;
 

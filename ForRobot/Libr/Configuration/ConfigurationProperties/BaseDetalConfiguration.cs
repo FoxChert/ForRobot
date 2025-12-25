@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Xml;
+using System.Collections.Generic;
 using System.Configuration;
 
 namespace ForRobot.Libr.Configuration.ConfigurationProperties
@@ -8,21 +10,39 @@ namespace ForRobot.Libr.Configuration.ConfigurationProperties
     /// </summary>
     public abstract class BaseConfigurationSection : ConfigurationSection
     {
+        private Dictionary<string, string> _propertyValues = new Dictionary<string, string>();
+
+        protected override void DeserializeElement(System.Xml.XmlReader reader, bool serializeCollectionKey)
+        {
+            var xml = reader.ReadOuterXml();
+
+            if (!string.IsNullOrEmpty(xml))
+            {
+                var doc = new XmlDocument();
+                doc.LoadXml(xml);
+                
+                foreach (XmlNode node in doc.DocumentElement.ChildNodes)
+                {
+                    if (node.NodeType == XmlNodeType.Element)
+                    {
+                        _propertyValues[node.Name] = node.InnerText;
+                    }
+                }
+            }
+
+            //using (var stringReader = new System.IO.StringReader($"<{this.GetType().Name}>{xml}</{this.GetType().Name}>"))
+            //using (var stringReader = new System.IO.StringReader(xml))
+            //using (var xmlReader = XmlReader.Create(stringReader))
+            //{
+            //    xmlReader.Read();
+            //    xmlReader.Read();
+            //    base.DeserializeElement(xmlReader, serializeCollectionKey);
+            //}
+        }
+
         /// <summary>
         /// Получение значения свойств конфигурации по имени с возможностью указания значения по умолчанию
         /// </summary>
-        /// <typeparam name="T">Тип возвращаемого значения</typeparam>
-        /// <param name="propertyName">Имя свойства конфигурации</param>
-        /// <param name="defaultValue">Значение по умолчанию, возвращаемое в случае ошибки или отсутствия значения</param>
-        /// <returns>
-        /// Значение свойства конфигурации, приведенное к типу T, 
-        /// или значение по умолчанию, если свойство отсутствует, равно null или возникла ошибка при получении
-        /// </returns>
-        /// <exception cref="ArgumentNullException">Если propertyName равен null</exception>
-        /// <remarks>
-        /// Метод использует блок try-catch для перехвата любых исключений, возникающих 
-        /// при доступе к свойствам конфигурации, и возвращает значение по умолчанию в таких случаях
-        /// </remarks>
         protected T GetValue<T>(string propertyName, T defaultValue = default(T))
         {
             if (propertyName == null)
@@ -33,20 +53,18 @@ namespace ForRobot.Libr.Configuration.ConfigurationProperties
 
             try
             {
-                var value = this[propertyName];
-
-                if (value == null)
-                    return defaultValue;
-
-                if (typeof(T).IsValueType && value is T typedValue)
-                    return typedValue;
-
-                if (!typeof(T).IsValueType && value is T)
-                    return (T)value;
+                if (_propertyValues.ContainsKey(propertyName))
+                {
+                    var value = _propertyValues[propertyName];
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        return (T)Convert.ChangeType(value, typeof(T));
+                    }
+                }
 
                 return defaultValue;
             }
-            catch (Exception ex) when (ex is ConfigurationErrorsException || ex is InvalidCastException)
+            catch (Exception ex) when (ex is ConfigurationErrorsException || ex is InvalidCastException || ex is FormatException)
             {
                 return defaultValue;
             }

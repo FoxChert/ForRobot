@@ -789,15 +789,15 @@
 
                                 <i:Interaction.Behaviors>
                                     <behavior:CameraControllerBehavior/>
-                                    <behavior:HelixWeldsBehavior Detal="{Binding Path=CurrentDetal, diag:PresentationTraceSources.TraceLevel=High, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                    <!--<behavior:HelixWeldsBehavior Detal="{Binding Path=CurrentDetal, diag:PresentationTraceSources.TraceLevel=High, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                                                  Thickness="{Binding Path=Settings.WeldsThickness, Source={x:Static Application.Current}, Mode=OneWay}"
-                                                                 IsDivided="{Binding Path=DataContext.IsDividedWelds, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Page}, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged}"/>
+                                                                 IsDivided="{Binding Path=DataContext.IsDividedWelds, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Page}, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged}"/>-->
 
-                                    <behavior:HelixAnnotationsBehavior Detal="{Binding Path=CurrentDetal, PresentationTraceSources.TraceLevel=High, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                    <!--<behavior:HelixAnnotationsBehavior Detal="{Binding Path=CurrentDetal, PresentationTraceSources.TraceLevel=High, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                                                        FontSize="{Binding Path=Settings.AnnotationFontSize, Mode=OneWay, Source={x:Static Application.Current}, UpdateSourceTrigger=PropertyChanged}"
                                                                        Foreground="{Binding Source={x:Static color:Colors.AnnotationForegroundColor}, Converter={StaticResource ColorToBrushConverter}}"
                                                                        LabelBackground="{Binding Source={x:Static color:Colors.AnnotationBackgroundColor}, Converter={StaticResource ColorToBrushConverter}}"
-                                                                       Thickness="{Binding Path=Settings.AnnotationThickness, Mode=OneWay, Source={x:Static Application.Current}, UpdateSourceTrigger=PropertyChanged}"/>
+                                                                       Thickness="{Binding Path=Settings.AnnotationThickness, Mode=OneWay, Source={x:Static Application.Current}, UpdateSourceTrigger=PropertyChanged}"/>-->
 
                                     <!--<behavior:HelixSceneTrackerBehavior SceneItems="{Binding Path=DataContext.SceneItemsCollection, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource AncestorType={x:Type Page}, Mode=FindAncestor}}"/>-->
                                 </i:Interaction.Behaviors>

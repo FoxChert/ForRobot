@@ -9,5 +9,7 @@ namespace ForRobot.Models.File3D
         bool IsSaved { get; }
         string Path { get; }
         Model3DGroup CurrentModel { get; }
+
+        void Save();
     }
 }

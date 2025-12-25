@@ -313,7 +313,6 @@
     <Compile Include="Libr\Clipboard\CacheClipboardProvider.cs" />
     <Compile Include="Libr\Clipboard\UndoRedoManager.cs" />
     <Compile Include="Libr\Clipboard\UndoRedo\UndoRedoStacks.cs" />
-    <Compile Include="Libr\Collections\CollectionWithEvents.cs" />
     <Compile Include="Models\File3D\File3DCollection.cs" />
     <Compile Include="Libr\Collections\Model3DCollection.cs" />
     <Compile Include="Libr\Collections\Transform3DBuilder.cs" />
@@ -359,6 +358,7 @@
     <Compile Include="Libr\Services\Providers\IConfigurationProvider.cs" />
     <Compile Include="Models\File3D\AssimpModelHandler.cs" />
     <Compile Include="Libr\Factories\File3DFactory.cs" />
+    <Compile Include="Models\File3D\FilePropertyChangedEventArgs.cs" />
     <Compile Include="Models\File3D\HelixToolkitModelHandler.cs" />
     <Compile Include="Models\File3D\IFile3D.cs" />
     <Compile Include="Models\File3D\IModelFileHandler.cs" />
