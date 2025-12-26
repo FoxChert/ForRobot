@@ -25,10 +25,7 @@ namespace ForRobot.Models.Detals
         private bool _paralleleRibs = true;
         private bool _diferentDissolutionLeft = false;
         private bool _diferentDissolutionRight = false;
-        //private bool _diferentHight = false;
-        //private bool _diferentHightLeftToRight = false;
-
-        private decimal _reverseDeflection;
+        
         private decimal _ribsHeight;
         private decimal _ribsThickness;
         private int _ribCount;
@@ -38,9 +35,8 @@ namespace ForRobot.Models.Detals
         private decimal _ribsIdentToRight;
         private decimal _weldsDissolutionLeft;
         private decimal _weldsDissolutionRight;
-        private decimal _bevelToLeft;
-        private decimal _bevelToRight;        
-        private FullyObservableCollection<Rib> _ribsCollection;
+        //private FullyObservableCollection<Rib> _ribsCollection;
+        private RibCollection _ribsCollection;
 
         #endregion
 
@@ -106,51 +102,6 @@ namespace ForRobot.Models.Detals
                 this.OnChangeProperty(nameof(this.DiferentDissolutionRight));
             }
         }
-
-        //[JsonIgnore]
-        //[SaveAttribute]
-        //[JsonConverter(typeof(JsonCommentConverter), "Разная ли высота рёбер")]
-        ///// <summary>
-        ///// Разная ли высота рёбер
-        ///// </summary>
-        //public bool DiferentHight
-        //{
-        //    get => this._diferentHight;
-        //    set
-        //    {
-        //        Set(ref this._diferentHight, value);
-        //        if (!value && this.RibsCollection?.Count > 0)
-        //        {
-        //            for (int i = 0; i < this.RibsCollection.Count; i++)
-        //            {
-        //                this.RibsCollection[i].HightLeft = this.RibsHeight;
-        //                this.RibsCollection[i].HightRight = this.RibsHeight;
-        //            }
-        //        }
-        //        this.OnChangeProperty();
-        //    }
-        //}
-
-        //[JsonIgnore]
-        //[SaveAttribute]
-        //[JsonConverter(typeof(JsonCommentConverter), "Разная ли высота рёбер с 2-х сторон")]
-        ///// <summary>
-        ///// Разная ли высота рёбер с 2-х сторон
-        ///// </summary>
-        //public bool DiferentHightLeftToRight
-        //{
-        //    get => this._diferentHightLeftToRight;
-        //    set
-        //    {
-        //        Set(ref this._diferentHightLeftToRight, value);
-        //        if (!value && this.RibsCollection?.Count > 0)
-        //            foreach (var rib in this.RibsCollection)
-        //            {
-        //                rib.OnChangeHightEvent(rib, null);
-        //            }
-        //        this.OnChangeProperty();
-        //    }
-        //}
         
         [JsonConverter(typeof(JsonCommentConverter), "Высота рёбер (вертикальной стенки)")]
         /// <summary>
@@ -289,21 +240,29 @@ namespace ForRobot.Models.Detals
         /// <summary>
         /// Коллекция рёбер
         /// </summary>
-        public FullyObservableCollection<Rib> RibsCollection
+        public RibCollection RibsCollection
         {
             get => this._ribsCollection;
             private set
             {
-                if(this._ribsCollection != null)
-                    this._ribsCollection.ItemPropertyChanged -= (s, e) => this.OnChangeProperty();
-                    
                 this._ribsCollection = value;
-
-                if (this._ribsCollection != null)
-                    this._ribsCollection.ItemPropertyChanged += (s, e) => this.OnChangeProperty();
             }
         }
-        
+        //public FullyObservableCollection<Rib> RibsCollection
+        //{
+        //    get => this._ribsCollection;
+        //    private set
+        //    {
+        //        if(this._ribsCollection != null)
+        //            this._ribsCollection.ItemPropertyChanged -= (s, e) => this.OnChangeProperty();
+                    
+        //        this._ribsCollection = value;
+
+        //        if (this._ribsCollection != null)
+        //            this._ribsCollection.ItemPropertyChanged += (s, e) => this.OnChangeProperty();
+        //    }
+        //}
+
         #endregion
 
         #region Constructor
@@ -365,37 +324,45 @@ namespace ForRobot.Models.Detals
                     break;
 
                 case nameof(this.DiferentDissolutionLeft):
-                    if (!this.DiferentDissolutionLeft && this.RibsCollection?.Count > 0)
-                    {
-                        for (int i = 0; i < this.RibsCollection.Count; i++)
-                        {
-                            this.RibsCollection[i].DissolutionLeft = this.WeldsDissolutionLeft;
-                        }
-                    }
+                    if (this.DiferentDissolutionLeft)
+                        break;
+                    this.RibsCollection.SetWeldsDissolutionLeft(this.WeldsDissolutionLeft);
+                    //if (!this.DiferentDissolutionLeft && this.RibsCollection?.Count > 0)
+                    //{
+                    //    for (int i = 0; i < this.RibsCollection.Count; i++)
+                    //    {
+                    //        this.RibsCollection[i].DissolutionLeft = this.WeldsDissolutionLeft;
+                    //    }
+                    //}
                     break;
 
                 case nameof(this.DiferentDissolutionRight):
-                    if (!this.DiferentDissolutionRight && this.RibsCollection?.Count > 0)
-                    {
-                        for (int i = 0; i < this.RibsCollection.Count; i++)
-                        {
-                            this.RibsCollection[i].DissolutionRight = this.WeldsDissolutionRight;
-                        }
-                    }
+                    if (this.DiferentDissolutionRight)
+                        return;
+                    this.RibsCollection.SetWeldsDissolutionRight(this.WeldsDissolutionRight);
+                    //if (!this.DiferentDissolutionRight && this.RibsCollection?.Count > 0)
+                    //{
+                    //    for (int i = 0; i < this.RibsCollection.Count; i++)
+                    //    {
+                    //        this.RibsCollection[i].DissolutionRight = this.WeldsDissolutionRight;
+                    //    }
+                    //}
                     break;
 
                 case nameof(this.RibsHeight):
-                    for (int i = 0; i < this.RibsCollection?.Count; i++)
-                    {
-                        this.RibsCollection[i].Height = this.RibsHeight;
-                    }
+                    this.RibsCollection.SetRibsHeight(this.RibsHeight);
+                    //for (int i = 0; i < this.RibsCollection?.Count; i++)
+                    //{
+                    //    this.RibsCollection[i].Height = this.RibsHeight;
+                    //}
                     break;
 
                 case nameof(this.RibsThickness):
-                    for (int i = 0; i < this.RibsCollection?.Count; i++)
-                    {
-                        this.RibsCollection[i].Thickness = this.RibsThickness;
-                    }
+                    this.RibsCollection.SetRibsThickness(this.RibsThickness);
+                    //for (int i = 0; i < this.RibsCollection?.Count; i++)
+                    //{
+                    //    this.RibsCollection[i].Thickness = this.RibsThickness;
+                    //}
                     break;
 
                 case nameof(this.DistanceToFirstRib):
@@ -407,55 +374,61 @@ namespace ForRobot.Models.Detals
                     break;
 
                 case nameof(this.DistanceBetweenRibs):
-                    for (int i = 1; i < this.RibsCollection?.Count; i++)
-                    {
-                        this.RibsCollection[i].DistanceLeft = this.DistanceBetweenRibs;
-                        this.RibsCollection[i].DistanceRight = this.DistanceBetweenRibs;
-                    }
+                    this.RibsCollection.SetRibsDistance(this.DistanceBetweenRibs);
+                    //for (int i = 1; i < this.RibsCollection?.Count; i++)
+                    //{
+                    //    this.RibsCollection[i].DistanceLeft = this.DistanceBetweenRibs;
+                    //    this.RibsCollection[i].DistanceRight = this.DistanceBetweenRibs;
+                    //}
                     break;
 
                 case nameof(this.RibsIdentToLeft):
-                    for (int i = 0; i < this.RibsCollection?.Count; i++)
-                    {
-                        this.RibsCollection[i].IdentToLeft = this.RibsIdentToLeft;
-                    }
+                    this.RibsCollection.SetRibsIdentToLeft(this.RibsIdentToLeft);
+                    //for (int i = 0; i < this.RibsCollection?.Count; i++)
+                    //{
+                    //    this.RibsCollection[i].IdentToLeft = this.RibsIdentToLeft;
+                    //}
                     break;
 
                 case nameof(this.RibsIdentToRight):
-                    for (int i = 0; i < this.RibsCollection?.Count; i++)
-                    {
-                        this.RibsCollection[i].IdentToRight = this.RibsIdentToRight;
-                    }
+                    this.RibsCollection.SetRibsIdentToRight(this.RibsIdentToRight);
+                    //for (int i = 0; i < this.RibsCollection?.Count; i++)
+                    //{
+                    //    this.RibsCollection[i].IdentToRight = this.RibsIdentToRight;
+                    //}
                     break;
 
                 case nameof(this.WeldsDissolutionLeft):
-                    for (int i = 0; i < this.RibsCollection?.Count; i++)
-                    {
-                        this.RibsCollection[i].DissolutionLeft = this.WeldsDissolutionLeft;
-                    }
+                    this.RibsCollection.SetWeldsDissolutionLeft(this.WeldsDissolutionLeft);
+                    //for (int i = 0; i < this.RibsCollection?.Count; i++)
+                    //{
+                    //    this.RibsCollection[i].DissolutionLeft = this.WeldsDissolutionLeft;
+                    //}
                     break;
 
                 case nameof(this.WeldsDissolutionRight):
-                    for (int i = 0; i < this.RibsCollection?.Count; i++)
-                    {
-                        this.RibsCollection[i].DissolutionRight = this.WeldsDissolutionRight;
-                    }
+                    this.RibsCollection.SetWeldsDissolutionRight(this.WeldsDissolutionRight);
+                    //for (int i = 0; i < this.RibsCollection?.Count; i++)
+                    //{
+                    //    this.RibsCollection[i].DissolutionRight = this.WeldsDissolutionRight;
+                    //}
                     break;
 
                 case nameof(this.RibsCount):
-                    if (this.RibsCollection == null || this.RibsCollection?.Count == 0)
-                        break;
+                    this.RibsCollection.SetCount(this.RibsCount);
+                    //if (this.RibsCollection == null || this.RibsCollection?.Count == 0)
+                    //    break;
 
-                    if (this.RibsCount > this.RibsCollection.Count)
-                        for (int i = this.RibsCollection.Count; i < this.RibsCount; i++)
-                        {
-                            this.RibsCollection.Add(this.RibsCollection.Last<Rib>().Clone() as Rib);
-                        }
-                    else
-                    {
-                        for (int i = this.RibsCollection.Count - 1; i >= this.RibsCount; i--)
-                            this.RibsCollection.RemoveAt(i);
-                    }
+                    //if (this.RibsCount > this.RibsCollection.Count)
+                    //    for (int i = this.RibsCollection.Count; i < this.RibsCount; i++)
+                    //    {
+                    //        this.RibsCollection.Add(this.RibsCollection.Last<Rib>().Clone() as Rib);
+                    //    }
+                    //else
+                    //{
+                    //    for (int i = this.RibsCollection.Count - 1; i >= this.RibsCount; i--)
+                    //        this.RibsCollection.RemoveAt(i);
+                    //}
                     break;
             }
         }
@@ -479,8 +452,6 @@ namespace ForRobot.Models.Detals
                     IdentToRight = this.RibsIdentToRight,
                     DissolutionLeft = this.WeldsDissolutionLeft,
                     DistanceRight = this.WeldsDissolutionRight
-                    //HightLeft = this.RibsHeight,
-                    //HightRight = this.RibsHeight
                 };
 
                 if (i == 0)

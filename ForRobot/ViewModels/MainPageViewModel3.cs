@@ -152,6 +152,9 @@ namespace ForRobot.ViewModels
             get => this._selectedFile;
             set
             {
+                if (this._selectedFile != null)
+                    this._selectedFile.PropertyChanged -= HandlePropertyChange_SelectedFile;
+
                 //if (this._selectedFile != null)
                 //    this._selectedFile.DetalChangedEvent -= (s, e) =>
                 //    {
@@ -161,8 +164,11 @@ namespace ForRobot.ViewModels
 
                 Set(ref this._selectedFile, value);
 
-                if(this._selectedFile is Models.File3D.NativeFile3D nativeFile)
-                    GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new Libr.Messages.UpdateCurrentDetalMessage(nativeFile.CurrentDetal));
+                //if(this._selectedFile is Models.File3D.NativeFile3D nativeFile)
+                //    GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new Libr.Messages.UpdateCurrentDetalMessage(nativeFile.CurrentDetal));
+
+                if (this._selectedFile != null)
+                    this._selectedFile.PropertyChanged += HandlePropertyChange_SelectedFile;
 
                 //if (this._selectedFile != null)
                 //    this._selectedFile.DetalChangedEvent += (s, e) => 
@@ -170,6 +176,14 @@ namespace ForRobot.ViewModels
                 //        RaisePropertyChanged(nameof(this.SelectedFile));
                 //        RaisePropertyChanged(nameof(this.ActiveContent));
                 //    };
+            }
+        }
+
+        private void HandlePropertyChange_SelectedFile(object sender, PropertyChangedEventArgs e)
+        {
+            if (sender is Models.File3D.NativeFile3D nativeFile)
+            {
+                RaisePropertyChanged(nameof(nativeFile.CurrentDetal));
             }
         }
 
@@ -395,12 +409,9 @@ namespace ForRobot.ViewModels
 
                 nativeFile.StandartParamertrs();
 
-                //RaisePropertyChanged(nameof(nativeFile.CurrentDetal));
-
-                //this.SelectedFile.StandartParamertrs();
                 RaisePropertyChanged(nameof(this.SelectedFile));
-                //RaisePropertyChanged(nameof(this.SelectedFile.CurrentDetal));
-                //RaisePropertyChanged(nameof(this.ActiveContent));
+                RaisePropertyChanged(nameof(this.ActiveContent));
+
                 //GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new Libr.Messages.UpdateCurrentDetalMessage(this.SelectedFile.CurrentDetal));
             });
         }
@@ -553,13 +564,10 @@ namespace ForRobot.ViewModels
 
                 if (App.Current.Settings.SaveDetalProperties)
                 {
-                    if(file3D is Models.File3D.NativeFile3D nativeFile)
-                    {
-                        nativeFile.CurrentDetal.ChangePropertyEvent += (s, e) =>
-                        {
-                            Models.File3D.File3D.Save(s as ForRobot.Models.File3D.File3D);
-                        };
-                    }
+                    //file3D.PropertyChanged += (s, e) =>
+                    //{
+                    //    Models.File3D.File3D.Save(s as ForRobot.Models.File3D.File3D);
+                    //};
                 }
 
                 App.Current.OpenedFiles.Add(file3D);

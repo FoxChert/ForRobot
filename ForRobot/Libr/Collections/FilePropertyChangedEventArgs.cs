@@ -1,6 +1,8 @@
 ﻿using System;
 
-namespace ForRobot.Models.File3D
+using ForRobot.Models.File3D;
+
+namespace ForRobot.Libr.Collections
 {
     public class FilePropertyChangedEventArgs : EventArgs
     {

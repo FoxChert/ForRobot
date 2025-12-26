@@ -129,12 +129,12 @@ namespace ForRobot.Models.File3D
         /// <param name="e"></param>
         private void HandleCurrentDetalPropertyChange(object sender, PropertyChangedEventArgs e)
         {
-            switch (e.PropertyName)
-            {
-                case nameof(Plita.RibsCount):
-                    break;
-            }
-            this.OnModelChanged();
+            //switch (e.PropertyName)
+            //{
+            //    case nameof(Plita.RibsCount):
+            //        break;
+            //}
+            //this.OnModelChanged();
         }
 
         #endregion

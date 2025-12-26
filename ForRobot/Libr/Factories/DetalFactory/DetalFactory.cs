@@ -65,7 +65,7 @@ namespace ForRobot.Libr.Factories.DetalFactory
             if (plateConfig == null)
                 throw new InvalidOperationException($"Конфигурация для детали {DetalType.Plita} не найдена");
 
-            return new Plita
+            return new Plita()
             {
                 ReverseDeflection = plateConfig.ReverseDeflection,
                 PlateWidth = plateConfig.PlateWidth,
@@ -82,7 +82,9 @@ namespace ForRobot.Libr.Factories.DetalFactory
                 RibsIdentToLeft = plateConfig.RibsIdentToLeft,
                 RibsIdentToRight = plateConfig.RibsIdentToRight,
                 WeldsDissolutionLeft = plateConfig.WeldsDissolutionLeft,
-                WeldsDissolutionRight = plateConfig.WeldsDissolutionRight
+                WeldsDissolutionRight = plateConfig.WeldsDissolutionRight,
+
+
             };
         }
 

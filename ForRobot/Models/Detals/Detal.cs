@@ -89,10 +89,10 @@ namespace ForRobot.Models.Detals
         /// </summary>
         public decimal PlateLength
         {
-            get => this._plateWidth;
+            get => this._plateLength;
             set
             {
-                this._plateWidth = value;
+                this._plateLength = value;
                 this.OnChangeProperty(nameof(this.PlateLength));
             }
         }
