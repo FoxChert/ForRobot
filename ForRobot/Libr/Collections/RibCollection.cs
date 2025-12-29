@@ -13,7 +13,7 @@ namespace ForRobot.Libr.Collections
     public class RibCollection : ObservableCollection<Rib>
     {
 
-        private bool _diferentDistance = false;
+        private bool _isRibsDiferentDistance = false;
         private bool _paralleleRibs = true;
 
         #region Public variables
@@ -22,13 +22,13 @@ namespace ForRobot.Libr.Collections
         /// <summary>
         /// Различно ли расстояние между рёбрами => отступы и т.д.
         /// </summary>
-        public bool DiferentDistance
+        public bool IsRibsDiferentDistance
         {
-            get => this._diferentDistance;
+            get => this._isRibsDiferentDistance;
             set
             {
-                this._diferentDistance = value;
-                this.OnChangeProperty(nameof(this.DiferentDistance));
+                this._isRibsDiferentDistance = value;
+                this.SetIsRibsDiferentDistance(this._isRibsDiferentDistance);
             }
         }
 
@@ -37,6 +37,25 @@ namespace ForRobot.Libr.Collections
         #endregion Public variables
 
         #region Private functions
+
+        private void SetIsRibsDiferentDistance(bool isRibsDiferentDistance)
+        {
+            if (this.Count == 0)
+                return;
+
+            for (int i = 0; i < this.Count; i++)
+            {
+                this.RibsCollection[i].IdentToLeft = this.RibsIdentToLeft;
+                this.RibsCollection[i].IdentToRight = this.RibsIdentToRight;
+
+                if (i == 0)
+                {
+                    this.RibsCollection[i].DistanceLeft = this.DistanceToFirstRib;
+                    continue;
+                }
+                this.RibsCollection[i].DistanceLeft = this.DistanceBetweenRibs;
+            }
+        }
 
         private void OnRibPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
