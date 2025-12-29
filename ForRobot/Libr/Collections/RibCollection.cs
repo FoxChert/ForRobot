@@ -3,17 +3,51 @@ using System.Linq;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
+using Newtonsoft.Json;
+
+using ForRobot.Libr.Converters;
 using ForRobot.Models.Detals;
 
 namespace ForRobot.Libr.Collections
 {
     public class RibCollection : ObservableCollection<Rib>
     {
+
+        private bool _diferentDistance = false;
+        private bool _paralleleRibs = true;
+
+        #region Public variables
+
+        [JsonConverter(typeof(JsonCommentConverter), "Разное ли рассояние между рёбрами")]
+        /// <summary>
+        /// Различно ли расстояние между рёбрами => отступы и т.д.
+        /// </summary>
+        public bool DiferentDistance
+        {
+            get => this._diferentDistance;
+            set
+            {
+                this._diferentDistance = value;
+                this.OnChangeProperty(nameof(this.DiferentDistance));
+            }
+        }
+
         public event EventHandler<RibPropertyChangedEventArgs> RibPropertyChanged;
+
+        #endregion Public variables
+
+        #region Private functions
+
+        private void OnRibPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var rib = (Rib)sender;
+            RibPropertyChanged?.Invoke(this, new RibPropertyChangedEventArgs(rib, e.PropertyName));
+        }
 
         protected override void InsertItem(int index, Rib item)
         {
             base.InsertItem(index, item);
+
             if (item != null)
                 item.PropertyChanged += OnRibPropertyChanged;
         }
@@ -21,17 +55,19 @@ namespace ForRobot.Libr.Collections
         protected override void RemoveItem(int index)
         {
             var item = this[index];
+
             if (item != null)
                 item.PropertyChanged -= OnRibPropertyChanged;
+
             base.RemoveItem(index);
         }
 
         protected override void ClearItems()
         {
-            foreach (var item in this)
+            for (int i = 0; i < this.Count; i++)
             {
-                if (item != null)
-                    item.PropertyChanged -= OnRibPropertyChanged;
+                if (this[i] != null)
+                    this[i].PropertyChanged -= OnRibPropertyChanged;
             }
             base.ClearItems();
         }
@@ -39,6 +75,7 @@ namespace ForRobot.Libr.Collections
         protected override void SetItem(int index, Rib item)
         {
             var oldItem = this[index];
+
             if (oldItem != null)
                 oldItem.PropertyChanged -= OnRibPropertyChanged;
 
@@ -48,11 +85,9 @@ namespace ForRobot.Libr.Collections
                 item.PropertyChanged += OnRibPropertyChanged;
         }
 
-        private void OnRibPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            var rib = (Rib)sender;
-            RibPropertyChanged?.Invoke(this, new RibPropertyChangedEventArgs(rib, e.PropertyName));
-        }
+        #endregion
+
+        #region Public functions
 
         public void SetCount(int count)
         {
@@ -131,5 +166,7 @@ namespace ForRobot.Libr.Collections
                 this[i].IdentToRight = ribsIdentToRight;
             }
         }
+
+        #endregion Public functions
     }
 }
