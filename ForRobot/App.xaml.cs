@@ -27,7 +27,7 @@ namespace ForRobot
         private const string _mutexName = "InterfaceOfRobots_UniqueAppMutex";
         private const string _pipeName = "InterfaceOfRobots_UniqueAppPipe";
         private CancellationTokenSource _pipeServerCts;
-        private ForRobot.Models.File3D.File3DCollection _openedFiles;
+        private ForRobot.Libr.Collections.File3DCollection _openedFiles;
 
         /// <summary>
         /// Путь к программе на сервере
@@ -86,13 +86,13 @@ namespace ForRobot
         /// <summary>
         /// Открытые файлы 3D моделей
         /// </summary>
-        public ForRobot.Models.File3D.File3DCollection OpenedFiles
+        public ForRobot.Libr.Collections.File3DCollection OpenedFiles
         {
             get
             {
                 if (this._openedFiles == null)
                 {
-                    this._openedFiles = new Models.File3D.File3DCollection();
+                    this._openedFiles = new ForRobot.Libr.Collections.File3DCollection();
                     this._openedFiles.CollectionChanged += (s, e) =>
                     {
                         switch (e.Action)
@@ -162,7 +162,7 @@ namespace ForRobot
                 Environment.Exit(1);
             }
         }
-
+        
         /// <summary>
         /// Детектит исключения в течении работы
         /// </summary>

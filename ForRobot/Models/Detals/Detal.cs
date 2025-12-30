@@ -20,6 +20,7 @@ namespace ForRobot.Models.Detals
         private string _scoseType = ScoseTypes.Rect;
         private decimal _reverseDeflection;
         private decimal _plateWidth;
+        private decimal _plateWidthSave;
         private decimal _plateLength;
         private decimal _plateThickness;
         private decimal _plateBevelToLeft;
@@ -199,6 +200,11 @@ namespace ForRobot.Models.Detals
             }
         }
 
+        /// <summary>
+        /// Свойства сварки детали
+        /// </summary>
+        public WeldingProperties WeldingProperties { get; set; }
+
         #endregion
 
         #region Event
@@ -232,11 +238,14 @@ namespace ForRobot.Models.Detals
             {
                 if(this.ScoseType == ScoseTypes.Rect)
                 {
+                    (this._plateWidthSave, this.PlateWidth) = (this.PlateWidth, 0);
                     (this._plateBevelToLeftSave, this._plateBevelToRightSave) = (this.PlateBevelToLeft, this.PlateBevelToRight);
                     (this.PlateBevelToLeft, this.PlateBevelToRight) = (0, 0);
                 }
-                else if(this.PlateBevelToLeft == 0 || this.PlateBevelToRight == 0)
+                else
+                //else if(this.PlateBevelToLeft == 0 || this.PlateBevelToRight == 0)
                 {
+                    this.PlateWidth = this._plateWidthSave;
                     (this.PlateBevelToLeft, this.PlateBevelToRight) = (this._plateBevelToLeftSave, this._plateBevelToRightSave);
                 }
             }

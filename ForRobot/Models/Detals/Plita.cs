@@ -47,6 +47,20 @@ namespace ForRobot.Models.Detals
         /// <inheritdoc cref="Detal.DetalType"/>
         public override string DetalType { get => DetalTypes.Plita; }
 
+        [JsonConverter(typeof(JsonCommentConverter), "Разное ли рассояние между рёбрами")]
+        /// <summary>
+        /// Различно ли расстояние между рёбрами => отступы и т.д.
+        /// </summary>
+        public bool DiferentDistance
+        {
+            get => this._diferentDistance;
+            set
+            {
+                this._diferentDistance = value;
+                this.OnChangeProperty(nameof(this.DiferentDistance));
+            }
+        }
+
         [JsonConverter(typeof(JsonCommentConverter), "Параллельлны ли рёбра")]
         /// <summary>
         /// Паралельны ли рёбра друг к другу
@@ -234,6 +248,7 @@ namespace ForRobot.Models.Detals
                 this._ribsCollection = value;
             }
         }
+
         //public FullyObservableCollection<Rib> RibsCollection
         //{
         //    get => this._ribsCollection;
@@ -330,8 +345,10 @@ namespace ForRobot.Models.Detals
                     break;
 
                 case nameof(this.DistanceToFirstRib):
-                    if (this.RibsCollection?.Count == 0)
+                    if (!this.ValidateRibsCollection())
                         break;
+                    //if (this.RibsCollection?.Count == 0)
+                    //    break;
 
                     this.RibsCollection[0].DistanceLeft = this.DistanceToFirstRib;
                     this.RibsCollection[0].DistanceRight = this.DistanceToFirstRib;
@@ -358,7 +375,12 @@ namespace ForRobot.Models.Detals
                     break;
 
                 case nameof(this.RibsCount):
-                    this.RibsCollection.SetCount(this.RibsCount);
+                    //this.RibsCollection.SetCount(this.RibsCount);
+                    this.WeldingProperties?.BuildingWeldingSchema(this.RibsCount);
+                    break;
+
+                case nameof(this.WeldingProperties.SelectedWeldingSchema):
+                    this.WeldingProperties.BuildingWeldingSchema(this.RibsCount);
                     break;
             }
         }
@@ -369,7 +391,7 @@ namespace ForRobot.Models.Detals
         /// Заполнение коллекции расстояний
         /// </summary>
         /// <returns></returns>
-        private FullyObservableCollection<Rib> FillRibsCollection()
+        private RibCollection FillRibsCollection()
         {
             Rib rib;
             List<Rib> ribsList = new List<Rib>();
@@ -397,7 +419,17 @@ namespace ForRobot.Models.Detals
 
                 ribsList.Add(rib);
             }
-            return new FullyObservableCollection<Rib>(ribsList);
+            return new RibCollection(ribsList);
+        }
+
+        private bool ValidateRibsCollection()
+        {
+            if(this.RibsCollection == null || this.RibsCollection.Count == 0)
+            {
+                this.FillRibsCollection();
+                return false;
+            }
+            return true;
         }
 
         //private FullyObservableCollection<WeldingSchemas.SchemaItem> FillWeldingSchema()
@@ -437,7 +469,7 @@ namespace ForRobot.Models.Detals
 
         #region Public functions
 
-        public FullyObservableCollection<Rib> SetRibsCollection(FullyObservableCollection<Rib> collection) => this.RibsCollection = collection;
+        //public FullyObservableCollection<Rib> SetRibsCollection(FullyObservableCollection<Rib> collection) => this.RibsCollection = collection;
 
         #endregion Public functions
 

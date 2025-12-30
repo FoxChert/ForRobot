@@ -84,7 +84,18 @@ namespace ForRobot.Libr.Factories.DetalFactory
                 WeldsDissolutionLeft = plateConfig.WeldsDissolutionLeft,
                 WeldsDissolutionRight = plateConfig.WeldsDissolutionRight,
 
-
+                WeldingProperties = new WeldingProperties()
+                {
+                    SearchOffsetStart = plateConfig.SearchOffsetStart,
+                    SearchOffsetEnd = plateConfig.SearchOffsetEnd,
+                    TechOffsetSeamStart = plateConfig.TechOffsetSeamStart,
+                    TechOffsetSeamEnd = plateConfig.TechOffsetSeamEnd,
+                    SeamsOverlap = plateConfig.SeamsOverlap,
+                    ProgramNom = plateConfig.ProgramNom,
+                    WeldingSpead = plateConfig.WeldingSpead,
+                    DistanceForWelding = plateConfig.DistanceForWelding,
+                    DistanceForSearch = plateConfig.DistanceForSearch
+                }
             };
         }
 
@@ -250,12 +261,13 @@ namespace ForRobot.Libr.Factories.DetalFactory
         /// <typeparam name="T">Тип детали</typeparam>
         /// <param name="detal">Деталь для сериализации</param>
         /// <param name="contractResolver">Резолвер контрактов (опционально)</param>
+        /// <param name="isValidate">Проводить ли валидацию JSON-строки (опционально)</param>
         /// <returns>Строка JSON, представляющая деталь</returns>
         /// <exception cref="ArgumentNullException">Если detal равен null</exception>
         /// <exception cref="ArgumentException">Если тип детали не поддерживается</exception>
-        public string Serialize<T>(T detal, IContractResolver contractResolver = null) where T : Detal
+        public string Serialize<T>(T detal, IContractResolver contractResolver = null, bool isValidate = false) where T : Detal
         {
-            return Serialize(detal as Detal, contractResolver);
+            return Serialize(detal as Detal, contractResolver, isValidate);
         }
 
         /// <summary>
@@ -263,10 +275,11 @@ namespace ForRobot.Libr.Factories.DetalFactory
         /// </summary>
         /// <param name="detal">Деталь для сериализации</param>
         /// <param name="contractResolver">Резолвер контрактов (опционально)</param>
+        /// <param name="isValidate">Проводить ли валидацию JSON-строки (опционально)</param>
         /// <returns>Строка JSON, представляющая деталь</returns>
         /// <exception cref="ArgumentNullException">Если detal равен null</exception>
         /// <exception cref="ArgumentException">Если тип детали не поддерживается</exception>
-        public string Serialize(Detal detal, IContractResolver contractResolver = null)
+        public string Serialize(Detal detal, IContractResolver contractResolver = null, bool isValidate = false)
         {
             if (detal == null)
                 throw new ArgumentNullException(nameof(detal));
@@ -284,8 +297,9 @@ namespace ForRobot.Libr.Factories.DetalFactory
                 switch (detal.DetalType)
                 {
                     case DetalTypes.Plita:
-                        this.ValidationJsonString<Plita>(jsonString);
                         jsonString = JsonConvert.SerializeObject(detal, settings);
+                        if(isValidate)
+                            this.ValidationJsonString<Plita>(jsonString);
                         break;
 
                     default:
@@ -299,7 +313,7 @@ namespace ForRobot.Libr.Factories.DetalFactory
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Ошибка при сериализации детали типа {detal.DetalType}", ex);
+                throw new InvalidOperationException($"Ошибка при сериализации детали типа: {detal.DetalType}", ex);
             }
             return jsonString;
         }

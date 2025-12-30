@@ -14,8 +14,8 @@ namespace ForRobot.Libr.Factories.DetalFactory
         T Deserialize<T>(string jsonString) where T : Detal;
         Detal Deserialize(string jsonString);
 
-        string Serialize<T>(T detal, IContractResolver contractResolver = null) where T : Detal;
-        string Serialize(Detal detal, IContractResolver contractResolver = null);
+        string Serialize<T>(T detal, IContractResolver contractResolver = null, bool isValidate = false) where T : Detal;
+        string Serialize(Detal detal, IContractResolver contractResolver = null, bool isValidate = false);
 
         void ClearCache();
     }

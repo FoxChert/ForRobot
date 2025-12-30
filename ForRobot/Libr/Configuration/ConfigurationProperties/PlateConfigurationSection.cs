@@ -33,8 +33,8 @@ namespace ForRobot.Libr.Configuration.ConfigurationProperties
         public decimal TechOffsetSeamStart => GetValue<decimal>("weld_tech_offset_start");
         public decimal TechOffsetSeamEnd => GetValue<decimal>("weld_tech_offset_end");
         public decimal SeamsOverlap => GetValue<decimal>("weld_overlap");
-        public decimal ProgramNom => GetValue<decimal>("weld_job");
-        public decimal WeldingSpead => GetValue<decimal>("weld_velocity");
+        public int ProgramNom => GetValue<int>("weld_job");
+        public int WeldingSpead => GetValue<int>("weld_velocity");
         public decimal DistanceForWelding => GetValue<decimal>("gantry_radius_weld");
         public decimal DistanceForSearch => GetValue<decimal>("gantry_radius_search");
     }

@@ -14,8 +14,6 @@ namespace ForRobot.Models.File3D
 
         private readonly ForRobot.Libr.Factories.DetalFactory.IDetalFactory _detalFactory;
 
-        private string _selectedWeldingSchema = WeldingSchemas.GetDescription(WeldingSchemas.SchemasTypes.LeftEvenOdd_RightEvenOdd);
-
         private Model3DGroup _currentModel = new Model3DGroup();
 
         private Detal _currentDetal;
@@ -28,19 +26,6 @@ namespace ForRobot.Models.File3D
 
         public override string Filter { get; } = "Text Files (*.txt)|*.txt|Json Files (*.json)|*.json|All Supported Files (*.txt;*.json)|*.txt;*.json";
 
-        /// <summary>
-        /// Выбранная схема сварки рёбер
-        /// </summary>
-        public string SelectedWeldingSchema
-        {
-            get => this._selectedWeldingSchema;
-            set
-            {
-                this._selectedWeldingSchema = value;
-                this.OnPropertyChanged(nameof(this.SelectedWeldingSchema));
-            }
-        }
-
         public override Model3DGroup CurrentModel
         {
             get => this._currentModel;
@@ -52,16 +37,6 @@ namespace ForRobot.Models.File3D
         }
 
         public Detal CurrentDetal { get => this._currentDetal; set => this.SetDetal(value); }
-
-        public FullyObservableCollection<WeldingSchemas.SchemaItem> WeldingSchema
-        {
-            get => this._weldingSchema;
-            private set
-            {
-                this._weldingSchema = value;
-                this.OnPropertyChanged(nameof(this.WeldingSchema));
-            }
-        }
 
         #endregion Public variables
 
@@ -107,18 +82,18 @@ namespace ForRobot.Models.File3D
         {
             switch (e.PropertyName)
             {
-                case nameof(SelectedWeldingSchema):
-                    if (this.SelectedWeldingSchema == ForRobot.Models.Detals.WeldingSchemas.GetDescription(ForRobot.Models.Detals.WeldingSchemas.SchemasTypes.Edit))
-                        break;
+                //    case nameof(SelectedWeldingSchema):
+                //        if (this.SelectedWeldingSchema == ForRobot.Models.Detals.WeldingSchemas.GetDescription(ForRobot.Models.Detals.WeldingSchemas.SchemasTypes.Edit))
+                //            break;
 
-                    this.WeldingSchema = ForRobot.Models.Detals.WeldingSchemas.BuildingSchema(ForRobot.Models.Detals.WeldingSchemas.GetSchemaType(this.SelectedWeldingSchema), (this.CurrentDetal as Plita).RibsCount) as FullyObservableCollection<WeldingSchemas.SchemaItem>;
-                    this.WeldingSchema.CollectionChanged += (s, o) => this.OnPropertyChanged(nameof(this.WeldingSchema));
-                    this.WeldingSchema.ItemPropertyChanged += (s, o) =>
-                    {
-                        this.SelectedWeldingSchema = ForRobot.Models.Detals.WeldingSchemas.GetDescription(WeldingSchemas.SchemasTypes.Edit);
-                        this.OnPropertyChanged(nameof(this.WeldingSchema));
-                    };
-                    break;
+                //        this.WeldingSchema = ForRobot.Models.Detals.WeldingSchemas.BuildingSchema(ForRobot.Models.Detals.WeldingSchemas.GetSchemaType(this.SelectedWeldingSchema), (this.CurrentDetal as Plita).RibsCount) as FullyObservableCollection<WeldingSchemas.SchemaItem>;
+                //        this.WeldingSchema.CollectionChanged += (s, o) => this.OnPropertyChanged(nameof(this.WeldingSchema));
+                //        this.WeldingSchema.ItemPropertyChanged += (s, o) =>
+                //        {
+                //            this.SelectedWeldingSchema = ForRobot.Models.Detals.WeldingSchemas.GetDescription(WeldingSchemas.SchemasTypes.Edit);
+                //            this.OnPropertyChanged(nameof(this.WeldingSchema));
+                //        };
+                //        break;
             }
         }
 
@@ -134,11 +109,11 @@ namespace ForRobot.Models.File3D
             //    case nameof(Plita.RibsCount):
             //        break;
             //}
-            //this.OnModelChanged();
+            this.OnPropertyChanged(nameof(CurrentDetal));
         }
 
         #endregion
-        
+
         private void SetDetal(object value)
         {
             if (this._currentDetal == value) // Изменить на сравнение объеков

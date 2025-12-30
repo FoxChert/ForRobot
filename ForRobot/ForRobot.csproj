@@ -321,6 +321,7 @@
     <Compile Include="Libr\Configuration\CachedConfigurationProvider.cs" />
     <Compile Include="Libr\Configuration\ConfigurationProperties\BaseDetalConfiguration.cs" />
     <Compile Include="Libr\Configuration\ConfigurationProvider.cs" />
+    <Compile Include="Libr\Converters\WeldingSchemaConverter.cs" />
     <Compile Include="Libr\Cryptography\Hashing.cs" />
     <Compile Include="Libr\Factories\DetalFactory\DetalFactory.cs" />
     <Compile Include="Libr\Factories\DetalFactory\IDetalFactory.cs" />

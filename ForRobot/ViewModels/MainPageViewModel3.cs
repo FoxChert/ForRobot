@@ -560,15 +560,13 @@ namespace ForRobot.ViewModels
                 else
                 {
                     file3D = Models.File3D.File3D.CreateNativeFile3D(path, DetalTypes.StringToEnum(App.Current.Settings.StartedDetalType));
-                }                
+                }
 
                 if (App.Current.Settings.SaveDetalProperties)
-                {
-                    //file3D.PropertyChanged += (s, e) =>
+                    file3D.PropertyChanged += (s, e) => System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() => (s as Models.File3D.File3D).Save()));
                     //{
-                    //    Models.File3D.File3D.Save(s as ForRobot.Models.File3D.File3D);
+                    //    (s as Models.File3D.File3D).Save();
                     //};
-                }
 
                 App.Current.OpenedFiles.Add(file3D);
             }

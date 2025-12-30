@@ -1,61 +1,60 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
-using Newtonsoft.Json;
-
-using ForRobot.Libr.Converters;
 using ForRobot.Models.Detals;
 
 namespace ForRobot.Libr.Collections
 {
+    /// <summary>
+    /// Коллекция ребер с поддержкой уведомлений об изменениях свойств отдельных элементов
+    /// </summary>
     public class RibCollection : ObservableCollection<Rib>
     {
 
-        private bool _isRibsDiferentDistance = false;
-        private bool _paralleleRibs = true;
-
         #region Public variables
 
-        [JsonConverter(typeof(JsonCommentConverter), "Разное ли рассояние между рёбрами")]
         /// <summary>
-        /// Различно ли расстояние между рёбрами => отступы и т.д.
+        /// Событие изменения свойства любого ребра в коллекции
         /// </summary>
-        public bool IsRibsDiferentDistance
-        {
-            get => this._isRibsDiferentDistance;
-            set
-            {
-                this._isRibsDiferentDistance = value;
-                this.SetIsRibsDiferentDistance(this._isRibsDiferentDistance);
-            }
-        }
-
         public event EventHandler<RibPropertyChangedEventArgs> RibPropertyChanged;
 
         #endregion Public variables
 
-        #region Private functions
+        #region Constructors
 
-        private void SetIsRibsDiferentDistance(bool isRibsDiferentDistance)
+        public RibCollection() : base()
+        { }
+
+        public RibCollection(List<Rib> list) : base(list)
         {
-            if (this.Count == 0)
-                return;
+            if (list == null)
+                throw new ArgumentNullException(nameof(list));
 
-            for (int i = 0; i < this.Count; i++)
+            foreach (var item in Items)
             {
-                this.RibsCollection[i].IdentToLeft = this.RibsIdentToLeft;
-                this.RibsCollection[i].IdentToRight = this.RibsIdentToRight;
-
-                if (i == 0)
-                {
-                    this.RibsCollection[i].DistanceLeft = this.DistanceToFirstRib;
-                    continue;
-                }
-                this.RibsCollection[i].DistanceLeft = this.DistanceBetweenRibs;
+                if (item != null)
+                    item.PropertyChanged += OnRibPropertyChanged;
             }
         }
+
+        public RibCollection(IEnumerable<Rib> enumerable) : base(enumerable)
+        {
+            if (enumerable == null)
+                throw new ArgumentNullException(nameof(enumerable));
+
+            foreach (var item in Items)
+            {
+                if (item != null)
+                    item.PropertyChanged += OnRibPropertyChanged;
+            }
+        }
+
+        #endregion
+
+        #region Private functions
 
         private void OnRibPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -65,10 +64,10 @@ namespace ForRobot.Libr.Collections
 
         protected override void InsertItem(int index, Rib item)
         {
-            base.InsertItem(index, item);
-
             if (item != null)
                 item.PropertyChanged += OnRibPropertyChanged;
+
+            base.InsertItem(index, item);
         }
 
         protected override void RemoveItem(int index)
@@ -98,10 +97,10 @@ namespace ForRobot.Libr.Collections
             if (oldItem != null)
                 oldItem.PropertyChanged -= OnRibPropertyChanged;
 
-            base.SetItem(index, item);
-
             if (item != null)
                 item.PropertyChanged += OnRibPropertyChanged;
+
+            base.SetItem(index, item);
         }
 
         #endregion
@@ -110,7 +109,7 @@ namespace ForRobot.Libr.Collections
 
         public void SetCount(int count)
         {
-            if (this == null || this?.Count == 0)
+            if (this == null || this.Count == 0)
                 return;
 
             if (this.Count < count)

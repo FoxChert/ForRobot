@@ -109,12 +109,9 @@ namespace ForRobot.Models.File3D
         {
             if (path == null)
                 throw new ArgumentNullException(nameof(path));
-            
-            if (!System.IO.File.Exists(path))
-                throw new FileNotFoundException("Не удалось найти файл", path);
 
             this.Path = path;
-            this.CurrentModel = this.LoadModel3D(path);
+            //this.CurrentModel = this.LoadModel3D(path);
         }
 
         #endregion Constructors
@@ -159,8 +156,8 @@ namespace ForRobot.Models.File3D
         {
             foreach (File3D file in files) file.Save();
         }
-        public virtual void Save() => this.Save(this.Path);
         public abstract void Save(string path);
+        public virtual void Save() => this.Save(this.Path);
 
         public void Undo() => this._undoRedoManager.Undo();
         public void Redo() => this._undoRedoManager.Redo();

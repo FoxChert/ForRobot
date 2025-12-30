@@ -32,7 +32,7 @@
     <conv:GetColorConverter x:Key="GetColorConverter"/>
     <conv:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
     <conv:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
-
+    <conv:WeldingSchemaConverter x:Key="WeldingSchemaConverter"/>
 
     <!--Control Content property -->
     <!--M => minus  P=> plus-->

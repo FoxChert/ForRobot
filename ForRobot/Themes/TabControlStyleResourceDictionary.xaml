@@ -134,8 +134,8 @@
             <TextBlock Grid.Row="0" Grid.Column="0" Text="Скорость сварки, см/м"/>
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Номер сварочной программы"/>
 
-            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=WildingSpead, Mode=TwoWay, ConverterCulture='en-us', StringFormat=F0, UpdateSourceTrigger=LostFocus}"/>
-            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=ProgramNom, Mode=TwoWay, ConverterCulture='en-us', StringFormat=F0, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=WeldingProperties.WeldingSpead, Mode=TwoWay, ConverterCulture='en-us', StringFormat=F0, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=WeldingProperties.ProgramNom, Mode=TwoWay, ConverterCulture='en-us', StringFormat=F0, UpdateSourceTrigger=LostFocus}"/>
 
             <GroupBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Header="Схема сварки" FontWeight="Bold" Padding="4" Margin="0,4,0,0">
                 <Grid>
@@ -146,7 +146,7 @@
 
                     <ComboBox Grid.Row="0" Margin="0, 10"
                               ItemsSource="{x:Static detals:WeldingSchemas.WeldingSchemasCollection}"
-                              SelectedItem="{Binding Path=DataContext.SelectedFile.CurrentDetal.SelectedWeldingSchema, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource AncestorType={x:Type Page}, Mode=FindAncestor}}"
+                              SelectedItem="{Binding Path=WeldingProperties.SelectedWeldingSchema, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource WeldingSchemaConverter}}"
                               SelectedIndex="0">
 
                         <ComboBox.ItemTemplate>
@@ -165,7 +165,7 @@
                         </ComboBox.ItemContainerStyle>
                     </ComboBox>
 
-                    <DataGrid Grid.Row="1" ItemsSource="{Binding Path=DataContext.SelectedFile.CurrentDetal.WeldingSchema, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource AncestorType={x:Type Page}, Mode=FindAncestor}}">
+                    <DataGrid Grid.Row="1" ItemsSource="{Binding Path=WeldingProperties.WeldingSchema, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
                         <DataGrid.Resources>
                             <Style TargetType="{x:Type ComboBox}">
                                 <Setter Property="MaxDropDownHeight" Value="150"/>
@@ -596,14 +596,11 @@
 
             <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=PlateLength, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
 
-            <TextBox Grid.Row="2" Grid.Column="1">
+            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Path=PlateWidth, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}">
                 <TextBox.Style>
                     <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource textBoxBase}">
-                        <Setter Property="Text" Value="{Binding Path=PlateWidth, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
-
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding Path=ScoseType}" Value="d_rect">
-                                <Setter Property="Text" Value="0.00"/>
+                            <DataTrigger Binding="{Binding Path=ScoseType}" Value="{x:Static detals:ScoseTypes.Rect}">
                                 <Setter Property="IsEnabled" Value="False"/>
                             </DataTrigger>
                         </Style.Triggers>
@@ -620,14 +617,11 @@
             <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding Path=RibsIdentToRight, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"
                      Style="{StaticResource TextBoxkDiferentDistance}"/>
 
-            <TextBox Grid.Row="9" Grid.Column="1">
+            <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding Path=PlateBevelToLeft, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}">
                 <TextBox.Style>
                     <Style TargetType="TextBox" BasedOn="{StaticResource textBoxBase}">
-                        <Setter Property="Text" Value="{Binding Path=PlateBevelToLeft, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
-
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Path=ScoseType}" Value="d_rect">
-                                <Setter Property="Text" Value="0.00"/>
                                 <Setter Property="IsEnabled" Value="False"/>
                             </DataTrigger>
                         </Style.Triggers>
@@ -635,14 +629,11 @@
                 </TextBox.Style>
             </TextBox>
 
-            <TextBox Grid.Row="10" Grid.Column="1">
+            <TextBox Grid.Row="10" Grid.Column="1" Text="{Binding Path=PlateBevelToRight, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}">
                 <TextBox.Style>
                     <Style TargetType="TextBox" BasedOn="{StaticResource textBoxBase}">
-                        <Setter Property="Text" Value="{Binding Path=PlateBevelToRight, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
-
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Path=ScoseType}" Value="d_rect">
-                                <Setter Property="Text" Value="0.00"/>
                                 <Setter Property="IsEnabled" Value="False"/>
                             </DataTrigger>
                         </Style.Triggers>
