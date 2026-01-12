@@ -123,13 +123,18 @@ namespace ForRobot.Libr.Factories.DetalFactory
             if (e?.ErrorContext == null)
                 return;
 
-            string message = string.Empty;
-            var obj = e.CurrentObject as Detal;
-
-            if (obj == null)
-                message = e.ErrorContext.Error.Message;
-            else
-                message = string.Format("Ошибка сериализации/десериализации объекта {0}: {1}", obj.GetType(), e.ErrorContext.Error.Message);
+            string message = "JSON Serialization Error\n" +
+                             $"\tError: {e.ErrorContext.Error.Message}\n" +
+                             $"\tPath: {e.ErrorContext.Path}\n" +
+                             $"\tMember: {e.ErrorContext.Member}\n" +
+                             $"\tOriginalObject: {e.ErrorContext.OriginalObject?.GetType().FullName}";
+            
+            //string message = string.Empty;
+            //var obj = e.CurrentObject as Detal;
+            //if (obj == null)
+            //    message = e.ErrorContext.Error.Message;
+            //else
+            //    message = string.Format("Ошибка сериализации/десериализации объекта {0}: {1}", obj.GetType(), e.ErrorContext.Error.Message);
 
             e.ErrorContext.Handled = true;
             throw new JsonSerializationException(message);
@@ -283,7 +288,7 @@ namespace ForRobot.Libr.Factories.DetalFactory
         {
             if (detal == null)
                 throw new ArgumentNullException(nameof(detal));
-            
+
             var settings = new JsonSerializerSettings()
             {
                 Formatting = Formatting.Indented,
@@ -307,13 +312,13 @@ namespace ForRobot.Libr.Factories.DetalFactory
                         throw new ArgumentException($"Тип детали {typeName} не поддерживается", nameof(detal));
                 }
             }
-            catch (JsonSerializationException)
+            catch (JsonSerializationException ex)
             {
                 throw;
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Ошибка при сериализации детали типа: {detal.DetalType}", ex);
+                throw new InvalidOperationException($"Ошибка при сериализации детали типа {detal.DetalType}", ex);
             }
             return jsonString;
         }
