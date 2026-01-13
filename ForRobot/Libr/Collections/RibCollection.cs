@@ -13,7 +13,6 @@ namespace ForRobot.Libr.Collections
     /// </summary>
     public class RibCollection : ObservableCollection<Rib>
     {
-
         #region Public variables
 
         /// <summary>

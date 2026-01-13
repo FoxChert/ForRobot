@@ -896,11 +896,12 @@
                                                 <Setter Property="Focusable" Value="False"/>
                                                 <Setter Property="Foreground" Value="Black"/>
                                                 <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                                                <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
                                                 <Setter Property="Template">
                                                     <Setter.Value>
                                                         <ControlTemplate TargetType="{x:Type DataGridCell}">
                                                             <Grid Background="{TemplateBinding Background}">
-                                                                <ContentPresenter VerticalAlignment="Center" Margin="15,0"/>
+                                                                <ContentPresenter VerticalAlignment="Center" Margin="5"/>
                                                             </Grid>
                                                         </ControlTemplate>
                                                     </Setter.Value>
@@ -921,7 +922,7 @@
 
                                             <Style TargetType="{x:Type DataGridColumnHeader}">
                                                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                                            </Style>
+                                            </Style> 
 
                                             <Style TargetType="{x:Type DataGridRowHeader}">
                                                 <Style.Triggers>
@@ -932,7 +933,7 @@
                                             </Style>
                                         </DataGrid.Resources>
 
-                                        <DataGrid.RowHeaderTemplate>
+                                        <!--<DataGrid.RowHeaderTemplate>
                                             <DataTemplate>
                                                 <Expander Expanded="Expander_Expanded"  Collapsed="Expander_Collapsed">
                                                     <Expander.Style>
@@ -946,18 +947,20 @@
                                                     </Expander.Style>
                                                 </Expander>
                                             </DataTemplate>
-                                        </DataGrid.RowHeaderTemplate>
+                                        </DataGrid.RowHeaderTemplate>-->
 
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Время" Binding="{Binding Time, StringFormat=\{0:HH:mm:ss\}}" Width="Auto"/>
                                             <DataGridTextColumn Header="Сообщение" Binding="{Binding Message}" Width="*" CellStyle="{StaticResource dgCellLeft}"/>
                                         </DataGrid.Columns>
 
-                                        <DataGrid.RowDetailsTemplate>
+                                        <!--<DataGrid.RowDetailsTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="{Binding Ditails}" Focusable="False" IsEnabled="False" Padding="5,10"/>
+                                                <Border Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}, Mode=FindAncestor}}">
+                                                    <TextBlock Text="{Binding Ditails}" Focusable="False" IsEnabled="False" Margin="5,10" TextWrapping="Wrap"/>
+                                                </Border>
                                             </DataTemplate>
-                                        </DataGrid.RowDetailsTemplate>
+                                        </DataGrid.RowDetailsTemplate>-->
 
                                         <!--<i:Interaction.Behaviors>
                                             <behavior:DataGridStretchLastColumn/>

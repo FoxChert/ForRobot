@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 namespace ForRobot.Libr.Converters
 {
     /// <summary>
-    /// Класс преобразования добавления комментария к <see cref="JsonPropertyAttribute"/>
+    /// Класс преобразования, добавляет комментарий к свойству в JSON-строке
     /// </summary>
     public class JsonCommentConverter : JsonConverter
     {
@@ -37,7 +37,7 @@ namespace ForRobot.Libr.Converters
         
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            writer.WriteValue(value);
+            serializer.Serialize(writer, value);
             writer.WriteComment(_comment);
         }
 

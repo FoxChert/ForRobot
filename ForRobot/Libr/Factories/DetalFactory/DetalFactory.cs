@@ -20,6 +20,10 @@ namespace ForRobot.Libr.Factories.DetalFactory
         private readonly IConfigurationProvider _configProvider;
         private readonly IJsonSchemaProvider _jsonSchemaProvider;
 
+        private JsonSerializationException _serializationError;
+
+        public static event Action<JsonSchemaValidationException> Validated;
+
         /// <summary>
         /// Инициализирует новый экземпляр класса DetalFactory
         /// </summary>
@@ -105,12 +109,14 @@ namespace ForRobot.Libr.Factories.DetalFactory
         /// <param name="jsonString">Строка JSON для десериализации</param>
         /// <param name="settings">Настройки сериализатора</param>
         /// <returns>Десериализованный объект <see cref="Plita"/></returns>
-        private Plita DeserializePlate(string jsonString, JsonSerializerSettings settings)
+        private Plita DeserializePlate(string jsonString, JsonSerializerSettings jsonSerializerSettings, JsonLoadSettings jsonLoadSettings = null)
         {
             if (string.IsNullOrEmpty(jsonString))
                 return this.CreateDetal<Plita>(DetalType.Plita);
+            else if (jsonLoadSettings == null)
+                return JsonConvert.DeserializeObject<Plita>(jsonString, jsonSerializerSettings);
             else
-                return JsonConvert.DeserializeObject<Plita>(jsonString, settings);
+                return JsonConvert.DeserializeObject<Plita>(JObject.Parse(jsonString, jsonLoadSettings).ToString(), jsonSerializerSettings);
         }
 
         /// <summary>
@@ -123,21 +129,14 @@ namespace ForRobot.Libr.Factories.DetalFactory
             if (e?.ErrorContext == null)
                 return;
 
-            string message = "JSON Serialization Error\n" +
+            string message = "JSON Error\n" +
                              $"\tError: {e.ErrorContext.Error.Message}\n" +
                              $"\tPath: {e.ErrorContext.Path}\n" +
                              $"\tMember: {e.ErrorContext.Member}\n" +
                              $"\tOriginalObject: {e.ErrorContext.OriginalObject?.GetType().FullName}";
-            
-            //string message = string.Empty;
-            //var obj = e.CurrentObject as Detal;
-            //if (obj == null)
-            //    message = e.ErrorContext.Error.Message;
-            //else
-            //    message = string.Format("Ошибка сериализации/десериализации объекта {0}: {1}", obj.GetType(), e.ErrorContext.Error.Message);
 
+            this._serializationError = new JsonSerializationException(message);
             e.ErrorContext.Handled = true;
-            throw new JsonSerializationException(message);
         }
 
         #endregion Private functions
@@ -205,9 +204,9 @@ namespace ForRobot.Libr.Factories.DetalFactory
         /// <exception cref="ArgumentException">Если тип детали не поддерживается</exception>
         /// <exception cref="JsonSerializationException">Если произошла ошибка десериализации</exception>
         /// <exception cref="JsonSchemaValidationException">Если JSON не прошел валидацию по схеме</exception>
-        public T Deserialize<T>(string jsonString) where T : Detal
+        public T Deserialize<T>(string jsonString, JsonSerializerSettings jsonSerializerSettings = null, JsonLoadSettings jsonLoadSettings = null) where T : Detal
         {
-            return (T)Deserialize(jsonString);
+            return (T)Deserialize(jsonString, jsonSerializerSettings, jsonLoadSettings);
         }
 
         /// <summary>
@@ -219,19 +218,26 @@ namespace ForRobot.Libr.Factories.DetalFactory
         /// <exception cref="ArgumentException">Если тип детали не поддерживается</exception>
         /// <exception cref="JsonSerializationException">Если произошла ошибка десериализации</exception>
         /// <exception cref="JsonSchemaValidationException">Если JSON не прошел валидацию по схеме</exception>
-        public Detal Deserialize(string jsonString)
+        public Detal Deserialize(string jsonString, JsonSerializerSettings jsonSerializerSettings = null, JsonLoadSettings jsonLoadSettings = null)
         {
             if (jsonString == null)
                 throw new ArgumentNullException(nameof(jsonString));
 
             if (string.IsNullOrEmpty(jsonString))
                 throw new ArgumentException("Строка JSON не может быть пустой", nameof(jsonString));
-            
-            var settings = new JsonSerializerSettings()
+
+            var serSettings = jsonSerializerSettings ?? new JsonSerializerSettings()
             {
-                Error = HandleSerializeringError
+                Formatting = Formatting.Indented,
+                ContractResolver = new DefaultContractResolver(),
             };
 
+            var loadSettings = jsonLoadSettings ?? new JsonLoadSettings()
+            {
+                CommentHandling = CommentHandling.Ignore
+            };
+
+            JsonSchemaValidationException validationException = null;
             try
             {
                 var jsonObject = JObject.Parse(jsonString);
@@ -245,10 +251,15 @@ namespace ForRobot.Libr.Factories.DetalFactory
                 switch (detalType)
                 {
                     case DetalTypes.Plita:
-                        if (!this.ValidationJsonString<Plita>(jsonString))
+                        bool isValid = this.ValidationJsonString<Plita>(jsonString, exception =>
+                        {
+                            validationException = exception;
+                            //throw new InvalidOperationException(exception);
+                        });
+                        if (!isValid)
                             return this.CreateDetal<Plita>();
 
-                        return this.DeserializePlate(jsonString, settings);
+                        return this.DeserializePlate(jsonString, serSettings, loadSettings);
 
                     default:
                         throw new ArgumentException($"Тип детали {detalType} не поддерживается", detalType);
@@ -257,6 +268,14 @@ namespace ForRobot.Libr.Factories.DetalFactory
             catch (JsonReaderException ex)
             {
                 throw new JsonSerializationException("Некорректный формат JSON", ex);
+            }
+            finally
+            {
+                if (validationException != null)
+                {
+                    Validated?.Invoke(validationException);
+                    //throw new InvalidOperationException($"Ошибка при десериализации JSON-строки", validationException);
+                }
             }
         }
 
@@ -270,9 +289,9 @@ namespace ForRobot.Libr.Factories.DetalFactory
         /// <returns>Строка JSON, представляющая деталь</returns>
         /// <exception cref="ArgumentNullException">Если detal равен null</exception>
         /// <exception cref="ArgumentException">Если тип детали не поддерживается</exception>
-        public string Serialize<T>(T detal, IContractResolver contractResolver = null, bool isValidate = false) where T : Detal
+        public string Serialize<T>(T detal, JsonSerializerSettings jsonSerializerSettings = null, bool isValidate = false) where T : Detal
         {
-            return Serialize(detal as Detal, contractResolver, isValidate);
+            return Serialize(detal as Detal, jsonSerializerSettings, isValidate);
         }
 
         /// <summary>
@@ -284,15 +303,15 @@ namespace ForRobot.Libr.Factories.DetalFactory
         /// <returns>Строка JSON, представляющая деталь</returns>
         /// <exception cref="ArgumentNullException">Если detal равен null</exception>
         /// <exception cref="ArgumentException">Если тип детали не поддерживается</exception>
-        public string Serialize(Detal detal, IContractResolver contractResolver = null, bool isValidate = false)
+        public string Serialize(Detal detal, JsonSerializerSettings jsonSerializerSettings = null, bool isValidate = false)
         {
             if (detal == null)
                 throw new ArgumentNullException(nameof(detal));
 
-            var settings = new JsonSerializerSettings()
+            var settings = jsonSerializerSettings ?? new JsonSerializerSettings()
             {
                 Formatting = Formatting.Indented,
-                ContractResolver = contractResolver ?? new DefaultContractResolver(),
+                ContractResolver = new DefaultContractResolver(),
                 Error = HandleSerializeringError
             };
 
@@ -303,7 +322,11 @@ namespace ForRobot.Libr.Factories.DetalFactory
                 {
                     case DetalTypes.Plita:
                         jsonString = JsonConvert.SerializeObject(detal, settings);
-                        if(isValidate)
+
+                        if (this._serializationError != null)
+                            throw _serializationError;
+
+                        if (isValidate)
                             this.ValidationJsonString<Plita>(jsonString);
                         break;
 
@@ -312,13 +335,17 @@ namespace ForRobot.Libr.Factories.DetalFactory
                         throw new ArgumentException($"Тип детали {typeName} не поддерживается", nameof(detal));
                 }
             }
-            catch (JsonSerializationException ex)
-            {
-                throw;
-            }
+            //catch (JsonSerializationException ex)
+            //{
+            //    throw ex;
+            //}
             catch (Exception ex)
             {
                 throw new InvalidOperationException($"Ошибка при сериализации детали типа {detal.DetalType}", ex);
+            }
+            finally
+            {
+                this._serializationError = null;
             }
             return jsonString;
         }
@@ -331,7 +358,7 @@ namespace ForRobot.Libr.Factories.DetalFactory
         /// <returns>True, если валидация прошла успешно</returns>
         /// <exception cref="ArgumentNullException">Если jsonString равен null</exception>
         /// <exception cref="JsonSchemaValidationException">Если JSON не прошел валидацию</exception>
-        public bool ValidationJsonString<T>(string jsonString) where T : Detal
+        public bool ValidationJsonString<T>(string jsonString, Action<JsonSchemaValidationException> onValidationError = null) where T : Detal
         {
             if (jsonString == null)
                 throw new ArgumentNullException(nameof(jsonString));
@@ -360,7 +387,9 @@ namespace ForRobot.Libr.Factories.DetalFactory
 
                 if (validationErrors.Count > 0)
                 {
-                    throw new JsonSchemaValidationException(schemaTitle, validationErrors, jsonString);
+                    var exception = new JsonSchemaValidationException(schemaTitle, validationErrors, jsonString);
+                    onValidationError?.Invoke(exception);
+                    return false;
                 }
             }
             catch (JsonReaderException ex)
@@ -373,7 +402,9 @@ namespace ForRobot.Libr.Factories.DetalFactory
                         Path = ex.Path
                     }
                 };
-                throw new JsonSchemaValidationException(schemaTitle, errors, jsonString, ex);
+                var exception = new JsonSchemaValidationException(schemaTitle, errors, jsonString, ex);
+                onValidationError?.Invoke(exception);
+                return false;
             }
             catch (JsonSchemaValidationException ex)
             {
@@ -381,9 +412,8 @@ namespace ForRobot.Libr.Factories.DetalFactory
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Ошибка при валидации JSON для типа {typeof(T).Name}", ex);
+                throw new InvalidOperationException($"Ошибка при валидации JSON для типа {typeof(T).FullName}", ex);
             }
-
             return true;
         }
 

@@ -149,8 +149,8 @@ namespace ForRobot.Models.Detals
             }
         }
 
-        [JsonProperty("gantry_radius_weld")]
-        [JsonConverter(typeof(JsonCommentConverter), "Расстояние между фланцем робота и позиционера на сварке для расчёта положения позиционера")]
+        [JsonProperty("gantry_radius_search")]
+        [JsonConverter(typeof(JsonCommentConverter), "Расстояние между фланцем робота и позиционера на поисках")]
         /// <summary>
         /// Дистанция до позиционера для поиска
         /// </summary>
