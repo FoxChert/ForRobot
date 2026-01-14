@@ -15,6 +15,8 @@ namespace ForRobot.Libr.Collections
     {
         #region Public variables
 
+        private bool _suppressNotifications = false;
+
         /// <summary>
         /// Событие изменения свойства любого ребра в коллекции
         /// </summary>
@@ -35,7 +37,7 @@ namespace ForRobot.Libr.Collections
             foreach (var item in Items)
             {
                 if (item != null)
-                    item.PropertyChanged += OnRibPropertyChanged;
+                    item.ChangePropertyEvent += OnRibPropertyChanged;
             }
         }
 
@@ -47,7 +49,7 @@ namespace ForRobot.Libr.Collections
             foreach (var item in Items)
             {
                 if (item != null)
-                    item.PropertyChanged += OnRibPropertyChanged;
+                    item.ChangePropertyEvent += OnRibPropertyChanged;
             }
         }
 
@@ -64,7 +66,7 @@ namespace ForRobot.Libr.Collections
         protected override void InsertItem(int index, Rib item)
         {
             if (item != null)
-                item.PropertyChanged += OnRibPropertyChanged;
+                item.ChangePropertyEvent += OnRibPropertyChanged;
 
             base.InsertItem(index, item);
         }
@@ -74,7 +76,7 @@ namespace ForRobot.Libr.Collections
             var item = this[index];
 
             if (item != null)
-                item.PropertyChanged -= OnRibPropertyChanged;
+                item.ChangePropertyEvent -= OnRibPropertyChanged;
 
             base.RemoveItem(index);
         }
@@ -84,7 +86,7 @@ namespace ForRobot.Libr.Collections
             for (int i = 0; i < this.Count; i++)
             {
                 if (this[i] != null)
-                    this[i].PropertyChanged -= OnRibPropertyChanged;
+                    this[i].ChangePropertyEvent -= OnRibPropertyChanged;
             }
             base.ClearItems();
         }
@@ -94,10 +96,10 @@ namespace ForRobot.Libr.Collections
             var oldItem = this[index];
 
             if (oldItem != null)
-                oldItem.PropertyChanged -= OnRibPropertyChanged;
+                oldItem.ChangePropertyEvent -= OnRibPropertyChanged;
 
             if (item != null)
-                item.PropertyChanged += OnRibPropertyChanged;
+                item.ChangePropertyEvent += OnRibPropertyChanged;
 
             base.SetItem(index, item);
         }

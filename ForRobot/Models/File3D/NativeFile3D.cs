@@ -45,7 +45,7 @@ namespace ForRobot.Models.File3D
         //public NativeFile3D() { }
 
         /// <summary>
-        /// 
+        /// Инициализация объекта <see cref="NativeFile3D"/> для чтения существующего файла
         /// </summary>
         /// <param name="path"></param>
         public NativeFile3D(string path, ForRobot.Libr.Factories.DetalFactory.IDetalFactory detalFactory) : base(path)
@@ -58,6 +58,12 @@ namespace ForRobot.Models.File3D
             this.CurrentDetal = this._detalFactory.Deserialize(jsonString);
         }
 
+        /// <summary>
+        /// Инициализация объекта <see cref="NativeFile3D"/>
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="detalType"></param>
+        /// <param name="detalFactory"></param>
         public NativeFile3D(string path, DetalType detalType, ForRobot.Libr.Factories.DetalFactory.IDetalFactory detalFactory) : base(path)
         {
             this._detalFactory = detalFactory;
@@ -136,6 +142,8 @@ namespace ForRobot.Models.File3D
         #endregion Private functions
 
         #region Public functions
+
+        public static NativeFile3D Create(string path, DetalType detalType) => ForRobot.Libr.Factories.File3DFactory.Create(path, detalType) as NativeFile3D;
 
         public override void Save(string path)
         {

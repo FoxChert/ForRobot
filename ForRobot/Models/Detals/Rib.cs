@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 //using System.Text.Json.Serialization;l
 using Newtonsoft.Json;
 
@@ -9,7 +10,7 @@ namespace ForRobot.Models.Detals
     /// <summary>
     /// Модель ребра настила
     /// </summary>
-    public class Rib : BaseClass, ICloneable
+    public class Rib : ICloneable
     {
         private decimal _height;
         private decimal _thickness;
@@ -26,49 +27,113 @@ namespace ForRobot.Models.Detals
         /// <summary>
         /// Высота ребра
         /// </summary>
-        public decimal Height { get => this._height; set => Set(ref this._height, value); }
+        public decimal Height
+        {
+            get => this._height;
+            set
+            {
+                this._height = value;
+                this.OnChangeProperty();
+            }
+        }
 
         [JsonProperty("wall_thickness")]
         /// <summary>
         /// Толщина ребра
         /// </summary>
-        public decimal Thickness { get => this._thickness; set => Set(ref this._thickness, value); }
+        public decimal Thickness
+        {
+            get => this._thickness;
+            set
+            {
+                this._thickness = value;
+                this.OnChangeProperty();
+            }
+        }
 
         [JsonProperty("wall_cross_dist_left")]
         /// <summary>
         /// Поперечное расстояние до следующего ребра по левому краю
         /// </summary>
-        public decimal DistanceLeft  { get => this._distanceLeft; set => Set(ref this._distanceLeft, value); }
+        public decimal DistanceLeft
+        {
+            get => this._distanceLeft;
+            set
+            {
+                this._distanceLeft = value;
+                this.OnChangeProperty();
+            }
+        }
 
         [JsonProperty("wall_cross_dist_right")]
         /// <summary>
         /// Поперечное расстояние до ребра по правому краю
         /// </summary>
-        public decimal DistanceRight { get => this._distanceRight; set => Set(ref this._distanceRight, value); }
+        public decimal DistanceRight
+        {
+            get => this._distanceRight;
+            set
+            {
+                this._distanceRight = value;
+                this.OnChangeProperty();
+            }
+        }
 
         [JsonProperty("wall_long_dist_left")]
         /// <summary>
         /// Продольное расстояние до ребра по левому краю
         /// </summary>
-        public decimal IdentToLeft { get => this._identToLeft; set => Set(ref this._identToLeft, value); }
+        public decimal IdentToLeft
+        {
+            get => this._identToLeft;
+            set
+            {
+                this._identToLeft = value;
+                this.OnChangeProperty();
+            }
+        }
 
         [JsonProperty("wall_long_dist_right")]
         /// <summary>
         /// Продольное расстояние до ребра по правому краю
         /// </summary>
-        public decimal IdentToRight { get => this._identToRight; set => Set(ref this._identToRight, value); }
+        public decimal IdentToRight
+        {
+            get => this._identToRight;
+            set
+            {
+                this._identToRight = value;
+                this.OnChangeProperty();
+            }
+        }
 
         [JsonProperty("weld_offset_left")]
         /// <summary>
         /// Отступ шва от левого края ребра
         /// </summary>
-        public decimal DissolutionLeft { get => this._dissolutionLeft; set => Set(ref this._dissolutionLeft, value); }
+        public decimal DissolutionLeft
+        {
+            get => this._dissolutionLeft;
+            set
+            {
+                this._dissolutionLeft = value;
+                this.OnChangeProperty();
+            }
+        }
 
         [JsonProperty("weld_offset_right")]
         /// <summary>
         /// Отступ шва от правого края ребра
         /// </summary>
-        public decimal DissolutionRight { get => this._dissolutionRight; set => Set(ref this._dissolutionRight, value); }
+        public decimal DissolutionRight
+        {
+            get => this._dissolutionRight;
+            set
+            {
+                this._dissolutionRight = value;
+                this.OnChangeProperty();
+            }
+        }
 
         //[JsonProperty("h1")]
         ///// <summary>
@@ -90,7 +155,18 @@ namespace ForRobot.Models.Detals
         ///// </summary>
         //public decimal HightRight { get => this._hightRight; set => Set(ref this._hightRight, value); }
 
+        /// <summary>
+        /// Событие изменения параметра детали
+        /// </summary>
+        public event PropertyChangedEventHandler ChangePropertyEvent;
+
         public Rib() { }
+
+        /// <summary>
+        /// Вызов события изменения свойства
+        /// </summary>
+        /// <param name="propertyName">Наименование свойства</param>
+        public virtual void OnChangeProperty([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null) => this.ChangePropertyEvent?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         public object Clone() => (Rib)this.MemberwiseClone();
     }

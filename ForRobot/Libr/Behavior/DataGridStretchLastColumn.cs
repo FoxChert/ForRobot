@@ -7,7 +7,7 @@ using System.Windows.Interactivity;
 
 namespace ForRobot.Libr.Behavior
 {
-    public class DataGridStretchLastColumn : Behavior<DataGrid>
+    public class DataGridStretchLastColumnBehavior : Behavior<DataGrid>
     {
         private DataGrid _dataGrid;
 

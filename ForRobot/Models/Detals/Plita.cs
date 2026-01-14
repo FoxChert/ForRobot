@@ -237,6 +237,15 @@ namespace ForRobot.Models.Detals
         }
                 
         [JsonProperty("walls_list")]
+        [JsonConverter(typeof(JsonCommentConverter), "Коллекция рёбер с параметрами:\n" +
+                                                     "wall_height - высота ребра\n" +
+                                                     "wall_thickness - толщина ребра\n" +
+                                                     "wall_cross_dist_left - поперечное расстояние до ребра слева\n" +
+                                                     "wall_cross_dist_right - поперечное расстояние до ребра справа\n" +
+                                                     "wall_long_dist_left - продольное расстояние до ребра слева\n" +
+                                                     "wall_long_dist_right - продольное расстояние до ребра справа\n" +
+                                                     "weld_offset_left - отступ шва слева\n" +
+                                                     "weld_offset_right - отступ шва справа")]
         /// <summary>
         /// Коллекция рёбер
         /// </summary>
@@ -245,7 +254,11 @@ namespace ForRobot.Models.Detals
             get => this._ribsCollection;
             private set
             {
+                if(this._ribsCollection != null)
+                    this._ribsCollection.RibPropertyChanged -= (s, e) => this.OnChangeProperty(e.PropertyName);
+
                 this._ribsCollection = value;
+                this._ribsCollection.RibPropertyChanged += (s, e) => this.OnChangeProperty(e.PropertyName);
             }
         }
 
@@ -292,35 +305,35 @@ namespace ForRobot.Models.Detals
             switch (e.PropertyName)
             {
                 case nameof(this.DiferentDistance):
-                    if (!this.DiferentDistance && this.RibsCollection?.Count > 0)
-                    {
-                        for (int i = 0; i < this.RibsCollection.Count; i++)
-                        {
-                            this.RibsCollection[i].IdentToLeft = this.RibsIdentToLeft;
-                            this.RibsCollection[i].IdentToRight = this.RibsIdentToRight;
+                    if (this.DiferentDistance || this.RibsCollection?.Count == 0)
+                        break;
 
-                            if (i == 0)
-                            {
-                                this.RibsCollection[i].DistanceLeft = this.DistanceToFirstRib;
-                                continue;
-                            }
-                            this.RibsCollection[i].DistanceLeft = this.DistanceBetweenRibs;
+                    for (int i = 0; i < this.RibsCollection.Count; i++)
+                    {
+                        this.RibsCollection[i].IdentToLeft = this.RibsIdentToLeft;
+                        this.RibsCollection[i].IdentToRight = this.RibsIdentToRight;
+
+                        if (i == 0)
+                        {
+                            this.RibsCollection[i].DistanceLeft = this.DistanceToFirstRib;
+                            continue;
                         }
+                        this.RibsCollection[i].DistanceLeft = this.DistanceBetweenRibs;
                     }
                     break;
 
                 case nameof(this.ParalleleRibs):
-                    if (this.ParalleleRibs && this.RibsCollection?.Count > 0)
+                    if (!this.ParalleleRibs || this.RibsCollection?.Count == 0)
+                        break;
+
+                    for (int i = 0; i < this.RibsCollection.Count; i++)
                     {
-                        for (int i = 0; i < this.RibsCollection.Count; i++)
-                        {
-                            Rib rib = this.RibsCollection[i];
+                        Rib rib = this.RibsCollection[i];
 
-                            if (i == 0)
-                                (rib.DistanceLeft, rib.DistanceRight) = (this.DistanceToFirstRib, this.DistanceToFirstRib);
+                        if (i == 0)
+                            (rib.DistanceLeft, rib.DistanceRight) = (this.DistanceToFirstRib, this.DistanceToFirstRib);
 
-                            (rib.DistanceLeft, rib.DistanceRight) = (this.DistanceBetweenRibs, this.DistanceBetweenRibs);
-                        }
+                        (rib.DistanceLeft, rib.DistanceRight) = (this.DistanceBetweenRibs, this.DistanceBetweenRibs);
                     }
                     break;
 
@@ -375,7 +388,11 @@ namespace ForRobot.Models.Detals
                     break;
 
                 case nameof(this.RibsCount):
-                    //this.RibsCollection.SetCount(this.RibsCount);
+                    this.RibsCollection.SetCount(this.RibsCount);
+
+                    //if (this.RibsCollection?.Count == 0)
+                    //    this.RibsCollection = this.FillRibsCollection();
+
                     this.WeldingProperties?.BuildingWeldingSchema(this.RibsCount);
                     break;
 
@@ -400,6 +417,8 @@ namespace ForRobot.Models.Detals
             {
                 rib = new Rib()
                 {
+                    Height = this.RibsHeight,
+                    Thickness = this.RibsThickness,
                     IdentToLeft = this.RibsIdentToLeft,
                     IdentToRight = this.RibsIdentToRight,
                     DissolutionLeft = this.WeldsDissolutionLeft,

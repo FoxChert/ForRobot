@@ -150,7 +150,6 @@ namespace ForRobot.Models.File3D
         #endregion Private functions
 
         public static File3D Load(string path) => ForRobot.Libr.Factories.File3DFactory.Create(path);
-        public static File3D CreateNativeFile3D(string path, DetalType detalType) => ForRobot.Libr.Factories.File3DFactory.Create(path, detalType);
 
         public static void Save(params File3D[] files)
         {

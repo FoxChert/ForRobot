@@ -878,20 +878,21 @@
                                             </DrawingImage.Drawing>
                                         </DrawingImage>
                                     </avalonDock:LayoutAnchorable.IconSource>
-                                    
-                                    <DataGrid ItemsSource="{Binding Path=MessagesCollection, Mode=OneWay}"
+
+                                    <DataGrid ItemsSource="{Binding Path=MessagesCollection, Mode=OneWay}"                                              
                                               SelectionMode="Single"
+                                              SelectionUnit="Cell" IsReadOnly="True"
                                               AutoGenerateColumns="False"
                                               EnableRowVirtualization="False"
                                               CanUserAddRows="False"
                                               CanUserSortColumns="False"
                                               ScrollViewer.CanContentScroll="True"
-                                              ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                              ScrollViewer.HorizontalScrollBarVisibility="Hidden"
                                               ScrollViewer.VerticalScrollBarVisibility="Auto"
                                               lib:ScrollViewerAttachedPropertiesDataGrid.ScrollOnLoadingRow="True">
 
                                         <DataGrid.Resources>
-                                            <Style x:Key="dgCellBase" TargetType="{x:Type DataGridCell}">
+                                            <Style TargetType="{x:Type DataGridCell}">
                                                 <Setter Property="IsEnabled" Value="False"/>
                                                 <Setter Property="Focusable" Value="False"/>
                                                 <Setter Property="Foreground" Value="Black"/>
@@ -914,15 +915,9 @@
                                                 </Style.Triggers>
                                             </Style>
 
-                                            <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource dgCellBase}"></Style>
-
-                                            <Style x:Key="dgCellLeft" TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource dgCellBase}">
-                                                <Setter Property="TextBlock.TextAlignment" Value="Left"/>
-                                            </Style>
-
                                             <Style TargetType="{x:Type DataGridColumnHeader}">
                                                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                                            </Style> 
+                                            </Style>
 
                                             <Style TargetType="{x:Type DataGridRowHeader}">
                                                 <Style.Triggers>
@@ -933,7 +928,7 @@
                                             </Style>
                                         </DataGrid.Resources>
 
-                                        <!--<DataGrid.RowHeaderTemplate>
+                                        <DataGrid.RowHeaderTemplate>
                                             <DataTemplate>
                                                 <Expander Expanded="Expander_Expanded"  Collapsed="Expander_Collapsed">
                                                     <Expander.Style>
@@ -947,24 +942,28 @@
                                                     </Expander.Style>
                                                 </Expander>
                                             </DataTemplate>
-                                        </DataGrid.RowHeaderTemplate>-->
+                                        </DataGrid.RowHeaderTemplate>
 
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Время" Binding="{Binding Time, StringFormat=\{0:HH:mm:ss\}}" Width="Auto"/>
-                                            <DataGridTextColumn Header="Сообщение" Binding="{Binding Message}" Width="*" CellStyle="{StaticResource dgCellLeft}"/>
+                                            <DataGridTemplateColumn Header="Сообщение" Width="*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Message}"
+                                                                   Style="{StaticResource {x:Type TextBlock}}"
+                                                                   TextWrapping="Wrap" VerticalAlignment="Center" TextAlignment="Left"/>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
                                         </DataGrid.Columns>
 
-                                        <!--<DataGrid.RowDetailsTemplate>
+                                        <DataGrid.RowDetailsTemplate>
                                             <DataTemplate>
                                                 <Border Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}, Mode=FindAncestor}}">
                                                     <TextBlock Text="{Binding Ditails}" Focusable="False" IsEnabled="False" Margin="5,10" TextWrapping="Wrap"/>
                                                 </Border>
                                             </DataTemplate>
-                                        </DataGrid.RowDetailsTemplate>-->
-
-                                        <!--<i:Interaction.Behaviors>
-                                            <behavior:DataGridStretchLastColumn/>
-                                        </i:Interaction.Behaviors>-->
+                                        </DataGrid.RowDetailsTemplate>
                                     </DataGrid>
                                 </avalonDock:LayoutAnchorable>
                             </avalonDock:LayoutAnchorablePane>

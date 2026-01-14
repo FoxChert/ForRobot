@@ -22,7 +22,10 @@ namespace ForRobot.Libr.Factories.DetalFactory
 
         private JsonSerializationException _serializationError;
 
-        public static event Action<JsonSchemaValidationException> Validated;
+        /// <summary>
+        /// Событие возникновения ошибки валидации JSON-строки
+        /// </summary>
+        public static event Action<JsonSchemaValidationException> ValidatedError;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса DetalFactory
@@ -254,7 +257,6 @@ namespace ForRobot.Libr.Factories.DetalFactory
                         bool isValid = this.ValidationJsonString<Plita>(jsonString, exception =>
                         {
                             validationException = exception;
-                            //throw new InvalidOperationException(exception);
                         });
                         if (!isValid)
                             return this.CreateDetal<Plita>();
@@ -273,8 +275,7 @@ namespace ForRobot.Libr.Factories.DetalFactory
             {
                 if (validationException != null)
                 {
-                    Validated?.Invoke(validationException);
-                    //throw new InvalidOperationException($"Ошибка при десериализации JSON-строки", validationException);
+                    ValidatedError?.Invoke(validationException);
                 }
             }
         }
@@ -314,8 +315,9 @@ namespace ForRobot.Libr.Factories.DetalFactory
                 ContractResolver = new DefaultContractResolver(),
                 Error = HandleSerializeringError
             };
-
+            
             string jsonString = string.Empty;
+            JsonSchemaValidationException validationException = null;
             try
             {
                 switch (detal.DetalType)
@@ -327,7 +329,11 @@ namespace ForRobot.Libr.Factories.DetalFactory
                             throw _serializationError;
 
                         if (isValidate)
-                            this.ValidationJsonString<Plita>(jsonString);
+                            this.ValidationJsonString<Plita>(jsonString, exception => 
+                            {
+                                validationException = exception;
+                                throw validationException;
+                            });
                         break;
 
                     default:
@@ -346,6 +352,11 @@ namespace ForRobot.Libr.Factories.DetalFactory
             finally
             {
                 this._serializationError = null;
+
+                if (validationException != null)
+                {
+                    ValidatedError?.Invoke(validationException);
+                }
             }
             return jsonString;
         }
