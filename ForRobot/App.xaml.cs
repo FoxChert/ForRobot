@@ -205,13 +205,24 @@ namespace ForRobot
             // Проверка версии файла в папке с обновлением и запрос к пользователю.
             string updatePath = Path.Combine(App.Current.UpdatePath, $"{ResourceAssembly.GetName().Name}.exe");
 
-            if (Settings.AutoUpdate &&
-                File.Exists(updatePath) &&
-                new Version(FileVersionInfo.GetVersionInfo(updatePath).ProductVersion) > Assembly.GetExecutingAssembly().GetName().Version &&
-                (!Settings.InformUser || MessageBox.Show($"Обнаружено обновление до версии {FileVersionInfo.GetVersionInfo(updatePath).ProductVersion}\nОбновить приложение?", "Обновление интерфейса", MessageBoxButton.OKCancel, MessageBoxImage.Question, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly) == MessageBoxResult.OK))
+            if (Settings.AutoUpdate)
             {
-                this.Logger.Trace($"Обновление приложения до версии {FileVersionInfo.GetVersionInfo(updatePath).ProductVersion}");
-                App.Current.UpDateApp(args);
+                var taskExistAppFiles = new Task<bool>(() => File.Exists(updatePath));
+                var taskUpdateApp = Task.WhenAny(taskExistAppFiles, Task.Delay(3000)); // Проверка существования файлов для обновления, ограничено по времени.
+
+                bool fileExists = false;
+                if (taskUpdateApp.Result == taskExistAppFiles)
+                {
+                    fileExists = taskExistAppFiles.Result;
+                }
+
+                if (fileExists &&
+                    new Version(FileVersionInfo.GetVersionInfo(updatePath).ProductVersion) > Assembly.GetExecutingAssembly().GetName().Version && // Проверка версии приложения для обновления
+                    (!Settings.InformUser || MessageBox.Show($"Обнаружено обновление до версии {FileVersionInfo.GetVersionInfo(updatePath).ProductVersion}\nОбновить приложение?", "Обновление интерфейса", MessageBoxButton.OKCancel, MessageBoxImage.Question, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly) == MessageBoxResult.OK))
+                {
+                    this.Logger.Trace($"Обновление приложения до версии {FileVersionInfo.GetVersionInfo(updatePath).ProductVersion}");
+                    App.Current.UpDateApp(args);
+                }
             }
 
             // Обновление настроек приложения к пользовательским.
@@ -276,16 +287,16 @@ namespace ForRobot
             new Thread(() => process.Start()).Start();
         }
 
-        /// <summary>
-        /// Обновление скрипта-генератора
-        /// </summary>
-        private void UpDateScript()
-        {
-            foreach (var file in Directory.GetFiles(Path.Combine(App.Current.UpdatePath, "Scripts")))
-            {
-                File.Copy(file, Path.Combine(this.FilePathOnPC, $"Scripts\\{new FileInfo(file).Name}"), true);
-            }
-        }
+        ///// <summary>
+        ///// Обновление скрипта-генератора
+        ///// </summary>
+        //private void UpDateScript()
+        //{
+        //    foreach (var file in Directory.GetFiles(Path.Combine(App.Current.UpdatePath, "Scripts")))
+        //    {
+        //        File.Copy(file, Path.Combine(this.FilePathOnPC, $"Scripts\\{new FileInfo(file).Name}"), true);
+        //    }
+        //}
 
         /// <summary>
         /// Передача аргументов уже существующему экземпляру приложения

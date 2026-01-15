@@ -8,7 +8,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 using CommunityToolkit.Diagnostics;
@@ -24,8 +23,6 @@ namespace ForRobot.Models.File3D
     public abstract class File3D : IFile3D, IDisposable
     {
         #region Private variables
-
-        private static readonly Dictionary<string, List<IModelFileHandler>> _handlersByFormat;
 
         private readonly ForRobot.Libr.Clipboard.UndoRedoManager _undoRedoManager;
         private readonly Dispatcher dispatcher;
@@ -79,24 +76,6 @@ namespace ForRobot.Models.File3D
 
         #region Constructors
 
-        static File3D()
-        {
-            _handlersByFormat = new Dictionary<string, List<IModelFileHandler>>(StringComparer.OrdinalIgnoreCase)
-            {
-                [".stl"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
-                [".obj"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
-                //[".fbx"] = new List<IModelFileHandler> { new AssimpModelHandler() },
-                //[".callada"] = new List<IModelFileHandler> { new AssimpModelHandler() },
-                //[".3ds"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
-                //[".gltf"] = new List<IModelFileHandler> { new AssimpModelHandler() },
-                //[".glb"] = new List<IModelFileHandler> { new AssimpModelHandler() },
-                //[".ply"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
-                //[".off"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
-                //[".lwo"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() }
-                //[".step"] = new List<IModelFileHandler> { new OpenCascadeModelHandler() }
-            };
-        }
-
         public File3D()
         {
             //this._undoRedoManager = new ForRobot.Libr.Clipboard.UndoRedoManager(new ForRobot.Libr.Clipboard.CacheClipboardProvider(), this.Path);
@@ -111,33 +90,11 @@ namespace ForRobot.Models.File3D
                 throw new ArgumentNullException(nameof(path));
 
             this.Path = path;
-            //this.CurrentModel = this.LoadModel3D(path);
         }
 
         #endregion Constructors
 
         #region Private functions
-
-        private Model3DGroup LoadModel3D(string path)
-        {
-            if (!System.IO.File.Exists(path))
-                throw new FileNotFoundException("Не удалось найти файл", path);
-
-            string extension = System.IO.Path.GetExtension(path).ToLower();
-            System.Windows.Media.Media3D.Model3DGroup model = null;
-
-            if (_handlersByFormat.TryGetValue(extension, out var handlers))
-            {
-                for (int i = 0; i < handlers.Count; i++)
-                {
-                    var modelFileHandler = handlers[i];
-                    model = modelFileHandler.LoadModel(path) as System.Windows.Media.Media3D.Model3DGroup;
-
-                    if (model != null) break;
-                }
-            }
-            return model;
-        }
 
         private void OnPropertyChanged(params string[] propertyNames)
         {

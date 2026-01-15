@@ -233,6 +233,7 @@ namespace ForRobot.Libr.Factories.DetalFactory
             {
                 Formatting = Formatting.Indented,
                 ContractResolver = new DefaultContractResolver(),
+                ObjectCreationHandling = ObjectCreationHandling.Replace
             };
 
             var loadSettings = jsonLoadSettings ?? new JsonLoadSettings()

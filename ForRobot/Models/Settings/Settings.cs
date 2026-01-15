@@ -67,7 +67,7 @@ namespace ForRobot.Models.Settings
         #region Generic
 
         /// <summary>
-        /// Прилежение обновляется автоматически
+        /// Обновляется ли приложение автоматически
         /// </summary>
         public bool AutoUpdate { get; set; } = true;
 

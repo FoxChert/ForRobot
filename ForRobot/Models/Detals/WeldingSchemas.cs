@@ -40,6 +40,8 @@ namespace ForRobot.Models.Detals
 
         public class SchemaItem : INotifyPropertyChanged
         {
+            public const string DEFA
+
             private string _leftSide;
             private string _rightSide;
 

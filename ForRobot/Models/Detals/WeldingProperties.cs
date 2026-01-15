@@ -214,7 +214,7 @@ namespace ForRobot.Models.Detals
             switch (e.PropertyName)
             {
                 case nameof(this.WeldingSchema):
-                    this.WeldingSchema.ItemPropertyChanged += HandlerPropertyChanged_WeldingSchemaItem;
+                    //this.WeldingSchema.ItemPropertyChanged += HandlerPropertyChanged_WeldingSchemaItem;
                     break;
 
                 //case nameof(this.SelectedWeldingSchema):

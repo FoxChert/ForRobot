@@ -145,9 +145,7 @@ namespace ForRobot.Models.Detals
                     return;
 
                 this._ribCount = value;
-
-                //this.ChangeRibCollection();
-                //this.ChangeWeldingSchema();
+                
                 this.OnChangeProperty(nameof(this.RibsCount));
             }
         }
@@ -235,7 +233,7 @@ namespace ForRobot.Models.Detals
                 this.OnChangeProperty();
             }
         }
-                
+
         [JsonProperty("walls_list")]
         [JsonConverter(typeof(JsonCommentConverter), "Коллекция рёбер с параметрами:\n" +
                                                      "wall_height - высота ребра\n" +
@@ -254,28 +252,13 @@ namespace ForRobot.Models.Detals
             get => this._ribsCollection;
             private set
             {
-                if(this._ribsCollection != null)
-                    this._ribsCollection.RibPropertyChanged -= (s, e) => this.OnChangeProperty(e.PropertyName);
+                if (this._ribsCollection != null)
+                    this._ribsCollection.RibPropertyChanged -= this.HandleChangeProperty_RibsCollection;
 
                 this._ribsCollection = value;
-                this._ribsCollection.RibPropertyChanged += (s, e) => this.OnChangeProperty(e.PropertyName);
+                this._ribsCollection.RibPropertyChanged += this.HandleChangeProperty_RibsCollection;
             }
         }
-
-        //public FullyObservableCollection<Rib> RibsCollection
-        //{
-        //    get => this._ribsCollection;
-        //    private set
-        //    {
-        //        if(this._ribsCollection != null)
-        //            this._ribsCollection.ItemPropertyChanged -= (s, e) => this.OnChangeProperty();
-                    
-        //        this._ribsCollection = value;
-
-        //        if (this._ribsCollection != null)
-        //            this._ribsCollection.ItemPropertyChanged += (s, e) => this.OnChangeProperty();
-        //    }
-        //}
 
         #endregion
 
@@ -331,8 +314,10 @@ namespace ForRobot.Models.Detals
                         Rib rib = this.RibsCollection[i];
 
                         if (i == 0)
+                        {
                             (rib.DistanceLeft, rib.DistanceRight) = (this.DistanceToFirstRib, this.DistanceToFirstRib);
-
+                            continue;
+                        }
                         (rib.DistanceLeft, rib.DistanceRight) = (this.DistanceBetweenRibs, this.DistanceBetweenRibs);
                     }
                     break;
@@ -360,15 +345,21 @@ namespace ForRobot.Models.Detals
                 case nameof(this.DistanceToFirstRib):
                     if (!this.ValidateRibsCollection())
                         break;
-                    //if (this.RibsCollection?.Count == 0)
-                    //    break;
 
                     this.RibsCollection[0].DistanceLeft = this.DistanceToFirstRib;
                     this.RibsCollection[0].DistanceRight = this.DistanceToFirstRib;
                     break;
 
                 case nameof(this.DistanceBetweenRibs):
-                    this.RibsCollection.SetRibsDistance(this.DistanceBetweenRibs);
+                    for (int i = 0; i < this.RibsCollection.Count; i++)
+                    {
+                        Rib rib = this.RibsCollection[i];
+
+                        if (i == 0)
+                            continue;
+
+                        (rib.DistanceLeft, rib.DistanceRight) = (this.DistanceBetweenRibs, this.DistanceBetweenRibs);
+                    }
                     break;
 
                 case nameof(this.RibsIdentToLeft):
@@ -390,8 +381,8 @@ namespace ForRobot.Models.Detals
                 case nameof(this.RibsCount):
                     this.RibsCollection.SetCount(this.RibsCount);
 
-                    //if (this.RibsCollection?.Count == 0)
-                    //    this.RibsCollection = this.FillRibsCollection();
+                    if (this.RibsCollection?.Count == 0)
+                        this.RibsCollection = this.FillRibsCollection();
 
                     this.WeldingProperties?.BuildingWeldingSchema(this.RibsCount);
                     break;
@@ -400,6 +391,26 @@ namespace ForRobot.Models.Detals
                     this.WeldingProperties.BuildingWeldingSchema(this.RibsCount);
                     break;
             }
+        }
+
+        /// <summary>
+        /// Делегат изменения свойства ребра в <see cref="RibCollection"/>
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HandleChangeProperty_RibsCollection(object sender, RibPropertyChangedEventArgs e)
+        {
+            if (e.Rib == null)
+                return;
+            
+            switch (e.PropertyName)
+            {
+                case nameof(Rib.DistanceLeft):
+                    if (this.ParalleleRibs)
+                        e.Rib.DistanceRight = e.Rib.DistanceLeft;
+                    break;
+            }
+            this.OnChangeProperty(e.PropertyName);
         }
 
         #endregion Handle
@@ -488,7 +499,7 @@ namespace ForRobot.Models.Detals
 
         #region Public functions
 
-        //public FullyObservableCollection<Rib> SetRibsCollection(FullyObservableCollection<Rib> collection) => this.RibsCollection = collection;
+
 
         #endregion Public functions
 

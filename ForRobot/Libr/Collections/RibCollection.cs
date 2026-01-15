@@ -149,6 +149,7 @@ namespace ForRobot.Libr.Collections
         {
             for (int i = 0; i < this?.Count; i++)
             {
+
                 this[i].DistanceLeft = distanceBetweenRibs;
                 this[i].DistanceRight = distanceBetweenRibs;
             }
