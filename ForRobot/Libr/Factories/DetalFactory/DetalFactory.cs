@@ -9,6 +9,7 @@ using Newtonsoft.Json.Serialization;
 using ForRobot.Libr.Json.Schemas;
 using ForRobot.Libr.Services.Providers;
 using ForRobot.Models.Detals;
+using ForRobot.Models.Welding;
 
 namespace ForRobot.Libr.Factories.DetalFactory
 {

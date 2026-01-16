@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Linq;
-using System.Windows.Media.Imaging;
+using System.Threading;
 using System.Collections.Generic;
+using System.ComponentModel;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
-using ForRobot.Libr.Json;
-using ForRobot.Libr.Attributes;
 using ForRobot.Libr.Converters;
 using ForRobot.Libr.Collections;
-using System.ComponentModel;
-using System.Threading;
+using ForRobot.Models.Welding;
 
 namespace ForRobot.Models.Detals
 {
@@ -19,7 +17,7 @@ namespace ForRobot.Models.Detals
     {
         #region Private variables
 
-        private string _selectedWeldingSchema = WeldingSchemas.GetDescription(WeldingSchemas.SchemasTypes.LeftEvenOdd_RightEvenOdd);
+        private string _selectedWeldingSchema = WeldingSchemas.GetDescription(WeldingSchemaTypes.LeftEvenOdd_RightEvenOdd);
 
         private bool _diferentDistance = false;
         private bool _paralleleRibs = true;
@@ -384,11 +382,11 @@ namespace ForRobot.Models.Detals
                     if (this.RibsCollection?.Count == 0)
                         this.RibsCollection = this.FillRibsCollection();
 
-                    this.WeldingProperties?.BuildingWeldingSchema(this.RibsCount);
+                    //this.WeldingProperties?.BuildingWeldingSchema(this.RibsCount);
                     break;
 
                 case nameof(this.WeldingProperties.SelectedWeldingSchema):
-                    this.WeldingProperties.BuildingWeldingSchema(this.RibsCount);
+                    //this.WeldingProperties.BuildingWeldingSchema(this.RibsCount);
                     break;
             }
         }

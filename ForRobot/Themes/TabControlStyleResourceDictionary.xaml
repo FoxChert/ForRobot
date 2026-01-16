@@ -4,6 +4,7 @@
                     xmlns:local="clr-namespace:ForRobot.Themes"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib"
                     xmlns:detals="clr-namespace:ForRobot.Models.Detals"
+                    xmlns:welding="clr-namespace:ForRobot.Models.Welding"
                     xmlns:behavior="clr-namespace:ForRobot.Libr.Behavior">
 
     <BitmapImage x:Key="ImageRectangular" UriSource="/InterfaceOfRobots;component/Themes/Images/Rectangular.png"/>
@@ -145,7 +146,7 @@
                     </Grid.RowDefinitions>
 
                     <ComboBox Grid.Row="0" Margin="0, 10"
-                              ItemsSource="{x:Static detals:WeldingSchemas.WeldingSchemasCollection}"
+                              ItemsSource="{x:Static welding:WeldingSchemas.WeldingSchemasCollection}"
                               SelectedItem="{Binding Path=WeldingProperties.SelectedWeldingSchema, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource WeldingSchemaConverter}}"
                               SelectedIndex="0">
 
@@ -298,13 +299,13 @@
                 </Popup>
             </StackPanel>
 
-            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Path=SearchOffsetStart, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
-            <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Path=SearchOffsetEnd, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
-            <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding Path=SeamsOverlap, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
-            <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding Path=TechOffsetSeamStart, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
-            <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding Path=TechOffsetSeamEnd, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
-            <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding Path=DistanceForWelding, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
-            <!--<TextBox Grid.Row="9" Grid.Column="1" Text="{Binding Path=DistanceForSearch, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>-->
+            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Path=WeldingProperties.SearchOffsetStart, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Path=WeldingProperties.SearchOffsetEnd, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding Path=WeldingProperties.SeamsOverlap, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding Path=WeldingProperties.TechOffsetSeamStart, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding Path=WeldingProperties.TechOffsetSeamEnd, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding Path=WeldingProperties.DistanceForWelding, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding Path=WeldingProperties.DistanceForSearch, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
             <TextBox Grid.Row="10" Grid.Column="1" Text="{Binding Path=XOffset, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
             <TextBox Grid.Row="11" Grid.Column="1" Text="{Binding Path=YOffset, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
             <TextBox Grid.Row="12" Grid.Column="1" Text="{Binding Path=ReverseDeflection, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>

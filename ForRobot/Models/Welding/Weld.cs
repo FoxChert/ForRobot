@@ -6,7 +6,7 @@ using ForRobot.Models.File3D;
 
 using HelixToolkit.Wpf;
 
-namespace ForRobot.Models.File3D
+namespace ForRobot.Models.Welding
 {
     /// <summary>
     /// Модель представления шва

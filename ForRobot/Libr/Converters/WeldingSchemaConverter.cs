@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Windows.Data;
-using System.Windows.Controls;
 using System.Reflection;
 using System.Globalization;
 
-using ForRobot.Models.Detals;
+using ForRobot.Models.Welding;
 
 namespace ForRobot.Libr.Converters
 {
@@ -16,14 +15,12 @@ namespace ForRobot.Libr.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value == null || !(value is WeldingSchemas.SchemasTypes))
+            if (value == null || !(value is WeldingSchemaTypes schemasTypes))
                 throw new FormatException("to use this converter, value and parameter shall inherit from WeldingSchemas.SchemasTypes");
-
-            WeldingSchemas.SchemasTypes schemasTypes;
-
+            
             if(Enum.TryParse(value.ToString(), out schemasTypes))
             {
-                FieldInfo fieldInfo = typeof(WeldingSchemas.SchemasTypes).GetField(value.ToString());
+                FieldInfo fieldInfo = typeof(WeldingSchemaTypes).GetField(value.ToString());
 
                 if (fieldInfo != null && fieldInfo.IsLiteral)
                 {

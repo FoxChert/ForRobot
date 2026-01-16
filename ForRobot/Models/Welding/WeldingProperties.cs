@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using ForRobot.Libr.Converters;
 using ForRobot.Libr.Collections;
 
-namespace ForRobot.Models.Detals
+namespace ForRobot.Models.Welding
 {
     public class WeldingProperties : INotifyPropertyChanged, IDisposable
     {
@@ -22,8 +22,8 @@ namespace ForRobot.Models.Detals
         private int _weldingSpead;
         private decimal _distanceForSearch;
         private decimal _distanceForWelding;
-        private WeldingSchemas.SchemasTypes _selectedWeldingSchema = WeldingSchemas.SchemasTypes.Edit;
-        private FullyObservableCollection<WeldingSchemas.SchemaItem> _weldingSchema;
+        private WeldingSchemaTypes _selectedWeldingSchema = WeldingSchemaTypes.Edit;
+        private FullyObservableCollection<WeldingSchemaItem> _weldingSchema;
 
         #endregion Private variables
 
@@ -168,7 +168,7 @@ namespace ForRobot.Models.Detals
         /// <summary>
         /// Выбранная схема сварки рёбер
         /// </summary>
-        public WeldingSchemas.SchemasTypes SelectedWeldingSchema
+        public WeldingSchemaTypes SelectedWeldingSchema
         {
             get => this._selectedWeldingSchema;
             set
@@ -182,7 +182,7 @@ namespace ForRobot.Models.Detals
         /// <summary>
         /// Схема сварки (в какой очерёдности будут накладываться сварные швы)
         /// </summary>
-        public FullyObservableCollection<WeldingSchemas.SchemaItem> WeldingSchema
+        public FullyObservableCollection<WeldingSchemaItem> WeldingSchema
         {
             get => this._weldingSchema;
             set
@@ -205,26 +205,26 @@ namespace ForRobot.Models.Detals
 
         public WeldingProperties()
         {
-            this.BuildingWeldingSchema();
-            this.PropertyChanged += HandlerPropertyChanged;
+            //this.BuildingWeldingSchema();
+            //this.PropertyChanged += HandlerPropertyChanged;
         }
 
-        private void HandlerPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case nameof(this.WeldingSchema):
-                    //this.WeldingSchema.ItemPropertyChanged += HandlerPropertyChanged_WeldingSchemaItem;
-                    break;
+        //private void HandlerPropertyChanged(object sender, PropertyChangedEventArgs e)
+        //{
+        //    switch (e.PropertyName)
+        //    {
+        //        case nameof(this.WeldingSchema):
+        //            //this.WeldingSchema.ItemPropertyChanged += HandlerPropertyChanged_WeldingSchemaItem;
+        //            break;
 
-                //case nameof(this.SelectedWeldingSchema):
-                //    break;
-            }
-        }
+        //        //case nameof(this.SelectedWeldingSchema):
+        //        //    break;
+        //    }
+        //}
 
         private void HandlerPropertyChanged_WeldingSchemaItem(object sender, ItemPropertyChangedEventArgs e)
         {
-            this.SelectedWeldingSchema = WeldingSchemas.SchemasTypes.Edit;
+            this.SelectedWeldingSchema = WeldingSchemaTypes.Edit;
         }
 
         /// <summary>
@@ -233,10 +233,16 @@ namespace ForRobot.Models.Detals
         /// <param name="propertyName">Наименование свойства</param>
         private void OnChangeProperty([CallerMemberName] string propertyName = null) => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        public void BuildingWeldingSchema(int ribsCount = Plita.MIN_RIB_COUNT)
-        {
-            this.WeldingSchema = ForRobot.Models.Detals.WeldingSchemas.BuildingSchema(this.SelectedWeldingSchema, ribsCount) as FullyObservableCollection<WeldingSchemas.SchemaItem>;
-        }
+        //public void BuildingWeldingSchema(int ribsCount = Plita.MIN_RIB_COUNT)
+        //{
+        //    if (this.WeldingSchema != null)
+        //        this.WeldingSchema.ItemPropertyChanged -= HandlerPropertyChanged_WeldingSchemaItem;
+
+        //    this.WeldingSchema = ForRobot.Models.Detals.WeldingSchemas.BuildingSchema(this.SelectedWeldingSchema, ribsCount) as FullyObservableCollection<WeldingSchemas.SchemaItem>;
+
+        //    if (this.WeldingSchema != null)
+        //        this.WeldingSchema.ItemPropertyChanged += HandlerPropertyChanged_WeldingSchemaItem;
+        //}
 
         //public static FullyObservableCollection<WeldingSchemas.SchemaItem> FillWeldingSchema(WeldingSchemas.SchemasTypes schemasType, int weldsCount)
         //{
@@ -257,7 +263,7 @@ namespace ForRobot.Models.Detals
 
         public void Dispose()
         {
-            this.PropertyChanged -= HandlerPropertyChanged;
+            //this.PropertyChanged -= HandlerPropertyChanged;
             GC.SuppressFinalize(this);
         }
 

@@ -1,9 +1,10 @@
-﻿using ForRobot.Models.Detals;
-using ForRobot.Models.File3D;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Media.Media3D;
+
+using ForRobot.Models.Detals;
+using ForRobot.Models.Welding;
 
 namespace ForRobot.Libr.Services
 {

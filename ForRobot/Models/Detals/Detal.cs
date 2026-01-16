@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.ComponentModel;
 
 using Newtonsoft.Json;
 
-//using ForRobot.Models.File3D;
-//using ForRobot.Libr;
-//using ForRobot.Libr.Json;
 using ForRobot.Libr.Converters;
-using HelixToolkit.Wpf.SharpDX;
-using System.Threading;
+using ForRobot.Models.Welding;
 
 namespace ForRobot.Models.Detals
 {
@@ -203,7 +200,7 @@ namespace ForRobot.Models.Detals
         /// <summary>
         /// Свойства сварки детали
         /// </summary>
-        public WeldingProperties WeldingProperties { get; set; }
+        public WeldingProperties WeldingProperties { get; set; } = new WeldingProperties();
 
         #endregion
 
@@ -221,6 +218,7 @@ namespace ForRobot.Models.Detals
         public Detal()
         {
             this.ChangePropertyEvent += this.HandleChangeProperty;
+            this.WeldingProperties.PropertyChanged += (s, e) => this.OnChangeProperty(e.PropertyName);
         }
 
         #endregion
@@ -291,6 +289,7 @@ namespace ForRobot.Models.Detals
                 if (disposing)
                 {
                     this.ChangePropertyEvent -= this.HandleChangeProperty;
+                    this.WeldingProperties.PropertyChanged -= (s, e) => this.OnChangeProperty(e.PropertyName);
                     GC.SuppressFinalize(this);
                 }
             }

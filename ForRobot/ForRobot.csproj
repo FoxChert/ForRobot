@@ -326,6 +326,7 @@
     <Compile Include="Libr\Cryptography\Hashing.cs" />
     <Compile Include="Libr\Factories\DetalFactory\DetalFactory.cs" />
     <Compile Include="Libr\Factories\DetalFactory\IDetalFactory.cs" />
+    <Compile Include="Libr\Factories\DetalFactory\WeldingFactory.cs" />
     <Compile Include="Libr\Json\Schemas\CachedJsonSchemaProvider.cs" />
     <Compile Include="Libr\Json\Schemas\JsonSchemaProvider.cs" />
     <Compile Include="Libr\Json\Schemas\JsonManager.cs" />
@@ -358,7 +359,9 @@
     <Compile Include="Libr\Clipboard\UndoRedo\IUndoRedo.cs" />
     <Compile Include="Libr\Services\Providers\IJsonSchemaProvider.cs" />
     <Compile Include="Libr\ValueChangedEventArgs.cs" />
-    <Compile Include="Models\Detals\WeldingProperties.cs" />
+    <Compile Include="Models\Welding\WeldingSchemaItem.cs" />
+    <Compile Include="Models\Welding\WeldingSchemaTypes.cs" />
+    <Compile Include="Models\Welding\WeldingProperties.cs" />
     <Compile Include="Libr\Services\Providers\IConfigurationProvider.cs" />
     <Compile Include="Models\File3D\AssimpModelHandler.cs" />
     <Compile Include="Libr\Factories\File3DFactory.cs" />
@@ -378,8 +381,8 @@
     <Compile Include="Models\AppMessage.cs" />
     <Compile Include="Models\Controls\FileFlags.cs" />
     <Compile Include="Models\Detals\Hole.cs" />
-    <Compile Include="Models\File3D\Weld.cs" />
-    <Compile Include="Models\Detals\WeldingSchemas.cs" />
+    <Compile Include="Models\Welding\Weld.cs" />
+    <Compile Include="Models\Welding\WeldingSchemas.cs" />
     <Compile Include="Models\File3D\Annotation.cs" />
     <Compile Include="Models\File3D\File3D.cs" />
     <Compile Include="Models\File3D\Materials.cs" />

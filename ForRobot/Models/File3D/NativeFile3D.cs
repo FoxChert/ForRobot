@@ -18,7 +18,7 @@ namespace ForRobot.Models.File3D
 
         private Detal _currentDetal;
 
-        private FullyObservableCollection<WeldingSchemas.SchemaItem> _weldingSchema;
+        //private FullyObservableCollection<WeldingSchemas.SchemaItem> _weldingSchema;
 
         #endregion private variables
 

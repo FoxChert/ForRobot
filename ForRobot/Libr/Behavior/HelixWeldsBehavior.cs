@@ -6,7 +6,7 @@ using System.ComponentModel;
 
 using GalaSoft.MvvmLight.Messaging;
 
-using ForRobot.Models.File3D;
+using ForRobot.Models.Welding;
 using ForRobot.Models.Detals;
 
 namespace ForRobot.Libr.Behavior

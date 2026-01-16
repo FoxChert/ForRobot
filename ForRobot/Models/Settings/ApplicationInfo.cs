@@ -7,7 +7,7 @@ namespace ForRobot.Models.Settings
 {
     public class ApplicationInfo
     {
-        [JsonConverter(typeof(ForRobot.Libr.Json.ImageSourceConverter))]
+        [JsonConverter(typeof(ForRobot.Libr.Converters.ImageSourceConverter))]
         public ImageSource Icon { get; set; }
 
         public string Name { get; set; }
