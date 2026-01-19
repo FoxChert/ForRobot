@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Collections.Generic;
 
+using ForRobot.Libr;
+
 namespace ForRobot.Models.Welding
 {
     public static class WeldingSchemas
@@ -17,9 +19,10 @@ namespace ForRobot.Models.Welding
         /// <returns></returns>
         private static IEnumerable<string> GetSchemasCollection()
         {
-            var Descriptions = typeof(WeldingSchemaItem).GetFields().Select(field => field.GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), false).SingleOrDefault() as System.ComponentModel.DescriptionAttribute);
-            List<string> DescriptionList = Descriptions.Where(item => item != null).Select(item => item.Description).ToList<string>();
-            return DescriptionList;
+            var descriptions = Enum.GetValues(typeof(WeldingSchemaTypes))
+                .Cast<WeldingSchemaTypes>()
+                .Select(item => item.GetDescription());
+            return descriptions.ToList<string>();
         }
 
         /// <summary>

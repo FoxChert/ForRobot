@@ -162,7 +162,7 @@ namespace ForRobot.Libr.Behavior
             hab.Detal = (Detal)e.NewValue;
 
             if (e.OldValue != null && e.OldValue is Detal oldDetal)
-                oldDetal.ChangePropertyEvent -= hab.PropertyChangeHandle;
+                oldDetal.PropertyChanged -= hab.PropertyChangeHandle;
 
             hab.Detal = (Detal)e.NewValue;
 
@@ -173,7 +173,7 @@ namespace ForRobot.Libr.Behavior
             }
             else
             {
-                hab.Detal.ChangePropertyEvent += hab.PropertyChangeHandle;
+                hab.Detal.PropertyChanged += hab.PropertyChangeHandle;
                 hab.UpdateAnnotations();
             }
         }

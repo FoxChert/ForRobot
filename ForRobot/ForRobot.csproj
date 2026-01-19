@@ -324,6 +324,7 @@
     <Compile Include="Libr\Converters\ImageSourceConverter.cs" />
     <Compile Include="Libr\Converters\WeldingSchemaConverter.cs" />
     <Compile Include="Libr\Cryptography\Hashing.cs" />
+    <Compile Include="Libr\EnumExtensions.cs" />
     <Compile Include="Libr\Factories\DetalFactory\DetalFactory.cs" />
     <Compile Include="Libr\Factories\DetalFactory\IDetalFactory.cs" />
     <Compile Include="Libr\Factories\DetalFactory\WeldingFactory.cs" />

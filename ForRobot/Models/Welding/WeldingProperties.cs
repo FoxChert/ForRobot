@@ -187,7 +187,20 @@ namespace ForRobot.Models.Welding
             get => this._weldingSchema;
             set
             {
+                //if (this._weldingSchema != null)
+                //    this._weldingSchema.ItemPropertyChanged -= HandlerPropertyChanged_WeldingSchemaItem;
+
+                if (this._weldingSchema != null)
+                    this._weldingSchema.ItemPropertyChanged -= (s, e) => this.OnChangeProperty(e.PropertyName);
+
                 this._weldingSchema = value;
+
+                //if (this._weldingSchema != null)
+                //    this._weldingSchema.ItemPropertyChanged += HandlerPropertyChanged_WeldingSchemaItem;
+
+                if (this._weldingSchema != null)
+                    this._weldingSchema.ItemPropertyChanged += (s, e) => this.OnChangeProperty(e.PropertyName);
+
                 this.OnChangeProperty(nameof(this.WeldingSchema));
             }
         }
@@ -222,10 +235,10 @@ namespace ForRobot.Models.Welding
         //    }
         //}
 
-        private void HandlerPropertyChanged_WeldingSchemaItem(object sender, ItemPropertyChangedEventArgs e)
-        {
-            this.SelectedWeldingSchema = WeldingSchemaTypes.Edit;
-        }
+        //private void HandlerPropertyChanged_WeldingSchemaItem(object sender, ItemPropertyChangedEventArgs e)
+        //{
+        //    this.SelectedWeldingSchema = WeldingSchemaTypes.Edit;
+        //}
 
         /// <summary>
         /// Вызов события изменения свойства

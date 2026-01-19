@@ -10,7 +10,7 @@ using ForRobot.Models.Welding;
 
 namespace ForRobot.Models.Detals
 {
-    public abstract class Detal : ICloneable, IDisposable
+    public abstract class Detal : INotifyPropertyChanged, ICloneable, IDisposable
     {
         #region Private variables
 
@@ -200,7 +200,7 @@ namespace ForRobot.Models.Detals
         /// <summary>
         /// Свойства сварки детали
         /// </summary>
-        public WeldingProperties WeldingProperties { get; set; } = new WeldingProperties();
+        public WeldingProperties WeldingProperties { get; set; }
 
         #endregion
 
@@ -209,7 +209,7 @@ namespace ForRobot.Models.Detals
         /// <summary>
         /// Событие изменения параметра детали
         /// </summary>
-        public event PropertyChangedEventHandler ChangePropertyEvent;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
 
@@ -217,8 +217,13 @@ namespace ForRobot.Models.Detals
 
         public Detal()
         {
-            this.ChangePropertyEvent += this.HandleChangeProperty;
-            this.WeldingProperties.PropertyChanged += (s, e) => this.OnChangeProperty(e.PropertyName);
+            this.PropertyChanged += this.HandleChangeProperty;
+
+            this.WeldingProperties = new WeldingProperties();
+            this.WeldingProperties.PropertyChanged += (s, e) => 
+            {
+                this.OnChangeProperty(e.PropertyName);
+            };
         }
 
         #endregion
@@ -270,7 +275,7 @@ namespace ForRobot.Models.Detals
         /// Вызов события изменения свойства
         /// </summary>
         /// <param name="propertyName">Наименование свойства</param>
-        public virtual void OnChangeProperty([CallerMemberName] string propertyName = null) => this.ChangePropertyEvent?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        public virtual void OnChangeProperty([CallerMemberName] string propertyName = null) => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         #endregion
 
@@ -288,7 +293,7 @@ namespace ForRobot.Models.Detals
             {
                 if (disposing)
                 {
-                    this.ChangePropertyEvent -= this.HandleChangeProperty;
+                    this.PropertyChanged -= this.HandleChangeProperty;
                     this.WeldingProperties.PropertyChanged -= (s, e) => this.OnChangeProperty(e.PropertyName);
                     GC.SuppressFinalize(this);
                 }

@@ -127,7 +127,7 @@ namespace ForRobot.Models.File3D
 
             if (this._currentDetal != null) // Отписка событий
             {
-                this._currentDetal.ChangePropertyEvent -= HandleCurrentDetalPropertyChange;
+                this._currentDetal.PropertyChanged -= HandleCurrentDetalPropertyChange;
             }
 
             this._currentDetal = value as Detal;
@@ -135,7 +135,7 @@ namespace ForRobot.Models.File3D
             if (this._currentDetal == null)
                 return;
 
-            this._currentDetal.ChangePropertyEvent += HandleCurrentDetalPropertyChange;
+            this._currentDetal.PropertyChanged += HandleCurrentDetalPropertyChange;
             this._currentDetal.OnChangeProperty();
         }
 

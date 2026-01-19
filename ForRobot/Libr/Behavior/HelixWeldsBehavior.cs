@@ -61,7 +61,7 @@ namespace ForRobot.Libr.Behavior
             HelixWeldsBehavior helixWeldsBehavior = (HelixWeldsBehavior)d;
 
             if (e.OldValue != null && e.OldValue is Detal oldDetal)
-                oldDetal.ChangePropertyEvent -= helixWeldsBehavior.PropertyChangeHandle;
+                oldDetal.PropertyChanged -= helixWeldsBehavior.PropertyChangeHandle;
 
             if (helixWeldsBehavior.Items != null && helixWeldsBehavior.Items is ObservableCollection<Weld> currentCollection)
                 foreach (var item in currentCollection) item.Children.Clear();
@@ -75,7 +75,7 @@ namespace ForRobot.Libr.Behavior
             }
             else
             {
-                helixWeldsBehavior.Detal.ChangePropertyEvent += helixWeldsBehavior.PropertyChangeHandle;
+                helixWeldsBehavior.Detal.PropertyChanged += helixWeldsBehavior.PropertyChangeHandle;
                 helixWeldsBehavior.UpdateWelds();
             }
         }

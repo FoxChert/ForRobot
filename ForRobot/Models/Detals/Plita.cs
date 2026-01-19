@@ -267,7 +267,7 @@ namespace ForRobot.Models.Detals
             this.RibsCollection = this.FillRibsCollection();
             //this.WeldingSchema = this.FillWeldingSchema();
 
-            this.ChangePropertyEvent += this.HandleChangeProperty;
+            this.PropertyChanged += this.HandleChangeProperty;
         }
 
         #endregion
@@ -341,7 +341,7 @@ namespace ForRobot.Models.Detals
                     break;
 
                 case nameof(this.DistanceToFirstRib):
-                    if (!this.ValidateRibsCollection())
+                    if (this.RibsCollection?.Count == 0)
                         break;
 
                     this.RibsCollection[0].DistanceLeft = this.DistanceToFirstRib;
@@ -382,11 +382,14 @@ namespace ForRobot.Models.Detals
                     if (this.RibsCollection?.Count == 0)
                         this.RibsCollection = this.FillRibsCollection();
 
+                    this.WeldingProperties.WeldingSchema = new FullyObservableCollection<WeldingSchemaItem>(ForRobot.Libr.Factories.DetalFactory.WeldingFactory.CreateSchema<Plita>(this.WeldingProperties.SelectedWeldingSchema, this.RibsCount));
+
                     //this.WeldingProperties?.BuildingWeldingSchema(this.RibsCount);
                     break;
 
                 case nameof(this.WeldingProperties.SelectedWeldingSchema):
                     //this.WeldingProperties.BuildingWeldingSchema(this.RibsCount);
+                    this.WeldingProperties.WeldingSchema = new FullyObservableCollection<WeldingSchemaItem>(ForRobot.Libr.Factories.DetalFactory.WeldingFactory.CreateSchema<Plita>(this.WeldingProperties.SelectedWeldingSchema, this.RibsCount));
                     break;
             }
         }
@@ -450,16 +453,6 @@ namespace ForRobot.Models.Detals
             return new RibCollection(ribsList);
         }
 
-        private bool ValidateRibsCollection()
-        {
-            if(this.RibsCollection == null || this.RibsCollection.Count == 0)
-            {
-                this.FillRibsCollection();
-                return false;
-            }
-            return true;
-        }
-
         //private FullyObservableCollection<WeldingSchemas.SchemaItem> FillWeldingSchema()
         //{
         //    if (string.IsNullOrEmpty(this.SelectedWeldingSchema))
@@ -515,7 +508,7 @@ namespace ForRobot.Models.Detals
             {
                 if (disposing)
                 {
-                    this.ChangePropertyEvent -= this.HandleChangeProperty;
+                    this.PropertyChanged -= this.HandleChangeProperty;
                     GC.SuppressFinalize(this);
                 }
             }
