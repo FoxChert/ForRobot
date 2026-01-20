@@ -68,7 +68,7 @@ namespace ForRobot.Libr.Factories.DetalFactory
         /// <returns>Новая деталь типа Plita</returns>
         private Plita CreatePlita()
         {
-            var plateConfig = _configProvider.GetPlitaConfig();
+            var plateConfig = _configProvider.GetPlateConfig();
 
             if (plateConfig == null)
                 throw new InvalidOperationException($"Конфигурация для детали {DetalType.Plita} не найдена");
@@ -383,7 +383,7 @@ namespace ForRobot.Libr.Factories.DetalFactory
             try
             {
                 JObject jsonObject = JObject.Parse(jsonString);
-                JSchema schema = _jsonSchemaProvider.GetPlitaSchema();
+                JSchema schema = _jsonSchemaProvider.GetPlateSchema();
                 schemaTitle = schema.Title ?? schemaTitle;
                 var validationErrors = new List<ValidationErrorInfo>();
                 

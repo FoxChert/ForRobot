@@ -6,7 +6,7 @@ namespace ForRobot.Libr.Services.Providers
 {
     public interface IConfigurationProvider
     {
-        PlateConfigurationSection GetPlitaConfig();
+        PlateConfigurationSection GetPlateConfig();
         RobotConfigurationSection GetRobotConfig();
     }
 }

@@ -39,14 +39,14 @@ namespace ForRobot
         /// </summary>
         private string FilePathOnPC { get => Directory.GetCurrentDirectory(); }
 
+        //private ForRobot.Models.Settings.Settings _settings = ForRobot.App.GetSettings();
+
         ///// <summary>
         ///// Экземпляр app из app.config
         ///// </summary>
         //private ForRobot.Libr.ConfigurationProperties.AppConfigurationSection AppConfig { get; set; } = (ConfigurationManager.GetSection("app") as ForRobot.Libr.ConfigurationProperties.AppConfigurationSection);
 
-        private static ForRobot.Models.Settings.Settings _settings;
-
-        #endregion 
+        #endregion
 
         #region Public variables
 
@@ -74,14 +74,7 @@ namespace ForRobot
         /// Настройки приложения
         /// (выгружаются из временных файлов, иначе инициализируются как класс)
         /// </summary>
-        public ForRobot.Models.Settings.Settings Settings
-        {
-            get => _settings ?? (_settings = ForRobot.Models.Settings.Settings.GetSettings());
-            set
-            {
-                _settings = value;
-            }
-        }
+        public ForRobot.Models.Settings.Settings Settings { get => GetSettings(); }
 
         /// <summary>
         /// Открытые файлы 3D моделей
@@ -425,6 +418,22 @@ namespace ForRobot
                     }
                 });
             }
+        }
+
+        /// <summary>
+        /// Установка начтроек приложения
+        /// </summary>
+        /// <returns></returns>
+        private ForRobot.Models.Settings.Settings GetSettings()
+        {
+            ForRobot.Models.Settings.Settings settings = ForRobot.Models.Settings.Settings.GetSettings();
+            var robotConfig = App.Current.ConfigProvider.GetRobotConfig();
+            var plateConfig = App.Current.ConfigProvider.GetPlateConfig();
+            settings.PlitaProgramName = plateConfig.PlateProgramName;
+            settings.PlitaScriptName = plateConfig.PlateScriptName;
+            settings.PathFolderOfGeneration = robotConfig.PathFolderGeneration;
+            settings.ControlerFolder = robotConfig.ControlFolderPath;
+            return settings;
         }
 
         #endregion Private functions

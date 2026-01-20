@@ -16,6 +16,6 @@ namespace ForRobot.Libr.Json.Schemas
             return JSchema.Parse(schema);
         }
 
-        public JSchema GetPlitaSchema() => SelectSchema<ForRobot.Models.Detals.Plita>();
+        public JSchema GetPlateSchema() => SelectSchema<ForRobot.Models.Detals.Plita>();
     }
 }

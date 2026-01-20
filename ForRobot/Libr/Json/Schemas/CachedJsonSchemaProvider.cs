@@ -33,7 +33,7 @@ namespace ForRobot.Libr.Json.Schemas
             }
         }
 
-        public JSchema GetPlitaSchema() => GetCached("plate", () => _innerProvider.GetPlitaSchema());
+        public JSchema GetPlateSchema() => GetCached("plate", () => _innerProvider.GetPlateSchema());
 
         public void ClearCache()
         {

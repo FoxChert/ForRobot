@@ -29,7 +29,7 @@ namespace ForRobot.Libr.Configuration
             }
         }
 
-        public PlateConfigurationSection GetPlitaConfig() => GetCached("plate", () => _innerProvider.GetPlitaConfig());
+        public PlateConfigurationSection GetPlateConfig() => GetCached("plate", () => _innerProvider.GetPlateConfig());
 
         public RobotConfigurationSection GetRobotConfig() => GetCached("robot", () => _innerProvider.GetRobotConfig());
 

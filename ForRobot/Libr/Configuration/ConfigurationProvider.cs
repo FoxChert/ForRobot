@@ -17,7 +17,7 @@ namespace ForRobot.Libr.Configuration
         /// Получение конфигурации узла plate
         /// </summary>
         /// <returns></returns>
-        public PlateConfigurationSection GetPlitaConfig() => this.SelectConfig(PlateConfigName) as PlateConfigurationSection ?? throw new ConfigurationErrorsException(this.GetConfigErrorMessage(PlateConfigName));
+        public PlateConfigurationSection GetPlateConfig() => this.SelectConfig(PlateConfigName) as PlateConfigurationSection ?? throw new ConfigurationErrorsException(this.GetConfigErrorMessage(PlateConfigName));
 
         /// <summary>
         /// Получение конфигурации узла robot
