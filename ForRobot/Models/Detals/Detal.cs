@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.ComponentModel;
@@ -200,7 +201,7 @@ namespace ForRobot.Models.Detals
         /// <summary>
         /// Свойства сварки детали
         /// </summary>
-        public WeldingProperties WeldingProperties { get; set; }
+        public WeldingProperties WeldingProperties { get; set; } = new WeldingProperties();
 
         #endregion
 
@@ -218,8 +219,6 @@ namespace ForRobot.Models.Detals
         public Detal()
         {
             this.PropertyChanged += this.HandleChangeProperty;
-
-            this.WeldingProperties = new WeldingProperties();
             this.WeldingProperties.PropertyChanged += (s, e) => 
             {
                 this.OnChangeProperty(e.PropertyName);
@@ -234,7 +233,7 @@ namespace ForRobot.Models.Detals
         /// Делегат изменения свойства детали
         /// </summary>
         /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="e"></param>,
         private void HandleChangeProperty(object sender, PropertyChangedEventArgs e)
         {
             if(e.PropertyName == nameof(this.ScoseType))
@@ -246,7 +245,6 @@ namespace ForRobot.Models.Detals
                     (this.PlateBevelToLeft, this.PlateBevelToRight) = (0, 0);
                 }
                 else
-                //else if(this.PlateBevelToLeft == 0 || this.PlateBevelToRight == 0)
                 {
                     this.PlateWidth = this._plateWidthSave;
                     (this.PlateBevelToLeft, this.PlateBevelToRight) = (this._plateBevelToLeftSave, this._plateBevelToRightSave);
@@ -276,6 +274,13 @@ namespace ForRobot.Models.Detals
         /// </summary>
         /// <param name="propertyName">Наименование свойства</param>
         public virtual void OnChangeProperty([CallerMemberName] string propertyName = null) => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        //[OnDeserializing]
+        //internal void OnDeserializing(StreamingContext context)
+        //{
+        //    if(this.WeldingProperties != null)
+        //        this.WeldingProperties.PropertyChanged += (s, e) => this.OnChangeProperty(e.PropertyName);
+        //}
 
         #endregion
 

@@ -185,6 +185,8 @@ namespace ForRobot.ViewModels
             {
                 RaisePropertyChanged(nameof(nativeFile.CurrentDetal));
             }
+            //RaisePropertyChanged(nameof(this.SelectedFile));
+            //RaisePropertyChanged(nameof(this.ActiveContent));
         }
 
         /// <summary>

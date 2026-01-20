@@ -1052,6 +1052,7 @@
                                             <SolidColorBrush x:Key="TreeViewItem.TreeArrow.Static.Stroke" Color="#FF818181"/>
 
                                             <Style TargetType="{x:Type TreeViewItem}">
+                                                <Setter Property="HorizontalAlignment" Value="Stretch"/>
                                                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                                                 <Setter Property="Focusable" Value="False"/>
                                                 <Setter Property="Margin" Value="5"/>
@@ -1156,15 +1157,15 @@
                                         </TreeView.Resources>
 
                                         <TreeViewItem Header="Общие">
-                                            <ContentControl ContentTemplate="{StaticResource PlitaTemplate3Style}"/>
+                                            <ContentControl ContentTemplate="{StaticResource PlitaTemplateStyle}"/>
                                         </TreeViewItem>
 
                                         <TreeViewItem Header="Доп.">
-                                            <ContentControl ContentTemplate="{StaticResource PlitaDopTemplate3Style}"/>
+                                            <ContentControl ContentTemplate="{StaticResource PlitaDopTemplateStyle}"/>
                                         </TreeViewItem>
 
                                         <TreeViewItem Header="Сварка" HorizontalContentAlignment="Stretch">
-                                            <ContentControl ContentTemplate="{StaticResource PlitaSvarkaTemplate3Style}"/>
+                                            <ContentControl ContentTemplate="{StaticResource PlitaSvarkaTemplateStyle}"/>
                                         </TreeViewItem>
 
                                         <i:Interaction.Behaviors>

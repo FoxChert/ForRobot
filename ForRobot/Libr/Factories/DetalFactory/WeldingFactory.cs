@@ -43,33 +43,50 @@ namespace ForRobot.Libr.Factories.DetalFactory
         /// <returns></returns>
         private static IEnumerable<WeldingSchemaItem> BuildLeftEvenOddRightEvenOdd(int weldsCount, IEnumerable<WeldingSchemaItem> weldingSchema)
         {
-            for (int i = 1; i <= weldsCount;)
+            int i = 1;
+            var schemaList = weldingSchema.ToList<WeldingSchemaItem>();
+            for (int index = 0; index < schemaList.Count; index++)
             {
-                foreach (var weld in weldingSchema.Where(item => (Array.IndexOf(weldingSchema.ToArray(), item) + 1) % 2 == 0))
+                if ((index + 1) % 2 == 0)
                 {
-                    weld.LeftSide = i.ToString();
-                    i++;
-                }
-
-                foreach (var weld in weldingSchema.Where(item => (Array.IndexOf(weldingSchema.ToArray(), item) + 1) % 2 != 0))
-                {
-                    weld.LeftSide = i.ToString();
-                    i++;
-                }
-
-                foreach (var weld in weldingSchema.Where(item => (Array.IndexOf(weldingSchema.ToArray(), item) + 1) % 2 == 0))
-                {
-                    weld.RightSide = i.ToString();
-                    i++;
-                }
-
-                foreach (var weld in weldingSchema.Where(item => (Array.IndexOf(weldingSchema.ToArray(), item) + 1) % 2 != 0))
-                {
-                    weld.RightSide = i.ToString();
+                    schemaList[index].LeftSide = i.ToString();
                     i++;
                 }
             }
-            return weldingSchema;
+            for (int index = 0; index < schemaList.Count; index++)
+            {
+                if ((index + 1) % 2 != 0)
+                {
+                    schemaList[index].LeftSide = i.ToString();
+                    i++;
+                }
+            }
+            for (int index = 0; index < schemaList.Count; index++)
+            {
+                if ((index + 1) % 2 == 0)
+                {
+                    schemaList[index].RightSide = i.ToString();
+                    i++;
+                }
+            }
+            for (int index = 0; index < schemaList.Count; index++)
+            {
+                if ((index + 1) % 2 != 0)
+                {
+                    schemaList[index].RightSide = i.ToString();
+                    i++;
+                }
+            }
+
+            return schemaList;
+        }
+
+        private static IEnumerable<WeldingSchemaItem> CreateEnumerableWithCount(int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                yield return new WeldingSchemaItem();
+            }
         }
 
         /// <summary>
@@ -81,10 +98,10 @@ namespace ForRobot.Libr.Factories.DetalFactory
             switch (typeSchema)
             {
                 case WeldingSchemaTypes.LeftEvenOdd_RightEvenOdd:
-                    return BuildLeftEvenOddRightEvenOdd(ribsCount * 2, new List<WeldingSchemaItem>(ribsCount));
+                    return BuildLeftEvenOddRightEvenOdd(ribsCount * 2, CreateEnumerableWithCount(ribsCount));
 
                 default:
-                    return new List<WeldingSchemaItem>(ribsCount);
+                    return CreateEnumerableWithCount(ribsCount);
             }
         }
 

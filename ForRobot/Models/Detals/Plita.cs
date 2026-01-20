@@ -33,7 +33,6 @@ namespace ForRobot.Models.Detals
         private decimal _ribsIdentToRight;
         private decimal _weldsDissolutionLeft;
         private decimal _weldsDissolutionRight;
-        //private FullyObservableCollection<Rib> _ribsCollection;
         private RibCollection _ribsCollection;
 
         #endregion
@@ -265,8 +264,6 @@ namespace ForRobot.Models.Detals
         public Plita() : base()
         {
             this.RibsCollection = this.FillRibsCollection();
-            //this.WeldingSchema = this.FillWeldingSchema();
-
             this.PropertyChanged += this.HandleChangeProperty;
         }
 
@@ -424,7 +421,6 @@ namespace ForRobot.Models.Detals
         {
             Rib rib;
             List<Rib> ribsList = new List<Rib>();
-
             for (int i = 0; i < this.RibsCount; i++)
             {
                 rib = new Rib()
@@ -453,43 +449,9 @@ namespace ForRobot.Models.Detals
             return new RibCollection(ribsList);
         }
 
-        //private FullyObservableCollection<WeldingSchemas.SchemaItem> FillWeldingSchema()
-        //{
-        //    if (string.IsNullOrEmpty(this.SelectedWeldingSchema))
-        //        return null;
-
-        //    FullyObservableCollection<WeldingSchemas.SchemaItem> schema = ForRobot.Models.Detals.WeldingSchemas.BuildingSchema(ForRobot.Models.Detals.WeldingSchemas.GetSchemaType(this.SelectedWeldingSchema), base.RibsCount);
-        //    schema.ItemPropertyChanged += (s, e) =>
-        //    {
-        //        if (this.SelectedWeldingSchema != WeldingSchemas.GetDescription(WeldingSchemas.SchemasTypes.Edit))
-        //            this.SelectedWeldingSchema = ForRobot.Models.Detals.WeldingSchemas.GetDescription(WeldingSchemas.SchemasTypes.Edit);
-
-        //        this.OnChangeProperty(nameof(this.WeldingSchema));
-        //    };
-        //    return schema;
-        //}
-
-        //private void ChangeWeldingSchema()
-        //{
-        //    if (this.WeldingSchema == null || this.WeldingSchema?.Count == 0)
-        //        return;
-
-        //    if (this.RibsCount > this.WeldingSchema.Count)
-        //        for (int i = this.WeldingSchema.Count; i < this.RibsCount; i++)
-        //            this.WeldingSchema.Add(new WeldingSchemas.SchemaItem());
-        //    else
-        //    {
-        //        for (int i = this.WeldingSchema.Count - 1; i >= this.RibsCount; i--)
-        //            this.WeldingSchema.RemoveAt(i);
-        //    }
-
-        //    this.SelectedWeldingSchema = this.SelectedWeldingSchema;
-        //}
-
         #endregion Private functions
 
         #region Public functions
-
 
 
         #endregion Public functions

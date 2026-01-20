@@ -280,17 +280,6 @@ namespace ForRobot
             new Thread(() => process.Start()).Start();
         }
 
-        ///// <summary>
-        ///// Обновление скрипта-генератора
-        ///// </summary>
-        //private void UpDateScript()
-        //{
-        //    foreach (var file in Directory.GetFiles(Path.Combine(App.Current.UpdatePath, "Scripts")))
-        //    {
-        //        File.Copy(file, Path.Combine(this.FilePathOnPC, $"Scripts\\{new FileInfo(file).Name}"), true);
-        //    }
-        //}
-
         /// <summary>
         /// Передача аргументов уже существующему экземпляру приложения
         /// </summary>

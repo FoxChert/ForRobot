@@ -34,7 +34,7 @@ namespace ForRobot.Themes
         }
 
         /// <summary>
-        /// Метод выделения содержимого TextBox
+        /// Метод выделения содержимого <see cref="TextBox"/>
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -47,6 +47,26 @@ namespace ForRobot.Themes
                 e.Handled = true;
                 textBox.Focus();
             }
-        } 
+        }
+
+        /// <summary>
+        /// Метод изменения размера <see cref="DataGrid"/>
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DataGrid_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (sender is DataGrid dataGrid)
+            {
+                dataGrid.UpdateLayout();
+                foreach (var column in dataGrid.Columns)
+                {
+                    if (column.Width.IsStar)
+                    {
+                        column.Width = new DataGridLength(1, DataGridLengthUnitType.Star);
+                    }
+                }
+            }
+        }
     }
 }
