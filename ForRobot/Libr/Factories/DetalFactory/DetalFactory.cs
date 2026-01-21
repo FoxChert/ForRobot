@@ -102,7 +102,8 @@ namespace ForRobot.Libr.Factories.DetalFactory
                     ProgramNom = plateConfig.ProgramNom,
                     WeldingSpead = plateConfig.WeldingSpead,
                     DistanceForWelding = plateConfig.DistanceForWelding,
-                    DistanceForSearch = plateConfig.DistanceForSearch
+                    DistanceForSearch = plateConfig.DistanceForSearch,
+                    SelectedWeldingSchema = WeldingSchemaTypes.LeftEvenOdd_RightEvenOdd
                 }
             };
         }

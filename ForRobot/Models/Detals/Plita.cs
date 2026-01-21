@@ -253,6 +253,7 @@ namespace ForRobot.Models.Detals
                     this._ribsCollection.RibPropertyChanged -= this.HandleChangeProperty_RibsCollection;
 
                 this._ribsCollection = value;
+
                 this._ribsCollection.RibPropertyChanged += this.HandleChangeProperty_RibsCollection;
             }
         }
@@ -264,6 +265,7 @@ namespace ForRobot.Models.Detals
         public Plita() : base()
         {
             this.RibsCollection = this.FillRibsCollection();
+            //this.WeldingProperties.WeldingSchema = ForRobot.Libr.Factories.DetalFactory.WeldingFactory.CreateSchema<Plita>(this.WeldingProperties.SelectedWeldingSchema, this.RibsCount);
             this.PropertyChanged += this.HandleChangeProperty;
         }
 
@@ -379,14 +381,18 @@ namespace ForRobot.Models.Detals
                     if (this.RibsCollection?.Count == 0)
                         this.RibsCollection = this.FillRibsCollection();
 
-                    this.WeldingProperties.WeldingSchema = new FullyObservableCollection<WeldingSchemaItem>(ForRobot.Libr.Factories.DetalFactory.WeldingFactory.CreateSchema<Plita>(this.WeldingProperties.SelectedWeldingSchema, this.RibsCount));
+                    this.WeldingProperties.WeldingSchema = this.FillWeldingSchema();
 
                     //this.WeldingProperties?.BuildingWeldingSchema(this.RibsCount);
                     break;
 
                 case nameof(this.WeldingProperties.SelectedWeldingSchema):
                     //this.WeldingProperties.BuildingWeldingSchema(this.RibsCount);
-                    this.WeldingProperties.WeldingSchema = new FullyObservableCollection<WeldingSchemaItem>(ForRobot.Libr.Factories.DetalFactory.WeldingFactory.CreateSchema<Plita>(this.WeldingProperties.SelectedWeldingSchema, this.RibsCount));
+
+                    if (this.WeldingProperties.SelectedWeldingSchema == WeldingSchemaTypes.Edit)
+                        break;
+
+                    this.WeldingProperties.WeldingSchema = this.FillWeldingSchema();
                     break;
             }
         }
@@ -447,6 +453,12 @@ namespace ForRobot.Models.Detals
                 ribsList.Add(rib);
             }
             return new RibCollection(ribsList);
+        }
+
+        private FullyObservableCollection<WeldingSchemaItem> FillWeldingSchema()
+        {
+            var schema = ForRobot.Libr.Factories.DetalFactory.WeldingFactory.CreateSchema<Plita>(this.WeldingProperties.SelectedWeldingSchema, this.RibsCount);
+            return new FullyObservableCollection<WeldingSchemaItem>(schema);
         }
 
         #endregion Private functions

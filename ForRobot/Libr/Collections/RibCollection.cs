@@ -102,7 +102,7 @@ namespace ForRobot.Libr.Collections
             base.SetItem(index, item);
         }
 
-        #endregion
+        #endregion Private functions
 
         #region Public functions
 

@@ -10,7 +10,7 @@ namespace ForRobot.Models.Detals
     /// <summary>
     /// Модель ребра настила
     /// </summary>
-    public class Rib : ICloneable
+    public class Rib : INotifyPropertyChanged, ICloneable
     {
         private decimal _height;
         private decimal _thickness;
@@ -18,8 +18,6 @@ namespace ForRobot.Models.Detals
         private decimal _distanceRight;
         private decimal _identToLeft;
         private decimal _identToRight;
-        private decimal _dissolutionLeft;
-        private decimal _dissolutionRight;
         //private decimal _hightLeft;
         //private decimal _hightRight;
 
@@ -107,34 +105,6 @@ namespace ForRobot.Models.Detals
             }
         }
 
-        [JsonProperty("weld_offset_left")]
-        /// <summary>
-        /// Отступ шва от левого края ребра
-        /// </summary>
-        public decimal DissolutionLeft
-        {
-            get => this._dissolutionLeft;
-            set
-            {
-                this._dissolutionLeft = value;
-                this.OnChangeProperty();
-            }
-        }
-
-        [JsonProperty("weld_offset_right")]
-        /// <summary>
-        /// Отступ шва от правого края ребра
-        /// </summary>
-        public decimal DissolutionRight
-        {
-            get => this._dissolutionRight;
-            set
-            {
-                this._dissolutionRight = value;
-                this.OnChangeProperty();
-            }
-        }
-
         //[JsonProperty("h1")]
         ///// <summary>
         ///// высота ребра (общая или слева)
@@ -158,7 +128,7 @@ namespace ForRobot.Models.Detals
         /// <summary>
         /// Событие изменения параметра детали
         /// </summary>
-        public event PropertyChangedEventHandler ChangePropertyEvent;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public Rib() { }
 
@@ -166,7 +136,7 @@ namespace ForRobot.Models.Detals
         /// Вызов события изменения свойства
         /// </summary>
         /// <param name="propertyName">Наименование свойства</param>
-        public virtual void OnChangeProperty([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null) => this.ChangePropertyEvent?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        private void OnChangeProperty([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null) => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         public object Clone() => (Rib)this.MemberwiseClone();
     }

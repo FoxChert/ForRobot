@@ -9,39 +9,14 @@ using ForRobot.Models.Welding;
 
 namespace ForRobot.Libr.Factories.DetalFactory
 {
-    /// <summary>
-    /// Фабрика для создания схемы сварки деталей
-    /// </summary>
-    public static class WeldingFactory
+    public static class WeldingSchemaExtention
     {
-        #region Private functions
-
-        /// <summary>
-        /// Определение DetalType на основе generic типа
-        /// </summary>
-        /// <typeparam name="T">Тип детали</typeparam>
-        /// <returns>Соответствующий DetalType</returns>
-        /// <exception cref="NotSupportedException">Если тип не поддерживается</exception>
-        private static DetalType GetDetalTypeFromGenericType<T>() where T : Detal
-        {
-            Type targetType = typeof(T);
-
-            switch (targetType)
-            {
-                case Type plate when plate == typeof(Plita):
-                    return DetalType.Plita;
-
-                default:
-                    throw new NotSupportedException($"Тип {targetType.Name} не поддерживается фабрикой");
-            }
-        }
-
         /// <summary>
         /// Заполнение схемы: сначала слева четные - нечетные, справа четные - нечетные
         /// </summary>
-        /// <param name="iSumRib">Кол-во рёбер</param>
+        /// <param name="weldingSchema"></param>
         /// <returns></returns>
-        private static IEnumerable<WeldingSchemaItem> BuildLeftEvenOddRightEvenOdd(int weldsCount, IEnumerable<WeldingSchemaItem> weldingSchema)
+        public static IEnumerable<WeldingSchemaItem> BuildWeldingSchema_LeftEvenOddRightEvenOdd(this IEnumerable<WeldingSchemaItem> weldingSchema)
         {
             int i = 1;
             var schemaList = weldingSchema.ToList<WeldingSchemaItem>();
@@ -77,10 +52,42 @@ namespace ForRobot.Libr.Factories.DetalFactory
                     i++;
                 }
             }
-
             return schemaList;
         }
+    }
 
+    /// <summary>
+    /// Фабрика для создания схемы сварки деталей
+    /// </summary>
+    public static class WeldingFactory
+    {
+        #region Private functions
+
+        /// <summary>
+        /// Определение DetalType на основе generic типа
+        /// </summary>
+        /// <typeparam name="T">Тип детали</typeparam>
+        /// <returns>Соответствующий DetalType</returns>
+        /// <exception cref="NotSupportedException">Если тип не поддерживается</exception>
+        private static DetalType GetDetalTypeFromGenericType<T>() where T : Detal
+        {
+            Type targetType = typeof(T);
+
+            switch (targetType)
+            {
+                case Type plate when plate == typeof(Plita):
+                    return DetalType.Plita;
+
+                default:
+                    throw new NotSupportedException($"Тип {targetType.Name} не поддерживается фабрикой");
+            }
+        }
+
+        /// <summary>
+        /// Создание заполненной коллекции <see cref="WeldingSchemaItem"/>
+        /// </summary>
+        /// <param name="count">Кол-во элементов коллекции</param>
+        /// <returns></returns>
         private static IEnumerable<WeldingSchemaItem> CreateEnumerableWithCount(int count)
         {
             for (int i = 0; i < count; i++)

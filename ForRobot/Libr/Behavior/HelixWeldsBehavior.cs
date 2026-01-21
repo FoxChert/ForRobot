@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Media3D;
+using System.Collections;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-
+using HelixToolkit.Wpf;
 using GalaSoft.MvvmLight.Messaging;
 
 using ForRobot.Models.Welding;
@@ -11,18 +14,205 @@ using ForRobot.Models.Detals;
 
 namespace ForRobot.Libr.Behavior
 {
-    public class HelixWeldsBehavior : HelixAddCollectionBehavior<Weld>
+    public class WeldVisual : ScreenSpaceVisual3D
     {
-        public Detal Detal
+        #region Private variables
+
+        private readonly LinesVisual3D _line1;
+        private readonly LinesVisual3D _line2;
+        private Point3D _startPoint;
+        private Point3D _endPoint;
+        private Point3D _centerPoint;
+        private Color _color;
+        private Color _leftLineColor;
+        private Color _rightLineColor;
+        private double _thickness = 2.0;
+        private bool _isDivided = false;
+        
+        #endregion Private variables
+
+        #region Public variables
+
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Общий цвет шва
+        /// </summary>
+        public new Color Color
         {
-            get => (Detal)GetValue(DetalProperty);
-            set => SetValue(DetalProperty, value);
+            get => this._color;
+            set
+            {
+                this._color = value;
+                this.UpdateColor();
+            }
+        }
+        /// <summary>
+        /// Цвет левой полавины шва
+        /// </summary>
+        public Color LeftLineColor
+        {
+            get => this._leftLineColor;
+            set
+            {
+                this._leftLineColor = value;
+                this.UpdateColor();
+            }
+        }
+        /// <summary>
+        /// Цвет правой полавины шва
+        /// </summary>
+        public Color RightLineColor
+        {
+            get => this._rightLineColor;
+            set
+            {
+                this._rightLineColor = value;
+                this.UpdateColor();
+            }
+        }
+        
+        /// <summary>
+        /// Точка начала шва
+        /// </summary>
+        public Point3D StartPoint
+        {
+            get => this._startPoint;
+            set
+            {
+                this._startPoint = value;
+                this.UpdateCenterPoint();
+                this.UpdateGeometry();
+            }
         }
 
-        public static readonly DependencyProperty DetalProperty = DependencyProperty.Register(nameof(Detal),
-                                                                                              typeof(Detal),
-                                                                                              typeof(HelixWeldsBehavior),
-                                                                                              new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnDetalChanged));
+        /// <summary>
+        /// Точка конца шва
+        /// </summary>
+        public Point3D EndPoint
+        {
+            get => this._endPoint;
+            set
+            {
+                this._endPoint = value;
+                this.UpdateCenterPoint();
+                this.UpdateGeometry();
+            }
+        }
+
+        /// <summary>
+        /// Центральная точка, где сходятся два сегмента
+        /// </summary>
+        public Point3D CenterPoint
+        {
+            get => this._centerPoint;
+            set
+            {
+                this._centerPoint = value;
+                this.UpdateGeometry();
+            }
+        }
+
+        /// <summary>
+        /// Толщина линии шва
+        /// </summary>
+        public double Thickness
+        {
+            get => this._thickness;
+            set
+            {
+                this._thickness = value;
+                if (this._line1 != null) this._line1.Thickness = this._thickness;
+                if (this._line2 != null) this._line2.Thickness = this._thickness;
+            }
+        }
+
+        /// <summary>
+        /// Разделён ли шов по цвету попалам
+        /// </summary>
+        public bool IsDivided
+        {
+            get => this._isDivided;
+            set
+            {
+                this._isDivided = value;
+                this.UpdateColor();
+            }
+        }
+
+        #endregion Public variables
+
+        public WeldVisual()
+        {
+            this._line1 = new LinesVisual3D()
+            {
+                Thickness = this.Thickness
+            };
+
+            this._line2 = new LinesVisual3D()
+            {
+                Thickness = this.Thickness
+            };
+
+            Children.Add(this._line1);
+            Children.Add(this._line2);
+        }
+
+        public WeldVisual(Color color, Color? leftLineColor, Color? rightLineColor) : this()
+        {
+            this.Color = color;
+            this.LeftLineColor = leftLineColor ?? this.Color;
+            this.RightLineColor = rightLineColor ?? this.Color;
+        }
+
+        protected override bool UpdateTransforms() => true;
+
+        protected override void UpdateGeometry()
+        {
+            if (this._line1 == null || this._line2 == null) return;
+
+            this._line1.Points = new Point3DCollection { this.StartPoint, this.CenterPoint };
+
+            this._line2.Points = new Point3DCollection { this.CenterPoint, this.EndPoint };
+        }
+
+        /// <summary>
+        /// Обновление цвета двух сегментов шва
+        /// </summary>
+        private void UpdateColor()
+        {
+            if (this.IsDivided)
+            {
+                this._line1.Color = this.LeftLineColor;
+                this._line2.Color = this.RightLineColor;
+            }
+            else
+            {
+                this._line1.Color = this.Color;
+                this._line2.Color = this.Color;
+            }
+        }
+    }
+
+    public class HelixWeldsBehavior : HelixAddCollectionBehavior<WeldVisual>
+    {
+        //public Detal Detal
+        //{
+        //    get => (Detal)GetValue(DetalProperty);
+        //    set => SetValue(DetalProperty, value);
+        //}
+
+        //public static readonly DependencyProperty DetalProperty = DependencyProperty.Register(nameof(Detal),
+        //                                                                                      typeof(Detal),
+        //                                                                                      typeof(HelixWeldsBehavior),
+        //                                                                                      new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnDetalChanged));
+
+        public IEnumerable ItemsSource { get; set; }
+
+        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(nameof(ItemsSource),
+                                                                                                    typeof(IEnumerable),
+                                                                                                    typeof(HelixWeldsBehavior),
+                                                                                                    new PropertyMetadata(null, OnThicknessChanged));
 
         public virtual double Thickness
         {
@@ -48,37 +238,42 @@ namespace ForRobot.Libr.Behavior
 
         public HelixWeldsBehavior()
         {
-            Messenger.Default.Register<ForRobot.Libr.Messages.UpdateCurrentDetalMessage>(this, message =>
-            {
-                this.Detal = message.Detal;
-            });
+            //Messenger.Default.Register<ForRobot.Libr.Messages.UpdateCurrentDetalMessage>(this, message =>
+            //{
+            //    this.Detal = message.Detal;
+            //});
         }
 
         #region Static functions
 
-        private static void OnDetalChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            HelixWeldsBehavior helixWeldsBehavior = (HelixWeldsBehavior)d;
 
-            if (e.OldValue != null && e.OldValue is Detal oldDetal)
-                oldDetal.PropertyChanged -= helixWeldsBehavior.PropertyChangeHandle;
-
-            if (helixWeldsBehavior.Items != null && helixWeldsBehavior.Items is ObservableCollection<Weld> currentCollection)
-                foreach (var item in currentCollection) item.Children.Clear();
-
-            helixWeldsBehavior.Detal = (Detal)e.NewValue;
-
-            if (helixWeldsBehavior.Detal == null)
-            {
-                if (helixWeldsBehavior.Items is ObservableCollection<Weld> weldsCollection)
-                    weldsCollection.Clear();
-            }
-            else
-            {
-                helixWeldsBehavior.Detal.PropertyChanged += helixWeldsBehavior.PropertyChangeHandle;
-                helixWeldsBehavior.UpdateWelds();
-            }
         }
+
+        //private static void OnDetalChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        //{
+        //    HelixWeldsBehavior helixWeldsBehavior = (HelixWeldsBehavior)d;
+
+        //    if (e.OldValue != null && e.OldValue is Detal oldDetal)
+        //        oldDetal.PropertyChanged -= helixWeldsBehavior.PropertyChangeHandle;
+
+        //    if (helixWeldsBehavior.Items != null && helixWeldsBehavior.Items is ObservableCollection<Weld> currentCollection)
+        //        foreach (var item in currentCollection) item.Children.Clear();
+
+        //    helixWeldsBehavior.Detal = (Detal)e.NewValue;
+
+        //    if (helixWeldsBehavior.Detal == null)
+        //    {
+        //        if (helixWeldsBehavior.Items is ObservableCollection<Weld> weldsCollection)
+        //            weldsCollection.Clear();
+        //    }
+        //    else
+        //    {
+        //        helixWeldsBehavior.Detal.PropertyChanged += helixWeldsBehavior.PropertyChangeHandle;
+        //        helixWeldsBehavior.UpdateWelds();
+        //    }
+        //}
 
         private static void OnThicknessChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -153,9 +348,9 @@ namespace ForRobot.Libr.Behavior
             weld.IsDivided = this.IsDivided;
         }
 
-        ~HelixWeldsBehavior()
-        {
-            Messenger.Default.Unregister<ForRobot.Libr.Messages.UpdateCurrentDetalMessage>(this);
-        }
+        //~HelixWeldsBehavior()
+        //{
+        //    Messenger.Default.Unregister<ForRobot.Libr.Messages.UpdateCurrentDetalMessage>(this);
+        //}
     }
 }

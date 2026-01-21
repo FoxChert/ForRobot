@@ -22,7 +22,7 @@ namespace ForRobot.Models.Welding
         private int _weldingSpead;
         private decimal _distanceForSearch;
         private decimal _distanceForWelding;
-        private WeldingSchemaTypes _selectedWeldingSchema = WeldingSchemaTypes.Edit;
+        private WeldingSchemaTypes _selectedWeldingSchema;
         private FullyObservableCollection<WeldingSchemaItem> _weldingSchema;
 
         #endregion Private variables
@@ -187,19 +187,13 @@ namespace ForRobot.Models.Welding
             get => this._weldingSchema;
             set
             {
-                //if (this._weldingSchema != null)
-                //    this._weldingSchema.ItemPropertyChanged -= HandlerPropertyChanged_WeldingSchemaItem;
-
                 if (this._weldingSchema != null)
-                    this._weldingSchema.ItemPropertyChanged -= (s, e) => this.OnChangeProperty(e.PropertyName);
+                    this._weldingSchema.ItemPropertyChanged -= HandlerPropertyChanged_WeldingSchemaItem;
 
                 this._weldingSchema = value;
-
-                //if (this._weldingSchema != null)
-                //    this._weldingSchema.ItemPropertyChanged += HandlerPropertyChanged_WeldingSchemaItem;
-
+                
                 if (this._weldingSchema != null)
-                    this._weldingSchema.ItemPropertyChanged += (s, e) => this.OnChangeProperty(e.PropertyName);
+                    this._weldingSchema.ItemPropertyChanged += this.HandlerPropertyChanged_WeldingSchemaItem;
 
                 this.OnChangeProperty(nameof(this.WeldingSchema));
             }
@@ -218,8 +212,8 @@ namespace ForRobot.Models.Welding
 
         public WeldingProperties()
         {
-            //this.BuildingWeldingSchema();
-            //this.PropertyChanged += HandlerPropertyChanged;
+            //this.SelectedWeldingSchema = WeldingSchemaTypes.Edit;
+            //this.WeldingSchema = new FullyObservableCollection<WeldingSchemaItem>();
         }
 
         //private void HandlerPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -235,10 +229,11 @@ namespace ForRobot.Models.Welding
         //    }
         //}
 
-        //private void HandlerPropertyChanged_WeldingSchemaItem(object sender, ItemPropertyChangedEventArgs e)
-        //{
-        //    this.SelectedWeldingSchema = WeldingSchemaTypes.Edit;
-        //}
+        private void HandlerPropertyChanged_WeldingSchemaItem(object sender, ItemPropertyChangedEventArgs e)
+        {
+            this.SelectedWeldingSchema = WeldingSchemaTypes.Edit;
+            this.OnChangeProperty(e.PropertyName);
+        }
 
         /// <summary>
         /// Вызов события изменения свойства

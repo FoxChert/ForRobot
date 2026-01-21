@@ -13,6 +13,18 @@ namespace ForRobot.Libr.Services
         ObservableCollection<Weld> GetWelds(Detal detal);
     }
 
+    public static class Point3DExtention
+    {
+        public static Point3D ScaleBy(this Point3D point3D, double factor)
+        {
+            point3D.X *= factor;
+            point3D.Y *= factor;
+            point3D.Z *= factor;
+
+            return point3D;
+        }
+    }
+
     /// <summary>
     /// Класс сервис добавления швов под тип детали
     /// </summary>
@@ -33,7 +45,7 @@ namespace ForRobot.Libr.Services
         {
             //if (plate.RibsCollection == null || plate.RibsCollection.Count == 0)
             //    return null;
-
+            
             // Преобразование реальных размеров в модельные.
             double modelPlateWidth = (double)plate.PlateWidth * (double)ScaleFactor;
             double modelPlateHeight = (double)plate.PlateThickness * (double)ScaleFactor;

@@ -198,10 +198,25 @@ namespace ForRobot.Models.Detals
             }
         }
 
+        private WeldingProperties _weldingProperties = new WeldingProperties();
+
         /// <summary>
         /// Свойства сварки детали
         /// </summary>
-        public WeldingProperties WeldingProperties { get; set; } = new WeldingProperties();
+        public WeldingProperties WeldingProperties
+        {
+            get => this._weldingProperties;
+            set
+            {
+                if (this._weldingProperties != null)
+                    this._weldingProperties.PropertyChanged -= this.HandleChangeProperty_WeldingProperties;
+
+                this._weldingProperties = value;
+
+                if (this._weldingProperties != null)
+                    this._weldingProperties.PropertyChanged += this.HandleChangeProperty_WeldingProperties;
+            }
+        }
 
         #endregion
 
@@ -219,10 +234,7 @@ namespace ForRobot.Models.Detals
         public Detal()
         {
             this.PropertyChanged += this.HandleChangeProperty;
-            this.WeldingProperties.PropertyChanged += (s, e) => 
-            {
-                this.OnChangeProperty(e.PropertyName);
-            };
+            this.WeldingProperties.PropertyChanged += this.HandleChangeProperty_WeldingProperties;
         }
 
         #endregion
@@ -251,6 +263,8 @@ namespace ForRobot.Models.Detals
                 }
             }
         }
+
+        private void HandleChangeProperty_WeldingProperties(object sender, PropertyChangedEventArgs e) => this.OnChangeProperty(e.PropertyName);
 
         #endregion
 
@@ -299,7 +313,7 @@ namespace ForRobot.Models.Detals
                 if (disposing)
                 {
                     this.PropertyChanged -= this.HandleChangeProperty;
-                    this.WeldingProperties.PropertyChanged -= (s, e) => this.OnChangeProperty(e.PropertyName);
+                    this.WeldingProperties.PropertyChanged -= this.HandleChangeProperty_WeldingProperties;
                     GC.SuppressFinalize(this);
                 }
             }
