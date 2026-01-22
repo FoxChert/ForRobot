@@ -16,10 +16,10 @@ namespace ForRobot.Libr.Factories.DetalFactory
         /// </summary>
         /// <param name="weldingSchema"></param>
         /// <returns></returns>
-        public static IEnumerable<WeldingSchemaItem> BuildWeldingSchema_LeftEvenOddRightEvenOdd(this IEnumerable<WeldingSchemaItem> weldingSchema)
+        public static WeldingSchema BuildWeldingSchema_LeftEvenOddRightEvenOdd(this WeldingSchema weldingSchema)
         {
             int i = 1;
-            var schemaList = weldingSchema.ToList<WeldingSchemaItem>();
+            var schemaList = weldingSchema.ToList();
             for (int index = 0; index < schemaList.Count; index++)
             {
                 if ((index + 1) % 2 == 0)
@@ -52,7 +52,7 @@ namespace ForRobot.Libr.Factories.DetalFactory
                     i++;
                 }
             }
-            return schemaList;
+            return new WeldingSchema(schemaList);
         }
     }
 
@@ -105,7 +105,7 @@ namespace ForRobot.Libr.Factories.DetalFactory
             switch (typeSchema)
             {
                 case WeldingSchemaTypes.LeftEvenOdd_RightEvenOdd:
-                    return BuildLeftEvenOddRightEvenOdd(ribsCount * 2, CreateEnumerableWithCount(ribsCount));
+                    return (CreateEnumerableWithCount(ribsCount * 2) as WeldingSchema).BuildWeldingSchema_LeftEvenOddRightEvenOdd();
 
                 default:
                     return CreateEnumerableWithCount(ribsCount);

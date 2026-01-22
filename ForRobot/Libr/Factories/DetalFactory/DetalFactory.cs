@@ -18,8 +18,8 @@ namespace ForRobot.Libr.Factories.DetalFactory
     /// </summary>
     public class DetalFactory : IDetalFactory, IDisposable
     {
-        private readonly IConfigurationProvider _configProvider;
         private readonly IJsonSchemaProvider _jsonSchemaProvider;
+        private readonly IDetalProvider _detalProvider;
 
         private JsonSerializationException _serializationError;
 
@@ -34,9 +34,9 @@ namespace ForRobot.Libr.Factories.DetalFactory
         /// <param name="configProvider">Провайдер вывода свойств узлов конфигурации</param>
         /// <param name="jsonSchemaProvider">Провайдер вывода JSON схем</param>
         /// <exception cref="ArgumentNullException">Если любой из параметров равен null</exception>
-        public DetalFactory(IConfigurationProvider configProvider, IJsonSchemaProvider jsonSchemaProvider)
+        public DetalFactory(IDetalProvider detalProvider, IJsonSchemaProvider jsonSchemaProvider)
         {
-            this._configProvider = configProvider ?? throw new ArgumentNullException(nameof(configProvider));
+            this._detalProvider = detalProvider ?? throw new ArgumentNullException(nameof(detalProvider));
             this._jsonSchemaProvider = jsonSchemaProvider ?? throw new ArgumentNullException(nameof(jsonSchemaProvider));
         }
 
@@ -60,52 +60,6 @@ namespace ForRobot.Libr.Factories.DetalFactory
                 default:
                     throw new NotSupportedException($"Тип {targetType.Name} не поддерживается фабрикой");
             }
-        }
-
-        /// <summary>
-        /// Создает деталь типа <see cref="DetalType.Plita"/> с параметрами из конфигурации
-        /// </summary>
-        /// <returns>Новая деталь типа Plita</returns>
-        private Plita CreatePlita()
-        {
-            var plateConfig = _configProvider.GetPlateConfig();
-
-            if (plateConfig == null)
-                throw new InvalidOperationException($"Конфигурация для детали {DetalType.Plita} не найдена");
-
-            return new Plita()
-            {
-                ReverseDeflection = plateConfig.ReverseDeflection,
-                PlateWidth = plateConfig.PlateWidth,
-                PlateLength = plateConfig.PlateLength,
-                PlateThickness = plateConfig.PlateThickness,
-                PlateBevelToLeft = plateConfig.PlateBevelToLeft,
-                PlateBevelToRight = plateConfig.PlateBevelToRight,
-
-                RibsHeight = plateConfig.RibsHeight,
-                RibsThickness = plateConfig.RibsThickness,
-                RibsCount = plateConfig.RibsCount,
-                DistanceToFirstRib = plateConfig.DistanceToFirstRib,
-                DistanceBetweenRibs = plateConfig.DistanceBetweenRibs,
-                RibsIdentToLeft = plateConfig.RibsIdentToLeft,
-                RibsIdentToRight = plateConfig.RibsIdentToRight,
-                WeldsDissolutionLeft = plateConfig.WeldsDissolutionLeft,
-                WeldsDissolutionRight = plateConfig.WeldsDissolutionRight,
-
-                WeldingProperties = new WeldingProperties()
-                {
-                    SearchOffsetStart = plateConfig.SearchOffsetStart,
-                    SearchOffsetEnd = plateConfig.SearchOffsetEnd,
-                    TechOffsetSeamStart = plateConfig.TechOffsetSeamStart,
-                    TechOffsetSeamEnd = plateConfig.TechOffsetSeamEnd,
-                    SeamsOverlap = plateConfig.SeamsOverlap,
-                    ProgramNom = plateConfig.ProgramNom,
-                    WeldingSpead = plateConfig.WeldingSpead,
-                    DistanceForWelding = plateConfig.DistanceForWelding,
-                    DistanceForSearch = plateConfig.DistanceForSearch,
-                    SelectedWeldingSchema = WeldingSchemaTypes.LeftEvenOdd_RightEvenOdd
-                }
-            };
         }
 
         /// <summary>
@@ -187,7 +141,7 @@ namespace ForRobot.Libr.Factories.DetalFactory
                 switch (type)
                 {
                     case DetalType.Plita:
-                        return CreatePlita();
+                        return this._detalProvider.CreatePlita();
 
                     default:
                         throw new ArgumentException($"Тип детали {DetalTypes.EnumToString(type)} не поддерживается", nameof(type));
@@ -441,9 +395,14 @@ namespace ForRobot.Libr.Factories.DetalFactory
 
             try
             {
-                if (_configProvider is ForRobot.Libr.Configuration.CachedConfigurationProvider cachedConfigProvider)
+                //if (_configProvider is ForRobot.Libr.Configuration.CachedConfigurationProvider cachedConfigProvider)
+                //{
+                //    cachedConfigProvider.ClearCache();
+                //}
+
+                if (this._detalProvider is ForRobot.Models.Detals.CachedDetalProvider cachedDetalProvider)
                 {
-                    cachedConfigProvider.ClearCache();
+                    cachedDetalProvider.ClearCache();
                 }
 
                 if (_jsonSchemaProvider is ForRobot.Libr.Json.Schemas.CachedJsonSchemaProvider cachedJsonProvider)

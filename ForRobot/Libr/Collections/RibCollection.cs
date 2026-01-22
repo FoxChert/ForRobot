@@ -35,7 +35,7 @@ namespace ForRobot.Libr.Collections
             foreach (var item in Items)
             {
                 if (item != null)
-                    item.ChangePropertyEvent += OnRibPropertyChanged;
+                    item.PropertyChanged += OnRibPropertyChanged;
             }
         }
 
@@ -47,7 +47,7 @@ namespace ForRobot.Libr.Collections
             foreach (var item in Items)
             {
                 if (item != null)
-                    item.ChangePropertyEvent += OnRibPropertyChanged;
+                    item.PropertyChanged += OnRibPropertyChanged;
             }
         }
 
@@ -64,7 +64,7 @@ namespace ForRobot.Libr.Collections
         protected override void InsertItem(int index, Rib item)
         {
             if (item != null)
-                item.ChangePropertyEvent += OnRibPropertyChanged;
+                item.PropertyChanged += OnRibPropertyChanged;
 
             base.InsertItem(index, item);
         }
@@ -74,7 +74,7 @@ namespace ForRobot.Libr.Collections
             var item = this[index];
 
             if (item != null)
-                item.ChangePropertyEvent -= OnRibPropertyChanged;
+                item.PropertyChanged -= OnRibPropertyChanged;
 
             base.RemoveItem(index);
         }
@@ -84,7 +84,7 @@ namespace ForRobot.Libr.Collections
             for (int i = 0; i < this.Count; i++)
             {
                 if (this[i] != null)
-                    this[i].ChangePropertyEvent -= OnRibPropertyChanged;
+                    this[i].PropertyChanged -= OnRibPropertyChanged;
             }
             base.ClearItems();
         }
@@ -94,10 +94,10 @@ namespace ForRobot.Libr.Collections
             var oldItem = this[index];
 
             if (oldItem != null)
-                oldItem.ChangePropertyEvent -= OnRibPropertyChanged;
+                oldItem.PropertyChanged -= OnRibPropertyChanged;
 
             if (item != null)
-                item.ChangePropertyEvent += OnRibPropertyChanged;
+                item.PropertyChanged += OnRibPropertyChanged;
 
             base.SetItem(index, item);
         }
@@ -124,22 +124,6 @@ namespace ForRobot.Libr.Collections
                 {
                     this.RemoveItem(this.Count - 1);
                 }
-            }
-        }
-
-        public void SetWeldsDissolutionLeft(decimal dissolutionLeft)
-        {
-            for (int i = 0; i < this?.Count; i++)
-            {
-                this[i].DissolutionLeft = dissolutionLeft;
-            }
-        }
-
-        public void SetWeldsDissolutionRight(decimal dissolutionRight)
-        {
-            for (int i = 0; i < this?.Count; i++)
-            {
-                this[i].DissolutionRight = dissolutionRight;
             }
         }
 

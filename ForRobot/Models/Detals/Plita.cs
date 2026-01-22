@@ -16,9 +16,7 @@ namespace ForRobot.Models.Detals
     public class Plita : Detal
     {
         #region Private variables
-
-        private string _selectedWeldingSchema = WeldingSchemas.GetDescription(WeldingSchemaTypes.LeftEvenOdd_RightEvenOdd);
-
+        
         private bool _diferentDistance = false;
         private bool _paralleleRibs = true;
         private bool _diferentDissolutionLeft = false;
@@ -322,13 +320,15 @@ namespace ForRobot.Models.Detals
                 case nameof(this.DiferentDissolutionLeft):
                     if (this.DiferentDissolutionLeft)
                         break;
-                    this.RibsCollection.SetWeldsDissolutionLeft(this.WeldsDissolutionLeft);
+
+                    this.WeldingProperties.Welds?.SetWeldsDissolutionLeft(this.WeldsDissolutionLeft);
                     break;
 
                 case nameof(this.DiferentDissolutionRight):
                     if (this.DiferentDissolutionRight)
                         return;
-                    this.RibsCollection.SetWeldsDissolutionRight(this.WeldsDissolutionRight);
+
+                    this.WeldingProperties.Welds?.SetWeldsDissolutionRight(this.WeldsDissolutionRight);
                     break;
 
                 case nameof(this.RibsHeight):
@@ -368,11 +368,11 @@ namespace ForRobot.Models.Detals
                     break;
 
                 case nameof(this.WeldsDissolutionLeft):
-                    this.RibsCollection.SetWeldsDissolutionLeft(this.WeldsDissolutionLeft);
+                    this.WeldingProperties.Welds?.SetWeldsDissolutionLeft(this.WeldsDissolutionLeft);
                     break;
 
                 case nameof(this.WeldsDissolutionRight):
-                    this.RibsCollection.SetWeldsDissolutionRight(this.WeldsDissolutionRight);
+                    this.WeldingProperties.Welds?.SetWeldsDissolutionRight(this.WeldsDissolutionRight);
                     break;
 
                 case nameof(this.RibsCount):
@@ -381,7 +381,7 @@ namespace ForRobot.Models.Detals
                     if (this.RibsCollection?.Count == 0)
                         this.RibsCollection = this.FillRibsCollection();
 
-                    this.WeldingProperties.WeldingSchema = this.FillWeldingSchema();
+                    //this.WeldingProperties.WeldingSchema = this.FillWeldingSchema();
 
                     //this.WeldingProperties?.BuildingWeldingSchema(this.RibsCount);
                     break;
@@ -389,10 +389,10 @@ namespace ForRobot.Models.Detals
                 case nameof(this.WeldingProperties.SelectedWeldingSchema):
                     //this.WeldingProperties.BuildingWeldingSchema(this.RibsCount);
 
-                    if (this.WeldingProperties.SelectedWeldingSchema == WeldingSchemaTypes.Edit)
-                        break;
+                    //if (this.WeldingProperties.SelectedWeldingSchema == WeldingSchemaTypes.Edit)
+                    //    break;
 
-                    this.WeldingProperties.WeldingSchema = this.FillWeldingSchema();
+                    //this.WeldingProperties.WeldingSchema = this.FillWeldingSchema();
                     break;
             }
         }
@@ -434,9 +434,9 @@ namespace ForRobot.Models.Detals
                     Height = this.RibsHeight,
                     Thickness = this.RibsThickness,
                     IdentToLeft = this.RibsIdentToLeft,
-                    IdentToRight = this.RibsIdentToRight,
-                    DissolutionLeft = this.WeldsDissolutionLeft,
-                    DistanceRight = this.WeldsDissolutionRight
+                    IdentToRight = this.RibsIdentToRight
+                    //DissolutionLeft = this.WeldsDissolutionLeft,
+                    //DistanceRight = this.WeldsDissolutionRight
                 };
 
                 if (i == 0)

@@ -26,6 +26,7 @@ namespace ForRobot.Models.Detals
         private decimal _plateBevelToLeftSave;
         private decimal _plateBevelToRightSave;
         private decimal[] _XYZOffset = new decimal[3] { 0, 0, 0 };
+        private WeldingProperties _weldingProperties = new WeldingProperties();
 
         #endregion
 
@@ -197,9 +198,7 @@ namespace ForRobot.Models.Detals
                 this.OnChangeProperty(nameof(this.ZOffset));
             }
         }
-
-        private WeldingProperties _weldingProperties = new WeldingProperties();
-
+        
         /// <summary>
         /// Свойства сварки детали
         /// </summary>
@@ -215,6 +214,8 @@ namespace ForRobot.Models.Detals
 
                 if (this._weldingProperties != null)
                     this._weldingProperties.PropertyChanged += this.HandleChangeProperty_WeldingProperties;
+
+                this.OnChangeProperty(nameof(WeldingProperties));
             }
         }
 
@@ -234,7 +235,8 @@ namespace ForRobot.Models.Detals
         public Detal()
         {
             this.PropertyChanged += this.HandleChangeProperty;
-            this.WeldingProperties.PropertyChanged += this.HandleChangeProperty_WeldingProperties;
+
+            //this.WeldingProperties = new WeldingProperties();
         }
 
         #endregion
@@ -264,6 +266,11 @@ namespace ForRobot.Models.Detals
             }
         }
 
+        /// <summary>
+        /// Делегат изменения свойства параметров сворки
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>,
         private void HandleChangeProperty_WeldingProperties(object sender, PropertyChangedEventArgs e) => this.OnChangeProperty(e.PropertyName);
 
         #endregion

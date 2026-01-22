@@ -37,7 +37,7 @@ namespace ForRobot.Libr.Converters
             if (!(value is string valueString) || string.IsNullOrEmpty(valueString))
                 throw new FormatException("to use this converter, value and parameter shall inherit from String");
 
-            return WeldingSchemas.GetSchemaType(valueString);
+            return WeldingSchema.GetSchemaType(valueString);
         }
     }
 }

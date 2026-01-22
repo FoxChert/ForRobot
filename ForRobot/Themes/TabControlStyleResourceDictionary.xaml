@@ -140,7 +140,7 @@
                     </Grid.RowDefinitions>
 
                     <ComboBox Grid.Row="0" Margin="0, 10"
-                              ItemsSource="{x:Static welding:WeldingSchemas.WeldingSchemasCollection}"
+                              ItemsSource="{x:Static welding:WeldingSchema.WeldingSchemasCollection}"
                               SelectedItem="{Binding Path=WeldingProperties.SelectedWeldingSchema, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource WeldingSchemaConverter}}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>

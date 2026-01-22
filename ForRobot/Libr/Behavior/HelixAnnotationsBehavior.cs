@@ -257,11 +257,11 @@ namespace ForRobot.Libr.Behavior
                         item.IsVisible = true;
                     break;
 
-                case nameof(Rib.DissolutionLeft):
-                case nameof(Rib.DissolutionRight):
-                    foreach (var item in this.Items.Where(x => x != null && x.PropertyName.Contains("Dissolution")))
-                        item.IsVisible = true;
-                    break;
+                //case nameof(Rib.DissolutionLeft):
+                //case nameof(Rib.DissolutionRight):
+                //    foreach (var item in this.Items.Where(x => x != null && x.PropertyName.Contains("Dissolution")))
+                //        item.IsVisible = true;
+                //    break;
 
                 default:
                     foreach (var item in this.Items.Where(x => x != null && new List<string> { nameof(Plita.PlateLength), nameof(Plita.PlateWidth), nameof(Plita.PlateBevelToLeft), nameof(Plita.PlateBevelToRight) }.Contains(x.PropertyName)))

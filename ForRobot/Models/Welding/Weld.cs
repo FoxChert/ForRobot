@@ -18,6 +18,8 @@ namespace ForRobot.Models.Welding
 
         private decimal _dissolutionLeft;
         private decimal _dissolutionRight;
+        private Point3D _startPoint;
+        private Point3D _endPoint;
 
         #endregion Private variables
 
@@ -51,64 +53,39 @@ namespace ForRobot.Models.Welding
             }
         }
 
-        ///// <summary>
-        ///// Точка начала шва
-        ///// </summary>
-        //public Point3D StartPoint
-        //{
-        //    get => this._startPoint;
-        //    set
-        //    {
-        //        this._startPoint = value;
-        //        this.UpdateCenterPoint();
-        //        this.UpdateGeometry();
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Точка конца шва
-        ///// </summary>
-        //public Point3D EndPoint
-        //{
-        //    get => this._endPoint;
-        //    set
-        //    {
-        //        this._endPoint = value;
-        //        this.UpdateCenterPoint();
-        //        this.UpdateGeometry();
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Центральная точка, где сходятся два сегмента
-        ///// </summary>
-        //public Point3D CenterPoint
-        //{
-        //    get => this._centerPoint;
-        //    set
-        //    {
-        //        this._centerPoint = value;
-        //        this.UpdateGeometry();
-        //    }
-        //}
-
         [JsonIgnore]
         /// <summary>
         /// Точка начала шва
         /// </summary>
-        public Point3D StartPoint { get; set; }
+        public Point3D StartPoint
+        {
+            get => this._startPoint;
+            set
+            {
+                this._startPoint = value;
+                this.UpdateCenterPoint();
+            }
+        }
 
         [JsonIgnore]
         /// <summary>
         /// Точка конца шва
         /// </summary>
-        public Point3D EndPoint { get; set; }
+        public Point3D EndPoint
+        {
+            get => this._endPoint;
+            set
+            {
+                this._endPoint = value;
+                this.UpdateCenterPoint();
+            }
+        }
 
         [JsonIgnore]
         /// <summary>
         /// Центральная точка, где сходятся два сегмента
         /// </summary>
-        public Point3D CenterPoint { get; set; }
+        public Point3D CenterPoint { get; private set; }
 
         ///// <summary>
         ///// Толщина линии шва

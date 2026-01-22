@@ -17,13 +17,13 @@ namespace ForRobot.Libr.Factories
     public static class File3DFactory
     {
         /// <summary>
-        /// Провайдер конфигурации
-        /// </summary>
-        private static IConfigurationProvider _configurationProvider;
-        /// <summary>
         /// Провайдер json-схем для валидации структуры json-строк
         /// </summary>
         private static IJsonSchemaProvider _jsonSchemaProvider;
+        /// <summary>
+        /// Провайдер создания объектов <see cref="ForRobot.Models.Detals.Detal"/>
+        /// </summary>
+        private static IDetalProvider _detalProvider;
         /// <summary>
         /// Кэширование фабрики создания детали
         /// </summary>
@@ -45,13 +45,13 @@ namespace ForRobot.Libr.Factories
 
         private static void InitializeDefaultProviders()
         {
-            _configurationProvider = new ForRobot.Libr.Configuration.ConfigurationProvider();
+            _detalProvider = new ForRobot.Models.Detals.DetalProvider(new ForRobot.Libr.Configuration.ConfigurationProvider());
             _jsonSchemaProvider = new ForRobot.Libr.Json.Schemas.JsonSchemaProvider();
         }
 
         private static void CreateCachedDetalFactory()
         {
-            _cachedDetalFactory = new ForRobot.Libr.Factories.DetalFactory.DetalFactory(_configurationProvider, _jsonSchemaProvider);
+            _cachedDetalFactory = new ForRobot.Libr.Factories.DetalFactory.DetalFactory(_detalProvider, _jsonSchemaProvider);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace ForRobot.Libr.Factories
 
                 case ".json":
                 case ".txt":
-                    return new NativeFile3D(path, new ForRobot.Libr.Factories.DetalFactory.DetalFactory(_configurationProvider, _jsonSchemaProvider));
+                    return new NativeFile3D(path, _cachedDetalFactory);
 
                 default:
                     throw new Exception(string.Format("Расширение {0} не поддерживается", extension));
@@ -129,13 +129,13 @@ namespace ForRobot.Libr.Factories
         }
 
         /// <summary>
-        /// Установка провайдера конфигурации
+        /// Установка провайдера деталей
         /// </summary>
-        /// <param name="configurationProvider">Провайдер конфигурации</param>
+        /// <param name="detalProvider">Провайдер деталей</param>
         /// <exception cref="ArgumentNullException">Если configurationProvider равен null</exception>
-        public static void SetConfigurationProvider(IConfigurationProvider configurationProvider)
+        public static void SetDetalProvider(IDetalProvider detalProvider)
         {
-            _configurationProvider = configurationProvider ?? throw new ArgumentNullException(nameof(configurationProvider));
+            _detalProvider = _detalProvider ?? throw new ArgumentNullException(nameof(detalProvider));
             CreateCachedDetalFactory();
         }
         /// <summary>

@@ -360,8 +360,11 @@
     <Compile Include="Libr\Logging\Logger.cs" />
     <Compile Include="Libr\Messages\UpdateCurrentDetalMessage.cs" />
     <Compile Include="Libr\Clipboard\UndoRedo\IUndoRedo.cs" />
+    <Compile Include="Libr\Services\Providers\IDetalProvider.cs" />
     <Compile Include="Libr\Services\Providers\IJsonSchemaProvider.cs" />
     <Compile Include="Libr\ValueChangedEventArgs.cs" />
+    <Compile Include="Models\Detals\CachedDetalProvider.cs" />
+    <Compile Include="Models\Detals\DetalProvider.cs" />
     <Compile Include="Models\Welding\WeldingSchemaItem.cs" />
     <Compile Include="Models\Welding\WeldingSchemaTypes.cs" />
     <Compile Include="Models\Welding\WeldingProperties.cs" />
@@ -385,7 +388,7 @@
     <Compile Include="Models\Controls\FileFlags.cs" />
     <Compile Include="Models\Detals\Hole.cs" />
     <Compile Include="Models\Welding\Weld.cs" />
-    <Compile Include="Models\Welding\WeldingSchemas.cs" />
+    <Compile Include="Models\Welding\WeldingSchema.cs" />
     <Compile Include="Models\File3D\Annotation.cs" />
     <Compile Include="Models\File3D\File3D.cs" />
     <Compile Include="Models\File3D\Materials.cs" />

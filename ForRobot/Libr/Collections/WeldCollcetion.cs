@@ -8,7 +8,7 @@ using ForRobot.Models.Welding;
 namespace ForRobot.Libr.Collections
 {
     public class WeldCollcetion : ObservableCollection<Weld>
-    {
+    {        
         #region Public variables
 
         /// <summary>
@@ -100,6 +100,22 @@ namespace ForRobot.Libr.Collections
                 item.PropertyChanged += OnWeldPropertyChanged;
 
             base.SetItem(index, item);
+        }
+
+        public void SetWeldsDissolutionLeft(decimal dissolutionLeft)
+        {
+            for (int i = 0; i < this?.Count; i++)
+            {
+                this[i].DissolutionLeft = dissolutionLeft;
+            }
+        }
+
+        public void SetWeldsDissolutionRight(decimal dissolutionRight)
+        {
+            for (int i = 0; i < this?.Count; i++)
+            {
+                this[i].DissolutionRight = dissolutionRight;
+            }
         }
 
         #endregion Public functions

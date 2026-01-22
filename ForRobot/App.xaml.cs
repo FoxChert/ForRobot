@@ -38,7 +38,7 @@ namespace ForRobot
         /// Путь к программе на коммпьютере
         /// </summary>
         private string FilePathOnPC { get => Directory.GetCurrentDirectory(); }
-
+        
         //private ForRobot.Models.Settings.Settings _settings = ForRobot.App.GetSettings();
 
         ///// <summary>
@@ -57,8 +57,9 @@ namespace ForRobot
         /// </summary>
         public readonly ForRobot.Libr.Services.IWindowsAppService WindowsAppService = new ForRobot.Libr.Services.WindowsAppService();
 
-        public readonly ForRobot.Libr.Services.Providers.IConfigurationProvider ConfigProvider = new ForRobot.Libr.Configuration.CachedConfigurationProvider(new ForRobot.Libr.Configuration.ConfigurationProvider());
-        public readonly ForRobot.Libr.Services.Providers.IJsonSchemaProvider JsonSchemaProvider = new ForRobot.Libr.Json.Schemas.CachedJsonSchemaProvider(new ForRobot.Libr.Json.Schemas.JsonSchemaProvider());
+        public static ForRobot.Libr.Services.Providers.IConfigurationProvider ConfigProvider = new ForRobot.Libr.Configuration.CachedConfigurationProvider(new ForRobot.Libr.Configuration.ConfigurationProvider());
+        public static ForRobot.Libr.Services.Providers.IJsonSchemaProvider JsonSchemaProvider = new ForRobot.Libr.Json.Schemas.CachedJsonSchemaProvider(new ForRobot.Libr.Json.Schemas.JsonSchemaProvider());
+        public static ForRobot.Libr.Services.Providers.IDetalProvider DetalProvider = new ForRobot.Models.Detals.CachedDetalProvider(new ForRobot.Models.Detals.DetalProvider(ConfigProvider));
 
         /// <summary>
         /// Директория AvalonDock.config файла, в котором сохраняется макет интерфейса.
@@ -137,8 +138,8 @@ namespace ForRobot
 
                 this.Logger.Trace("Запуск приложения");
 
-                ForRobot.Libr.Factories.File3DFactory.SetConfigurationProvider(this.ConfigProvider);
-                ForRobot.Libr.Factories.File3DFactory.SetJsonSchemaProvider(this.JsonSchemaProvider);
+                ForRobot.Libr.Factories.File3DFactory.SetDetalProvider(DetalProvider);
+                ForRobot.Libr.Factories.File3DFactory.SetJsonSchemaProvider(JsonSchemaProvider);
 
                 foreach (var i in e.Args) // Исп. для открытия файла модели "с помощью"
                     this.OpenedFiles.Add(Models.File3D.File3D.Load(i));
@@ -416,8 +417,8 @@ namespace ForRobot
         private ForRobot.Models.Settings.Settings GetSettings()
         {
             ForRobot.Models.Settings.Settings settings = ForRobot.Models.Settings.Settings.GetSettings();
-            var robotConfig = App.Current.ConfigProvider.GetRobotConfig();
-            var plateConfig = App.Current.ConfigProvider.GetPlateConfig();
+            var robotConfig = ConfigProvider.GetRobotConfig();
+            var plateConfig = ConfigProvider.GetPlateConfig();
             settings.PlitaProgramName = plateConfig.PlateProgramName;
             settings.PlitaScriptName = plateConfig.PlateScriptName;
             settings.PathFolderOfGeneration = robotConfig.PathFolderGeneration;

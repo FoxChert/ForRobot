@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 
+using Newtonsoft.Json;
+
 namespace ForRobot.Models.Welding
 {
     public class WeldingSchemaItem : INotifyPropertyChanged
@@ -10,6 +12,7 @@ namespace ForRobot.Models.Welding
         private string _leftSide = DEVAULT_VALUE;
         private string _rightSide = DEVAULT_VALUE;
 
+        [JsonProperty("left_side")]
         public string LeftSide
         {
             get => this._leftSide;
@@ -19,7 +22,7 @@ namespace ForRobot.Models.Welding
                 this.OnChangeProperty(nameof(this.LeftSide));
             }
         }
-
+        [JsonProperty("right_side")]
         public string RightSide
         {
             get => this._rightSide;

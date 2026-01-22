@@ -1,17 +1,36 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 using ForRobot.Libr;
+using ForRobot.Libr.Collections;
 
 namespace ForRobot.Models.Welding
 {
-    public static class WeldingSchemas
+    /// <summary>
+    /// Схема очерёдности сварки швов
+    /// </summary>
+    public class WeldingSchema : FullyObservableCollection<WeldingSchemaItem>, INotifyPropertyChanged
     {
+        #region Public variables
+
         /// <summary>
         /// Коллекция описаний схем сварки
         /// </summary>
         public static readonly IEnumerable<string> WeldingSchemasCollection = GetSchemasCollection();
+
+        #endregion Public variables
+
+        #region Constructors
+
+        public WeldingSchema(int count) : base(new WeldingSchemaItem[count]) { }
+
+        public WeldingSchema(List<WeldingSchemaItem> list) : base(list) { }
+
+        public WeldingSchema(IEnumerable<WeldingSchemaItem> enumerable) : base(enumerable) { }
+
+        #endregion Constructors
 
         /// <summary>
         /// Выборка описаний типов схем сварки
@@ -25,6 +44,8 @@ namespace ForRobot.Models.Welding
             return descriptions.ToList<string>();
         }
 
+        #region Public functions
+        
         /// <summary>
         /// Вывод схемы для передачи
         /// </summary>
@@ -69,5 +90,7 @@ namespace ForRobot.Models.Welding
             var descriptions = enums.Select(field => new { Name = field.Name,  Description = (field.GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), false).SingleOrDefault() as System.ComponentModel.DescriptionAttribute)?.Description });
             return (WeldingSchemaTypes)Enum.Parse(typeof(WeldingSchemaTypes), descriptions.Where(item => item.Description == description).First().Name);
         }
+
+        #endregion Private functions
     }
 }

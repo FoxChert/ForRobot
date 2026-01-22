@@ -22,8 +22,9 @@ namespace ForRobot.Models.Welding
         private int _weldingSpead;
         private decimal _distanceForSearch;
         private decimal _distanceForWelding;
+        private WeldCollcetion _welds;
         private WeldingSchemaTypes _selectedWeldingSchema;
-        private FullyObservableCollection<WeldingSchemaItem> _weldingSchema;
+        private WeldingSchema _weldingSchema;
 
         #endregion Private variables
 
@@ -163,6 +164,16 @@ namespace ForRobot.Models.Welding
                 this.OnChangeProperty(nameof(this.DistanceForSearch));
             }
         }
+        
+        public WeldCollcetion Welds
+        {
+            get => this._welds;
+            set
+            {
+                this._welds = value;
+                this.OnChangeProperty(nameof(this.Welds));
+            }
+        }
 
         [JsonConverter(typeof(JsonCommentConverter), "Выбранная схема сварки рёбер")]
         /// <summary>
@@ -177,21 +188,20 @@ namespace ForRobot.Models.Welding
                 this.OnChangeProperty(nameof(this.SelectedWeldingSchema));
             }
         }
-
-        [JsonIgnore]
+        
         /// <summary>
         /// Схема сварки (в какой очерёдности будут накладываться сварные швы)
         /// </summary>
-        public FullyObservableCollection<WeldingSchemaItem> WeldingSchema
+        public WeldingSchema WeldingSchema
         {
             get => this._weldingSchema;
             set
             {
                 if (this._weldingSchema != null)
-                    this._weldingSchema.ItemPropertyChanged -= HandlerPropertyChanged_WeldingSchemaItem;
+                    this._weldingSchema.ItemPropertyChanged -= this.HandlerPropertyChanged_WeldingSchemaItem;
 
                 this._weldingSchema = value;
-                
+
                 if (this._weldingSchema != null)
                     this._weldingSchema.ItemPropertyChanged += this.HandlerPropertyChanged_WeldingSchemaItem;
 
@@ -220,12 +230,16 @@ namespace ForRobot.Models.Welding
         //{
         //    switch (e.PropertyName)
         //    {
-        //        case nameof(this.WeldingSchema):
-        //            //this.WeldingSchema.ItemPropertyChanged += HandlerPropertyChanged_WeldingSchemaItem;
-        //            break;
+        //        //case nameof(this.Welds):
+
+        //        //    break;
 
         //        //case nameof(this.SelectedWeldingSchema):
+        //        //    //this.WeldingSchema.ItemPropertyChanged += HandlerPropertyChanged_WeldingSchemaItem;
         //        //    break;
+
+        //            //case nameof(this.SelectedWeldingSchema):
+        //            //    break;
         //    }
         //}
 

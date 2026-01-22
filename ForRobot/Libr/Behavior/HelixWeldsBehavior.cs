@@ -3,7 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
-using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using HelixToolkit.Wpf;
@@ -142,6 +142,8 @@ namespace ForRobot.Libr.Behavior
 
         #endregion Public variables
 
+        #region Constructors
+
         public WeldVisual()
         {
             this._line1 = new LinesVisual3D()
@@ -165,6 +167,8 @@ namespace ForRobot.Libr.Behavior
             this.RightLineColor = rightLineColor ?? this.Color;
         }
 
+        #endregion Constructors
+
         protected override bool UpdateTransforms() => true;
 
         protected override void UpdateGeometry()
@@ -174,6 +178,21 @@ namespace ForRobot.Libr.Behavior
             this._line1.Points = new Point3DCollection { this.StartPoint, this.CenterPoint };
 
             this._line2.Points = new Point3DCollection { this.CenterPoint, this.EndPoint };
+        }
+
+        /// <summary>
+        /// Обновение центральной точки как середины между StartPoint и EndPoint
+        /// </summary>
+        private void UpdateCenterPoint()
+        {
+            if (this.StartPoint != null && this.EndPoint != null)
+            {
+                this.CenterPoint = new Point3D(
+                    (this.StartPoint.X + this.EndPoint.X) / 2,
+                    (this.StartPoint.Y + this.EndPoint.Y) / 2,
+                    (this.StartPoint.Z + this.EndPoint.Z) / 2
+                );
+            }
         }
 
         /// <summary>
@@ -194,7 +213,7 @@ namespace ForRobot.Libr.Behavior
         }
     }
 
-    public class HelixWeldsBehavior : HelixAddCollectionBehavior<WeldVisual>
+    public class HelixWeldsBehavior<T> : HelixAddCollectionBehavior<WeldVisual>
     {
         //public Detal Detal
         //{
@@ -207,14 +226,14 @@ namespace ForRobot.Libr.Behavior
         //                                                                                      typeof(HelixWeldsBehavior),
         //                                                                                      new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnDetalChanged));
 
-        public IEnumerable ItemsSource { get; set; }
+        public IEnumerable<T> ItemsSource { get; set; }
 
         public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(nameof(ItemsSource),
-                                                                                                    typeof(IEnumerable),
-                                                                                                    typeof(HelixWeldsBehavior),
-                                                                                                    new PropertyMetadata(null, OnThicknessChanged));
+                                                                                                    typeof(IEnumerable<T>),
+                                                                                                    typeof(HelixWeldsBehavior<T>),
+                                                                                                    new PropertyMetadata(null, OnItemsSourceChanged));
 
-        public virtual double Thickness
+        public double Thickness
         {
             get => (double)GetValue(ThicknessProperty);
             set => SetValue(ThicknessProperty, value);
@@ -222,8 +241,19 @@ namespace ForRobot.Libr.Behavior
 
         public static readonly DependencyProperty ThicknessProperty = DependencyProperty.Register(nameof(Thickness),
                                                                                                   typeof(double),
-                                                                                                  typeof(HelixWeldsBehavior),
+                                                                                                  typeof(HelixWeldsBehavior<T>),
                                                                                                   new PropertyMetadata(Services.WeldService.DEFAULT_WELD_THICKNESS, OnThicknessChanged));
+
+        public Color Color
+        {
+            get => (Color)GetValue(ColorProperty);
+            set => SetValue(ColorProperty, value);
+        }
+
+        public static readonly DependencyProperty ColorProperty = DependencyProperty.Register(nameof(Color),
+                                                                                              typeof(Color),
+                                                                                              typeof(HelixWeldsBehavior<T>),
+                                                                                              new PropertyMetadata(Services.WeldService.DEFAULT_WELD_THICKNESS, OnThicknessChanged));
 
         public bool IsDivided
         {
@@ -233,7 +263,7 @@ namespace ForRobot.Libr.Behavior
 
         public static readonly DependencyProperty IsDividedProperty = DependencyProperty.Register(nameof(IsDivided),
                                                                                                   typeof(bool),
-                                                                                                  typeof(HelixWeldsBehavior),
+                                                                                                  typeof(HelixWeldsBehavior<T>),
                                                                                                   new PropertyMetadata(false, OnIsDividedChanged));
 
         public HelixWeldsBehavior()
@@ -248,7 +278,12 @@ namespace ForRobot.Libr.Behavior
 
         private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
+            HelixWeldsBehavior<T> helixWeldsBehavior = (HelixWeldsBehavior<T>)d;
 
+            if (helixWeldsBehavior.Items != null)
+                foreach (var item in helixWeldsBehavior.Items) item.Children.Clear();
+                       
+            helixWeldsBehavior.ItemsSource = (IEnumerable<T>)e.NewValue;
         }
 
         //private static void OnDetalChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -277,14 +312,14 @@ namespace ForRobot.Libr.Behavior
 
         private static void OnThicknessChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            HelixWeldsBehavior helixWeldsBehavior = (HelixWeldsBehavior)d;
+            HelixWeldsBehavior<T> helixWeldsBehavior = (HelixWeldsBehavior<T>)d;
             helixWeldsBehavior.Thickness = (double)e.NewValue;
             helixWeldsBehavior.UpdateWeldsThickness();
         }
 
         private static void OnIsDividedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            HelixWeldsBehavior helixWeldsBehavior = (HelixWeldsBehavior)d;
+            HelixWeldsBehavior<T> helixWeldsBehavior = (HelixWeldsBehavior<T>)d;
             helixWeldsBehavior.IsDivided = (bool)e.NewValue;
             helixWeldsBehavior.UpdateWeldsIsDivided();
         }
@@ -295,34 +330,34 @@ namespace ForRobot.Libr.Behavior
 
         private void UpdateWelds()
         {
-            ForRobot.Libr.Services.IWeldService weldService = new ForRobot.Libr.Services.WeldService(ForRobot.Models.Settings.Settings.ScaleFactor);
+            //ForRobot.Libr.Services.IWeldService weldService = new ForRobot.Libr.Services.WeldService(ForRobot.Models.Settings.Settings.ScaleFactor);
 
             //if (this.Detal == null)
             //    return;
 
-            var welds = weldService.GetWelds(this.Detal);
+            //var welds = weldService.GetWelds(this.Detal);
 
-            if (this.Items is ObservableCollection<Weld> currentCollection)
-            {
-                currentCollection.Clear();
-                foreach (var weld in welds)
-                {
-                    this.UpdateWeldProperties(weld);
-                    currentCollection.Add(weld);
-                }
-            }
-            else
-            {
-                foreach (var item in welds)
-                    this.UpdateWeldProperties(item);
+            //if (this.Items is ObservableCollection<Weld> currentCollection)
+            //{
+            //    currentCollection.Clear();
+            //    foreach (var weld in welds)
+            //    {
+            //        this.UpdateWeldProperties(weld);
+            //        currentCollection.Add(weld);
+            //    }
+            //}
+            //else
+            //{
+            //    foreach (var item in welds)
+            //        this.UpdateWeldProperties(item);
 
-                this.Items = welds;
-            }
+            //    this.Items = welds;
+            //}
         }
 
         private void UpdateWeldsThickness()
         {
-            if (!(this.Items is ObservableCollection<Weld> currentCollection) || currentCollection == null)
+            if (!(this.Items is IEnumerable<WeldVisual> currentCollection) || currentCollection == null)
                 return;
 
             foreach (var item in currentCollection)
@@ -331,7 +366,7 @@ namespace ForRobot.Libr.Behavior
 
         private void UpdateWeldsIsDivided()
         {
-            if (!(this.Items is ObservableCollection<Weld> currentCollection) || currentCollection == null)
+            if (!(this.Items is IEnumerable<WeldVisual> currentCollection) || currentCollection == null)
                 return;
 
             foreach (var item in currentCollection)
@@ -342,7 +377,7 @@ namespace ForRobot.Libr.Behavior
         /// Обновление свойств объекта класса <see cref="Weld"/>
         /// </summary>
         /// <param name="weld"></param>
-        private void UpdateWeldProperties(Weld weld)
+        private void UpdateWeldProperties(WeldVisual weld)
         {
             weld.Thickness = this.Thickness;
             weld.IsDivided = this.IsDivided;
