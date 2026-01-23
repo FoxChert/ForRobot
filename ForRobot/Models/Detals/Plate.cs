@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 
 using Newtonsoft.Json;
@@ -13,24 +14,20 @@ using ForRobot.Models.Welding;
 
 namespace ForRobot.Models.Detals
 {
-    public class Plita : Detal
+    public class Plate : Detal
     {
         #region Private variables
         
         private bool _diferentDistance = false;
         private bool _paralleleRibs = true;
-        private bool _diferentDissolutionLeft = false;
-        private bool _diferentDissolutionRight = false;
         
         private decimal _ribsHeight;
         private decimal _ribsThickness;
-        private int _ribCount;
+        private int _ribCount = MIN_RIB_COUNT;
         private decimal _distanceToFirstRib;
         private decimal _distanceBetweenRibs;
         private decimal _ribsIdentToLeft;
         private decimal _ribsIdentToRight;
-        private decimal _weldsDissolutionLeft;
-        private decimal _weldsDissolutionRight;
         private RibCollection _ribsCollection;
 
         #endregion
@@ -40,7 +37,7 @@ namespace ForRobot.Models.Detals
         public const int MIN_RIB_COUNT = 1;
         
         /// <inheritdoc cref="Detal.DetalType"/>
-        public override string DetalType { get => DetalTypes.Plita; }
+        public override string DetalType { get => DetalTypes.Plate; }
 
         [JsonConverter(typeof(JsonCommentConverter), "Разное ли рассояние между рёбрами")]
         /// <summary>
@@ -69,35 +66,7 @@ namespace ForRobot.Models.Detals
                 this.OnChangeProperty(nameof(this.ParalleleRibs));
             }
         }
-
-        [JsonConverter(typeof(JsonCommentConverter), "Разный ли роспуск слева")]
-        /// <summary>
-        /// Разный ли роспуск слева
-        /// </summary>
-        public bool DiferentDissolutionLeft
-        {
-            get => this._diferentDissolutionLeft;
-            set
-            {
-                this._diferentDissolutionLeft = value;
-                this.OnChangeProperty(nameof(this.DiferentDissolutionLeft));
-            }
-        }
-        
-        [JsonConverter(typeof(JsonCommentConverter), "Разный ли роспуск справа")]
-        /// <summary>
-        /// Разный ли роспуск справа
-        /// </summary>
-        public bool DiferentDissolutionRight
-        {
-            get => this._diferentDissolutionRight;
-            set
-            {
-                this._diferentDissolutionRight = value;
-                this.OnChangeProperty(nameof(this.DiferentDissolutionRight));
-            }
-        }
-        
+               
         [JsonConverter(typeof(JsonCommentConverter), "Высота рёбер (вертикальной стенки)")]
         /// <summary>
         /// Высота ребра
@@ -200,35 +169,7 @@ namespace ForRobot.Models.Detals
                 this.OnChangeProperty();
             }
         }
-        
-        [JsonConverter(typeof(JsonCommentConverter), "Роспуск слева")]
-        /// <summary>
-        /// Отступ шва от левого края ребер (роспуск, выкружка)
-        /// </summary>
-        public decimal WeldsDissolutionLeft
-        {
-            get => this._weldsDissolutionLeft;
-            set
-            {
-                this._weldsDissolutionLeft = value;
-                this.OnChangeProperty();
-            }
-        }
-        
-        [JsonConverter(typeof(JsonCommentConverter), "Роспуск справа")]
-        /// <summary>
-        /// Отступ шва от правого края ребер (роспуск, выкружка)
-        /// </summary>
-        public decimal WeldsDissolutionRight
-        {
-            get => this._weldsDissolutionRight;
-            set
-            {
-                this._weldsDissolutionRight = value;
-                this.OnChangeProperty();
-            }
-        }
-
+       
         [JsonProperty("walls_list")]
         [JsonConverter(typeof(JsonCommentConverter), "Коллекция рёбер с параметрами:\n" +
                                                      "wall_height - высота ребра\n" +
@@ -236,9 +177,7 @@ namespace ForRobot.Models.Detals
                                                      "wall_cross_dist_left - поперечное расстояние до ребра слева\n" +
                                                      "wall_cross_dist_right - поперечное расстояние до ребра справа\n" +
                                                      "wall_long_dist_left - продольное расстояние до ребра слева\n" +
-                                                     "wall_long_dist_right - продольное расстояние до ребра справа\n" +
-                                                     "weld_offset_left - отступ шва слева\n" +
-                                                     "weld_offset_right - отступ шва справа")]
+                                                     "wall_long_dist_right - продольное расстояние до ребра справа")]
         /// <summary>
         /// Коллекция рёбер
         /// </summary>
@@ -248,11 +187,16 @@ namespace ForRobot.Models.Detals
             private set
             {
                 if (this._ribsCollection != null)
+                {
                     this._ribsCollection.RibPropertyChanged -= this.HandleChangeProperty_RibsCollection;
+                    this._ribsCollection.CollectionChanged -= this.HandleCollectionChanged_RibsCollection;
+
+                }
 
                 this._ribsCollection = value;
 
                 this._ribsCollection.RibPropertyChanged += this.HandleChangeProperty_RibsCollection;
+                this._ribsCollection.CollectionChanged += this.HandleCollectionChanged_RibsCollection;
             }
         }
 
@@ -260,10 +204,11 @@ namespace ForRobot.Models.Detals
 
         #region Constructor
 
-        public Plita() : base()
+        public Plate() : base()
         {
-            this.RibsCollection = this.FillRibsCollection();
-            //this.WeldingProperties.WeldingSchema = ForRobot.Libr.Factories.DetalFactory.WeldingFactory.CreateSchema<Plita>(this.WeldingProperties.SelectedWeldingSchema, this.RibsCount);
+            this.RibsCollection = this.GetRibsCollection();
+            this.WeldingProperties.FillWeldsCollection(this.RibsCount * 2);
+            //this.WeldingProperties.WeldingSchema = ForRobot.Libr.Factories.DetalFactory.WeldingFactory.CreateSchema<Plate>(this.WeldingProperties.SelectedWeldingSchema, this.RibsCount);
             this.PropertyChanged += this.HandleChangeProperty;
         }
 
@@ -317,20 +262,6 @@ namespace ForRobot.Models.Detals
                     }
                     break;
 
-                case nameof(this.DiferentDissolutionLeft):
-                    if (this.DiferentDissolutionLeft)
-                        break;
-
-                    this.WeldingProperties.Welds?.SetWeldsDissolutionLeft(this.WeldsDissolutionLeft);
-                    break;
-
-                case nameof(this.DiferentDissolutionRight):
-                    if (this.DiferentDissolutionRight)
-                        return;
-
-                    this.WeldingProperties.Welds?.SetWeldsDissolutionRight(this.WeldsDissolutionRight);
-                    break;
-
                 case nameof(this.RibsHeight):
                     this.RibsCollection.SetRibsHeight(this.RibsHeight);
                     break;
@@ -367,26 +298,15 @@ namespace ForRobot.Models.Detals
                     this.RibsCollection.SetRibsIdentToRight(this.RibsIdentToRight);
                     break;
 
-                case nameof(this.WeldsDissolutionLeft):
-                    this.WeldingProperties.Welds?.SetWeldsDissolutionLeft(this.WeldsDissolutionLeft);
-                    break;
-
-                case nameof(this.WeldsDissolutionRight):
-                    this.WeldingProperties.Welds?.SetWeldsDissolutionRight(this.WeldsDissolutionRight);
-                    break;
-
                 case nameof(this.RibsCount):
                     this.RibsCollection.SetCount(this.RibsCount);
-
-                    if (this.RibsCollection?.Count == 0)
-                        this.RibsCollection = this.FillRibsCollection();
+                    this.WeldingProperties.Welds?.SetCount(this.RibsCount * 2);
 
                     //this.WeldingProperties.WeldingSchema = this.FillWeldingSchema();
-
                     //this.WeldingProperties?.BuildingWeldingSchema(this.RibsCount);
                     break;
 
-                case nameof(this.WeldingProperties.SelectedWeldingSchema):
+                case nameof(this.WeldingProperties.SelectedWeldingSchema): 
                     //this.WeldingProperties.BuildingWeldingSchema(this.RibsCount);
 
                     //if (this.WeldingProperties.SelectedWeldingSchema == WeldingSchemaTypes.Edit)
@@ -417,13 +337,39 @@ namespace ForRobot.Models.Detals
             this.OnChangeProperty(e.PropertyName);
         }
 
+        /// <summary>
+        /// Делегат изменения <see cref="RibCollection"/>
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HandleCollectionChanged_RibsCollection(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    break;
+
+                case NotifyCollectionChangedAction.Move:
+                    break;
+
+                case NotifyCollectionChangedAction.Remove:
+                    break;
+
+                case NotifyCollectionChangedAction.Replace:
+                    break;
+
+                case NotifyCollectionChangedAction.Reset:
+                    break;
+            }
+        }
+
         #endregion Handle
 
         /// <summary>
         /// Заполнение коллекции расстояний
         /// </summary>
         /// <returns></returns>
-        private RibCollection FillRibsCollection()
+        private RibCollection GetRibsCollection()
         {
             Rib rib;
             List<Rib> ribsList = new List<Rib>();
@@ -435,8 +381,6 @@ namespace ForRobot.Models.Detals
                     Thickness = this.RibsThickness,
                     IdentToLeft = this.RibsIdentToLeft,
                     IdentToRight = this.RibsIdentToRight
-                    //DissolutionLeft = this.WeldsDissolutionLeft,
-                    //DistanceRight = this.WeldsDissolutionRight
                 };
 
                 if (i == 0)
@@ -457,7 +401,7 @@ namespace ForRobot.Models.Detals
 
         private FullyObservableCollection<WeldingSchemaItem> FillWeldingSchema()
         {
-            var schema = ForRobot.Libr.Factories.DetalFactory.WeldingFactory.CreateSchema<Plita>(this.WeldingProperties.SelectedWeldingSchema, this.RibsCount);
+            var schema = ForRobot.Libr.Factories.DetalFactory.WeldingFactory.CreateSchema<Plate>(this.WeldingProperties.SelectedWeldingSchema, this.RibsCount);
             return new FullyObservableCollection<WeldingSchemaItem>(schema);
         }
 
@@ -472,7 +416,7 @@ namespace ForRobot.Models.Detals
 
         private volatile int _disposed;
 
-        ~Plita() => Dispose(false);
+        ~Plate() => Dispose(false);
 
         public new void Dispose() => this.Dispose(true);
 

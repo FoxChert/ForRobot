@@ -198,7 +198,7 @@
 
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding Path=SelectedDetalType, RelativeSource={RelativeSource AncestorType={x:Type local:CreateWindow}, Mode=FindAncestor}}" 
-                                                     Value="{x:Static detals:DetalTypes.Plita}">
+                                                     Value="{x:Static detals:DetalTypes.Plate}">
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="ContentControl">
@@ -227,7 +227,7 @@
 
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding Path=SelectedDetalType, RelativeSource={RelativeSource AncestorType={x:Type local:CreateWindow}, Mode=FindAncestor}}"
-                                                     Value="{x:Static detals:DetalTypes.Plita}">
+                                                     Value="{x:Static detals:DetalTypes.Plate}">
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="ContentControl">
@@ -256,7 +256,7 @@
 
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding Path=SelectedDetalType, RelativeSource={RelativeSource AncestorType={x:Type local:CreateWindow}, Mode=FindAncestor}}"
-                                                     Value="{x:Static detals:DetalTypes.Plita}">
+                                                     Value="{x:Static detals:DetalTypes.Plate}">
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="ContentControl">

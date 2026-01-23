@@ -5,8 +5,8 @@ namespace ForRobot.Libr.Services.Providers
 {
     public interface IDetalProvider
     {
-        Plita CreatePlita();
-        PlitaStringer CreatePlitaStringer();
-        PlitaTreygolnik CreatePlitaTreygolnik();
+        Plate CreatePlita();
+        PlateStringer CreatePlitaStringer();
+        PlateTreygolnik CreatePlitaTreygolnik();
     }
 }

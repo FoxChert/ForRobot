@@ -104,7 +104,7 @@ namespace ForRobot.Models.Settings
         /// <summary>
         /// Тип детали, для которой создаётся стартовый файл
         /// </summary>
-        public string StartedDetalType { get; set; } = Models.Detals.DetalTypes.Plita;
+        public string StartedDetalType { get; set; } = Models.Detals.DetalTypes.Plate;
 
         /// <summary>
         /// Выбранное приложение для открытия файлов

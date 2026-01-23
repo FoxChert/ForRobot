@@ -12,7 +12,7 @@ namespace ForRobot.Models.Welding
     /// <summary>
     /// Модель представления шва
     /// </summary>
-    public class Weld : INotifyPropertyChanged
+    public class Weld : INotifyPropertyChanged, ICloneable
     {
         #region Private variables
 
@@ -27,7 +27,7 @@ namespace ForRobot.Models.Welding
 
         [JsonProperty("weld_offset_left")]
         /// <summary>
-        /// Отступ шва от левого края ребра
+        /// отступ шва слева (роспуск, выкружка)
         /// </summary>
         public decimal DissolutionLeft
         {
@@ -35,13 +35,13 @@ namespace ForRobot.Models.Welding
             set
             {
                 this._dissolutionLeft = value;
-                this.OnChangeProperty();
+                this.OnChangeProperty(nameof(this.DissolutionLeft));
             }
         }
 
         [JsonProperty("weld_offset_right")]
         /// <summary>
-        /// Отступ шва от правого края ребра
+        /// отступ шва справа (роспуск, выкружка)
         /// </summary>
         public decimal DissolutionRight
         {
@@ -49,7 +49,7 @@ namespace ForRobot.Models.Welding
             set
             {
                 this._dissolutionRight = value;
-                this.OnChangeProperty();
+                this.OnChangeProperty(nameof(this.DissolutionRight));
             }
         }
 
@@ -131,5 +131,7 @@ namespace ForRobot.Models.Welding
                 );
             }
         }
+
+        public object Clone() => (Weld)this.MemberwiseClone();
     }
 }

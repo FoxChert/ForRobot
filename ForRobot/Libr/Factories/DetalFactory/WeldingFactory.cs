@@ -75,8 +75,8 @@ namespace ForRobot.Libr.Factories.DetalFactory
 
             switch (targetType)
             {
-                case Type plate when plate == typeof(Plita):
-                    return DetalType.Plita;
+                case Type plate when plate == typeof(Plate):
+                    return DetalType.Plate;
 
                 default:
                     throw new NotSupportedException($"Тип {targetType.Name} не поддерживается фабрикой");
@@ -123,8 +123,8 @@ namespace ForRobot.Libr.Factories.DetalFactory
             {
                 switch (detalType)
                 {
-                    case DetalType.Plita:
-                        return CreatePlitaSchema(typeSchema, weldCount == 0 ? Plita.MIN_RIB_COUNT : weldCount);
+                    case DetalType.Plate:
+                        return CreatePlitaSchema(typeSchema, weldCount == 0 ? Plate.MIN_RIB_COUNT : weldCount);
 
                     default:
                         throw new ArgumentException($"Тип детали {DetalTypes.EnumToString(detalType)} не поддерживается", nameof(detalType));

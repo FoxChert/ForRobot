@@ -51,7 +51,7 @@ namespace ForRobot.ViewModels
         /// </summary>
         public string SelectedDetalTypeName
         {
-            get => this._selectedDetalTypeName ?? (this._selectedDetalTypeName = ForRobot.Models.Detals.DetalTypes.Plita);
+            get => this._selectedDetalTypeName ?? (this._selectedDetalTypeName = ForRobot.Models.Detals.DetalTypes.Plate);
             set
             {
                 Set(ref this._selectedDetalTypeName, value);
@@ -64,7 +64,7 @@ namespace ForRobot.ViewModels
         /// </summary>
         public string SelectedDetalTypeScript
         {
-            get => this._selectedDetalTypeScript ?? (this._selectedDetalTypeScript = ForRobot.Models.Detals.DetalTypes.Plita);
+            get => this._selectedDetalTypeScript ?? (this._selectedDetalTypeScript = ForRobot.Models.Detals.DetalTypes.Plate);
             set
             {
                 Set(ref this._selectedDetalTypeScript, value);
@@ -81,13 +81,13 @@ namespace ForRobot.ViewModels
             {
                 switch (this.SelectedDetalTypeName)
                 {
-                    case string a when a == DetalTypes.Plita:
+                    case string a when a == DetalTypes.Plate:
                         return this.Settings.PlitaProgramName;
 
-                    case string b when b == DetalTypes.Plita:
+                    case string b when b == DetalTypes.Plate:
                         return this.Settings.PlitaStringerProgramName;
 
-                    case string c when c == DetalTypes.Plita:
+                    case string c when c == DetalTypes.Plate:
                         return this.Settings.PlitaTreugolnikProgramName;
 
                     default:
@@ -98,15 +98,15 @@ namespace ForRobot.ViewModels
             {
                 switch (this.SelectedDetalTypeName)
                 {
-                    case string a when a == DetalTypes.Plita:
+                    case string a when a == DetalTypes.Plate:
                         this.Settings.PlitaProgramName = value;
                         break;
 
-                    case string b when b == DetalTypes.Plita:
+                    case string b when b == DetalTypes.Plate:
                         this.Settings.PlitaStringerProgramName = value;
                         break;
 
-                    case string c when c == DetalTypes.Plita:
+                    case string c when c == DetalTypes.Plate:
                         this.Settings.PlitaTreugolnikProgramName = value;
                         break;
                 }
@@ -122,13 +122,13 @@ namespace ForRobot.ViewModels
             {
                 switch (this.SelectedDetalTypeScript)
                 {
-                    case string a when a == DetalTypes.Plita:
+                    case string a when a == DetalTypes.Plate:
                         return this.Settings.PlitaScriptName;
 
-                    case string b when b == DetalTypes.Plita:
+                    case string b when b == DetalTypes.Plate:
                         return this.Settings.PlitaStringerScriptName;
 
-                    case string c when c == DetalTypes.Plita:
+                    case string c when c == DetalTypes.Plate:
                         return this.Settings.PlitaTreugolnikScriptName;
 
                     default:
@@ -139,15 +139,15 @@ namespace ForRobot.ViewModels
             {
                 switch (this.SelectedDetalTypeScript)
                 {
-                    case string a when a == DetalTypes.Plita:
+                    case string a when a == DetalTypes.Plate:
                         this.Settings.PlitaScriptName = value;
                         break;
 
-                    case string b when b == DetalTypes.Plita:
+                    case string b when b == DetalTypes.Plate:
                         this.Settings.PlitaStringerScriptName = value;
                         break;
 
-                    case string c when c == DetalTypes.Plita:
+                    case string c when c == DetalTypes.Plate:
                         this.Settings.PlitaTreugolnikScriptName = value;
                         break;
                 }

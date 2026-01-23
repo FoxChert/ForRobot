@@ -41,7 +41,7 @@ namespace ForRobot.Libr.Services
 
         #region Private functions
 
-        private List<Weld> GetPlateWelds(Plita plate)
+        private List<Weld> GetPlateWelds(Plate plate)
         {
             //// Преобразование реальных размеров в модельные.
             //double modelPlateWidth = (double)plate.PlateWidth * (double)ScaleFactor;
@@ -134,8 +134,8 @@ namespace ForRobot.Libr.Services
         {
             switch (detal.DetalType)
             {
-                case DetalTypes.Plita:
-                    return new ObservableCollection<Weld>(this.GetPlateWelds(detal as Plita));
+                case DetalTypes.Plate:
+                    return new ObservableCollection<Weld>(this.GetPlateWelds(detal as Plate));
 
                 default:
                     return null;

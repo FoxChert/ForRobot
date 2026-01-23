@@ -10,7 +10,7 @@ namespace ForRobot.Models.Detals
         /// <summary>
         /// Плита
         /// </summary>
-        public const string Plita = "Настил с ребром";
+        public const string Plate = "Настил с ребром";
 
         /// <summary>
         /// Плита со стрингером
@@ -26,8 +26,8 @@ namespace ForRobot.Models.Detals
         {
             switch (detalType)
             {
-                case Plita:
-                    return DetalType.Plita;
+                case Plate:
+                    return DetalType.Plate;
 
                 case Stringer:
                     return DetalType.Stringer;
@@ -36,7 +36,7 @@ namespace ForRobot.Models.Detals
                     return DetalType.Treygolnik;
 
                 default:
-                    return DetalType.Plita;
+                    return DetalType.Plate;
             }
         }
 
@@ -44,8 +44,8 @@ namespace ForRobot.Models.Detals
         {
             switch (detalType)
             {
-                case DetalType.Plita:
-                    return Plita;
+                case DetalType.Plate:
+                    return Plate;
 
                 case DetalType.Stringer:
                     return Stringer;
@@ -54,7 +54,7 @@ namespace ForRobot.Models.Detals
                     return Treygolnik;
 
                 default:
-                    return Plita;
+                    return Plate;
             }
         }
     }

@@ -57,7 +57,7 @@ namespace ForRobot.Libr.Services
 
             switch (obj)
             {
-                case Plita plita:
+                case Plate plita:
                     propertiesNull = new List<string>() { "BevelToStart", "BevelToEnd" };
                     break;
             }

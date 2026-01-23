@@ -16,7 +16,7 @@ namespace ForRobot.Views.Windows
     /// </summary>
     public partial class CreateWindow : Window, INotifyPropertyChanged, IDisposable
     {
-        private string _selectedDetalType = DetalTypes.Plita;
+        private string _selectedDetalType = DetalTypes.Plate;
         private string _path = string.Empty;
         private string _plitaProgramName = App.Current.Settings.PlitaProgramName;
         private string _plitaStringerProgramName = App.Current.Settings.PlitaStringerProgramName;
@@ -41,7 +41,7 @@ namespace ForRobot.Views.Windows
             {
                 switch (this.SelectedDetalType)
                 {
-                    case string a when a == DetalTypes.Plita:
+                    case string a when a == DetalTypes.Plate:
                         return this._plitaProgramName;
 
                     case string b when b == DetalTypes.Stringer:
@@ -58,7 +58,7 @@ namespace ForRobot.Views.Windows
             {
                 switch (this.SelectedDetalType)
                 {
-                    case string a when a == DetalTypes.Plita:
+                    case string a when a == DetalTypes.Plate:
                         this._plitaProgramName = value;
                         break;
 

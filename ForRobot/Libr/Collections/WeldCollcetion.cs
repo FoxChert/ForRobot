@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -100,6 +101,27 @@ namespace ForRobot.Libr.Collections
                 item.PropertyChanged += OnWeldPropertyChanged;
 
             base.SetItem(index, item);
+        }
+
+        public void SetCount(int count)
+        {
+            if (this == null || this.Count == 0)
+                return;
+
+            if (this.Count < count)
+            {
+                while (this.Count < count)
+                {
+                    this.Add(this.Last<Weld>().Clone() as Weld);
+                }
+            }
+            else
+            {
+                while (this.Count > count)
+                {
+                    this.RemoveItem(this.Count - 1);
+                }
+            }
         }
 
         public void SetWeldsDissolutionLeft(decimal dissolutionLeft)

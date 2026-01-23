@@ -1,9 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema",
   "title": "Plate Json-Schema",
-  "description": "JSON-схема для валидации класса Plita",
-  "x-class-name": "Plita",
-  "x-full-name": "ForRobot.Models.Detals.Plita",
+  "description": "JSON-схема для валидации класса Plate",
+  "x-class-name": "Plate",
+  "x-full-name": "ForRobot.Models.Detals.Plate",
   "x-namespace": "ForRobot.Models.Detals",
   "type": "object",
 
@@ -53,6 +53,112 @@
       "description": "Смещение настила от нулевой точки стола"
     },
 
+    "welding_properties": {
+      "type": "object",
+      "properties": {
+        "search_offset_start": {
+          "type": "number",
+          "description": "Отступ поиска в начале шва"
+        },
+
+        "search_offset_end": {
+          "type": "number",
+          "description": "Отступ поиска в конце шва"
+        },
+
+        "weld_tech_offset_start": {
+          "type": "number",
+          "description": "Технологический отступ начала шва"
+        },
+
+        "weld_tech_offset_end": {
+          "type": "number",
+          "description": "Технологический отступ конца шва"
+        },
+
+        "weld_overlap": {
+          "type": "number",
+          "description": "Перекрытие швов в месте соединения"
+        },
+
+        "weld_job": {
+          "type": "integer",
+          "description": "Номер используемого джоба (ячейки) на источнике"
+        },
+
+        "weld_velocity": {
+          "type": "integer",
+          "description": "Скорость сварки (обратно пропорциональна получаемому катету)"
+        },
+
+        "gantry_radius_weld": {
+          "type": "number",
+          "description": "Расстояние между фланцем робота и позиционера на сварке для расчёта положения позиционера"
+        },
+
+        "gantry_radius_search": {
+          "type": "number",
+          "description": "Расстояние между фланцем робота и позиционера на поисках"
+        },
+
+        "welds_list": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "weld_offset_left": {
+                "type": "number",
+                "description": "Отступ шва от левого края ребра"
+              },
+
+              "weld_offset_right": {
+                "type": "number",
+                "description": "Отступ шва от правого края ребра"
+              }
+            }
+          },
+          "minItems": 1,
+          "description": "Коллекция швов",
+          "required": [
+            "weld_offset_left",
+            "weld_offset_right"
+          ]
+        },
+
+        "welding_schema": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "left_side": {
+                "type": "string"
+              },
+
+              "right_side": {
+                "type": "string"
+              }
+            }
+          },
+          //"minItems": 1,
+          "description": "Схема сварки"
+        }
+      },
+      "required": [
+        "search_offset_start",
+        "search_offset_end",
+        "weld_tech_offset_start",
+        "weld_tech_offset_end",
+        "weld_overlap",
+        "weld_job",
+        "weld_velocity",
+        "gantry_radius_weld",
+        "gantry_radius_search",
+        "welds_list"
+        //"welding_schema"
+      ],
+      "description": "Коллекция параметров сварки"
+    },
+
     "wall_count": {
       "type": "integer",
       "minimum": 1,
@@ -69,14 +175,6 @@
           },
 
           "wall_cross_dist_right": {
-            "type": "number"
-          },
-
-          "weld_offset_left": {
-            "type": "number"
-          },
-
-          "weld_offset_right": {
             "type": "number"
           },
 
@@ -102,9 +200,7 @@
           "wall_cross_dist_left",
           "wall_cross_dist_right",
           "wall_long_dist_left",
-          "wall_long_dist_right",
-          "weld_offset_left",
-          "weld_offset_right"
+          "wall_long_dist_right"
         ]
       },
       "minItems": 1,
@@ -122,6 +218,7 @@
     "base_bevel_right",
     "base_displace",
     "wall_count",
-    "walls_list"
+    "walls_list",
+    "welding_properties"
   ]
 }

@@ -199,6 +199,8 @@ namespace ForRobot.Models.Detals
             }
         }
         
+        [JsonProperty("welding_properties")]
+        [JsonConverter(typeof(JsonCommentConverter), "Параметры сварки")]
         /// <summary>
         /// Свойства сварки детали
         /// </summary>
@@ -208,12 +210,15 @@ namespace ForRobot.Models.Detals
             set
             {
                 if (this._weldingProperties != null)
-                    this._weldingProperties.PropertyChanged -= this.HandleChangeProperty_WeldingProperties;
+                    this._weldingProperties.PropertyChanged -= (s, e) => this.OnChangeProperty(e.PropertyName);
 
                 this._weldingProperties = value;
 
                 if (this._weldingProperties != null)
-                    this._weldingProperties.PropertyChanged += this.HandleChangeProperty_WeldingProperties;
+                    this._weldingProperties.PropertyChanged += (s, e) =>
+                    {
+                        this.OnChangeProperty(e.PropertyName);
+                    };
 
                 this.OnChangeProperty(nameof(WeldingProperties));
             }
@@ -234,9 +239,8 @@ namespace ForRobot.Models.Detals
 
         public Detal()
         {
+            this.WeldingProperties = new WeldingProperties();
             this.PropertyChanged += this.HandleChangeProperty;
-
-            //this.WeldingProperties = new WeldingProperties();
         }
 
         #endregion
@@ -266,12 +270,12 @@ namespace ForRobot.Models.Detals
             }
         }
 
-        /// <summary>
-        /// Делегат изменения свойства параметров сворки
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>,
-        private void HandleChangeProperty_WeldingProperties(object sender, PropertyChangedEventArgs e) => this.OnChangeProperty(e.PropertyName);
+        ///// <summary>
+        ///// Делегат изменения свойства параметров сворки
+        ///// </summary>
+        ///// <param name="sender"></param>
+        ///// <param name="e"></param>,
+        //private void HandleChangeProperty_WeldingProperties(object sender, PropertyChangedEventArgs e) => this.OnChangeProperty(e.PropertyName);
 
         #endregion
 
@@ -320,7 +324,8 @@ namespace ForRobot.Models.Detals
                 if (disposing)
                 {
                     this.PropertyChanged -= this.HandleChangeProperty;
-                    this.WeldingProperties.PropertyChanged -= this.HandleChangeProperty_WeldingProperties;
+                    if(this.WeldingProperties != null)
+                        this.WeldingProperties.PropertyChanged -= (s, e) => this.OnChangeProperty(e.PropertyName);
                     GC.SuppressFinalize(this);
                 }
             }

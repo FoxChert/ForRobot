@@ -54,8 +54,8 @@ namespace ForRobot.Libr.Factories.DetalFactory
 
             switch (targetType)
             {
-                case Type plate when plate == typeof(Plita):
-                    return DetalType.Plita;
+                case Type plate when plate == typeof(Plate):
+                    return DetalType.Plate;
 
                 default:
                     throw new NotSupportedException($"Тип {targetType.Name} не поддерживается фабрикой");
@@ -63,19 +63,19 @@ namespace ForRobot.Libr.Factories.DetalFactory
         }
 
         /// <summary>
-        /// Десериализует строку JSON в объект типа <see cref="Plita"/>
+        /// Десериализует строку JSON в объект типа <see cref="Plate"/>
         /// </summary>
         /// <param name="jsonString">Строка JSON для десериализации</param>
         /// <param name="settings">Настройки сериализатора</param>
-        /// <returns>Десериализованный объект <see cref="Plita"/></returns>
-        private Plita DeserializePlate(string jsonString, JsonSerializerSettings jsonSerializerSettings, JsonLoadSettings jsonLoadSettings = null)
+        /// <returns>Десериализованный объект <see cref="Plate"/></returns>
+        private Plate DeserializePlate(string jsonString, JsonSerializerSettings jsonSerializerSettings, JsonLoadSettings jsonLoadSettings = null)
         {
             if (string.IsNullOrEmpty(jsonString))
-                return this.CreateDetal<Plita>(DetalType.Plita);
+                return this.CreateDetal<Plate>(DetalType.Plate);
             else if (jsonLoadSettings == null)
-                return JsonConvert.DeserializeObject<Plita>(jsonString, jsonSerializerSettings);
+                return JsonConvert.DeserializeObject<Plate>(jsonString, jsonSerializerSettings);
             else
-                return JsonConvert.DeserializeObject<Plita>(JObject.Parse(jsonString, jsonLoadSettings).ToString(), jsonSerializerSettings);
+                return JsonConvert.DeserializeObject<Plate>(JObject.Parse(jsonString, jsonLoadSettings).ToString(), jsonSerializerSettings);
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace ForRobot.Libr.Factories.DetalFactory
             {
                 switch (type)
                 {
-                    case DetalType.Plita:
+                    case DetalType.Plate:
                         return this._detalProvider.CreatePlita();
 
                     default:
@@ -210,13 +210,13 @@ namespace ForRobot.Libr.Factories.DetalFactory
 
                 switch (detalType)
                 {
-                    case DetalTypes.Plita:
-                        bool isValid = this.ValidationJsonString<Plita>(jsonString, exception =>
+                    case DetalTypes.Plate:
+                        bool isValid = this.ValidationJsonString<Plate>(jsonString, exception =>
                         {
                             validationException = exception;
                         });
                         if (!isValid)
-                            return this.CreateDetal<Plita>();
+                            return this.CreateDetal<Plate>();
 
                         return this.DeserializePlate(jsonString, serSettings, loadSettings);
 
@@ -279,14 +279,14 @@ namespace ForRobot.Libr.Factories.DetalFactory
             {
                 switch (detal.DetalType)
                 {
-                    case DetalTypes.Plita:
+                    case DetalTypes.Plate:
                         jsonString = JsonConvert.SerializeObject(detal, settings);
 
                         if (this._serializationError != null)
                             throw _serializationError;
 
                         if (isValidate)
-                            this.ValidationJsonString<Plita>(jsonString, exception => 
+                            this.ValidationJsonString<Plate>(jsonString, exception => 
                             {
                                 validationException = exception;
                                 throw validationException;

@@ -35,7 +35,7 @@ namespace ForRobot.ViewModels
         /// </summary>
         public string SelectedDetalType
         {
-            get => this._selectedDetalType ?? (this._selectedDetalType = DetalType.Plita.ToString());
+            get => this._selectedDetalType ?? (this._selectedDetalType = DetalType.Plate.ToString());
             set
             {
                 this._selectedDetalType = value;
@@ -50,7 +50,7 @@ namespace ForRobot.ViewModels
             {
                 switch (this.SelectedDetalType)
                 {
-                    case string a when a == DetalTypes.Plita:
+                    case string a when a == DetalTypes.Plate:
                         return this._plitaProgramName;
 
                     case string b when b == DetalTypes.Stringer:
@@ -67,7 +67,7 @@ namespace ForRobot.ViewModels
             {
                 switch (this.SelectedDetalType)
                 {
-                    case string a when a == DetalTypes.Plita:
+                    case string a when a == DetalTypes.Plate:
                         this._plitaProgramName = value;
                         break;
 

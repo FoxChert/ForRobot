@@ -107,7 +107,7 @@ namespace ForRobot.Libr
         {
             switch (obj)
             {
-                //case ForRobot.Models.Detals.Plita plita:
+                //case ForRobot.Models.Detals.Plate plita:
                 //    return (ConfigurationManager.GetSection("app") as ForRobot.Libr.ConfigurationProperties.AppConfigurationSection).PlitaGenerator;
 
                 default:
@@ -175,15 +175,15 @@ namespace ForRobot.Libr
 
                 switch (detal)
                 {
-                    case Plita plita:
+                    case Plate plita:
                         this.LogMessage("Начат процесс генерации программы для плиты с рёбрами . . .");
                         break;
 
-                    case PlitaStringer stringer:
+                    case PlateStringer stringer:
                         this.LogMessage("Начат процесс генерации программы для плиты со стрингером . . .");
                         break;
 
-                    case PlitaTreygolnik treygolnik:
+                    case PlateTreygolnik treygolnik:
                         this.LogMessage("Начат процесс генерации программы для плиты треугольником . . .");
                         break;
                 }

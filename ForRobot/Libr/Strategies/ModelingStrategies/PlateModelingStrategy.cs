@@ -11,7 +11,7 @@ using ForRobot.Models.File3D;
 namespace ForRobot.Libr.Strategies.ModelingStrategies
 {
     /// <summary>
-    /// Реализация стратегии <see cref="IDetalModelingStrategy"/> класса <see cref="ForRobot.Models.Detals.Plita"/>
+    /// Реализация стратегии <see cref="IDetalModelingStrategy"/> класса <see cref="ForRobot.Models.Detals.Plate"/>
     /// </summary>
     public class PlateModelingStrategy : IDetalModelingStrategy
     {
@@ -136,7 +136,7 @@ namespace ForRobot.Libr.Strategies.ModelingStrategies
         /// </summary>
         /// <param name="plate"></param>
         /// <returns></returns>
-        private Model3DGroup AddPlate(Plita plate)
+        private Model3DGroup AddPlate(Plate plate)
         {
             this.ValidatePlateParameters(plate);
 
@@ -184,7 +184,7 @@ namespace ForRobot.Libr.Strategies.ModelingStrategies
         /// </summary>
         /// <param name="plate"></param>
         /// <returns></returns>
-        private Model3DGroup AddRibs(Plita plate)
+        private Model3DGroup AddRibs(Plate plate)
         {
             Model3DGroup model3DGroup = new Model3DGroup();
             MeshBuilder meshBuilder = new MeshBuilder();
@@ -285,7 +285,7 @@ namespace ForRobot.Libr.Strategies.ModelingStrategies
         /// Валидация параметров плиты
         /// </summary>
         /// <param name="plate"></param>
-        private void ValidatePlateParameters(Plita plate)
+        private void ValidatePlateParameters(Plate plate)
         {
             if (plate.ScoseType == ScoseTypes.Rect) return;
 
@@ -307,12 +307,12 @@ namespace ForRobot.Libr.Strategies.ModelingStrategies
 
         #endregion Private functions
 
-        public bool CanHandle(DetalType detalType) => detalType == DetalType.Plita;
+        public bool CanHandle(DetalType detalType) => detalType == DetalType.Plate;
 
         public Model3DGroup CreateModel3D(Detal detal)
         {
             Model3DGroup model3DGroup = new Model3DGroup();
-            Plita plate = (Plita)detal;            
+            Plate plate = (Plate)detal;            
             model3DGroup.Children.Add(this.AddPlate(plate)); // Создание плиты.            
             model3DGroup.Children.Add(this.AddRibs(plate)); // Добавление рёбер.
             model3DGroup.SetName("DetalModel");

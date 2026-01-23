@@ -39,9 +39,9 @@ namespace ForRobot.Libr.Services
             //Models.File3D.File3D file3D = sender as Models.File3D.File3D;
             //RaisePropertyChanged(nameof(file3D.CurrentDetal));
 
-            //if (file3D.CurrentDetal is ForRobot.Models.Detals.Plita)
+            //if (file3D.CurrentDetal is ForRobot.Models.Detals.Plate)
             //{
-            //    Plita plita = file3D.CurrentDetal as ForRobot.Models.Detals.Plita;
+            //    Plate plita = file3D.CurrentDetal as ForRobot.Models.Detals.Plate;
             //    //RaisePropertyChanged(nameof(plita.SelectedWeldingSchema));
             //    //RaisePropertyChanged(nameof(plita.WeldingSchema));
             //}

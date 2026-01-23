@@ -92,7 +92,7 @@ namespace ForRobot.Models.File3D
                 //        if (this.SelectedWeldingSchema == ForRobot.Models.Detals.WeldingSchemas.GetDescription(ForRobot.Models.Detals.WeldingSchemas.SchemasTypes.Edit))
                 //            break;
 
-                //        this.WeldingSchema = ForRobot.Models.Detals.WeldingSchemas.BuildingSchema(ForRobot.Models.Detals.WeldingSchemas.GetSchemaType(this.SelectedWeldingSchema), (this.CurrentDetal as Plita).RibsCount) as FullyObservableCollection<WeldingSchemas.SchemaItem>;
+                //        this.WeldingSchema = ForRobot.Models.Detals.WeldingSchemas.BuildingSchema(ForRobot.Models.Detals.WeldingSchemas.GetSchemaType(this.SelectedWeldingSchema), (this.CurrentDetal as Plate).RibsCount) as FullyObservableCollection<WeldingSchemas.SchemaItem>;
                 //        this.WeldingSchema.CollectionChanged += (s, o) => this.OnPropertyChanged(nameof(this.WeldingSchema));
                 //        this.WeldingSchema.ItemPropertyChanged += (s, o) =>
                 //        {
@@ -112,7 +112,7 @@ namespace ForRobot.Models.File3D
         {
             //switch (e.PropertyName)
             //{
-            //    case nameof(Plita.RibsCount):
+            //    case nameof(Plate.RibsCount):
             //        break;
             //}
             this.OnPropertyChanged(nameof(CurrentDetal));
@@ -163,13 +163,13 @@ namespace ForRobot.Models.File3D
 
             switch (this.CurrentDetal.DetalType)
             {
-                case DetalTypes.Plita:
-                    Plita plita = this.CurrentDetal as Plita;
-                    (detal as Plita).ScoseType = plita.ScoseType;
-                    (detal as Plita).DiferentDistance = plita.DiferentDistance;
-                    (detal as Plita).ParalleleRibs = plita.ParalleleRibs;
-                    (detal as Plita).DiferentDissolutionLeft = plita.DiferentDissolutionLeft;
-                    (detal as Plita).DiferentDissolutionRight = plita.DiferentDissolutionRight;
+                case DetalTypes.Plate:
+                    Plate plita = this.CurrentDetal as Plate;
+                    (detal as Plate).ScoseType = plita.ScoseType;
+                    (detal as Plate).DiferentDistance = plita.DiferentDistance;
+                    (detal as Plate).ParalleleRibs = plita.ParalleleRibs;
+                    (detal as Plate).WeldingProperties.DiferentDissolutionLeft = plita.WeldingProperties.DiferentDissolutionLeft;
+                    (detal as Plate).WeldingProperties.DiferentDissolutionRight = plita.WeldingProperties.DiferentDissolutionRight;
                     break;
 
                 default:

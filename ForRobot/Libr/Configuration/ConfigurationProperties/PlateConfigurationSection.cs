@@ -4,7 +4,7 @@ using System.Configuration;
 namespace ForRobot.Libr.Configuration.ConfigurationProperties
 {
     /// <summary>
-    /// Класс для вывода стандартных свойств детали типа <see cref="ForRobot.Models.Detals.DetalTypes.Plita"/> из app.config
+    /// Класс для вывода стандартных свойств детали типа <see cref="ForRobot.Models.Detals.DetalTypes.Plate"/> из app.config
     /// </summary>
     public class PlateConfigurationSection : BaseConfigurationSection
     {

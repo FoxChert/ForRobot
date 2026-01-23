@@ -24,8 +24,17 @@ namespace ForRobot.Libr.Collections
 
         #region Constructors
 
-        public RibCollection() : base()
-        { }
+        public RibCollection() : base() { }
+
+        //public RibCollection(int count)
+        //{
+        //    List<Rib> ribs = new List<Rib>();
+        //    for(int i=0; i<count; i++)
+        //    {
+        //        ribs.Add(new Rib());
+        //    }
+        //    base(ribs);
+        //}
 
         public RibCollection(List<Rib> list) : base(list)
         {

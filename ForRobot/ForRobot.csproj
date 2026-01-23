@@ -508,7 +508,7 @@
     <Compile Include="Models\Controls\File.cs" />
     <Compile Include="Models\Controls\IFile.cs" />
     <Compile Include="Models\Detals\DetalTypes.cs" />
-    <Compile Include="Models\Detals\Plita.cs" />
+    <Compile Include="Models\Detals\Plate.cs" />
     <Compile Include="Models\Detals\ScoseTypes.cs" />
     <Compile Include="Models\Controls\FileTypes.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -529,7 +529,7 @@
     <Compile Include="Models\Robot.cs" />
     <Compile Include="Models\Detals\Detal.cs" />
     <Compile Include="Models\Detals\DetalType.cs" />
-    <Compile Include="Models\Detals\PlitaStringer.cs" />
+    <Compile Include="Models\Detals\PlateStringer.cs" />
     <Compile Include="Models\Detals\PlitaTreygolnik.cs" />
     <Compile Include="Models\Detals\Privyazka.cs" />
     <Compile Include="NativeMethods.cs" />
@@ -665,7 +665,6 @@
       <SubType>Designer</SubType>
     </Content>
     <EmbeddedResource Include="Libr\Resource\JsonSchemas\plate-schema.json" />
-    <EmbeddedResource Include="Libr\Resource\JsonSchemas\plate-schema-genaration.json" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>

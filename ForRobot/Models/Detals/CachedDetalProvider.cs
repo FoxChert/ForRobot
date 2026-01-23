@@ -28,14 +28,14 @@ namespace ForRobot.Models.Detals
             }
         }
 
-        public Plita CreatePlita() => GetCached(typeof(Plita).FullName, () => _innerProvider.CreatePlita());
+        public Plate CreatePlita() => GetCached(typeof(Plate).FullName, () => _innerProvider.CreatePlita());
 
-        public PlitaStringer CreatePlitaStringer()
+        public PlateStringer CreatePlitaStringer()
         {
             throw new NotImplementedException();
         }
 
-        public PlitaTreygolnik CreatePlitaTreygolnik()
+        public PlateTreygolnik CreatePlitaTreygolnik()
         {
             throw new NotImplementedException();
         }

@@ -243,16 +243,16 @@ namespace ForRobot.Libr.Behavior
 
             switch (propertyName)
             {
-                case nameof(ForRobot.Models.Detals.Plita.DistanceToFirstRib):
-                case nameof(ForRobot.Models.Detals.Plita.DistanceBetweenRibs):
+                case nameof(ForRobot.Models.Detals.Plate.DistanceToFirstRib):
+                case nameof(ForRobot.Models.Detals.Plate.DistanceBetweenRibs):
                 case nameof(Rib.DistanceLeft):
                 case nameof(Rib.DistanceRight):
                     foreach (var item in this.Items.Where(x => x != null && x.PropertyName.Contains("Distance")))
                         item.IsVisible = true;
                     break;
 
-                case nameof(ForRobot.Models.Detals.Plita.RibsIdentToLeft):
-                case nameof(ForRobot.Models.Detals.Plita.RibsIdentToRight):
+                case nameof(ForRobot.Models.Detals.Plate.RibsIdentToLeft):
+                case nameof(ForRobot.Models.Detals.Plate.RibsIdentToRight):
                     foreach (var item in this.Items.Where(x => x != null && x.PropertyName.Contains("Ident")))
                         item.IsVisible = true;
                     break;
@@ -264,7 +264,7 @@ namespace ForRobot.Libr.Behavior
                 //    break;
 
                 default:
-                    foreach (var item in this.Items.Where(x => x != null && new List<string> { nameof(Plita.PlateLength), nameof(Plita.PlateWidth), nameof(Plita.PlateBevelToLeft), nameof(Plita.PlateBevelToRight) }.Contains(x.PropertyName)))
+                    foreach (var item in this.Items.Where(x => x != null && new List<string> { nameof(Plate.PlateLength), nameof(Plate.PlateWidth), nameof(Plate.PlateBevelToLeft), nameof(Plate.PlateBevelToRight) }.Contains(x.PropertyName)))
                         item.IsVisible = true;
                     break;
             }

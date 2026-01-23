@@ -11,7 +11,7 @@ using ForRobot.Models.File3D;
 namespace ForRobot.Libr.Strategies.AnnotationStrategies
 {
     /// <summary>
-    /// Реализация стратегии <see cref="IDetalAnnotationStrategy"/> класса <see cref="ForRobot.Models.Detals.Plita"/>
+    /// Реализация стратегии <see cref="IDetalAnnotationStrategy"/> класса <see cref="ForRobot.Models.Detals.Plate"/>
     /// </summary>
     public class PlateAnnotationStrategy : IDetalAnnotationStrategy
     {
@@ -49,8 +49,8 @@ namespace ForRobot.Libr.Strategies.AnnotationStrategies
         /// <returns></returns>
         private Point3D CreatePoint(double x, double y, double z) => new Point3D(Math.Round(x, 4), Math.Round(y, 4), Math.Round(z, 4));
 
-        [PropertyName(nameof(Plita.PlateLength))]
-        private Annotation GetPlateLengthAnnotation(Plita plate)
+        [PropertyName(nameof(Plate.PlateLength))]
+        private Annotation GetPlateLengthAnnotation(Plate plate)
         {
             double modelPlateWidth = (double)plate.PlateWidth * (double)this._scaleFactor;
 
@@ -76,8 +76,8 @@ namespace ForRobot.Libr.Strategies.AnnotationStrategies
             return this.GetAnnotation(points, nameof(plate.PlateLength), ToString(plate.PlateLength));
         }
 
-        [PropertyName(nameof(Plita.PlateWidth))]
-        private Annotation GetPlateWidthAnnotation(Plita plate)
+        [PropertyName(nameof(Plate.PlateWidth))]
+        private Annotation GetPlateWidthAnnotation(Plate plate)
         {
             double halfLength = (double)plate.PlateLength * (double)this._scaleFactor / 2;
             double halfWidth = (double)plate.PlateWidth * (double)this._scaleFactor / 2;
@@ -112,8 +112,8 @@ namespace ForRobot.Libr.Strategies.AnnotationStrategies
             return this.GetAnnotation(points, nameof(plate.PlateWidth), ToString(plate.PlateWidth));
         }
 
-        [PropertyName(nameof(Plita.PlateBevelToLeft))]
-        private Annotation GetBevelToLeftAnnotation(Plita plate)
+        [PropertyName(nameof(Plate.PlateBevelToLeft))]
+        private Annotation GetBevelToLeftAnnotation(Plate plate)
         {
             double halfLength = (double)plate.PlateLength * (double)this._scaleFactor / 2;
             double halfWidth = (double)plate.PlateWidth * (double)this._scaleFactor / 2;
@@ -165,8 +165,8 @@ namespace ForRobot.Libr.Strategies.AnnotationStrategies
             return this.GetAnnotation(points, nameof(plate.PlateBevelToLeft), ToString(plate.PlateBevelToLeft), arrowSide);
         }
 
-        [PropertyName(nameof(Plita.PlateBevelToRight))]
-        private Annotation GetBevelToRightAnnotation(Plita plate)
+        [PropertyName(nameof(Plate.PlateBevelToRight))]
+        private Annotation GetBevelToRightAnnotation(Plate plate)
         {
             double halfLength = (double)plate.PlateLength * (double)this._scaleFactor / 2;
             double halfWidth = (double)plate.PlateWidth * (double)this._scaleFactor / 2;
@@ -219,7 +219,7 @@ namespace ForRobot.Libr.Strategies.AnnotationStrategies
         }
 
         [PropertyName("Distance")]
-        private List<Annotation> GetRibsDistancsesAnnotation(Plita plate)
+        private List<Annotation> GetRibsDistancsesAnnotation(Plate plate)
         {
             List<Annotation> annotations = new List<Annotation>();
             double modelPlateLength = (double)plate.PlateLength * (double)this._scaleFactor;
@@ -318,7 +318,7 @@ namespace ForRobot.Libr.Strategies.AnnotationStrategies
         }
 
         [PropertyName("Ident")]
-        private List<Annotation> GetRibsIdentsAnnotation(Plita plate)
+        private List<Annotation> GetRibsIdentsAnnotation(Plate plate)
         {
             List<Annotation> annotations = new List<Annotation>();
             double halfModelPlateLength = (double)plate.PlateLength * (double)this._scaleFactor / 2;
@@ -401,7 +401,7 @@ namespace ForRobot.Libr.Strategies.AnnotationStrategies
         }
 
         [PropertyName("Dissolution")]
-        private List<Annotation> GetRibsDissolutionsAnnotation(Plita plate)
+        private List<Annotation> GetRibsDissolutionsAnnotation(Plate plate)
         {
             List<Annotation> annotations = new List<Annotation>();
             //double halfModelPlateLength = (double)plate.PlateLength * (double)this._scaleFactor / 2;
@@ -498,11 +498,11 @@ namespace ForRobot.Libr.Strategies.AnnotationStrategies
 
         #endregion Private functions
 
-        public bool CanHandle(DetalType detalType) => detalType == DetalType.Plita;
+        public bool CanHandle(DetalType detalType) => detalType == DetalType.Plate;
 
         public ObservableCollection<Annotation> CreateAnnotations(Detal detal)
         {
-            Plita plate = (Plita)detal;
+            Plate plate = (Plate)detal;
             List<Annotation> annotationsList = new List<Annotation>()
             {
                 this.GetPlateLengthAnnotation(plate),

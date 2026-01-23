@@ -13,7 +13,7 @@ namespace ForRobot.Models.Detals
         /// <summary>
         /// Плита
         /// </summary>
-        Plita = 1,
+        Plate = 1,
 
         [Description("Настил со стрингером")]
         /// <summary>
@@ -27,6 +27,6 @@ namespace ForRobot.Models.Detals
         /// </summary>
         Treygolnik = 3,
 
-        All = Plita | Stringer | Treygolnik
+        All = Plate | Stringer | Treygolnik
     }
 }

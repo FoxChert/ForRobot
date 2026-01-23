@@ -49,13 +49,13 @@ namespace ForRobot.ViewModels
         //    {
         //        switch (this.SelectedFile.CurrentDetal)
         //        {
-        //            case Plita plita:
+        //            case Plate plita:
         //                return App.Current.Settings.PlitaProgramName;
 
-        //            case PlitaStringer plitaStringer:
+        //            case PlateStringer plitaStringer:
         //                return App.Current.Settings.PlitaStringerProgramName;
 
-        //            case PlitaTreygolnik plitaTreygolnik:
+        //            case PlateTreygolnik plitaTreygolnik:
         //                return App.Current.Settings.PlitaTreugolnikProgramName;
 
         //            default:
@@ -70,13 +70,13 @@ namespace ForRobot.ViewModels
         //    {
         //        switch (this.SelectedFile.CurrentDetal)
         //        {
-        //            case Plita plita:
+        //            case Plate plita:
         //                return App.Current.Settings.PlitaScriptName;
 
-        //            case PlitaStringer plitaStringer:
+        //            case PlateStringer plitaStringer:
         //                return App.Current.Settings.PlitaStringerScriptName;
 
-        //            case PlitaTreygolnik plitaTreygolnik:
+        //            case PlateTreygolnik plitaTreygolnik:
         //                return App.Current.Settings.PlitaTreugolnikScriptName;
 
         //            default:
@@ -690,7 +690,7 @@ namespace ForRobot.ViewModels
             string programName;
             switch (startedDetalType)
             {
-                case DetalTypes.Plita:
+                case DetalTypes.Plate:
                     programName = App.Current.Settings.PlitaProgramName;
                     break;
 
@@ -833,8 +833,8 @@ namespace ForRobot.ViewModels
             //{
             //    switch (detal)
             //    {
-            //        case Plita p:
-            //            var plita = (Plita)detal;
+            //        case Plate p:
+            //            var plita = (Plate)detal;
             //            var sch = WeldingSchemas.GetSchema(plita.WeldingSchema);
             //            jObject.Add("welding_sequence", JToken.FromObject(sch)); // Запись в json-строку схему сварки настила.
             //            break;
@@ -900,9 +900,9 @@ namespace ForRobot.ViewModels
         //    ////RaisePropertyChanged(nameof(file3D.Detal));
         //    //////RaisePropertyChanged(nameof(file3D.CurrentModel));
 
-        //    ////if (file3D.Detal is ForRobot.Models.Detals.Plita)
+        //    ////if (file3D.Detal is ForRobot.Models.Detals.Plate)
         //    ////{
-        //    ////    Plita plita = file3D.Detal as ForRobot.Models.Detals.Plita;
+        //    ////    Plate plita = file3D.Detal as ForRobot.Models.Detals.Plate;
         //    ////    RaisePropertyChanged(nameof(plita.SelectedWeldingSchema));
         //    ////    RaisePropertyChanged(nameof(plita.WeldingSchema));
         //    ////}
@@ -961,15 +961,15 @@ namespace ForRobot.ViewModels
             //// Генерация программы.
             //switch (this.SelectedFile.CurrentDetal)
             //{
-            //    case Plita plita:
+            //    case Plate plita:
             //        App.Current.Logger.Info("Начат процесс генерации программы для плиты с рёбрами . . .");
             //        break;
 
-            //    case PlitaStringer plitaStringer:
+            //    case PlateStringer plitaStringer:
             //        App.Current.Logger.Info("Начат процесс генерации программы для плиты со стрингером . . .");
             //        break;
 
-            //    case PlitaTreygolnik plitaTreygolnik:
+            //    case PlateTreygolnik plitaTreygolnik:
             //        App.Current.Logger.Info("Начат процесс генерации программы для плиты треугольником . . .");
             //        break;
             //}

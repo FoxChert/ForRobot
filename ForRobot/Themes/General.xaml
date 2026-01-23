@@ -250,7 +250,7 @@
     </ControlTemplate>
 
     <BitmapImage x:Key="ImagePlitaStart" UriSource="/InterfaceOfRobots;component/Themes/Images/StartPlita.png"/>
-    <BitmapImage x:Key="ImagePlitaBody" UriSource="/InterfaceOfRobots;component/Themes/Images/Plita.png"/>
+    <BitmapImage x:Key="ImagePlitaBody" UriSource="/InterfaceOfRobots;component/Themes/Images/Plate.png"/>
     <BitmapImage x:Key="ImagePlitaEnd" UriSource="pack://application:,,,/Themes/Images/EndPlita.png"/>
     <!--<BitmapImage x:Key="ImagePlitaEnd" UriSource="pack://application:,,,/InterfaceOfRobots;component/Themes/Images/EndPlita.png"/>-->
     <!--<BitmapImage x:Key="ImagePlitaEnd" UriSource="/InterfaceOfRobots;component/Themes/Images/EndPlita.png"/>-->

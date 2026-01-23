@@ -15,17 +15,17 @@ namespace ForRobot.Models.Detals
         }
 
         /// <summary>
-        /// Создает деталь типа <see cref="DetalType.Plita"/> с параметрами из конфигурации
+        /// Создает деталь типа <see cref="DetalType.Plate"/> с параметрами из конфигурации
         /// </summary>
-        /// <returns>Новая деталь типа Plita</returns>
-        public Plita CreatePlita()
+        /// <returns>Новая деталь типа Plate</returns>
+        public Plate CreatePlita()
         {
             var plateConfig = this._configurationProvider.GetPlateConfig();
 
             if (plateConfig == null)
-                throw new InvalidOperationException($"Конфигурация для детали {DetalType.Plita} не найдена");
-
-            return new Plita()
+                throw new InvalidOperationException($"Конфигурация для детали {DetalType.Plate} не найдена");
+            
+            return new Plate()
             {
                 ReverseDeflection = plateConfig.ReverseDeflection,
                 PlateWidth = plateConfig.PlateWidth,
@@ -41,11 +41,11 @@ namespace ForRobot.Models.Detals
                 DistanceBetweenRibs = plateConfig.DistanceBetweenRibs,
                 RibsIdentToLeft = plateConfig.RibsIdentToLeft,
                 RibsIdentToRight = plateConfig.RibsIdentToRight,
-                WeldsDissolutionLeft = plateConfig.WeldsDissolutionLeft,
-                WeldsDissolutionRight = plateConfig.WeldsDissolutionRight,
 
-                WeldingProperties = new WeldingProperties()
+                WeldingProperties =
                 {
+                    WeldsDissolutionLeft = plateConfig.WeldsDissolutionLeft,
+                    WeldsDissolutionRight = plateConfig.WeldsDissolutionRight,
                     SearchOffsetStart = plateConfig.SearchOffsetStart,
                     SearchOffsetEnd = plateConfig.SearchOffsetEnd,
                     TechOffsetSeamStart = plateConfig.TechOffsetSeamStart,
@@ -57,15 +57,44 @@ namespace ForRobot.Models.Detals
                     DistanceForSearch = plateConfig.DistanceForSearch,
                     SelectedWeldingSchema = WeldingSchemaTypes.LeftEvenOdd_RightEvenOdd
                 }
+
+                //WeldsDissolutionLeft = plateConfig.WeldsDissolutionLeft,
+                //WeldsDissolutionRight = plateConfig.WeldsDissolutionRight,
+                //SearchOffsetStart = plateConfig.SearchOffsetStart,
+                //SearchOffsetEnd = plateConfig.SearchOffsetEnd,
+                //TechOffsetSeamStart = plateConfig.TechOffsetSeamStart,
+                //TechOffsetSeamEnd = plateConfig.TechOffsetSeamEnd,
+                //SeamsOverlap = plateConfig.SeamsOverlap,
+                //ProgramNom = plateConfig.ProgramNom,
+                //WeldingSpead = plateConfig.WeldingSpead,
+                //DistanceForWelding = plateConfig.DistanceForWelding,
+                //DistanceForSearch = plateConfig.DistanceForSearch,
+                //SelectedWeldingSchema = WeldingSchemaTypes.LeftEvenOdd_RightEvenOdd
+
+                //WeldingProperties = new WeldingProperties()
+                //{
+                //    WeldsDissolutionLeft = plateConfig.WeldsDissolutionLeft,
+                //    WeldsDissolutionRight = plateConfig.WeldsDissolutionRight,
+                //    SearchOffsetStart = plateConfig.SearchOffsetStart,
+                //    SearchOffsetEnd = plateConfig.SearchOffsetEnd,
+                //    TechOffsetSeamStart = plateConfig.TechOffsetSeamStart,
+                //    TechOffsetSeamEnd = plateConfig.TechOffsetSeamEnd,
+                //    SeamsOverlap = plateConfig.SeamsOverlap,
+                //    ProgramNom = plateConfig.ProgramNom,
+                //    WeldingSpead = plateConfig.WeldingSpead,
+                //    DistanceForWelding = plateConfig.DistanceForWelding,
+                //    DistanceForSearch = plateConfig.DistanceForSearch,
+                //    SelectedWeldingSchema = WeldingSchemaTypes.LeftEvenOdd_RightEvenOdd
+                //}
             };
         }
 
-        public PlitaStringer CreatePlitaStringer()
+        public PlateStringer CreatePlitaStringer()
         {
             throw new NotImplementedException();
         }
 
-        public PlitaTreygolnik CreatePlitaTreygolnik()
+        public PlateTreygolnik CreatePlitaTreygolnik()
         {
             throw new NotImplementedException();
         }

@@ -59,8 +59,8 @@ namespace ForRobot.Libr.Services
         {
             switch (detal.DetalType)
             {
-                case DetalTypes.Plita:
-                    Plita plate = detal as Plita;
+                case DetalTypes.Plate:
+                    Plate plate = detal as Plate;
 
                     if (configuration == SceneConfiguration.FirstCehConfiguration)
                         this.PlateFirstCehConfiguration(scene, plate);
@@ -70,7 +70,7 @@ namespace ForRobot.Libr.Services
             }
         }
 
-        private void PlateFirstCehConfiguration(Model3DGroup scene, Plita plate)
+        private void PlateFirstCehConfiguration(Model3DGroup scene, Plate plate)
         {
             double halfModelPlateLength = (double)plate.PlateLength * this._scaleFactor / 2;
             double halfModelPlateWidth = (double)plate.PlateWidth * this._scaleFactor / 2;
@@ -101,7 +101,7 @@ namespace ForRobot.Libr.Services
             scene.Children.AddMan((halfModelPlateLength + DEFAULT_DISTANCE * 1.5 + offsetDirection) * -1, 0, 0, manBTransform);
         }
 
-        private void PlateSecondCehConfiguration(Model3DGroup scene, Plita plate)
+        private void PlateSecondCehConfiguration(Model3DGroup scene, Plate plate)
         {
             double halfModelPlateLength = (double)plate.PlateLength * this._scaleFactor / 2;
             double halfModelPlateWidth = (double)plate.PlateWidth * this._scaleFactor / 2;
@@ -151,8 +151,8 @@ namespace ForRobot.Libr.Services
 
             switch (detal.DetalType)
             {
-                case DetalTypes.Plita:
-                    Plita plate = detal as Plita;
+                case DetalTypes.Plate:
+                    Plate plate = detal as Plate;
                     detalModel3D.SetName("Plate");
 
                     this.ApplySceneConfiguration(scene, plate, SceneConfiguration.FirstCehConfiguration);

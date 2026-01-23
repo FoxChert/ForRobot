@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace ForRobot.Models.Detals
 {
-    public class PlitaStringer : Detal
+    public class PlateStringer : Detal
     {
         [JsonIgnore]
         /// <summary>
@@ -19,7 +19,7 @@ namespace ForRobot.Models.Detals
 
         #region Constructor
 
-        public PlitaStringer() { }
+        public PlateStringer() { }
 
         #endregion
     }
