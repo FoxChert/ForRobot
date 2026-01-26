@@ -788,7 +788,8 @@
                                                        Fill="{Binding Source={x:Static file:Colors.SelectorBoxColor}, Converter={StaticResource ColorToBrushConverter}}"/>-->
 
                                 <i:Interaction.Behaviors>
-                                    <behavior:CameraControllerBehavior/>
+                                    <behavior:CameraControllerBehavior/>                                    
+                                    
                                     <!--<behavior:HelixWeldsBehavior Detal="{Binding Path=CurrentDetal, diag:PresentationTraceSources.TraceLevel=High, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                                                  Thickness="{Binding Path=Settings.WeldsThickness, Source={x:Static Application.Current}, Mode=OneWay}"
                                                                  IsDivided="{Binding Path=DataContext.IsDividedWelds, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Page}, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged}"/>-->

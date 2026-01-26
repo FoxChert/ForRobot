@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-using ForRobot.Models.Detals;
 using ForRobot.Models.Welding;
 
 namespace ForRobot.Libr.Factories.DetalFactory
@@ -79,30 +76,10 @@ namespace ForRobot.Libr.Factories.DetalFactory
         #region Private functions
 
         /// <summary>
-        /// Определение DetalType на основе generic типа
-        /// </summary>
-        /// <typeparam name="T">Тип детали</typeparam>
-        /// <returns>Соответствующий DetalType</returns>
-        /// <exception cref="NotSupportedException">Если тип не поддерживается</exception>
-        private static DetalType GetDetalTypeFromGenericType<T>() where T : Detal
-        {
-            Type targetType = typeof(T);
-
-            switch (targetType)
-            {
-                case Type plate when plate == typeof(Plate):
-                    return DetalType.Plate;
-
-                default:
-                    throw new NotSupportedException($"Тип {targetType.Name} не поддерживается фабрикой");
-            }
-        }
-
-        /// <summary>
         /// Создание заполненной коллекции <see cref="WeldingSchemaItem"/>
         /// </summary>
         /// <param name="count">Кол-во элементов коллекции</param>
-        /// <returns></returns>
+        /// <returns>Коллекция WeldingSchemaItem заданного размера</returns>
         private static IEnumerable<WeldingSchemaItem> CreateEnumerableWithCount(int count)
         {
             if (count < 0)

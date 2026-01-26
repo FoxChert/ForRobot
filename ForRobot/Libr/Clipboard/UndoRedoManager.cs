@@ -16,8 +16,8 @@ namespace ForRobot.Libr.Clipboard
 
         #region Public variables
         
-        public bool CanUndo => _stacks.UndoStack.Count > 0;
-        public bool CanRedo => _stacks.RedoStack.Count > 0;
+        public bool CanUndo => this._stacks.UndoStack.Count > 0;
+        public bool CanRedo => this._stacks.RedoStack.Count > 0;
 
         public event EventHandler UndoRedoStateChanged;
         //public event NotifyCollectionChangedEventHandler UndoRedoStateChanged;
@@ -26,9 +26,9 @@ namespace ForRobot.Libr.Clipboard
 
         public UndoRedoManager(CacheClipboardProvider clipboardProvider, string fileKey)
         {
-            _clipboardProvider = clipboardProvider;
-            _fileKey = fileKey;
-            _stacks = _clipboardProvider.GetOrAddStacks(_fileKey);
+            this._clipboardProvider = clipboardProvider;
+            this._fileKey = fileKey;
+            this._stacks = _clipboardProvider.GetOrAddStacks(_fileKey);
         }
 
         #region Public functions
@@ -39,8 +39,8 @@ namespace ForRobot.Libr.Clipboard
 
             var command = _stacks.UndoStack.Pop();
             command.Unexecute();
-            _stacks.RedoStack.Push(command);
-            OnUndoRedoStateChanged();
+            this._stacks.RedoStack.Push(command);
+            this.OnUndoRedoStateChanged();
         }
 
         public void Redo()
@@ -49,25 +49,25 @@ namespace ForRobot.Libr.Clipboard
 
             var command = _stacks.RedoStack.Pop();
             command.Execute();
-            _stacks.UndoStack.Push(command);
-            OnUndoRedoStateChanged();
+            this._stacks.UndoStack.Push(command);
+            this.OnUndoRedoStateChanged();
         }
 
         public void AddUndoCommand(IUndoableCommand command)
         {
-            _stacks.UndoStack.Push(command);
-            _stacks.RedoStack.Clear();
-            OnUndoRedoStateChanged();
+            this._stacks.UndoStack.Push(command);
+            this._stacks.RedoStack.Clear();
+            this.OnUndoRedoStateChanged();
         }
 
         public void ClearUndoRedoHistory()
         {
-            _stacks.UndoStack.Clear();
-            _stacks.RedoStack.Clear();
-            OnUndoRedoStateChanged();
+            this._stacks.UndoStack.Clear();
+            this._stacks.RedoStack.Clear();
+            this.OnUndoRedoStateChanged();
         }
 
-        protected virtual void OnUndoRedoStateChanged() => UndoRedoStateChanged?.Invoke(this, EventArgs.Empty);
+        protected virtual void OnUndoRedoStateChanged() => this.UndoRedoStateChanged?.Invoke(this, EventArgs.Empty);
 
         #endregion Public functions
     }

@@ -327,7 +327,28 @@ namespace ForRobot.Models
                 this.OnChangeProperty();
             }
         }
-        
+
+        public double[] CenterPoint3D { get; private set; } = new double[3] { 0, 0, 0 };
+
+        [JsonIgnore]
+        public double XPoint
+        {
+            get => this.CenterPoint3D[0];
+            set => this.CenterPoint3D[0] = value;
+        }
+        [JsonIgnore]
+        public double YPoint
+        {
+            get => this.CenterPoint3D[1];
+            set => this.CenterPoint3D[1] = value;
+        }
+        [JsonIgnore]
+        public double ZPoint
+        {
+            get => this.CenterPoint3D[2];
+            set => this.CenterPoint3D[2] = value;
+        }
+
         [JsonIgnore]
         /// <summary>
         /// Файлы роботов
@@ -364,8 +385,6 @@ namespace ForRobot.Models
             {
                 this.OnChangeProperty(nameof(this.Files));
             };
-            //this.Files.Children.ItemPropertyChanged += (s, e) => this.OnChangeProperty(nameof(this.Files));
-
         }
 
         #endregion

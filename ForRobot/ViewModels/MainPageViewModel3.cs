@@ -138,8 +138,8 @@ namespace ForRobot.ViewModels
         #region Public variables
 
         public bool IsVisibleGridLinesVisual3D { get => this._isVisibleGridLinesVisual3D; set => Set(ref this._isVisibleGridLinesVisual3D, value); }
-        public bool CanUndo => SelectedFile == null ? false : this.SelectedFile.CanUndo;
-        public bool CanRedo => SelectedFile == null ? false : this.SelectedFile.CanRedo;
+        //public bool CanUndo => SelectedFile == null ? false : this.SelectedFile.CanUndo;
+        //public bool CanRedo => SelectedFile == null ? false : this.SelectedFile.CanRedo;
         public bool IsDividedWelds { get => this._isDividedWelds; set => Set(ref this._isDividedWelds, value); }
 
         public Version Version { get => System.Reflection.Assembly.GetEntryAssembly().GetName().Version; }
@@ -384,20 +384,18 @@ namespace ForRobot.ViewModels
         ///// <summary>
         ///// Команда отмены действия
         ///// </summary>
-        //public ICommand UndoCommand { get => new RelayCommand(_ => 
+        //public ICommand UndoCommand
         //{
-        //    this.SelectedFile?.Undo();
-        //    GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new Libr.Messages.UpdateCurrentDetalMessage(this.SelectedFile.CurrentDetal));
-        //}, _ => this.CanUndo); }
+        //    get => new RelayCommand(_ => this.SelectedFile?.Undo(), _ => this.SelectedFile == null ? false : this.SelectedFile.CanUndo);
+        //}
 
         ///// <summary>
         ///// Команда возврата действия
         ///// </summary>
-        //public ICommand RedoCommand { get => new RelayCommand(_ => 
+        //public ICommand RedoCommand
         //{
-        //    this.SelectedFile?.Redo();
-        //    GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new Libr.Messages.UpdateCurrentDetalMessage(this.SelectedFile.CurrentDetal));
-        //}, _ => this.CanRedo); }
+        //    get => new RelayCommand(_ => this.SelectedFile?.Redo(), _ => this.SelectedFile == null ? false : this.SelectedFile.CanRedo);
+        //}
 
         /// <summary>
         /// Сброс параметров детали до стандартных

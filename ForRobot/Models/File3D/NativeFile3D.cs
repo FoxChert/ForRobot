@@ -18,8 +18,6 @@ namespace ForRobot.Models.File3D
 
         private Detal _currentDetal;
 
-        //private FullyObservableCollection<WeldingSchemas.SchemaItem> _weldingSchema;
-
         #endregion private variables
 
         #region Public variables
@@ -41,9 +39,7 @@ namespace ForRobot.Models.File3D
         #endregion Public variables
 
         #region Constructors
-
-        //public NativeFile3D() { }
-
+        
         /// <summary>
         /// Инициализация объекта <see cref="NativeFile3D"/> для чтения существующего файла
         /// </summary>
@@ -88,18 +84,8 @@ namespace ForRobot.Models.File3D
         {
             switch (e.PropertyName)
             {
-                //    case nameof(SelectedWeldingSchema):
-                //        if (this.SelectedWeldingSchema == ForRobot.Models.Detals.WeldingSchemas.GetDescription(ForRobot.Models.Detals.WeldingSchemas.SchemasTypes.Edit))
-                //            break;
-
-                //        this.WeldingSchema = ForRobot.Models.Detals.WeldingSchemas.BuildingSchema(ForRobot.Models.Detals.WeldingSchemas.GetSchemaType(this.SelectedWeldingSchema), (this.CurrentDetal as Plate).RibsCount) as FullyObservableCollection<WeldingSchemas.SchemaItem>;
-                //        this.WeldingSchema.CollectionChanged += (s, o) => this.OnPropertyChanged(nameof(this.WeldingSchema));
-                //        this.WeldingSchema.ItemPropertyChanged += (s, o) =>
-                //        {
-                //            this.SelectedWeldingSchema = ForRobot.Models.Detals.WeldingSchemas.GetDescription(WeldingSchemas.SchemasTypes.Edit);
-                //            this.OnPropertyChanged(nameof(this.WeldingSchema));
-                //        };
-                //        break;
+                case nameof(this.CurrentDetal):
+                    break;
             }
         }
 
@@ -122,10 +108,10 @@ namespace ForRobot.Models.File3D
 
         private void SetDetal(object value)
         {
-            if (this._currentDetal == value) // Изменить на сравнение объеков
+            if (this._currentDetal == value)
                 return;
 
-            if (this._currentDetal != null) // Отписка событий
+            if (this._currentDetal != null)
             {
                 this._currentDetal.PropertyChanged -= HandleCurrentDetalPropertyChange;
             }

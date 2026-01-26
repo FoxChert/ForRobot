@@ -24,7 +24,7 @@ namespace ForRobot.Models.File3D
     {
         #region Private variables
 
-        private readonly ForRobot.Libr.Clipboard.UndoRedoManager _undoRedoManager;
+        //private readonly ForRobot.Libr.Clipboard.UndoRedoManager _undoRedoManager;
         private readonly Dispatcher dispatcher;
 
         private bool _isSaved = true;
@@ -59,8 +59,8 @@ namespace ForRobot.Models.File3D
         public string Name => System.IO.Path.GetFileName(this.Path);
         public abstract string Filter { get; }
 
-        public bool CanUndo => this._undoRedoManager.CanUndo;
-        public bool CanRedo => this._undoRedoManager.CanRedo;
+        //public bool CanUndo => this._undoRedoManager.CanUndo;
+        //public bool CanRedo => this._undoRedoManager.CanRedo;
 
         public abstract Model3DGroup CurrentModel { get; protected set; }
 
@@ -86,10 +86,7 @@ namespace ForRobot.Models.File3D
 
         public File3D(string path) : this()
         {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
-
-            this.Path = path;
+            this.Path = path ?? throw new ArgumentNullException(nameof(path));
         }
 
         #endregion Constructors
@@ -115,8 +112,8 @@ namespace ForRobot.Models.File3D
         public abstract void Save(string path);
         public virtual void Save() => this.Save(this.Path);
 
-        public void Undo() => this._undoRedoManager.Undo();
-        public void Redo() => this._undoRedoManager.Redo();
+        //public void Undo() => this._undoRedoManager.Undo();
+        //public void Redo() => this._undoRedoManager.Redo();
 
         /// <summary>
         /// Вызов события изменения свойства класса <see cref="File3D"/>
