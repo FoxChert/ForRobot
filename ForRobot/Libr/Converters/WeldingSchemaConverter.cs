@@ -20,14 +20,7 @@ namespace ForRobot.Libr.Converters
             
             if(Enum.TryParse(value.ToString(), out schemasTypes))
             {
-                FieldInfo fieldInfo = typeof(WeldingSchemaTypes).GetField(value.ToString());
-
-                if (fieldInfo != null && fieldInfo.IsLiteral)
-                {
-                    return fieldInfo.GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), false).SingleOrDefault() as System.ComponentModel.DescriptionAttribute;
-                }
-                else
-                    return null;
+                return schemasTypes.GetDescription();
             }
             return null;
         }

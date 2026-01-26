@@ -57,35 +57,6 @@ namespace ForRobot.Models.Detals
                     DistanceForSearch = plateConfig.DistanceForSearch,
                     SelectedWeldingSchema = WeldingSchemaTypes.LeftEvenOdd_RightEvenOdd
                 }
-
-                //WeldsDissolutionLeft = plateConfig.WeldsDissolutionLeft,
-                //WeldsDissolutionRight = plateConfig.WeldsDissolutionRight,
-                //SearchOffsetStart = plateConfig.SearchOffsetStart,
-                //SearchOffsetEnd = plateConfig.SearchOffsetEnd,
-                //TechOffsetSeamStart = plateConfig.TechOffsetSeamStart,
-                //TechOffsetSeamEnd = plateConfig.TechOffsetSeamEnd,
-                //SeamsOverlap = plateConfig.SeamsOverlap,
-                //ProgramNom = plateConfig.ProgramNom,
-                //WeldingSpead = plateConfig.WeldingSpead,
-                //DistanceForWelding = plateConfig.DistanceForWelding,
-                //DistanceForSearch = plateConfig.DistanceForSearch,
-                //SelectedWeldingSchema = WeldingSchemaTypes.LeftEvenOdd_RightEvenOdd
-
-                //WeldingProperties = new WeldingProperties()
-                //{
-                //    WeldsDissolutionLeft = plateConfig.WeldsDissolutionLeft,
-                //    WeldsDissolutionRight = plateConfig.WeldsDissolutionRight,
-                //    SearchOffsetStart = plateConfig.SearchOffsetStart,
-                //    SearchOffsetEnd = plateConfig.SearchOffsetEnd,
-                //    TechOffsetSeamStart = plateConfig.TechOffsetSeamStart,
-                //    TechOffsetSeamEnd = plateConfig.TechOffsetSeamEnd,
-                //    SeamsOverlap = plateConfig.SeamsOverlap,
-                //    ProgramNom = plateConfig.ProgramNom,
-                //    WeldingSpead = plateConfig.WeldingSpead,
-                //    DistanceForWelding = plateConfig.DistanceForWelding,
-                //    DistanceForSearch = plateConfig.DistanceForSearch,
-                //    SelectedWeldingSchema = WeldingSchemaTypes.LeftEvenOdd_RightEvenOdd
-                //}
             };
         }
 

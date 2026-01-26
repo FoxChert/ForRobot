@@ -206,9 +206,8 @@ namespace ForRobot.Models.Detals
 
         public Plate() : base()
         {
-            this.RibsCollection = this.GetRibsCollection();
-            this.WeldingProperties.FillWeldsCollection(this.RibsCount * 2);
-            //this.WeldingProperties.WeldingSchema = ForRobot.Libr.Factories.DetalFactory.WeldingFactory.CreateSchema<Plate>(this.WeldingProperties.SelectedWeldingSchema, this.RibsCount);
+            this.RibsCollection = new RibCollection(this.RibsCount);
+            this.WeldingProperties.Welds = new WeldCollcetion(this.RibsCount);
             this.PropertyChanged += this.HandleChangeProperty;
         }
 
@@ -300,19 +299,7 @@ namespace ForRobot.Models.Detals
 
                 case nameof(this.RibsCount):
                     this.RibsCollection.SetCount(this.RibsCount);
-                    this.WeldingProperties.Welds?.SetCount(this.RibsCount * 2);
-
-                    //this.WeldingProperties.WeldingSchema = this.FillWeldingSchema();
-                    //this.WeldingProperties?.BuildingWeldingSchema(this.RibsCount);
-                    break;
-
-                case nameof(this.WeldingProperties.SelectedWeldingSchema): 
-                    //this.WeldingProperties.BuildingWeldingSchema(this.RibsCount);
-
-                    //if (this.WeldingProperties.SelectedWeldingSchema == WeldingSchemaTypes.Edit)
-                    //    break;
-
-                    //this.WeldingProperties.WeldingSchema = this.FillWeldingSchema();
+                    this.WeldingProperties.Welds?.SetCount(this.RibsCount);
                     break;
             }
         }
@@ -364,46 +351,6 @@ namespace ForRobot.Models.Detals
         }
 
         #endregion Handle
-
-        /// <summary>
-        /// Заполнение коллекции расстояний
-        /// </summary>
-        /// <returns></returns>
-        private RibCollection GetRibsCollection()
-        {
-            Rib rib;
-            List<Rib> ribsList = new List<Rib>();
-            for (int i = 0; i < this.RibsCount; i++)
-            {
-                rib = new Rib()
-                {
-                    Height = this.RibsHeight,
-                    Thickness = this.RibsThickness,
-                    IdentToLeft = this.RibsIdentToLeft,
-                    IdentToRight = this.RibsIdentToRight
-                };
-
-                if (i == 0)
-                {
-                    rib.DistanceLeft = this.DistanceToFirstRib;
-                    rib.DistanceRight = this.DistanceToFirstRib;
-                }
-                else
-                {
-                    rib.DistanceLeft = this.DistanceBetweenRibs;
-                    rib.DistanceRight = this.DistanceBetweenRibs;
-                }
-
-                ribsList.Add(rib);
-            }
-            return new RibCollection(ribsList);
-        }
-
-        private FullyObservableCollection<WeldingSchemaItem> FillWeldingSchema()
-        {
-            var schema = ForRobot.Libr.Factories.DetalFactory.WeldingFactory.CreateSchema<Plate>(this.WeldingProperties.SelectedWeldingSchema, this.RibsCount);
-            return new FullyObservableCollection<WeldingSchemaItem>(schema);
-        }
 
         #endregion Private functions
 

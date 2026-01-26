@@ -9,50 +9,65 @@ using ForRobot.Models.Welding;
 
 namespace ForRobot.Libr.Factories.DetalFactory
 {
-    public static class WeldingSchemaExtention
+    /// <summary>
+    /// Методы расширения для работы со схемами сварки
+    /// </summary>
+    public static class WeldingSchemaExtension
     {
         /// <summary>
         /// Заполнение схемы: сначала слева четные - нечетные, справа четные - нечетные
         /// </summary>
-        /// <param name="weldingSchema"></param>
-        /// <returns></returns>
+        /// <param name="weldingSchema">Схема сварки для заполнения</param>
+        /// <returns>Заполненная схема сварки</returns>
+        /// <exception cref="ArgumentNullException">Если weldingSchema равен null</exception>
         public static WeldingSchema BuildWeldingSchema_LeftEvenOddRightEvenOdd(this WeldingSchema weldingSchema)
         {
-            int i = 1;
+            if (weldingSchema == null)
+                throw new ArgumentNullException(nameof(weldingSchema));
+
             var schemaList = weldingSchema.ToList();
-            for (int index = 0; index < schemaList.Count; index++)
-            {
-                if ((index + 1) % 2 == 0)
-                {
-                    schemaList[index].LeftSide = i.ToString();
-                    i++;
-                }
-            }
-            for (int index = 0; index < schemaList.Count; index++)
-            {
-                if ((index + 1) % 2 != 0)
-                {
-                    schemaList[index].LeftSide = i.ToString();
-                    i++;
-                }
-            }
-            for (int index = 0; index < schemaList.Count; index++)
-            {
-                if ((index + 1) % 2 == 0)
-                {
-                    schemaList[index].RightSide = i.ToString();
-                    i++;
-                }
-            }
-            for (int index = 0; index < schemaList.Count; index++)
-            {
-                if ((index + 1) % 2 != 0)
-                {
-                    schemaList[index].RightSide = i.ToString();
-                    i++;
-                }
-            }
+            if (schemaList.Count == 0)
+                return weldingSchema;
+
+            int counter = 1;
+
+            // Заполняем левую сторону: сначала четные индексы, затем нечетные
+            counter = FillSideByParity(schemaList, counter, true, false);
+            counter = FillSideByParity(schemaList, counter, true, true);
+
+            // Заполняем правую сторону: сначала четные индексы, затем нечетные
+            counter = FillSideByParity(schemaList, counter, false, false);
+            FillSideByParity(schemaList, counter, false, true);
+
             return new WeldingSchema(schemaList);
+        }
+
+        /// <summary>
+        /// Вспомогательный метод для заполнения стороны по четности индексов
+        /// </summary>
+        /// <param name="items">Список элементов схемы</param>
+        /// <param name="startCounter">Начальное значение счетчика</param>
+        /// <param name="isLeftSide">True для левой стороны, false для правой</param>
+        /// <param name="isOddIndex">True для нечетных индексов, false для четных</param>
+        /// <returns>Следующее значение счетчика</returns>
+        private static int FillSideByParity(List<WeldingSchemaItem> items, int startCounter, bool isLeftSide, bool isOddIndex)
+        {
+            var filteredItems = items
+                .Select((item, index) => new { Item = item, Index = index })
+                .Where(x => (x.Index + 1) % 2 == (isOddIndex ? 1 : 0))
+                .ToList();
+
+            int counter = startCounter;
+            foreach (var itemInfo in filteredItems)
+            {
+                if (isLeftSide)
+                    itemInfo.Item.LeftSide = counter.ToString();
+                else
+                    itemInfo.Item.RightSide = counter.ToString();
+                counter++;
+            }
+
+            return counter;
         }
     }
 
@@ -90,6 +105,9 @@ namespace ForRobot.Libr.Factories.DetalFactory
         /// <returns></returns>
         private static IEnumerable<WeldingSchemaItem> CreateEnumerableWithCount(int count)
         {
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count), "Количество элементов не может быть отрицательным");
+
             for (int i = 0; i < count; i++)
             {
                 yield return new WeldingSchemaItem();
@@ -97,42 +115,46 @@ namespace ForRobot.Libr.Factories.DetalFactory
         }
 
         /// <summary>
-        /// Сборка схемы варки для плиты с рёбрами
+        /// Создает схему типа LeftEvenOdd_RightEvenOdd
         /// </summary>
-        /// <param name="typeSchema">Тип схемы</param>
-        private static IEnumerable<WeldingSchemaItem> CreatePlitaSchema(WeldingSchemaTypes typeSchema, int ribsCount)
+        /// <param name="weldCount">Количество точек сварки</param>
+        /// <returns>Заполненная схема сварки</returns>
+        private static IEnumerable<WeldingSchemaItem> CreateLeftEvenOddRightEvenOddSchema(int weldCount)
         {
-            switch (typeSchema)
-            {
-                case WeldingSchemaTypes.LeftEvenOdd_RightEvenOdd:
-                    return (CreateEnumerableWithCount(ribsCount * 2) as WeldingSchema).BuildWeldingSchema_LeftEvenOddRightEvenOdd();
-
-                default:
-                    return CreateEnumerableWithCount(ribsCount);
-            }
+            var items = CreateEnumerableWithCount(weldCount).ToList();
+            var schema = new WeldingSchema(items);
+            return schema.BuildWeldingSchema_LeftEvenOddRightEvenOdd();
         }
 
         #endregion Private functions
 
         #region Public functions
 
-        public static IEnumerable<WeldingSchemaItem> CreateSchema<T>(WeldingSchemaTypes typeSchema, int weldCount)  where T : Detal
+        /// <summary>
+        /// Создает схему сварки указанного типа
+        /// </summary>
+        /// <param name="typeSchema">Тип схемы сварки</param>
+        /// <param name="weldCount">Количество точек сварки</param>
+        /// <returns>Коллекция элементов схемы сварки</returns>
+        public static IEnumerable<WeldingSchemaItem> CreateSchema(WeldingSchemaTypes typeSchema, int weldCount)
         {
-            DetalType detalType = GetDetalTypeFromGenericType<T>();
+            if (weldCount < 0)
+                throw new ArgumentException("Количество сварок не может быть отрицательным", nameof(weldCount));
+
             try
             {
-                switch (detalType)
+                switch (typeSchema)
                 {
-                    case DetalType.Plate:
-                        return CreatePlitaSchema(typeSchema, weldCount == 0 ? Plate.MIN_RIB_COUNT : weldCount);
+                    case WeldingSchemaTypes.LeftEvenOdd_RightEvenOdd:
+                        return CreateLeftEvenOddRightEvenOddSchema(weldCount);
 
                     default:
-                        throw new ArgumentException($"Тип детали {DetalTypes.EnumToString(detalType)} не поддерживается", nameof(detalType));
+                        return CreateEnumerableWithCount(weldCount);
                 }
             }
             catch (Exception ex) when (!(ex is ArgumentException))
             {
-                throw new InvalidOperationException($"Ошибка при создании схемы сварки детали типа {detalType}", ex);
+                throw new InvalidOperationException($"Ошибка при создании схемы сварки", ex);
             }
         }
 

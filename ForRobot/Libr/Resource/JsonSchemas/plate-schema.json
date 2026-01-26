@@ -139,7 +139,7 @@
               }
             }
           },
-          //"minItems": 1,
+          "minItems": 1,
           "description": "Схема сварки"
         }
       },
@@ -153,8 +153,8 @@
         "weld_velocity",
         "gantry_radius_weld",
         "gantry_radius_search",
-        "welds_list"
-        //"welding_schema"
+        "welds_list",
+        "welding_schema"
       ],
       "description": "Коллекция параметров сварки"
     },

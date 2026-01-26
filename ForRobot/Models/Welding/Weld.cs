@@ -27,7 +27,7 @@ namespace ForRobot.Models.Welding
 
         [JsonProperty("weld_offset_left")]
         /// <summary>
-        /// отступ шва слева (роспуск, выкружка)
+        /// Отступ шва слева (роспуск, выкружка)
         /// </summary>
         public decimal DissolutionLeft
         {
@@ -41,7 +41,7 @@ namespace ForRobot.Models.Welding
 
         [JsonProperty("weld_offset_right")]
         /// <summary>
-        /// отступ шва справа (роспуск, выкружка)
+        /// Отступ шва справа (роспуск, выкружка)
         /// </summary>
         public decimal DissolutionRight
         {

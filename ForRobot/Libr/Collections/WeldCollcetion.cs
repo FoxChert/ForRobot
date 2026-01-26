@@ -48,9 +48,21 @@ namespace ForRobot.Libr.Collections
             }
         }
 
+        public WeldCollcetion(int count) : base(GetCollection(count)) { }
+
         #endregion Constructors
 
         #region Private functions
+
+        private static IEnumerable<Weld> GetCollection(int count)
+        {
+            List<Weld> welds = new List<Weld>();
+            for(int i=0; i<count; i++)
+            {
+                welds.Add(new Weld());
+            }
+            return welds;
+        }
 
         private void OnWeldPropertyChanged(object sender, PropertyChangedEventArgs e)
         {

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 
 using Newtonsoft.Json;
@@ -227,7 +227,9 @@ namespace ForRobot.Models.Welding
         }
 
         [JsonProperty("welds_list")]
-        [JsonConverter(typeof(JsonCommentConverter), "Коллекция швов")]
+        [JsonConverter(typeof(JsonCommentConverter), "Коллекция швов, гда:\n" +
+                                                     "weld_offset_left - отступ шва слева (роспуск, выкружка)\n" +
+                                                     "weld_offset_right - отступ шва справа (роспуск, выкружка)\n")]
         /// <summary>
         /// Коллекция швов
         /// </summary>
@@ -237,13 +239,18 @@ namespace ForRobot.Models.Welding
             set
             {
                 if (this._welds != null)
+                {
                     this._welds.WeldPropertyChanged -= (s, e) => this.OnChangeProperty(e.PropertyName);
+                    this.Welds.CollectionChanged -= this.HandleCollectionChanged_WeldCollcetion;
+                }
 
                 this._welds = value;
 
                 if (this._welds != null)
+                {
                     this._welds.WeldPropertyChanged += (s, e) => this.OnChangeProperty(e.PropertyName);
-
+                    this.Welds.CollectionChanged += this.HandleCollectionChanged_WeldCollcetion;
+                }
                 this.OnChangeProperty(nameof(this.Welds));
             }
         }
@@ -263,7 +270,10 @@ namespace ForRobot.Models.Welding
         }
         
         [JsonProperty("welding_schema")]
-        [JsonConverter(typeof(JsonCommentConverter), "Схема сварки")]
+        [JsonConverter(typeof(JsonCommentConverter), "Схема сварки, гда:\n" +
+                                                     "индекс - номер шва\n" +
+                                                     "left_side - очерёдность сварки левой стороны шва\n" +
+                                                     "right_side - очерёдность сварки правой стороны шва\n")]
         /// <summary>
         /// Схема сварки (в какой очерёдности будут накладываться сварные швы)
         /// </summary>
@@ -298,9 +308,14 @@ namespace ForRobot.Models.Welding
         public WeldingProperties()
         {
             this.PropertyChanged += this.HandlerPropertyChanged;
+        }
 
-            //this.SelectedWeldingSchema = WeldingSchemaTypes.Edit;
-            //this.WeldingSchema = new FullyObservableCollection<WeldingSchemaItem>();
+        private void FillWeldingSchema()
+        {
+            if (this.Welds == null)
+                this.WeldingSchema = null;
+            else
+                this.WeldingSchema = ForRobot.Libr.Factories.DetalFactory.WeldingFactory.CreateSchema(this.SelectedWeldingSchema, this.Welds.Count) as WeldingSchema;
         }
 
         private void HandlerPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -309,7 +324,6 @@ namespace ForRobot.Models.Welding
             {
                 case nameof(this.DiferentDissolutionLeft):
                 case nameof(this.WeldsDissolutionLeft):
-
                     if (this.DiferentDissolutionLeft)
                         break;
 
@@ -318,18 +332,54 @@ namespace ForRobot.Models.Welding
 
                 case nameof(this.DiferentDissolutionRight):
                 case nameof(this.WeldsDissolutionRight):
-
                     if (this.DiferentDissolutionRight)
                         break;
 
                     this.Welds?.SetWeldsDissolutionRight(this.WeldsDissolutionRight);
                     break;
+
+                case nameof(this.Welds):
+                case nameof(this.SelectedWeldingSchema):
+                    if (this.SelectedWeldingSchema == WeldingSchemaTypes.Edit)
+                        break;
+
+                    this.FillWeldingSchema();
+                    break;
             }
         }
 
+        /// <summary>
+        /// Делегат изменения <see cref="WeldCollcetion"/>
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HandleCollectionChanged_WeldCollcetion(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                case NotifyCollectionChangedAction.Remove:
+                case NotifyCollectionChangedAction.Reset:
+                    this.FillWeldingSchema();
+                    break;
+
+                case NotifyCollectionChangedAction.Move:
+                    break;
+
+                case NotifyCollectionChangedAction.Replace:
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Делегат изменения свойства <see cref="WeldingSchemaItem"/>
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void HandlerPropertyChanged_WeldingSchemaItem(object sender, ItemPropertyChangedEventArgs e)
         {
-            this.SelectedWeldingSchema = WeldingSchemaTypes.Edit;
+            if (this.SelectedWeldingSchema != WeldingSchemaTypes.Edit)
+                this.SelectedWeldingSchema = WeldingSchemaTypes.Edit;
             this.OnChangeProperty(e.PropertyName);
         }
 
@@ -338,46 +388,6 @@ namespace ForRobot.Models.Welding
         /// </summary>
         /// <param name="propertyName">Наименование свойства</param>
         private void OnChangeProperty([CallerMemberName] string propertyName = null) => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
-        public void FillWeldsCollection(int count)
-        {
-            Weld weld;
-            List<Weld> weldsList = new List<Weld>();
-            for (int i = 0; i < count; i++)
-            {
-                weld = new Weld()
-                {
-                    DissolutionLeft = this.WeldsDissolutionLeft,
-                    DissolutionRight = this.WeldsDissolutionRight
-                };
-                weldsList.Add(weld);
-            }
-            this.Welds = new WeldCollcetion(weldsList);
-        }
-
-        //public void BuildingWeldingSchema(int ribsCount = Plate.MIN_RIB_COUNT)
-        //{
-        //    if (this.WeldingSchema != null)
-        //        this.WeldingSchema.ItemPropertyChanged -= HandlerPropertyChanged_WeldingSchemaItem;
-
-        //    this.WeldingSchema = ForRobot.Models.Detals.WeldingSchemas.BuildingSchema(this.SelectedWeldingSchema, ribsCount) as FullyObservableCollection<WeldingSchemas.SchemaItem>;
-
-        //    if (this.WeldingSchema != null)
-        //        this.WeldingSchema.ItemPropertyChanged += HandlerPropertyChanged_WeldingSchemaItem;
-        //}
-
-        //public static FullyObservableCollection<WeldingSchemas.SchemaItem> FillWeldingSchema(WeldingSchemas.SchemasTypes schemasType, int weldsCount)
-        //{
-        //    FullyObservableCollection<WeldingSchemas.SchemaItem> schema = ForRobot.Models.Detals.WeldingSchemas.BuildingSchema(schemasType, weldsCount);
-        //    schema.ItemPropertyChanged += (s, e) =>
-        //    {
-        //        if (this.SelectedWeldingSchema != WeldingSchemas.GetDescription(WeldingSchemas.SchemasTypes.Edit))
-        //            this.SelectedWeldingSchema = ForRobot.Models.Detals.WeldingSchemas.GetDescription(WeldingSchemas.SchemasTypes.Edit);
-
-        //        this.OnChangeProperty(nameof(this.WeldingSchema));
-        //    };
-        //    return schema;
-        //}
 
         #region Implementations of IDisposable
 

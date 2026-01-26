@@ -26,15 +26,7 @@ namespace ForRobot.Libr.Collections
 
         public RibCollection() : base() { }
 
-        //public RibCollection(int count)
-        //{
-        //    List<Rib> ribs = new List<Rib>();
-        //    for(int i=0; i<count; i++)
-        //    {
-        //        ribs.Add(new Rib());
-        //    }
-        //    base(ribs);
-        //}
+        public RibCollection(int count) : base(GetCollection(count)) { }
 
         public RibCollection(List<Rib> list) : base(list)
         {
@@ -63,6 +55,16 @@ namespace ForRobot.Libr.Collections
         #endregion
 
         #region Private functions
+
+        private static IEnumerable<Rib> GetCollection(int count)
+        {
+            List<Rib> ribs = new List<Rib>();
+            for (int i = 0; i < count; i++)
+            {
+                ribs.Add(new Rib());
+            }
+            return ribs;
+        }
 
         private void OnRibPropertyChanged(object sender, PropertyChangedEventArgs e)
         {

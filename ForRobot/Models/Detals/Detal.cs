@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.Serialization;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.ComponentModel;
@@ -210,15 +209,12 @@ namespace ForRobot.Models.Detals
             set
             {
                 if (this._weldingProperties != null)
-                    this._weldingProperties.PropertyChanged -= (s, e) => this.OnChangeProperty(e.PropertyName);
+                    this._weldingProperties.PropertyChanged -= this.HandleChangeProperty_WeldingProperties;
 
                 this._weldingProperties = value;
 
                 if (this._weldingProperties != null)
-                    this._weldingProperties.PropertyChanged += (s, e) =>
-                    {
-                        this.OnChangeProperty(e.PropertyName);
-                    };
+                    this._weldingProperties.PropertyChanged += this.HandleChangeProperty_WeldingProperties;
 
                 this.OnChangeProperty(nameof(WeldingProperties));
             }
@@ -270,22 +266,18 @@ namespace ForRobot.Models.Detals
             }
         }
 
-        ///// <summary>
-        ///// Делегат изменения свойства параметров сворки
-        ///// </summary>
-        ///// <param name="sender"></param>
-        ///// <param name="e"></param>,
-        //private void HandleChangeProperty_WeldingProperties(object sender, PropertyChangedEventArgs e) => this.OnChangeProperty(e.PropertyName);
+        /// <summary>
+        /// Делегат изменения свойства параметров сворки
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>,
+        private void HandleChangeProperty_WeldingProperties(object sender, PropertyChangedEventArgs e) => this.OnChangeProperty(e.PropertyName);
 
         #endregion
 
         #region Public functions
 
         public object Clone() => (Detal)this.MemberwiseClone();
-        //{
-        //    var json = JsonConvert.SerializeObject(this);
-        //    return JsonConvert.DeserializeObject(json, this.GetType());
-        //}
 
         public bool Equals(Detal detal)
         {
@@ -299,13 +291,6 @@ namespace ForRobot.Models.Detals
         /// </summary>
         /// <param name="propertyName">Наименование свойства</param>
         public virtual void OnChangeProperty([CallerMemberName] string propertyName = null) => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
-        //[OnDeserializing]
-        //internal void OnDeserializing(StreamingContext context)
-        //{
-        //    if(this.WeldingProperties != null)
-        //        this.WeldingProperties.PropertyChanged += (s, e) => this.OnChangeProperty(e.PropertyName);
-        //}
 
         #endregion
 
@@ -324,8 +309,8 @@ namespace ForRobot.Models.Detals
                 if (disposing)
                 {
                     this.PropertyChanged -= this.HandleChangeProperty;
-                    if(this.WeldingProperties != null)
-                        this.WeldingProperties.PropertyChanged -= (s, e) => this.OnChangeProperty(e.PropertyName);
+                    if (this.WeldingProperties != null)
+                        this.WeldingProperties.PropertyChanged -= HandleChangeProperty_WeldingProperties;
                     GC.SuppressFinalize(this);
                 }
             }
