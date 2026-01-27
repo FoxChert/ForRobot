@@ -24,7 +24,7 @@ namespace ForRobot.Models.File3D
     {
         #region Private variables
 
-        //private readonly ForRobot.Libr.Clipboard.UndoRedoManager _undoRedoManager;
+        private ForRobot.Libr.Clipboard.UndoRedoManager _undoRedoManager;
         private readonly Dispatcher dispatcher;
 
         private bool _isSaved = true;
@@ -59,8 +59,8 @@ namespace ForRobot.Models.File3D
         public string Name => System.IO.Path.GetFileName(this.Path);
         public abstract string Filter { get; }
 
-        //public bool CanUndo => this._undoRedoManager.CanUndo;
-        //public bool CanRedo => this._undoRedoManager.CanRedo;
+        public bool CanUndo => this._undoRedoManager.CanUndo;
+        public bool CanRedo => this._undoRedoManager.CanRedo;
 
         public abstract Model3DGroup CurrentModel { get; protected set; }
 
@@ -78,7 +78,6 @@ namespace ForRobot.Models.File3D
 
         public File3D()
         {
-            //this._undoRedoManager = new ForRobot.Libr.Clipboard.UndoRedoManager(new ForRobot.Libr.Clipboard.CacheClipboardProvider(), this.Path);
             this.dispatcher = Dispatcher.CurrentDispatcher;
             this.ModelChangedEvent += (s, e) => this.OnPropertyChanged(nameof(this.CurrentModel));
             this.PropertyChanged += (s, e) => { if(e.PropertyName != nameof(this.IsSaved)) this.IsSaved = false; };
@@ -92,7 +91,7 @@ namespace ForRobot.Models.File3D
         #endregion Constructors
 
         #region Private functions
-
+        
         private void OnPropertyChanged(params string[] propertyNames)
         {
             foreach (var prop in propertyNames)
@@ -112,9 +111,11 @@ namespace ForRobot.Models.File3D
         public abstract void Save(string path);
         public virtual void Save() => this.Save(this.Path);
 
-        //public void Undo() => this._undoRedoManager.Undo();
-        //public void Redo() => this._undoRedoManager.Redo();
+        public void Undo() => this._undoRedoManager.Undo();
+        public void Redo() => this._undoRedoManager.Redo();
 
+        public void SetUndoRedoManager(ForRobot.Libr.Clipboard.CacheClipboardProvider cacheClipboardProvider) => this._undoRedoManager = new Libr.Clipboard.UndoRedoManager(cacheClipboardProvider, this.Path);
+        
         /// <summary>
         /// Вызов события изменения свойства класса <see cref="File3D"/>
         /// </summary>

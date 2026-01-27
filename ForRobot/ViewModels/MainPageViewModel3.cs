@@ -381,21 +381,21 @@ namespace ForRobot.ViewModels
         //    GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new Libr.Messages.UpdateCurrentDetalMessage(nativeFile.CurrentDetal));
         //}); }
 
-        ///// <summary>
-        ///// Команда отмены действия
-        ///// </summary>
-        //public ICommand UndoCommand
-        //{
-        //    get => new RelayCommand(_ => this.SelectedFile?.Undo(), _ => this.SelectedFile == null ? false : this.SelectedFile.CanUndo);
-        //}
+        /// <summary>
+        /// Команда отмены действия
+        /// </summary>
+        public ICommand UndoCommand
+        {
+            get => new RelayCommand(_ => this.SelectedFile?.Undo(), _ => this.SelectedFile == null ? false : this.SelectedFile.CanUndo);
+        }
 
-        ///// <summary>
-        ///// Команда возврата действия
-        ///// </summary>
-        //public ICommand RedoCommand
-        //{
-        //    get => new RelayCommand(_ => this.SelectedFile?.Redo(), _ => this.SelectedFile == null ? false : this.SelectedFile.CanRedo);
-        //}
+        /// <summary>
+        /// Команда возврата действия
+        /// </summary>
+        public ICommand RedoCommand
+        {
+            get => new RelayCommand(_ => this.SelectedFile?.Redo(), _ => this.SelectedFile == null ? false : this.SelectedFile.CanRedo);
+        }
 
         /// <summary>
         /// Сброс параметров детали до стандартных

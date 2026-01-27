@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.Diagnostics;
 using System.Windows;
+using System.Collections.Specialized;
 using System.Security.Cryptography;
 
 using NLog;
@@ -60,6 +61,7 @@ namespace ForRobot
         public static ForRobot.Libr.Services.Providers.IConfigurationProvider ConfigProvider = new ForRobot.Libr.Configuration.CachedConfigurationProvider(new ForRobot.Libr.Configuration.ConfigurationProvider());
         public static ForRobot.Libr.Services.Providers.IJsonSchemaProvider JsonSchemaProvider = new ForRobot.Libr.Json.Schemas.CachedJsonSchemaProvider(new ForRobot.Libr.Json.Schemas.JsonSchemaProvider());
         public static ForRobot.Libr.Services.Providers.IDetalProvider DetalProvider = new ForRobot.Models.Detals.CachedDetalProvider(new ForRobot.Models.Detals.DetalProvider(ConfigProvider));
+        public static ForRobot.Libr.Clipboard.CacheClipboardProvider ClipboardProvider = new Libr.Clipboard.CacheClipboardProvider();
 
         /// <summary>
         /// Директория AvalonDock.config файла, в котором сохраняется макет интерфейса.
@@ -91,13 +93,35 @@ namespace ForRobot
                     {
                         switch (e.Action)
                         {
-                            case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
+                            case NotifyCollectionChangedAction.Add:
                                 for(int i=0; i<e.NewItems.Count; i++)
                                 {
-                                    var file = e.NewItems[i];
+                                    var file = e.NewItems[i] as ForRobot.Models.File3D.File3D;
                                     if (file == null)
                                         return;
-                                    // В отдельную кэшированную коллекцию добавлять стэки новых файлов
+                                    ClipboardProvider.GetOrAddStacks(file.Path);
+                                    file.SetUndoRedoManager(ClipboardProvider);
+                                }
+                                break;
+
+                            case NotifyCollectionChangedAction.Remove:
+                            case NotifyCollectionChangedAction.Replace:
+                            case NotifyCollectionChangedAction.Reset:
+                                for (int i = 0; i < e.OldItems.Count; i++)
+                                {
+                                    var file = e.NewItems[i] as ForRobot.Models.File3D.File3D;
+                                    if (file == null)
+                                        return;
+                                    ClipboardProvider.RemoveStacks(file.Path);
+                                }
+
+                                for (int i = 0; i < e.NewItems.Count; i++)
+                                {
+                                    var file = e.NewItems[i] as ForRobot.Models.File3D.File3D;
+                                    if (file == null)
+                                        return;
+                                    ClipboardProvider.GetOrAddStacks(file.Path);
+                                    file.SetUndoRedoManager(ClipboardProvider);
                                 }
                                 break;
                         }

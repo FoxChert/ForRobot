@@ -12,7 +12,7 @@ namespace ForRobot.Libr.Clipboard.UndoRedo
 
         public string Description { get; }
 
-        public PropertyChangeCommand(object target, string propertyName, T oldValue, T newValue, string description = "")
+        public PropertyChangeCommand(object target, string propertyName, T oldValue, T newValue, string description = null)
         {
             _target = target;
             _propertyName = propertyName;
