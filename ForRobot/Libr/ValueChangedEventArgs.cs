@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 
 namespace ForRobot.Libr
 {
@@ -7,15 +6,19 @@ namespace ForRobot.Libr
     /// Событие изменения
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ValueChangedEventArgs<T> : EventArgs
+    public class ValueChangedEventArgs : EventArgs
     {
-        public T OldValue { get; }
-        public T NewValue { get; }
+        public object OldValue { get; }
+        public object NewValue { get; }
+        public string PropertyName { get; }
+        public Type ValueType { get; }
 
-        public ValueChangedEventArgs(T oldValue, T newValue)
+        public ValueChangedEventArgs(object oldValue, object newValue, string propertyName = null)
         {
-            OldValue = oldValue;
-            NewValue = newValue;
+            this.OldValue = oldValue;
+            this.NewValue = newValue;
+            this.PropertyName = propertyName;
+            this.ValueType = newValue?.GetType();
         }
     }
 }

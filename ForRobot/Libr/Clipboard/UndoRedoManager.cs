@@ -1,6 +1,7 @@
 ﻿using System;
-//using System.Collections.Specialized;
+
 using ForRobot.Libr.Clipboard.UndoRedo;
+using ForRobot.Libr.Collections;
 
 namespace ForRobot.Libr.Clipboard
 {
@@ -9,62 +10,96 @@ namespace ForRobot.Libr.Clipboard
         #region Private variables
 
         private readonly CacheClipboardProvider _clipboardProvider;
-        private readonly string _fileKey;
+        private readonly string _cacheKey;
         private readonly UndoRedoStacks _stacks;
+        private readonly object _syncRoot = new object();
 
-        #endregion Privae variables
+        #endregion Private variables
 
         #region Public variables
-        
-        public bool CanUndo => this._stacks.UndoStack.Count > 0;
-        public bool CanRedo => this._stacks.RedoStack.Count > 0;
 
+        /// <summary>
+        /// Можно ли отменить изменения
+        /// </summary>
+        public bool CanUndo
+        {
+            get
+            {
+                lock (this._syncRoot)
+                {
+                    return this._stacks.UndoStack.Count > 0;
+                }
+            }
+        }
+        /// <summary>
+        /// Можно ли вернуть изменения
+        /// </summary>
+        public bool CanRedo
+        {
+            get
+            {
+                lock (this._syncRoot)
+                {
+                    return this._stacks.RedoStack.Count > 0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Событие изменения состояний стеков
+        /// </summary>
         public event EventHandler UndoRedoStateChanged;
-        //public event NotifyCollectionChangedEventHandler UndoRedoStateChanged;
 
         #endregion Public variables
 
-        public UndoRedoManager(CacheClipboardProvider clipboardProvider, string fileKey)
+        public UndoRedoManager(CacheClipboardProvider clipboardProvider, string cacheKey)
         {
-            this._clipboardProvider = clipboardProvider;
-            this._fileKey = fileKey;
-            this._stacks = _clipboardProvider.GetOrAddStacks(_fileKey);
+            if (string.IsNullOrEmpty(cacheKey)) throw new ArgumentException("Key cannot be null or empty", nameof(cacheKey));
+
+            this._clipboardProvider = clipboardProvider ?? throw new ArgumentNullException(nameof(clipboardProvider));
+            this._cacheKey = cacheKey;
+            this._stacks = _clipboardProvider.GetOrAddStacks(_cacheKey);
+        }
+
+        private void ExecuteCommand(LimitedStack<IUndoableCommand> fromStack, LimitedStack<IUndoableCommand> toStack, Action<IUndoableCommand> action)
+        {
+            lock (this._syncRoot)
+            {
+                if (fromStack.Count == 0) return;
+
+                var command = fromStack.Pop();
+                action(command);
+                toStack.Push(command);
+                this.OnUndoRedoStateChanged();
+            }
         }
 
         #region Public functions
-        
-        public void Undo()
-        {
-            if (!this.CanUndo) return;
 
-            var command = _stacks.UndoStack.Pop();
-            command.Unexecute();
-            this._stacks.RedoStack.Push(command);
-            this.OnUndoRedoStateChanged();
-        }
-
-        public void Redo()
-        {
-            if (!this.CanRedo) return;
-
-            var command = _stacks.RedoStack.Pop();
-            command.Execute();
-            this._stacks.UndoStack.Push(command);
-            this.OnUndoRedoStateChanged();
-        }
+        public void Undo() => ExecuteCommand(this._stacks.UndoStack, this._stacks.RedoStack, cmd => cmd.Unexecute());
+        public void Redo() => ExecuteCommand(this._stacks.RedoStack, this._stacks.UndoStack, cmd => cmd.Execute());
 
         public void AddUndoCommand(IUndoableCommand command)
         {
-            this._stacks.UndoStack.Push(command);
-            this._stacks.RedoStack.Clear();
-            this.OnUndoRedoStateChanged();
+            lock (this._syncRoot)
+            {
+                this._stacks.UndoStack.Push(command);
+                this._stacks.RedoStack.Clear();
+                this.OnUndoRedoStateChanged();
+            }
         }
 
+        /// <summary>
+        /// Очистка стеков
+        /// </summary>
         public void ClearUndoRedoHistory()
         {
-            this._stacks.UndoStack.Clear();
-            this._stacks.RedoStack.Clear();
-            this.OnUndoRedoStateChanged();
+            lock (this._syncRoot)
+            {
+                this._stacks.UndoStack.Clear();
+                this._stacks.RedoStack.Clear();
+                this.OnUndoRedoStateChanged();
+            }
         }
 
         protected virtual void OnUndoRedoStateChanged() => this.UndoRedoStateChanged?.Invoke(this, EventArgs.Empty);

@@ -90,6 +90,9 @@ namespace ForRobot.Models.File3D
 
         }
 
+        protected override void HandleValueChangedEvent(object sender, ForRobot.Libr.ValueChangedEventArgs e) { }
+        protected override void HandleUndoRedoStateChangedEvent(object sender, EventArgs e) { }
+
         #endregion Public functions
     }
 }

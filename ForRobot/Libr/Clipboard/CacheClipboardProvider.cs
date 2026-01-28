@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Runtime.Caching;
 using System.Collections.Generic;
+using System.Runtime.Caching;
 
 using ForRobot.Libr.Clipboard.UndoRedo;
 
 namespace ForRobot.Libr.Clipboard
 {
-    public class CacheClipboardProvider
+    public class CacheClipboardProvider : IDisposable
     {
         private readonly Dictionary<string, UndoRedoStacks> _cache = new Dictionary<string, UndoRedoStacks>();
         private readonly object _lock = new object();
@@ -39,5 +39,16 @@ namespace ForRobot.Libr.Clipboard
                 return _cache.Remove(key);
             }
         }
+
+        #region Implementations of IDisposable
+
+        public void Dispose()
+        {
+            this._cache.Clear();
+            this._disposed = true;
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
     }
 }

@@ -1,13 +1,79 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 
 using ForRobot.Models.Detals;
 using ForRobot.Libr.Collections;
+using ForRobot.Libr.Clipboard.UndoRedo;
 
 namespace ForRobot.Models.File3D
 {
+    public static class DetalExtensions
+    {
+        public class ObjectReferenceEqualityComparer : IEqualityComparer<object>
+        {
+            public new bool Equals(object x, object y)
+            {
+                return ReferenceEquals(x, y);
+            }
+
+            public int GetHashCode(object obj)
+            {
+                return RuntimeHelpers.GetHashCode(obj);
+            }
+        }
+
+        public static object GetProperty(this Detal detal, string propertyName)
+        {
+            Queue<object> queue = new Queue<object>();
+            HashSet<object> visited = new HashSet<object>(new ObjectReferenceEqualityComparer());
+
+            queue.Enqueue(detal);
+            visited.Add(detal);
+
+            while (queue.Count > 0)
+            {
+                object current = queue.Dequeue();
+                Type currentType = current.GetType();                
+
+                foreach (var property in currentType.GetProperties())
+                {
+                    if (property.Name.Equals(propertyName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return property.GetValue(current);
+                    }
+
+                    if (property.PropertyType.IsClass &&
+                        property.PropertyType != typeof(RibCollection) && property.PropertyType != typeof(WeldCollcetion) &&
+                        property.CanRead)
+                    {
+                        object propertyValue = property.GetValue(current);
+                        if (propertyValue != null && !visited.Contains(propertyValue))
+                        {
+                            queue.Enqueue(propertyValue);
+                            visited.Add(propertyValue);
+                        }
+                    }
+                }
+            }
+            return null;
+
+            //Type type = detal.GetType();
+            //System.Reflection.PropertyInfo propertyInfo = type.GetProperty(propertyName);
+            //if(propertyInfo == null)
+            //{
+            //    foreach(var prop in type.GetProperties())
+            //    {
+            //        var obj = prop.GetValue(detal);
+            //    }
+            //}
+            //return propertyInfo.GetValue(detal);
+        }
+    }
+
     public class NativeFile3D : File3D
     {
         #region Private variables
@@ -17,6 +83,10 @@ namespace ForRobot.Models.File3D
         private Model3DGroup _currentModel = new Model3DGroup();
 
         private Detal _currentDetal;
+        /// <summary>
+        /// Поле для сохранения объекта <see cref="CurrentDetal"/> после изменения
+        /// </summary>
+        private Detal _oldDetal;
 
         #endregion private variables
 
@@ -101,7 +171,15 @@ namespace ForRobot.Models.File3D
             //    case nameof(Plate.RibsCount):
             //        break;
             //}
+
             this.OnPropertyChanged(nameof(CurrentDetal));
+
+            if (this._undoBlock)
+                return;
+
+            var oldValue = this._oldDetal.GetProperty(e.PropertyName);
+            var newValue = this.CurrentDetal.GetProperty(e.PropertyName);
+            this.OnValueChanged(oldValue, newValue, e.PropertyName);
         }
 
         #endregion
@@ -122,7 +200,38 @@ namespace ForRobot.Models.File3D
                 return;
 
             this._currentDetal.PropertyChanged += HandleCurrentDetalPropertyChange;
-            this._currentDetal.OnChangeProperty();
+
+            this._oldDetal = this.CurrentDetal.Clone() as Detal;
+            this.OnPropertyChanged(nameof(this.CurrentDetal));
+        }
+
+        /// <summary>
+        /// Делегат изменения значения отслеживаемого свойства
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected override void HandleValueChangedEvent(object sender, ForRobot.Libr.ValueChangedEventArgs e)
+        {
+            if (e.OldValue != null && e.NewValue != e.OldValue)
+            {
+                var command = new PropertyChangeCommand(this.CurrentDetal,
+                                                        e.PropertyName,
+                                                        e.OldValue,
+                                                        e.NewValue,
+                                                        $"Изменение свойства детали {e.PropertyName}: {e.OldValue} -> {e.NewValue}");
+                this.AddUndoCommand(command);
+            }
+            this.OnPropertyChanged(e.PropertyName);
+        }
+
+        /// <summary>
+        /// Делегат события фиксации изменения отслеживаемого свойства
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected override void HandleUndoRedoStateChangedEvent(object sender, EventArgs e)
+        {
+            this._oldDetal = this.CurrentDetal.Clone() as Detal;
         }
 
         #endregion Private functions
@@ -140,6 +249,34 @@ namespace ForRobot.Models.File3D
             System.IO.File.WriteAllText(path, jsonString);
         }
 
+        /// <summary>
+        /// Блокировщих срабатывания фиксации изменений при отмене/возврате (заменить на токен?)
+        /// </summary>
+        private bool _undoBlock = false;
+
+        /// <summary>
+        /// Отмена последнего изменения параметра <see cref="CurrentDetal"/>
+        /// </summary>
+        public override void Undo()
+        {
+            this._undoBlock = true;
+            base.Undo();
+            this._undoBlock = false;
+        }
+
+        /// <summary>
+        /// Возврат отменённого изменения параметра <see cref="CurrentDetal"/>
+        /// </summary>
+        public override void Redo()
+        {
+            this._undoBlock = true;
+            base.Redo();
+            this._undoBlock = false;
+        }
+
+        /// <summary>
+        /// Присвоение параметрам <see cref="CurrentDetal"/> стандартных значений
+        /// </summary>
         public void StandartParamertrs()
         {
             if (this.CurrentDetal == null)

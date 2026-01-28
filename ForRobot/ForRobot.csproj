@@ -313,6 +313,7 @@
     <Compile Include="Libr\Clipboard\CacheClipboardProvider.cs" />
     <Compile Include="Libr\Clipboard\UndoRedoManager.cs" />
     <Compile Include="Libr\Clipboard\UndoRedo\UndoRedoStacks.cs" />
+    <Compile Include="Libr\Collections\LimitedStack.cs" />
     <Compile Include="Libr\Collections\RibCollection.cs" />
     <Compile Include="Libr\Collections\File3DCollection.cs" />
     <Compile Include="Libr\Collections\Model3DCollection.cs" />
@@ -363,6 +364,7 @@
     <Compile Include="Libr\Services\Providers\IDetalProvider.cs" />
     <Compile Include="Libr\Services\Providers\IJsonSchemaProvider.cs" />
     <Compile Include="Libr\ValueChangedEventArgs.cs" />
+    <Compile Include="Libr\ValueChangedEventHandler.cs" />
     <Compile Include="Models\Detals\CachedDetalProvider.cs" />
     <Compile Include="Models\Detals\DetalProvider.cs" />
     <Compile Include="Models\Welding\WeldingSchemaItem.cs" />
@@ -397,7 +399,6 @@
     <Compile Include="Models\ProcessStatuses.cs" />
     <Compile Include="Libr\Clipboard\UndoRedo\PropertyChangeCommand.cs" />
     <Compile Include="Libr\Services\AnnotationService.cs" />
-    <Compile Include="Libr\Services\ChangeService.cs" />
     <Compile Include="Libr\Services\ExporterService.cs" />
     <Compile Include="Libr\Services\File3DImportService.cs" />
     <Compile Include="Libr\Services\FileDialogService.cs" />
