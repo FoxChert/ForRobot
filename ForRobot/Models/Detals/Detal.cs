@@ -10,7 +10,7 @@ using ForRobot.Models.Welding;
 
 namespace ForRobot.Models.Detals
 {
-    public abstract class Detal : INotifyPropertyChanged, ICloneable, IDisposable
+    public abstract class Detal : INotifyPropertyChanged, IDisposable
     {
         #region Private variables
 
@@ -277,7 +277,11 @@ namespace ForRobot.Models.Detals
 
         #region Public functions
 
-        public object Clone() => (Detal)this.MemberwiseClone();
+        public object Clone()
+        {
+            var json = JsonConvert.SerializeObject(this);
+            return JsonConvert.DeserializeObject(json, this.GetType());
+        }
 
         public bool Equals(Detal detal)
         {

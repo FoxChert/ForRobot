@@ -361,6 +361,8 @@
     <Compile Include="Libr\Logging\Logger.cs" />
     <Compile Include="Libr\Messages\UpdateCurrentDetalMessage.cs" />
     <Compile Include="Libr\Clipboard\UndoRedo\IUndoRedo.cs" />
+    <Compile Include="Libr\ObjectReferenceEqualityComparer.cs" />
+    <Compile Include="Libr\PropertyPathHelper.cs" />
     <Compile Include="Libr\Services\Providers\IDetalProvider.cs" />
     <Compile Include="Libr\Services\Providers\IJsonSchemaProvider.cs" />
     <Compile Include="Libr\ValueChangedEventArgs.cs" />

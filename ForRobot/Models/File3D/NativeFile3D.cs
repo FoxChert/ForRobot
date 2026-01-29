@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Media.Media3D;
-using System.Windows.Threading;
 
 using ForRobot.Models.Detals;
 using ForRobot.Libr.Collections;
@@ -13,23 +11,10 @@ namespace ForRobot.Models.File3D
 {
     public static class DetalExtensions
     {
-        public class ObjectReferenceEqualityComparer : IEqualityComparer<object>
-        {
-            public new bool Equals(object x, object y)
-            {
-                return ReferenceEquals(x, y);
-            }
-
-            public int GetHashCode(object obj)
-            {
-                return RuntimeHelpers.GetHashCode(obj);
-            }
-        }
-
         public static object GetProperty(this Detal detal, string propertyName)
         {
             Queue<object> queue = new Queue<object>();
-            HashSet<object> visited = new HashSet<object>(new ObjectReferenceEqualityComparer());
+            HashSet<object> visited = new HashSet<object>(new ForRobot.Libr.ObjectReferenceEqualityComparer());
 
             queue.Enqueue(detal);
             visited.Add(detal);
@@ -143,6 +128,26 @@ namespace ForRobot.Models.File3D
 
         #region Private functions
 
+        private void SetDetal(object value)
+        {
+            if (this._currentDetal == value)
+                return;
+
+            if (this._currentDetal != null)
+            {
+                this._currentDetal.PropertyChanged -= this.HandlePropertyChange_CurrentDetal;
+            }
+
+            this._currentDetal = value as Detal;
+
+            if (this._currentDetal == null)
+                return;
+
+            this._currentDetal.PropertyChanged += this.HandlePropertyChange_CurrentDetal;
+
+            this.OnPropertyChanged(nameof(this.CurrentDetal));
+        }
+
         #region Handle
 
         /// <summary>
@@ -155,6 +160,12 @@ namespace ForRobot.Models.File3D
             switch (e.PropertyName)
             {
                 case nameof(this.CurrentDetal):
+                    if (this._undoBlock)
+                    {
+                        this.OnValueChanged(this, this._oldDetal, this.CurrentDetal, nameof(CurrentDetal));
+                        //break;
+                    }
+                    this._oldDetal = this.CurrentDetal.Clone() as Detal;
                     break;
             }
         }
@@ -164,7 +175,7 @@ namespace ForRobot.Models.File3D
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void HandleCurrentDetalPropertyChange(object sender, PropertyChangedEventArgs e)
+        private void HandlePropertyChange_CurrentDetal(object sender, PropertyChangedEventArgs e)
         {
             //switch (e.PropertyName)
             //{
@@ -172,38 +183,20 @@ namespace ForRobot.Models.File3D
             //        break;
             //}
 
-            this.OnPropertyChanged(nameof(CurrentDetal));
+            //this.OnPropertyChanged(nameof(CurrentDetal));
 
             if (this._undoBlock)
                 return;
 
-            var oldValue = this._oldDetal.GetProperty(e.PropertyName);
-            var newValue = this.CurrentDetal.GetProperty(e.PropertyName);
-            this.OnValueChanged(oldValue, newValue, e.PropertyName);
+            string path = ForRobot.Libr.PropertyPathHelper.GetFullPropertyPath(this.CurrentDetal, e.PropertyName);
+            var oldValue = ForRobot.Libr.PropertyPathHelper.GetValueFromPath(this._oldDetal, path);
+            var newValue = ForRobot.Libr.PropertyPathHelper.GetValueFromPath(this.CurrentDetal, path);
+
+            if (!object.Equals(oldValue, newValue))
+                this.OnValueChanged(this.CurrentDetal, oldValue, newValue, e.PropertyName);
         }
 
         #endregion
-
-        private void SetDetal(object value)
-        {
-            if (this._currentDetal == value)
-                return;
-
-            if (this._currentDetal != null)
-            {
-                this._currentDetal.PropertyChanged -= HandleCurrentDetalPropertyChange;
-            }
-
-            this._currentDetal = value as Detal;
-
-            if (this._currentDetal == null)
-                return;
-
-            this._currentDetal.PropertyChanged += HandleCurrentDetalPropertyChange;
-
-            this._oldDetal = this.CurrentDetal.Clone() as Detal;
-            this.OnPropertyChanged(nameof(this.CurrentDetal));
-        }
 
         /// <summary>
         /// Делегат изменения значения отслеживаемого свойства
@@ -214,7 +207,7 @@ namespace ForRobot.Models.File3D
         {
             if (e.OldValue != null && e.NewValue != e.OldValue)
             {
-                var command = new PropertyChangeCommand(this.CurrentDetal,
+                var command = new PropertyChangeCommand(sender,
                                                         e.PropertyName,
                                                         e.OldValue,
                                                         e.NewValue,
@@ -298,7 +291,9 @@ namespace ForRobot.Models.File3D
                 default:
                     return;
             }
+            this._undoBlock = true;
             this.CurrentDetal = detal;
+            this._undoBlock = false;
         }
 
         #endregion Public functions

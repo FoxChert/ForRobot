@@ -135,9 +135,9 @@ namespace ForRobot.Models.File3D
         /// <param name="oldValue">Старое значение</param>
         /// <param name="newValue">Новое значение</param>
         /// <param name="propertyName">Имя свойства</param>
-        protected virtual void OnValueChanged(object oldValue, object newValue, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
+        protected virtual void OnValueChanged(object target, object oldValue, object newValue, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
         {
-            this.ValueChangedEvent?.Invoke(this, new ForRobot.Libr.ValueChangedEventArgs(oldValue, newValue, propertyName));
+            this.ValueChangedEvent?.Invoke(target, new ForRobot.Libr.ValueChangedEventArgs(oldValue, newValue, propertyName));
         }
         /// <summary>
         /// Вызов события изменения <see cref="CurrentModel"/>

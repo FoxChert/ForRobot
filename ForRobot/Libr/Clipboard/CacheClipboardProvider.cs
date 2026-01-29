@@ -45,7 +45,6 @@ namespace ForRobot.Libr.Clipboard
         public void Dispose()
         {
             this._cache.Clear();
-            this._disposed = true;
             GC.SuppressFinalize(this);
         }
 
