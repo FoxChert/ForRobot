@@ -26,8 +26,6 @@ namespace ForRobot.Libr.Collections
 
         public RibCollection() : base() { }
 
-        public RibCollection(int count) : base(GetCollection(count)) { }
-
         public RibCollection(List<Rib> list) : base(list)
         {
             if (list == null)
@@ -52,6 +50,8 @@ namespace ForRobot.Libr.Collections
             }
         }
 
+        public RibCollection(int count) : this(GetCollection(count)) { }
+        
         #endregion
 
         #region Private functions
@@ -126,7 +126,8 @@ namespace ForRobot.Libr.Collections
             {
                 while (this.Count < count)
                 {
-                    this.Add(this.Last<Rib>().Clone() as Rib);
+                    var item = this.Last<Rib>().Clone() as Rib;
+                    this.Add(item);
                 }
             }
             else

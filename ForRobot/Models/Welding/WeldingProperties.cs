@@ -10,7 +10,7 @@ using ForRobot.Libr.Collections;
 
 namespace ForRobot.Models.Welding
 {
-    public class WeldingProperties : INotifyPropertyChanged, IDisposable
+    public class WeldingProperties : INotifyPropertyChanged, ForRobot.Libr.Clipboard.IChangeNotificationControl, IDisposable
     {
         #region Private variables
 
@@ -293,7 +293,7 @@ namespace ForRobot.Models.Welding
                 this.OnChangeProperty(nameof(this.WeldingSchema));
             }
         }
-
+        
         #region Events
 
         /// <summary>
@@ -320,6 +320,9 @@ namespace ForRobot.Models.Welding
 
         private void HandlerPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            if (_suppressNotifications)
+                return;
+
             switch (e.PropertyName)
             {
                 case nameof(this.DiferentDissolutionLeft):
@@ -327,7 +330,8 @@ namespace ForRobot.Models.Welding
                     if (this.DiferentDissolutionLeft)
                         break;
 
-                    this.Welds?.SetWeldsDissolutionLeft(this.WeldsDissolutionLeft);
+                    using (SuppressNotifications())
+                        this.Welds?.SetWeldsDissolutionLeft(this.WeldsDissolutionLeft);
                     break;
 
                 case nameof(this.DiferentDissolutionRight):
@@ -335,7 +339,8 @@ namespace ForRobot.Models.Welding
                     if (this.DiferentDissolutionRight)
                         break;
 
-                    this.Welds?.SetWeldsDissolutionRight(this.WeldsDissolutionRight);
+                    using (SuppressNotifications())
+                        this.Welds?.SetWeldsDissolutionRight(this.WeldsDissolutionRight);
                     break;
 
                 case nameof(this.Welds):
@@ -343,7 +348,8 @@ namespace ForRobot.Models.Welding
                     if (this.SelectedWeldingSchema == WeldingSchemaTypes.Edit)
                         break;
 
-                    this.FillWeldingSchema();
+                    using (SuppressNotifications())
+                        this.FillWeldingSchema();
                     break;
             }
         }
@@ -380,14 +386,50 @@ namespace ForRobot.Models.Welding
         {
             if (this.SelectedWeldingSchema != WeldingSchemaTypes.Edit)
                 this.SelectedWeldingSchema = WeldingSchemaTypes.Edit;
-            this.OnChangeProperty(e.PropertyName);
+
+            this.OnChangeProperty(nameof(this.WeldingSchema));
         }
 
         /// <summary>
         /// Вызов события изменения свойства
         /// </summary>
         /// <param name="propertyName">Наименование свойства</param>
-        private void OnChangeProperty([CallerMemberName] string propertyName = null) => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        private void OnChangeProperty([CallerMemberName] string propertyName = null)
+        {
+            if (this._suppressNotifications)
+                return;
+
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        #region Implementations of IChangeNotificationControl
+
+        private bool _suppressNotifications = false;
+
+        public bool IsNotificationsSuppressed => this._suppressNotifications;
+
+        public IDisposable SuppressNotifications()=> new NotificationSuppressionScope(this);
+
+        private class NotificationSuppressionScope : IDisposable
+        {
+            private readonly WeldingProperties _owner;
+            private readonly bool _wasSuppressed;
+
+            public NotificationSuppressionScope(WeldingProperties owner)
+            {
+                _owner = owner;
+                _wasSuppressed = _owner._suppressNotifications;
+                _owner._suppressNotifications = true;
+            }
+
+            public void Dispose()
+            {
+                if (_owner != null)
+                    _owner._suppressNotifications = _wasSuppressed;
+            }
+        }
+
+        #endregion
 
         #region Implementations of IDisposable
 

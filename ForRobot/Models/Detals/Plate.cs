@@ -5,12 +5,11 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
+using ForRobot.Libr.Clipboard;
 using ForRobot.Libr.Converters;
 using ForRobot.Libr.Collections;
-using ForRobot.Models.Welding;
 
 namespace ForRobot.Models.Detals
 {
@@ -197,6 +196,7 @@ namespace ForRobot.Models.Detals
 
                 this._ribsCollection.RibPropertyChanged += this.HandleChangeProperty_RibsCollection;
                 this._ribsCollection.CollectionChanged += this.HandleCollectionChanged_RibsCollection;
+                this.OnChangeProperty();
             }
         }
 
@@ -230,17 +230,20 @@ namespace ForRobot.Models.Detals
                     if (this.DiferentDistance || this.RibsCollection?.Count == 0)
                         break;
 
-                    for (int i = 0; i < this.RibsCollection.Count; i++)
+                    using (SuppressNotifications())
                     {
-                        this.RibsCollection[i].IdentToLeft = this.RibsIdentToLeft;
-                        this.RibsCollection[i].IdentToRight = this.RibsIdentToRight;
-
-                        if (i == 0)
+                        for (int i = 0; i < this.RibsCollection.Count; i++)
                         {
-                            this.RibsCollection[i].DistanceLeft = this.DistanceToFirstRib;
-                            continue;
+                            this.RibsCollection[i].IdentToLeft = this.RibsIdentToLeft;
+                            this.RibsCollection[i].IdentToRight = this.RibsIdentToRight;
+
+                            if (i == 0)
+                            {
+                                this.RibsCollection[i].DistanceLeft = this.DistanceToFirstRib;
+                                continue;
+                            }
+                            this.RibsCollection[i].DistanceLeft = this.DistanceBetweenRibs;
                         }
-                        this.RibsCollection[i].DistanceLeft = this.DistanceBetweenRibs;
                     }
                     break;
 
@@ -248,58 +251,74 @@ namespace ForRobot.Models.Detals
                     if (!this.ParalleleRibs || this.RibsCollection?.Count == 0)
                         break;
 
-                    for (int i = 0; i < this.RibsCollection.Count; i++)
+                    using (SuppressNotifications())
                     {
-                        Rib rib = this.RibsCollection[i];
-
-                        if (i == 0)
+                        for (int i = 0; i < this.RibsCollection.Count; i++)
                         {
-                            (rib.DistanceLeft, rib.DistanceRight) = (this.DistanceToFirstRib, this.DistanceToFirstRib);
-                            continue;
+                            Rib rib = this.RibsCollection[i];
+
+                            if (i == 0)
+                            {
+                                (rib.DistanceLeft, rib.DistanceRight) = (this.DistanceToFirstRib, this.DistanceToFirstRib);
+                                continue;
+                            }
+                            (rib.DistanceLeft, rib.DistanceRight) = (this.DistanceBetweenRibs, this.DistanceBetweenRibs);
                         }
-                        (rib.DistanceLeft, rib.DistanceRight) = (this.DistanceBetweenRibs, this.DistanceBetweenRibs);
                     }
                     break;
 
                 case nameof(this.RibsHeight):
-                    this.RibsCollection.SetRibsHeight(this.RibsHeight);
+                    using (SuppressNotifications())
+                        this.RibsCollection.SetRibsHeight(this.RibsHeight);
                     break;
 
                 case nameof(this.RibsThickness):
-                    this.RibsCollection.SetRibsThickness(this.RibsThickness);
+                    using (SuppressNotifications())
+                        this.RibsCollection.SetRibsThickness(this.RibsThickness);
                     break;
 
                 case nameof(this.DistanceToFirstRib):
                     if (this.RibsCollection?.Count == 0)
                         break;
 
-                    this.RibsCollection[0].DistanceLeft = this.DistanceToFirstRib;
-                    this.RibsCollection[0].DistanceRight = this.DistanceToFirstRib;
+                    using (SuppressNotifications())
+                    {
+                        this.RibsCollection[0].DistanceLeft = this.DistanceToFirstRib;
+                        this.RibsCollection[0].DistanceRight = this.DistanceToFirstRib;
+                    }
                     break;
 
                 case nameof(this.DistanceBetweenRibs):
-                    for (int i = 0; i < this.RibsCollection.Count; i++)
+                    using (SuppressNotifications())
                     {
-                        Rib rib = this.RibsCollection[i];
+                        for (int i = 0; i < this.RibsCollection.Count; i++)
+                        {
+                            Rib rib = this.RibsCollection[i];
 
-                        if (i == 0)
-                            continue;
+                            if (i == 0)
+                                continue;
 
-                        (rib.DistanceLeft, rib.DistanceRight) = (this.DistanceBetweenRibs, this.DistanceBetweenRibs);
+                            (rib.DistanceLeft, rib.DistanceRight) = (this.DistanceBetweenRibs, this.DistanceBetweenRibs);
+                        }
                     }
                     break;
 
                 case nameof(this.RibsIdentToLeft):
-                    this.RibsCollection.SetRibsIdentToLeft(this.RibsIdentToLeft);
+                    using (SuppressNotifications())
+                        this.RibsCollection.SetRibsIdentToLeft(this.RibsIdentToLeft);
                     break;
 
                 case nameof(this.RibsIdentToRight):
-                    this.RibsCollection.SetRibsIdentToRight(this.RibsIdentToRight);
+                    using (SuppressNotifications())
+                        this.RibsCollection.SetRibsIdentToRight(this.RibsIdentToRight);
                     break;
 
                 case nameof(this.RibsCount):
-                    this.RibsCollection.SetCount(this.RibsCount);
-                    this.WeldingProperties.Welds?.SetCount(this.RibsCount);
+                    this.ComplexCascadingChange(() =>
+                    {
+                        this.RibsCollection.SetCount(this.RibsCount);
+                        this.WeldingProperties.Welds?.SetCount(this.RibsCount);
+                    });
                     break;
             }
         }
@@ -313,15 +332,16 @@ namespace ForRobot.Models.Detals
         {
             if (e.Rib == null)
                 return;
-            
+
             switch (e.PropertyName)
             {
                 case nameof(Rib.DistanceLeft):
-                    if (this.ParalleleRibs)
-                        e.Rib.DistanceRight = e.Rib.DistanceLeft;
+                    using (SuppressNotifications())
+                        if (this.ParalleleRibs)
+                            e.Rib.DistanceRight = e.Rib.DistanceLeft;
                     break;
             }
-            this.OnChangeProperty(e.PropertyName);
+            this.OnChangeProperty(nameof(this.RibsCollection));
         }
 
         /// <summary>
@@ -347,6 +367,26 @@ namespace ForRobot.Models.Detals
 
                 case NotifyCollectionChangedAction.Reset:
                     break;
+            }
+        }
+
+        /// <summary>
+        /// Выполнение комплексного каскадного изменения с подавлением уведомлений свойств <see cref="WeldingProperties"/> и <see cref="RibsCollection"/>
+        /// </summary>
+        /// <param name="changeAction">Делегат, выполняющий изменения</param>
+        private void ComplexCascadingChange(Action changeAction)
+        {
+            var controlsToSuppress = new List<IChangeNotificationControl> { this };
+
+            if (this.RibsCollection is IChangeNotificationControl ribsControl)
+                controlsToSuppress.Add(ribsControl);
+
+            if (this.WeldingProperties is IChangeNotificationControl weldingControl)
+                controlsToSuppress.Add(weldingControl);
+
+            using (NotificationSuppression.Suppress(controlsToSuppress))
+            {
+                changeAction?.Invoke();
             }
         }
 

@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 using Newtonsoft.Json;
 
+using ForRobot.Libr.Clipboard;
 using ForRobot.Libr.Converters;
 using ForRobot.Models.Welding;
 
 namespace ForRobot.Models.Detals
 {
-    public abstract class Detal : INotifyPropertyChanged, IDisposable
+    public abstract class Detal : INotifyPropertyChanged, IDisposable, IChangeNotificationControl
     {
         #region Private variables
 
@@ -250,19 +252,25 @@ namespace ForRobot.Models.Detals
         /// <param name="e"></param>,
         private void HandleChangeProperty(object sender, PropertyChangedEventArgs e)
         {
-            if(e.PropertyName == nameof(this.ScoseType))
+            if (_suppressNotifications)
+                return;
+
+            if (e.PropertyName == nameof(this.ScoseType))
             {
-                if(this.ScoseType == ScoseTypes.Rect)
+                ComplexCascadingChange(() =>
                 {
-                    (this._plateWidthSave, this.PlateWidth) = (this.PlateWidth, 0);
-                    (this._plateBevelToLeftSave, this._plateBevelToRightSave) = (this.PlateBevelToLeft, this.PlateBevelToRight);
-                    (this.PlateBevelToLeft, this.PlateBevelToRight) = (0, 0);
-                }
-                else
-                {
-                    this.PlateWidth = this._plateWidthSave;
-                    (this.PlateBevelToLeft, this.PlateBevelToRight) = (this._plateBevelToLeftSave, this._plateBevelToRightSave);
-                }
+                    if (this.ScoseType == ScoseTypes.Rect)
+                    {
+                        (this._plateWidthSave, this.PlateWidth) = (this.PlateWidth, 0);
+                        (this._plateBevelToLeftSave, this._plateBevelToRightSave) = (this.PlateBevelToLeft, this.PlateBevelToRight);
+                        (this.PlateBevelToLeft, this.PlateBevelToRight) = (0, 0);
+                    }
+                    else
+                    {
+                        this.PlateWidth = this._plateWidthSave;
+                        (this.PlateBevelToLeft, this.PlateBevelToRight) = (this._plateBevelToLeftSave, this._plateBevelToRightSave);
+                    }
+                });
             }
         }
 
@@ -273,14 +281,35 @@ namespace ForRobot.Models.Detals
         /// <param name="e"></param>,
         private void HandleChangeProperty_WeldingProperties(object sender, PropertyChangedEventArgs e) => this.OnChangeProperty(e.PropertyName);
 
+        /// <summary>
+        /// Выполнение комплексного каскадного изменения с подавлением уведомлений свойства <see cref="WeldingProperties"/>
+        /// </summary>
+        /// <param name="changeAction">Делегат, выполняющий изменения</param>
+        private void ComplexCascadingChange(Action changeAction)
+        {
+            var controlsToSuppress = new List<IChangeNotificationControl> { this };
+            
+            if (this.WeldingProperties is IChangeNotificationControl weldingControl)
+                controlsToSuppress.Add(weldingControl);
+
+            using (NotificationSuppression.Suppress(controlsToSuppress))
+            {
+                changeAction?.Invoke();
+            }
+        }
+
         #endregion
 
         #region Public functions
 
-        public object Clone()
+        public virtual object Clone()
         {
             var json = JsonConvert.SerializeObject(this);
-            return JsonConvert.DeserializeObject(json, this.GetType());
+            JsonSerializerSettings settings = new JsonSerializerSettings()
+            {
+                ObjectCreationHandling = ObjectCreationHandling.Replace
+            };
+            return JsonConvert.DeserializeObject(json, this.GetType(), settings);
         }
 
         public bool Equals(Detal detal)
@@ -294,7 +323,42 @@ namespace ForRobot.Models.Detals
         /// Вызов события изменения свойства
         /// </summary>
         /// <param name="propertyName">Наименование свойства</param>
-        protected void OnChangeProperty([CallerMemberName] string propertyName = null) => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        protected void OnChangeProperty([CallerMemberName] string propertyName = null)
+        {
+            if (this._suppressNotifications)
+                return;
+
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        #endregion
+
+        #region Implementations of IChangeNotificationControl
+
+        private bool _suppressNotifications = false;
+
+        public bool IsNotificationsSuppressed => this._suppressNotifications;
+
+        public IDisposable SuppressNotifications() => new NotificationSuppressionScope(this);
+
+        private class NotificationSuppressionScope : IDisposable
+        {
+            private readonly Detal _owner;
+            private readonly bool _wasSuppressed;
+
+            public NotificationSuppressionScope(Detal owner)
+            {
+                _owner = owner;
+                _wasSuppressed = _owner._suppressNotifications;
+                _owner._suppressNotifications = true;
+            }
+
+            public void Dispose()
+            {
+                if (_owner != null)
+                    _owner._suppressNotifications = _wasSuppressed;
+            }
+        }
 
         #endregion
 

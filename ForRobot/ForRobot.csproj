@@ -311,6 +311,8 @@
     <Compile Include="Libr\Behavior\HelixAddCollectionBehavior.cs" />
     <Compile Include="Libr\Behavior\DataGridStretchLastColumn.cs" />
     <Compile Include="Libr\Clipboard\CacheClipboardProvider.cs" />
+    <Compile Include="Libr\Clipboard\IChangeNotificationControl.cs" />
+    <Compile Include="Libr\Clipboard\MultiNotificationSuppression.cs" />
     <Compile Include="Libr\Clipboard\UndoRedoManager.cs" />
     <Compile Include="Libr\Clipboard\UndoRedo\UndoRedoStacks.cs" />
     <Compile Include="Libr\Collections\LimitedStack.cs" />

@@ -14,6 +14,8 @@ namespace ForRobot.Libr.Clipboard.UndoRedo
 
         public string Description { get; }
 
+        public event EventHandler CanExecuteChanged;
+
         public PropertyChangeCommand(object target, string propertyName, object oldValue, object newValue, string description = null)
         {
             this._target = target;
@@ -24,8 +26,6 @@ namespace ForRobot.Libr.Clipboard.UndoRedo
             this.Description = description;
             this._propertyChain = this._propertyPath.Split('.');
         }
-
-        public event EventHandler CanExecuteChanged;
 
         public bool CanExecute(object parameter) => true;
 
@@ -48,17 +48,11 @@ namespace ForRobot.Libr.Clipboard.UndoRedo
             {
                 property.SetValue(targetObject, value);
             }
-
-            //var property = _target.GetType().GetProperty(_propertyName);
-            //if (property != null && property.CanWrite)
-            //{
-            //    property.SetValue(_target, value);
-            //}
         }
 
         private object GetTargetObject()
         {
-            object current = _target;
+            object current = this._target;
             
             for (int i = 0; i < _propertyChain.Length - 1; i++)
             {

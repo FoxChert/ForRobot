@@ -177,23 +177,23 @@ namespace ForRobot.Models.File3D
         /// <param name="e"></param>
         private void HandlePropertyChange_CurrentDetal(object sender, PropertyChangedEventArgs e)
         {
-            //switch (e.PropertyName)
-            //{
-            //    case nameof(Plate.RibsCount):
-            //        break;
-            //}
+            switch (e.PropertyName)
+            {
+                case nameof(Plate.RibsCount):
+                    break;
+            }
 
-            //this.OnPropertyChanged(nameof(CurrentDetal));
+            Detal detal = sender as Detal;
 
             if (this._undoBlock)
                 return;
 
-            string path = ForRobot.Libr.PropertyPathHelper.GetFullPropertyPath(this.CurrentDetal, e.PropertyName);
+            string path = ForRobot.Libr.PropertyPathHelper.GetFullPropertyPath(detal, e.PropertyName);
             var oldValue = ForRobot.Libr.PropertyPathHelper.GetValueFromPath(this._oldDetal, path);
-            var newValue = ForRobot.Libr.PropertyPathHelper.GetValueFromPath(this.CurrentDetal, path);
+            var newValue = ForRobot.Libr.PropertyPathHelper.GetValueFromPath(detal, path);
 
             if (!object.Equals(oldValue, newValue))
-                this.OnValueChanged(this.CurrentDetal, oldValue, newValue, e.PropertyName);
+                this.OnValueChanged(detal, oldValue, newValue, e.PropertyName);
         }
 
         #endregion
@@ -205,7 +205,7 @@ namespace ForRobot.Models.File3D
         /// <param name="e"></param>
         protected override void HandleValueChangedEvent(object sender, ForRobot.Libr.ValueChangedEventArgs e)
         {
-            if (e.OldValue != null && e.NewValue != e.OldValue)
+            if (e.OldValue != null && !object.Equals(e.OldValue, e.NewValue))
             {
                 var command = new PropertyChangeCommand(sender,
                                                         e.PropertyName,

@@ -48,7 +48,7 @@ namespace ForRobot.Libr.Collections
             }
         }
 
-        public WeldCollcetion(int count) : base(GetCollection(count)) { }
+        public WeldCollcetion(int count) : this(GetCollection(count)) { }
 
         #endregion Constructors
 
