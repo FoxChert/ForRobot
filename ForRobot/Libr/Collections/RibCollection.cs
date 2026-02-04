@@ -14,7 +14,7 @@ namespace ForRobot.Libr.Collections
     public class RibCollection : ObservableCollection<Rib>
     {
         #region Public variables
-        
+
         /// <summary>
         /// Событие изменения свойства любого ребра в коллекции
         /// </summary>

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 using HelixToolkit.Wpf;
 
-namespace ForRobot.Models.File3D
+namespace ForRobot.Libr.Modeling
 {
     /// <summary>
     /// Обработчик файлов 3D моделей, использующий <see cref="HelixToolkit.Wpf"/> для загрузки и сохранения моделей

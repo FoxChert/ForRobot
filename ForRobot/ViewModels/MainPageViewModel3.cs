@@ -28,6 +28,7 @@ using ForRobot.Libr.Services;
 using ForRobot.Libr.Collections;
 using ForRobot.Models;
 using ForRobot.Models.Detals;
+using ForRobot.Models.RoboticComplex;
 
 namespace ForRobot.ViewModels
 {
@@ -885,9 +886,9 @@ namespace ForRobot.ViewModels
         private void SaveRobots()
         {
             Properties.Settings.Default.SaveRobots.Clear();
-            foreach (var r in this.RobotsCollection)
+            foreach (var item in this.RobotsCollection)
             {
-                Properties.Settings.Default.SaveRobots.Add(r.Json);
+                Properties.Settings.Default.SaveRobots.Add(item.Serialize());
                 Properties.Settings.Default.Save();
             }
         }

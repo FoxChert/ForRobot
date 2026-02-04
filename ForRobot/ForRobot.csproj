@@ -318,9 +318,12 @@
     <Compile Include="Libr\Collections\LimitedStack.cs" />
     <Compile Include="Libr\Collections\RibCollection.cs" />
     <Compile Include="Libr\Collections\File3DCollection.cs" />
-    <Compile Include="Libr\Collections\Model3DCollection.cs" />
+    <Compile Include="Libr\Modeling\CacheModel3DProvider.cs" />
+    <Compile Include="Libr\Modeling\Model3DCollection.cs" />
     <Compile Include="Libr\Collections\RibPropertyChangedEventArgs.cs" />
-    <Compile Include="Libr\Collections\Transform3DBuilder.cs" />
+    <Compile Include="Libr\Modeling\Model3DManager.cs" />
+    <Compile Include="Libr\Modeling\Model3DProvider.cs" />
+    <Compile Include="Libr\Modeling\Transform3DBuilder.cs" />
     <Compile Include="Libr\Collections\WeldCollcetion.cs" />
     <Compile Include="Libr\Collections\WeldPropertyChangedEventArgs.cs" />
     <Compile Include="Libr\Configuration\CachedConfigurationProvider.cs" />
@@ -332,7 +335,7 @@
     <Compile Include="Libr\EnumExtensions.cs" />
     <Compile Include="Libr\Factories\DetalFactory\DetalFactory.cs" />
     <Compile Include="Libr\Factories\DetalFactory\IDetalFactory.cs" />
-    <Compile Include="Libr\Factories\DetalFactory\WeldingFactory.cs" />
+    <Compile Include="Libr\Factories\WeldingFactory.cs" />
     <Compile Include="Libr\Json\Schemas\CachedJsonSchemaProvider.cs" />
     <Compile Include="Libr\Json\Schemas\JsonSchemaProvider.cs" />
     <Compile Include="Libr\Json\Schemas\JsonManager.cs" />
@@ -363,27 +366,34 @@
     <Compile Include="Libr\Logging\Logger.cs" />
     <Compile Include="Libr\Messages\UpdateCurrentDetalMessage.cs" />
     <Compile Include="Libr\Clipboard\UndoRedo\IUndoRedo.cs" />
+    <Compile Include="Libr\Modeling\PlateModelingService.cs" />
     <Compile Include="Libr\ObjectReferenceEqualityComparer.cs" />
     <Compile Include="Libr\PropertyPathHelper.cs" />
     <Compile Include="Libr\Services\Providers\IDetalProvider.cs" />
     <Compile Include="Libr\Services\Providers\IJsonSchemaProvider.cs" />
+    <Compile Include="Libr\Services\Providers\IModelProvider.cs" />
     <Compile Include="Libr\ValueChangedEventArgs.cs" />
     <Compile Include="Libr\ValueChangedEventHandler.cs" />
     <Compile Include="Models\Detals\CachedDetalProvider.cs" />
     <Compile Include="Models\Detals\DetalProvider.cs" />
+    <Compile Include="Models\ISceneItem.cs" />
+    <Compile Include="Models\RoboticComplex\PC.cs" />
+    <Compile Include="Models\RoboticComplex\RobotExtensions.cs" />
+    <Compile Include="Models\RoboticComplex\WeldingCell.cs" />
+    <Compile Include="Models\Welding\WeldingSchemaExtension.cs" />
     <Compile Include="Models\Welding\WeldingSchemaItem.cs" />
     <Compile Include="Models\Welding\WeldingSchemaTypes.cs" />
     <Compile Include="Models\Welding\WeldingProperties.cs" />
     <Compile Include="Libr\Services\Providers\IConfigurationProvider.cs" />
-    <Compile Include="Models\File3D\AssimpModelHandler.cs" />
+    <Compile Include="Libr\Modeling\AssimpModelHandler.cs" />
     <Compile Include="Libr\Factories\File3DFactory.cs" />
     <Compile Include="Libr\Collections\FilePropertyChangedEventArgs.cs" />
-    <Compile Include="Models\File3D\HelixToolkitModelHandler.cs" />
+    <Compile Include="Libr\Modeling\HelixToolkitModelHandler.cs" />
     <Compile Include="Models\File3D\IFile3D.cs" />
-    <Compile Include="Models\File3D\IModelFileHandler.cs" />
+    <Compile Include="Libr\Modeling\IModelFileHandler.cs" />
     <Compile Include="Models\File3D\MeshModelFile3D.cs" />
     <Compile Include="Models\File3D\NativeFile3D.cs" />
-    <Compile Include="Models\File3D\OpenCascadeModelHandler.cs" />
+    <Compile Include="Libr\Modeling\OpenCascadeModelHandler.cs" />
     <Compile Include="Models\Settings\SceneConfiguration.cs" />
     <Compile Include="Themes\Colors.cs" />
     <Compile Include="Models\Settings\ApplicationInfo.cs" />
@@ -407,7 +417,7 @@
     <Compile Include="Libr\Services\File3DImportService.cs" />
     <Compile Include="Libr\Services\FileDialogService.cs" />
     <Compile Include="Libr\Services\GenerationService.cs" />
-    <Compile Include="Libr\Services\ModelingService.cs" />
+    <Compile Include="Libr\Modeling\ModelingService.cs" />
     <Compile Include="Libr\Services\SelectAppsOnDeviceService.cs" />
     <Compile Include="Libr\Services\WeldService.cs" />
     <Compile Include="Libr\Services\WindowsAppService.cs" />
@@ -531,7 +541,7 @@
     <Compile Include="Libr\Logging\LogErrorEventArgs.cs" />
     <Compile Include="Libr\Logging\LogEventArgs.cs" />
     <Compile Include="Libr\Font.cs" />
-    <Compile Include="Models\Robot.cs" />
+    <Compile Include="Models\RoboticComplex\Robot.cs" />
     <Compile Include="Models\Detals\Detal.cs" />
     <Compile Include="Models\Detals\DetalType.cs" />
     <Compile Include="Models\Detals\PlateStringer.cs" />
@@ -585,15 +595,15 @@
     <EmbeddedResource Include="Scripts\krl_templates.py">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Scripts\weld_gen.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Resource Include="Themes\Icons\robot-arm_158.ico" />
     <Resource Include="Themes\Icons\checkbox.ico" />
     <Resource Include="Themes\Icons\input.ico" />
     <Resource Include="Themes\Images\EndPlita.png" />
     <Resource Include="Themes\Images\Plita.png" />
     <Resource Include="Themes\Images\StartPlita.png" />
-    <EmbeddedResource Include="Scripts\weld_gen.py">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
     <Resource Include="Themes\Images\back_view.png" />
     <Resource Include="Themes\Images\bottom_view.png" />
     <Resource Include="Themes\Images\front_view.png" />

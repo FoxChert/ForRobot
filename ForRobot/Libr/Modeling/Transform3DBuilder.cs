@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Media.Media3D;
 
-namespace ForRobot.Libr.Collections
+namespace ForRobot.Libr.Modeling
 {
     public static class Transform3DBuilder
     {

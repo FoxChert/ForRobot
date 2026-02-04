@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Media.Media3D;
 
 using ForRobot.Libr.Attributes;
-using ForRobot.Libr.Services;
+using ForRobot.Libr.Modeling;
 using ForRobot.Models.Detals;
 using ForRobot.Models.File3D;
 
@@ -23,18 +23,14 @@ namespace ForRobot.Libr.Strategies.AnnotationStrategies
         /// Коэффициент сужения/расширения для трапеций (от 0.1 до 0.9)
         /// </summary>
         private readonly double _trapezoidRatio;
-        /// <summary>
-        /// Смещение скоса
-        /// </summary>
-        private readonly double _slopeOffset;
+        ///// <summary>
+        ///// Смещение скоса
+        ///// </summary>
+        //private readonly double _slopeOffset;
 
-        public PlateAnnotationStrategy(double scaleFactor, double slopeOffset = ModelingService.SLOPE_OFF_SET, double trapezoidRatio = ModelingService.TRAPEZOID_RATIO)
+        public PlateAnnotationStrategy(double scaleFactor, double trapezoidRatio = ModelingService.TRAPEZOID_RATIO)
         {
-            if (slopeOffset <= 0)
-                throw new ArgumentException("Масштабный коэффициент должен быть больше нуля.");
-
             this._scaleFactor = scaleFactor;
-            this._slopeOffset = slopeOffset;
             this._trapezoidRatio = trapezoidRatio;
         }
 
@@ -62,7 +58,7 @@ namespace ForRobot.Libr.Strategies.AnnotationStrategies
             {
                 case ScoseTypes.SlopeLeft:
                 case ScoseTypes.SlopeRight:
-                    offsetX = (plate.ScoseType == ScoseTypes.SlopeLeft) ? -ModelingService.SLOPE_OFF_SET : ModelingService.SLOPE_OFF_SET;
+                    //offsetX = (plate.ScoseType == ScoseTypes.SlopeLeft) ? -ModelingService.SLOPE_OFF_SET : ModelingService.SLOPE_OFF_SET;
                     break;
             }
 
@@ -84,23 +80,23 @@ namespace ForRobot.Libr.Strategies.AnnotationStrategies
 
             //double bottomHalfLen = halfLength, topHalfLen = halfLength;
             double offsetX = 0;
-            switch (plate.ScoseType)
-            {
-                case ScoseTypes.SlopeLeft:
-                case ScoseTypes.SlopeRight:
-                    offsetX = -ModelingService.SLOPE_OFF_SET;
-                    break;
+            //switch (plate.ScoseType)
+            //{
+            //    case ScoseTypes.SlopeLeft:
+            //    case ScoseTypes.SlopeRight:
+            //        offsetX = -ModelingService.SLOPE_OFF_SET;
+            //        break;
 
-                    //case ScoseTypes.TrapezoidTop:
-                    //    bottomHalfLen = halfLength;
-                    //    topHalfLen = halfLength * (1 - ModelingService.TrapezoidRatio);
-                    //    break;
+            //        //case ScoseTypes.TrapezoidTop:
+            //        //    bottomHalfLen = halfLength;
+            //        //    topHalfLen = halfLength * (1 - ModelingService.TrapezoidRatio);
+            //        //    break;
 
-                    //case ScoseTypes.TrapezoidBottom:
-                    //    bottomHalfLen = halfLength * (1 - ModelingService.TrapezoidRatio);
-                    //    topHalfLen = halfLength;
-                    //    break;
-            }
+            //        //case ScoseTypes.TrapezoidBottom:
+            //        //    bottomHalfLen = halfLength * (1 - ModelingService.TrapezoidRatio);
+            //        //    topHalfLen = halfLength;
+            //        //    break;
+            //}
 
             Point3D A = this.CreatePoint(-halfLength + offsetX, -halfWidth, 0);
             Point3D B = this.CreatePoint(-halfLength + offsetX - Annotation.DefaultAnnotationWidth, -halfWidth, 0);
@@ -125,41 +121,41 @@ namespace ForRobot.Libr.Strategies.AnnotationStrategies
 
             Annotation.ArrowSide arrowSide = Annotation.ArrowSide.BC;
 
-            switch (plate.ScoseType)
-            {
-                case ScoseTypes.Rect:
-                    return null;
+            //switch (plate.ScoseType)
+            //{
+            //    case ScoseTypes.Rect:
+            //        return null;
 
-                case ScoseTypes.SlopeLeft:
-                    double offsetX = -ModelingService.SLOPE_OFF_SET;
-                    A = this.CreatePoint(-halfLength - offsetX, -halfWidth, 0);
-                    B = this.CreatePoint(-halfLength + offsetX, -halfWidth, 0);
-                    C = this.CreatePoint(-halfLength + offsetX, halfWidth, 0);
-                    D = this.CreatePoint(-halfLength + offsetX, halfWidth, 0);
-                    arrowSide = Annotation.ArrowSide.AB;
-                    break;
+            //    case ScoseTypes.SlopeLeft:
+            //        double offsetX = -ModelingService.SLOPE_OFF_SET;
+            //        A = this.CreatePoint(-halfLength - offsetX, -halfWidth, 0);
+            //        B = this.CreatePoint(-halfLength + offsetX, -halfWidth, 0);
+            //        C = this.CreatePoint(-halfLength + offsetX, halfWidth, 0);
+            //        D = this.CreatePoint(-halfLength + offsetX, halfWidth, 0);
+            //        arrowSide = Annotation.ArrowSide.AB;
+            //        break;
 
-                case ScoseTypes.SlopeRight:
-                    offsetX = ModelingService.SLOPE_OFF_SET;
-                    A = this.CreatePoint(-halfLength - offsetX, -halfWidth, 0);
-                    B = this.CreatePoint(-halfLength - offsetX, -halfWidth, 0);
-                    C = this.CreatePoint(-halfLength - offsetX, halfWidth, 0);
-                    D = this.CreatePoint(-halfLength + offsetX, halfWidth, 0);
-                    arrowSide = Annotation.ArrowSide.CD;
-                    break;
+            //    case ScoseTypes.SlopeRight:
+            //        offsetX = ModelingService.SLOPE_OFF_SET;
+            //        A = this.CreatePoint(-halfLength - offsetX, -halfWidth, 0);
+            //        B = this.CreatePoint(-halfLength - offsetX, -halfWidth, 0);
+            //        C = this.CreatePoint(-halfLength - offsetX, halfWidth, 0);
+            //        D = this.CreatePoint(-halfLength + offsetX, halfWidth, 0);
+            //        arrowSide = Annotation.ArrowSide.CD;
+            //        break;
 
-                case ScoseTypes.TrapezoidTop:
-                case ScoseTypes.TrapezoidBottom:
-                    double maxXPoint = halfLength * (1 - ModelingService.TRAPEZOID_RATIO);
-                    double isTop = (plate.ScoseType == ScoseTypes.TrapezoidTop) ? 1 : -1;
+            //    case ScoseTypes.TrapezoidTop:
+            //    case ScoseTypes.TrapezoidBottom:
+            //        double maxXPoint = halfLength * (1 - ModelingService.TRAPEZOID_RATIO);
+            //        double isTop = (plate.ScoseType == ScoseTypes.TrapezoidTop) ? 1 : -1;
 
-                    A = this.CreatePoint(-halfLength, -halfWidth * isTop, 0);
-                    B = this.CreatePoint(-halfLength, -halfWidth * isTop, 0);
-                    C = this.CreatePoint(-halfLength, halfWidth * isTop, 0);
-                    D = this.CreatePoint(-maxXPoint, halfWidth * isTop, 0);
-                    arrowSide = Annotation.ArrowSide.CD;
-                    break;
-            }
+            //        A = this.CreatePoint(-halfLength, -halfWidth * isTop, 0);
+            //        B = this.CreatePoint(-halfLength, -halfWidth * isTop, 0);
+            //        C = this.CreatePoint(-halfLength, halfWidth * isTop, 0);
+            //        D = this.CreatePoint(-maxXPoint, halfWidth * isTop, 0);
+            //        arrowSide = Annotation.ArrowSide.CD;
+            //        break;
+            //}
 
             Point3DCollection points = new Point3DCollection() { A, B, C, D };
             return this.GetAnnotation(points, nameof(plate.PlateBevelToLeft), ToString(plate.PlateBevelToLeft), arrowSide);
@@ -178,41 +174,41 @@ namespace ForRobot.Libr.Strategies.AnnotationStrategies
 
             Annotation.ArrowSide arrowSide = Annotation.ArrowSide.BC;
 
-            switch (plate.ScoseType)
-            {
-                case ScoseTypes.Rect:
-                    return null;
+            //switch (plate.ScoseType)
+            //{
+            //    case ScoseTypes.Rect:
+            //        return null;
 
-                case ScoseTypes.SlopeLeft:
-                    double offsetX = -ModelingService.SLOPE_OFF_SET;
-                    A = this.CreatePoint(halfLength - offsetX, -halfWidth, 0);
-                    B = this.CreatePoint(halfLength - offsetX, -halfWidth, 0);
-                    C = this.CreatePoint(halfLength - offsetX, halfWidth, 0);
-                    D = this.CreatePoint(halfLength + offsetX, halfWidth, 0);
-                    arrowSide = Annotation.ArrowSide.CD;
-                    break;
+            //    case ScoseTypes.SlopeLeft:
+            //        double offsetX = -ModelingService.SLOPE_OFF_SET;
+            //        A = this.CreatePoint(halfLength - offsetX, -halfWidth, 0);
+            //        B = this.CreatePoint(halfLength - offsetX, -halfWidth, 0);
+            //        C = this.CreatePoint(halfLength - offsetX, halfWidth, 0);
+            //        D = this.CreatePoint(halfLength + offsetX, halfWidth, 0);
+            //        arrowSide = Annotation.ArrowSide.CD;
+            //        break;
 
-                case ScoseTypes.SlopeRight:
-                    offsetX = ModelingService.SLOPE_OFF_SET;
-                    A = this.CreatePoint(halfLength - offsetX, -halfWidth, 0);
-                    B = this.CreatePoint(halfLength + offsetX, -halfWidth, 0);
-                    C = this.CreatePoint(halfLength + offsetX, halfWidth, 0);
-                    D = this.CreatePoint(halfLength + offsetX, halfWidth, 0);
-                    arrowSide = Annotation.ArrowSide.AB;
-                    break;
+            //    case ScoseTypes.SlopeRight:
+            //        offsetX = ModelingService.SLOPE_OFF_SET;
+            //        A = this.CreatePoint(halfLength - offsetX, -halfWidth, 0);
+            //        B = this.CreatePoint(halfLength + offsetX, -halfWidth, 0);
+            //        C = this.CreatePoint(halfLength + offsetX, halfWidth, 0);
+            //        D = this.CreatePoint(halfLength + offsetX, halfWidth, 0);
+            //        arrowSide = Annotation.ArrowSide.AB;
+            //        break;
 
-                case ScoseTypes.TrapezoidTop:
-                case ScoseTypes.TrapezoidBottom:
-                    double maxXPoint = halfLength * (1 - ModelingService.TRAPEZOID_RATIO);
-                    double isTop = (plate.ScoseType == ScoseTypes.TrapezoidTop) ? 1 : -1;
+            //    case ScoseTypes.TrapezoidTop:
+            //    case ScoseTypes.TrapezoidBottom:
+            //        double maxXPoint = halfLength * (1 - ModelingService.TRAPEZOID_RATIO);
+            //        double isTop = (plate.ScoseType == ScoseTypes.TrapezoidTop) ? 1 : -1;
 
-                    A = this.CreatePoint(halfLength, -halfWidth * isTop, 0);
-                    B = this.CreatePoint(halfLength, -halfWidth * isTop, 0);
-                    C = this.CreatePoint(halfLength, halfWidth * isTop, 0);
-                    D = this.CreatePoint(maxXPoint, halfWidth * isTop, 0);
-                    arrowSide = Annotation.ArrowSide.CD;
-                    break;
-            }
+            //        A = this.CreatePoint(halfLength, -halfWidth * isTop, 0);
+            //        B = this.CreatePoint(halfLength, -halfWidth * isTop, 0);
+            //        C = this.CreatePoint(halfLength, halfWidth * isTop, 0);
+            //        D = this.CreatePoint(maxXPoint, halfWidth * isTop, 0);
+            //        arrowSide = Annotation.ArrowSide.CD;
+            //        break;
+            //}
 
             Point3DCollection points = new Point3DCollection() { A, B, C, D };
             return this.GetAnnotation(points, nameof(plate.PlateBevelToRight), ToString(plate.PlateBevelToRight), arrowSide);
@@ -242,11 +238,11 @@ namespace ForRobot.Libr.Strategies.AnnotationStrategies
                 double basePlateLength = modelPlateLength;
                 switch (plate.ScoseType)
                 {
-                    case ScoseTypes.SlopeLeft:
-                    case ScoseTypes.SlopeRight:
-                        double positionRatio = ((ribLeftPositionY + ribRightPositionY) / 2 + modelPlateWidth / 2) / modelPlateWidth * 2 - 1;
-                        offsetX = ((plate.ScoseType == ScoseTypes.SlopeLeft) ? -ModelingService.SLOPE_OFF_SET : ModelingService.SLOPE_OFF_SET) * positionRatio;
-                        break;
+                    //case ScoseTypes.SlopeLeft:
+                    //case ScoseTypes.SlopeRight:
+                    //    double positionRatio = ((ribLeftPositionY + ribRightPositionY) / 2 + modelPlateWidth / 2) / modelPlateWidth * 2 - 1;
+                    //    offsetX = ((plate.ScoseType == ScoseTypes.SlopeLeft) ? -ModelingService.SLOPE_OFF_SET : ModelingService.SLOPE_OFF_SET) * positionRatio;
+                    //    break;
 
                     case ScoseTypes.TrapezoidTop:
                     case ScoseTypes.TrapezoidBottom:
@@ -260,7 +256,7 @@ namespace ForRobot.Libr.Strategies.AnnotationStrategies
                 }
                 // Длина ребра с учетом отступов и формы плиты
                 double ribLength = basePlateLength - modelRibIdentToLeft - modelRibIdentToRight;
-                ribLength = Math.Max(ribLength, ModelingService.MIN_RIB_LENGTH);
+                ribLength = Math.Max(ribLength, Plate.MIN_RIB_COUNT);
 
                 // Центр ребра по X с учетом смещения
                 double centerX = offsetX + (modelRibIdentToLeft - modelRibIdentToRight) / 2;
@@ -343,11 +339,11 @@ namespace ForRobot.Libr.Strategies.AnnotationStrategies
                 double basePlateLength = halfModelPlateLength;
                 switch (plate.ScoseType)
                 {
-                    case ScoseTypes.SlopeLeft:
-                    case ScoseTypes.SlopeRight:
-                        double positionRatio = ((ribLeftPositionY + ribRightPositionY) / 2 + modelPlateWidth / 2) / modelPlateWidth * 2 - 1;
-                        offsetX = ((plate.ScoseType == ScoseTypes.SlopeLeft) ? -this._slopeOffset : this._slopeOffset) * positionRatio;
-                        break;
+                    //case ScoseTypes.SlopeLeft:
+                    //case ScoseTypes.SlopeRight:
+                    //    double positionRatio = ((ribLeftPositionY + ribRightPositionY) / 2 + modelPlateWidth / 2) / modelPlateWidth * 2 - 1;
+                    //    offsetX = ((plate.ScoseType == ScoseTypes.SlopeLeft) ? -this._slopeOffset : this._slopeOffset) * positionRatio;
+                    //    break;
 
                     case ScoseTypes.TrapezoidTop:
                     case ScoseTypes.TrapezoidBottom:

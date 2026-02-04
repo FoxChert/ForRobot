@@ -5,6 +5,7 @@ using System.Windows.Media.Media3D;
 
 using HelixToolkit.Wpf;
 
+using ForRobot.Libr.Modeling;
 using ForRobot.Models.Detals;
 using ForRobot.Models.File3D;
 
@@ -15,28 +16,28 @@ namespace ForRobot.Libr.Strategies.ModelingStrategies
     /// </summary>
     public class PlateModelingStrategy : IDetalModelingStrategy
     {
-        /// <summary>
-        /// Масштабный коэффициент
-        /// </summary>
-        private readonly double _scaleFactor;
-        /// <summary>
-        /// Коэффициент сужения/расширения для трапеций (от 0.1 до 0.9)
-        /// </summary>
-        private readonly double _trapezoidRatio;
-        /// <summary>
-        /// Смещение скоса
-        /// </summary>
-        private readonly double _slopeOffset;
+        ///// <summary>
+        ///// Масштабный коэффициент
+        ///// </summary>
+        //private readonly double _scaleFactor;
+        ///// <summary>
+        ///// Коэффициент сужения/расширения для трапеций (от 0.1 до 0.9)
+        ///// </summary>
+        //private readonly double _trapezoidRatio;
+        ///// <summary>
+        ///// Смещение скоса
+        ///// </summary>
+        //private readonly double _slopeOffset;
 
-        public PlateModelingStrategy(double scaleFactor, double slopeOffset = 10, double trapezoidRatio = 0.2)
-        {
-            if (slopeOffset <= 0)
-                throw new ArgumentException("Масштабный коэффициент должен быть больше нуля.");
+        //public PlateModelingStrategy(double scaleFactor, double slopeOffset = 10, double trapezoidRatio = 0.2)
+        //{
+        //    if (slopeOffset <= 0)
+        //        throw new ArgumentException("Масштабный коэффициент должен быть больше нуля.");
 
-            this._scaleFactor = scaleFactor;
-            this._slopeOffset = slopeOffset;
-            this._trapezoidRatio = trapezoidRatio;
-        }
+        //    this._scaleFactor = scaleFactor;
+        //    this._slopeOffset = slopeOffset;
+        //    this._trapezoidRatio = trapezoidRatio;
+        //}
 
         #region Private functions
 
@@ -47,7 +48,7 @@ namespace ForRobot.Libr.Strategies.ModelingStrategies
         /// <param name="y"></param>
         /// <param name="z"></param>
         /// <returns></returns>
-        private Point3D CreatePoint(double x, double y, double z) => new Point3D(Math.Round(x, 4), Math.Round(y, 4), Math.Round(z, 4));
+        public static Point3D CreatePoint(double x, double y, double z) => new Point3D(Math.Round(x, 4), Math.Round(y, 4), Math.Round(z, 4));
 
         /// <summary>
         /// Сборка геометрии настила формой "Параллелограмм"
@@ -57,21 +58,21 @@ namespace ForRobot.Libr.Strategies.ModelingStrategies
         /// <param name="height">Высота настила (маштабируемая)</param>
         /// <param name="offsetDirection">Смещение скоса (отрицательно для параллелограмма влево)</param>
         /// <returns></returns>
-        private MeshGeometry3D GenerateSlopePlate(double length, double width, double height, double offsetDirection)
+        private MeshGeometry3D GenerateSlopePlate(double length, double width, double height, double bevelToLeft, double bevelToRight)
         {
             double halfLength = length / 2;
             double halfWidth = width / 2;
             double halfHeight = height / 2;
 
-            Point3D A = this.CreatePoint(-halfLength - offsetDirection, -halfWidth, -halfHeight);  // левый низ
-            Point3D B = this.CreatePoint(halfLength - offsetDirection, -halfWidth, -halfHeight);   // правый низ
-            Point3D C = this.CreatePoint(halfLength - offsetDirection, -halfWidth, halfHeight);    // правый верх
-            Point3D D = this.CreatePoint(-halfLength - offsetDirection, -halfWidth, halfHeight);   // левый верх
+            Point3D A = CreatePoint(-halfLength - bevelToLeft, -halfWidth, -halfHeight);  // левый низ
+            Point3D B = CreatePoint(halfLength - bevelToRight, -halfWidth, -halfHeight);   // правый низ
+            Point3D C = CreatePoint(halfLength - bevelToRight, -halfWidth, halfHeight);    // правый верх
+            Point3D D = CreatePoint(-halfLength - bevelToLeft, -halfWidth, halfHeight);   // левый верх
 
-            Point3D E = this.CreatePoint(-halfLength + offsetDirection, halfWidth, -halfHeight);  // левый низ
-            Point3D F = this.CreatePoint(halfLength + offsetDirection, halfWidth, -halfHeight);   // правый низ
-            Point3D G = this.CreatePoint(halfLength + offsetDirection, halfWidth, halfHeight);    // правый верх
-            Point3D H = this.CreatePoint(-halfLength + offsetDirection, halfWidth, halfHeight);   // левый верх
+            Point3D E = CreatePoint(-halfLength + bevelToLeft, halfWidth, -halfHeight);  // левый низ
+            Point3D F = CreatePoint(halfLength + bevelToRight, halfWidth, -halfHeight);   // правый низ
+            Point3D G = CreatePoint(halfLength + bevelToRight, halfWidth, halfHeight);    // правый верх
+            Point3D H = CreatePoint(-halfLength + bevelToLeft, halfWidth, halfHeight);   // левый верх
 
             MeshBuilder meshBuilder = new MeshBuilder();
 
@@ -101,20 +102,20 @@ namespace ForRobot.Libr.Strategies.ModelingStrategies
             double halfHeight = height / 2;
 
             // Вычисление размеров оснований с учетом ориентации
-            double bottomHalfLen = inBottom ? halfLength * (1 - this._trapezoidRatio) : halfLength;
-            double topHalfLen = inBottom ? halfLength : halfLength * (1 - this._trapezoidRatio);
+            double bottomHalfLen = inBottom ? halfLength * (1 - ModelingService.TRAPEZOID_RATIO) : halfLength;
+            double topHalfLen = inBottom ? halfLength : halfLength * (1 - ModelingService.TRAPEZOID_RATIO);
 
             // Нижнее основание (Y = -halfWidth)
-            Point3D A = this.CreatePoint(-bottomHalfLen, -halfWidth, -halfHeight);
-            Point3D B = this.CreatePoint(bottomHalfLen, -halfWidth, -halfHeight);
-            Point3D C = this.CreatePoint(bottomHalfLen, -halfWidth, halfHeight);
-            Point3D D = this.CreatePoint(-bottomHalfLen, -halfWidth, halfHeight);
+            Point3D A = CreatePoint(-bottomHalfLen, -halfWidth, -halfHeight);
+            Point3D B = CreatePoint(bottomHalfLen, -halfWidth, -halfHeight);
+            Point3D C = CreatePoint(bottomHalfLen, -halfWidth, halfHeight);
+            Point3D D = CreatePoint(-bottomHalfLen, -halfWidth, halfHeight);
 
             // Верхнее основание (Y = halfWidth)
-            Point3D E = this.CreatePoint(-topHalfLen, halfWidth, -halfHeight);
-            Point3D F = this.CreatePoint(topHalfLen, halfWidth, -halfHeight);
-            Point3D G = this.CreatePoint(topHalfLen, halfWidth, halfHeight);
-            Point3D H = this.CreatePoint(-topHalfLen, halfWidth, halfHeight);
+            Point3D E = CreatePoint(-topHalfLen, halfWidth, -halfHeight);
+            Point3D F = CreatePoint(topHalfLen, halfWidth, -halfHeight);
+            Point3D G = CreatePoint(topHalfLen, halfWidth, halfHeight);
+            Point3D H = CreatePoint(-topHalfLen, halfWidth, halfHeight);
 
             MeshBuilder meshBuilder = new MeshBuilder();
 
@@ -144,19 +145,22 @@ namespace ForRobot.Libr.Strategies.ModelingStrategies
             MeshBuilder meshBuilder = new MeshBuilder();
 
             // Преобразование реальных размеров в модельные.
-            double modelPlateWidth = (double)plate.PlateWidth * this._scaleFactor;
-            double modelPlateHeight = (double)plate.PlateThickness * this._scaleFactor;
-            double modelPlateLength = (double)plate.PlateLength * this._scaleFactor;
+            double modelPlateWidth = (double)plate.PlateWidth;
+            double modelPlateHeight = (double)plate.PlateThickness;
+            double modelPlateLength = (double)plate.PlateLength;
+
+            double modelBevelToLeft = (double)plate.PlateBevelToLeft;
+            double modelBevelToRight = (double)plate.PlateBevelToRight;
 
             MeshGeometry3D geometry = new MeshGeometry3D();
             switch (plate.ScoseType)
             {
                 case ScoseTypes.SlopeLeft:
-                    geometry = this.GenerateSlopePlate(modelPlateLength, modelPlateWidth, modelPlateHeight, -this._slopeOffset);
+                    geometry = this.GenerateSlopePlate(modelPlateLength, modelPlateWidth, modelPlateHeight, -modelBevelToLeft, -modelBevelToRight);
                     break;
 
                 case ScoseTypes.SlopeRight:
-                    geometry = this.GenerateSlopePlate(modelPlateLength, modelPlateWidth, modelPlateHeight, this._slopeOffset);
+                    geometry = this.GenerateSlopePlate(modelPlateLength, modelPlateWidth, modelPlateHeight, modelBevelToLeft, modelBevelToRight);
                     break;
 
                 case ScoseTypes.TrapezoidTop:
@@ -190,11 +194,14 @@ namespace ForRobot.Libr.Strategies.ModelingStrategies
             MeshBuilder meshBuilder = new MeshBuilder();
 
             // Преобразование реальных размеров в модельные.
-            double modelPlateWidth = (double)plate.PlateWidth * this._scaleFactor;
-            double modelPlateHeight = (double)plate.PlateThickness * this._scaleFactor;
-            double modelPlateLength = (double)plate.PlateLength * this._scaleFactor;
-            double modelRibHeight = (double)plate.RibsHeight * this._scaleFactor;
-            double modelRibThickness = (double)plate.RibsThickness * this._scaleFactor;
+            double modelPlateWidth = (double)plate.PlateWidth;
+            double modelPlateHeight = (double)plate.PlateThickness;
+            double modelPlateLength = (double)plate.PlateLength;
+            double modelRibHeight = (double)plate.RibsHeight;
+            double modelRibThickness = (double)plate.RibsThickness;
+
+            double modelBevelToLeft = (double)plate.PlateBevelToLeft;
+            double modelBevelToRight = (double)plate.PlateBevelToRight;
 
             double ribLeftPositionY = -modelPlateWidth / 2; // Начальная позиция по Y.
             double ribRightPositionY = -modelPlateWidth / 2;
@@ -202,10 +209,14 @@ namespace ForRobot.Libr.Strategies.ModelingStrategies
             for (int i = 0; i < plate.RibsCount; i++)
             {
                 var rib = plate.RibsCollection[i];
-                double modelRibDistanceLeft = (double)rib.DistanceLeft * this._scaleFactor;
-                double modelRibDistanceRight = (double)rib.DistanceRight * this._scaleFactor;
-                double modelRibIdentToLeft = (double)rib.IdentToLeft * this._scaleFactor;
-                double modelRibIdentToRight = (double)rib.IdentToRight * this._scaleFactor;
+                double modelRibDistanceLeft = (double)rib.DistanceLeft;
+                double modelRibDistanceRight = (double)rib.DistanceRight;
+                double modelRibIdentToLeft = (double)rib.IdentToLeft;
+                double modelRibIdentToRight = (double)rib.IdentToRight;
+                //double modelRibDistanceLeft = (double)rib.DistanceLeft * this._scaleFactor;
+                //double modelRibDistanceRight = (double)rib.DistanceRight * this._scaleFactor;
+                //double modelRibIdentToLeft = (double)rib.IdentToLeft * this._scaleFactor;
+                //double modelRibIdentToRight = (double)rib.IdentToRight * this._scaleFactor;
 
                 ribLeftPositionY += modelRibDistanceLeft;
                 ribRightPositionY += modelRibDistanceRight;
@@ -222,7 +233,8 @@ namespace ForRobot.Libr.Strategies.ModelingStrategies
                     case ScoseTypes.SlopeLeft:
                     case ScoseTypes.SlopeRight:
                         double positionRatio = ((ribLeftPositionY + ribRightPositionY) / 2 + modelPlateWidth / 2) / modelPlateWidth * 2 - 1;
-                        offsetX = ((plate.ScoseType == ScoseTypes.SlopeLeft) ? -this._slopeOffset : this._slopeOffset) * positionRatio;
+                        //offsetX = ((plate.ScoseType == ScoseTypes.SlopeLeft) ? -this._slopeOffset : this._slopeOffset) * positionRatio;
+                        //offsetX = ((plate.ScoseType == ScoseTypes.SlopeLeft) ? -this._slopeOffset : this._slopeOffset) * positionRatio;
                         break;
 
                     case ScoseTypes.TrapezoidTop:
@@ -230,15 +242,15 @@ namespace ForRobot.Libr.Strategies.ModelingStrategies
                         double trapezoidPositionRatio = (centerY + modelPlateWidth / 2) / modelPlateWidth;
 
                         if (plate.ScoseType == ScoseTypes.TrapezoidTop)
-                            basePlateLength = modelPlateLength * (1 - this._trapezoidRatio * trapezoidPositionRatio);
+                            basePlateLength = modelPlateLength * (1 - ModelingService.TRAPEZOID_RATIO * trapezoidPositionRatio);
                         else
-                            basePlateLength = modelPlateLength * (1 - this._trapezoidRatio * (1 - trapezoidPositionRatio));
+                            basePlateLength = modelPlateLength * (1 - ModelingService.TRAPEZOID_RATIO * (1 - trapezoidPositionRatio));
                         break;
                 }
 
                 // Длина ребра с учетом отступов и формы плиты
                 double ribLength = basePlateLength - modelRibIdentToLeft - modelRibIdentToRight;
-                ribLength = Math.Max(ribLength, ForRobot.Libr.Services.ModelingService.MIN_RIB_LENGTH);
+                ribLength = Math.Max(ribLength, Plate.MIN_RIB_COUNT);
 
                 // Центр ребра по X с учетом смещения
                 double centerX = offsetX + (modelRibIdentToLeft - modelRibIdentToRight) / 2;
@@ -301,7 +313,7 @@ namespace ForRobot.Libr.Strategies.ModelingStrategies
             //if (plate.ScoseType == ScoseTypes.SlopeLeft && plate.PlateBevelToLeft > plate.PlateWidth)
             //    throw new ArgumentException("Смещение параллелограмма и скосы недопустимы.", nameof(plate));
 
-            if (this._trapezoidRatio < 0.1 || this._trapezoidRatio > 0.9)
+            if (ModelingService.TRAPEZOID_RATIO < 0.1 || ModelingService.TRAPEZOID_RATIO > 0.9)
                 throw new InvalidOperationException("Недопустимый коэффициент трапеции, вне (0.1; 0.9).");
         }
 

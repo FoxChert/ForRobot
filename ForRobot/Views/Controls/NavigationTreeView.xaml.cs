@@ -10,8 +10,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
-using ForRobot.Models;
 using ForRobot.Models.Controls;
+using ForRobot.Models.RoboticComplex;
 
 namespace ForRobot.Views.Controls
 {

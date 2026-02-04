@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using ForRobot.Models;
+using ForRobot.Models.RoboticComplex;
 
 namespace ForRobot.ViewModels
 {

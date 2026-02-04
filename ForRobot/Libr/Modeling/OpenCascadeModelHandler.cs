@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ForRobot.Models.File3D
+namespace ForRobot.Libr.Modeling
 {
     //public class OpenCascadeModelHandler : IModelFileHandler
     //{

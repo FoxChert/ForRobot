@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 using Assimp;
 
-namespace ForRobot.Models.File3D
+namespace ForRobot.Libr.Modeling
 {
     /// <summary>
     /// Обработчик файлов 3D моделей, использующий <see cref="Assimp"/> для загрузки и сохранения моделей

@@ -18,7 +18,7 @@ using ForRobot.Libr.Client;
 using ForRobot.Libr.Logging;
 using ForRobot.Libr.Collections;
 
-namespace ForRobot.Models
+namespace ForRobot.Models.RoboticComplex
 {
     public class Robot : INotifyPropertyChanged, IDisposable
     {
@@ -53,11 +53,6 @@ namespace ForRobot.Models
 
         #region Readonly
 
-        private readonly JsonSerializerOptions options = new JsonSerializerOptions
-        {
-            AllowTrailingCommas = true,
-            WriteIndented = true
-        };
 
         #endregion
 
@@ -125,12 +120,6 @@ namespace ForRobot.Models
             }
         }
 
-        [JsonIgnore]
-        /// <summary>
-        /// JSON-строка для сохранения
-        /// </summary>
-        public string Json { get => JsonSerializer.Serialize<Robot>(this, options); }
-
         /// <summary>
         /// Путь к папке с программой
         /// </summary>
@@ -145,7 +134,7 @@ namespace ForRobot.Models
         }
 
         /// <summary>
-        /// Путь к папке на контроллере
+        /// Путь к выбранной папке на контроллере
         /// </summary>
         public string PathControllerFolder
         {
@@ -221,21 +210,47 @@ namespace ForRobot.Models
 
         [JsonIgnore]
         /// <summary>
+        /// Смещение по осям
+        /// </summary>
+        public double[] XYZ { get => new double[3] { X, Y, Z }; }
+
+        [JsonIgnore]
+        /// <summary>
         /// Смещение по оси x, мм.
         /// </summary>
-        public decimal X { get; set; } = decimal.Zero; // Поменять на вывод из соединения.
-
+        public double X { get; set; } // Поменять на вывод из соединения.
         [JsonIgnore]
         /// <summary>
         /// Смещение по оси y, мм.
         /// </summary>
-        public decimal Y { get; set; } = decimal.Zero;
-
+        public double Y { get; set; }
         [JsonIgnore]
         /// <summary>
         /// Смещение по оси z, мм.
         /// </summary>
-        public decimal Z { get; set; } = decimal.Zero;
+        public double Z { get; set; }
+
+        [JsonIgnore]
+        /// <summary>
+        /// Вращение по осям
+        /// </summary>
+        public double[] ABC { get => new double[3] { RotationX, RotationY, RotationZ }; }
+
+        [JsonIgnore]
+        /// <summary>
+        /// Вращение по оси x
+        /// </summary>
+        public double RotationX { get; set; } // A
+        [JsonIgnore]
+        /// <summary>
+        /// Вращение по оси y
+        /// </summary>
+        public double RotationY { get; set; } // B
+        [JsonIgnore]
+        /// <summary>
+        /// Вращение по оси z
+        /// </summary>
+        public double RotationZ { get; set; } // C
 
         /// <summary>
         /// Статус программы на роботе
@@ -328,27 +343,6 @@ namespace ForRobot.Models
             }
         }
 
-        public double[] CenterPoint3D { get; private set; } = new double[3] { 0, 0, 0 };
-
-        [JsonIgnore]
-        public double XPoint
-        {
-            get => this.CenterPoint3D[0];
-            set => this.CenterPoint3D[0] = value;
-        }
-        [JsonIgnore]
-        public double YPoint
-        {
-            get => this.CenterPoint3D[1];
-            set => this.CenterPoint3D[1] = value;
-        }
-        [JsonIgnore]
-        public double ZPoint
-        {
-            get => this.CenterPoint3D[2];
-            set => this.CenterPoint3D[2] = value;
-        }
-
         [JsonIgnore]
         /// <summary>
         /// Файлы роботов
@@ -366,6 +360,7 @@ namespace ForRobot.Models
         ///// Массив значений силы подачи
         ///// </summary>
         //public decimal[] WireFeedArray { get => this._wireFeedArray; set => Set(ref this._wireFeedArray, value); }
+        
 
         #endregion
 

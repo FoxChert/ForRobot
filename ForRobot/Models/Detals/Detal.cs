@@ -26,7 +26,12 @@ namespace ForRobot.Models.Detals
         private decimal _plateBevelToRight;
         private decimal _plateBevelToLeftSave;
         private decimal _plateBevelToRightSave;
-        private decimal[] _XYZOffset = new decimal[3] { 0, 0, 0 };
+
+        private decimal _xOffset = decimal.Zero;
+        private decimal _yOffset = decimal.Zero;
+        private decimal _zOffset = decimal.Zero;
+        //private decimal[] _XYZOffset = new decimal[3] { 0, 0, 0 };
+
         private WeldingProperties _weldingProperties = new WeldingProperties();
 
         #endregion
@@ -148,15 +153,7 @@ namespace ForRobot.Models.Detals
         /// <summary>
         /// Смещение детали от 0 точки по осям XYZ
         /// </summary>
-        public decimal[] XYZOffset
-        {
-            get => this._XYZOffset;
-            set
-            {
-                this._XYZOffset = value;
-                this.OnChangeProperty(nameof(this.XYZOffset));
-            }
-        }            
+        public decimal[] XYZOffset { get => new decimal[3] { this.XOffset, this.YOffset, this.ZOffset }; }        
 
         [JsonIgnore]
         /// <summary>
@@ -164,38 +161,36 @@ namespace ForRobot.Models.Detals
         /// </summary>
         public decimal XOffset
         {
-            get => this.XYZOffset[0];
+            get => this._xOffset;
             set
             {
-                this.XYZOffset[0] = value;
+                this._xOffset = value;
                 this.OnChangeProperty(nameof(this.XOffset));
             }
         }
-
         [JsonIgnore]
         /// <summary>
         /// Смещение детали от 0 точки по оси Y
         /// </summary>
         public decimal YOffset
         {
-            get => this.XYZOffset[1];
+            get => this._yOffset;
             set
             {
-                this.XYZOffset[1] = value;
+                this._yOffset = value;
                 this.OnChangeProperty(nameof(this.YOffset));
             }
         }
-
         [JsonIgnore]
         /// <summary>
         /// Смещение детали от 0 точки по оси Z
         /// </summary>
         public decimal ZOffset
         {
-            get => this.XYZOffset[2];
+            get => this._zOffset;
             set
             {
-                this.XYZOffset[2] = value;
+                this._zOffset = value;
                 this.OnChangeProperty(nameof(this.ZOffset));
             }
         }

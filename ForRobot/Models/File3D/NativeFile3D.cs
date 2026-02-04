@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Media.Media3D;
@@ -72,6 +74,10 @@ namespace ForRobot.Models.File3D
         /// Поле для сохранения объекта <see cref="CurrentDetal"/> после изменения
         /// </summary>
         private Detal _oldDetal;
+
+        private readonly object _updateLock = new object();
+        private CancellationTokenSource _undoRedoOperationToken = new CancellationTokenSource();
+        private CancellationTokenSource _cancellationTokenSource;
 
         #endregion private variables
 
@@ -160,10 +166,9 @@ namespace ForRobot.Models.File3D
             switch (e.PropertyName)
             {
                 case nameof(this.CurrentDetal):
-                    if (this._undoBlock)
+                    if (this._undoRedoOperationToken.Token.IsCancellationRequested)
                     {
                         this.OnValueChanged(this, this._oldDetal, this.CurrentDetal, nameof(CurrentDetal));
-                        //break;
                     }
                     this._oldDetal = this.CurrentDetal.Clone() as Detal;
                     break;
@@ -185,15 +190,25 @@ namespace ForRobot.Models.File3D
 
             Detal detal = sender as Detal;
 
-            if (this._undoBlock)
-                return;
+            if (!this._undoRedoOperationToken.Token.IsCancellationRequested)
+            {
 
-            string path = ForRobot.Libr.PropertyPathHelper.GetFullPropertyPath(detal, e.PropertyName);
-            var oldValue = ForRobot.Libr.PropertyPathHelper.GetValueFromPath(this._oldDetal, path);
-            var newValue = ForRobot.Libr.PropertyPathHelper.GetValueFromPath(detal, path);
+                string path = ForRobot.Libr.PropertyPathHelper.GetFullPropertyPath(detal, e.PropertyName);
+                var oldValue = ForRobot.Libr.PropertyPathHelper.GetValueFromPath(this._oldDetal, path);
+                var newValue = ForRobot.Libr.PropertyPathHelper.GetValueFromPath(detal, path);
 
-            if (!object.Equals(oldValue, newValue))
-                this.OnValueChanged(detal, oldValue, newValue, e.PropertyName);
+                if (!object.Equals(oldValue, newValue))
+                    this.OnValueChanged(detal, oldValue, newValue, e.PropertyName);
+            }
+
+
+            lock (this._updateLock)
+            {
+                this._cancellationTokenSource?.Cancel();
+                this._cancellationTokenSource?.Dispose();
+                this._cancellationTokenSource = new CancellationTokenSource();
+            }
+            _ = DebouncedUpdateAsync(_cancellationTokenSource.Token);
         }
 
         #endregion
@@ -243,18 +258,13 @@ namespace ForRobot.Models.File3D
         }
 
         /// <summary>
-        /// Блокировщих срабатывания фиксации изменений при отмене/возврате (заменить на токен?)
-        /// </summary>
-        private bool _undoBlock = false;
-
-        /// <summary>
         /// Отмена последнего изменения параметра <see cref="CurrentDetal"/>
         /// </summary>
         public override void Undo()
         {
-            this._undoBlock = true;
+            this._undoRedoOperationToken.Cancel();
             base.Undo();
-            this._undoBlock = false;
+            this._undoRedoOperationToken = new CancellationTokenSource();
         }
 
         /// <summary>
@@ -262,9 +272,9 @@ namespace ForRobot.Models.File3D
         /// </summary>
         public override void Redo()
         {
-            this._undoBlock = true;
+            this._undoRedoOperationToken.Cancel();
             base.Redo();
-            this._undoBlock = false;
+            this._undoRedoOperationToken = new CancellationTokenSource();
         }
 
         /// <summary>
@@ -291,9 +301,40 @@ namespace ForRobot.Models.File3D
                 default:
                     return;
             }
-            this._undoBlock = true;
+
+            this._undoRedoOperationToken.Cancel();
             this.CurrentDetal = detal;
-            this._undoBlock = false;
+            this._undoRedoOperationToken = new CancellationTokenSource();
+        }
+
+        private readonly int _debounceDelayMs = 150;
+
+        private async Task DebouncedUpdateAsync(CancellationToken cancellationToken)
+        {
+            await Task.Delay(_debounceDelayMs, cancellationToken);
+
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            if (this.CurrentDetal == null) return;
+
+            await System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    try
+                    {
+                        //var model = ForRobot.Libr.Services.ModelingService.Get3DScene(this.CurrentDetal);
+                        //var model = _modelingService.Get3DScene(file.CurrentDetal);
+                        //file.CurrentModel.Children.Clear();
+                        //file.CurrentModel.Children.Add(model);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception("Ошибка создания модели: " + ex.Message, ex);
+                    }
+                }
+            }));
         }
 
         #endregion Public functions

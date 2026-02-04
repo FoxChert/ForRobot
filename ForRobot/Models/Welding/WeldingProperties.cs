@@ -315,7 +315,7 @@ namespace ForRobot.Models.Welding
             if (this.Welds == null)
                 this.WeldingSchema = null;
             else
-                this.WeldingSchema = ForRobot.Libr.Factories.DetalFactory.WeldingFactory.CreateSchema(this.SelectedWeldingSchema, this.Welds.Count) as WeldingSchema;
+                this.WeldingSchema = ForRobot.Libr.Factories.WeldingFactory.CreateSchema(this.SelectedWeldingSchema, this.Welds.Count) as WeldingSchema;
         }
 
         private void HandlerPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -352,6 +352,7 @@ namespace ForRobot.Models.Welding
                         this.FillWeldingSchema();
                     break;
             }
+            //this.OnChangeProperty(nameof(this.Welds));
         }
 
         /// <summary>

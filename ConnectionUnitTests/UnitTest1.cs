@@ -13,9 +13,25 @@ namespace ConnectionUnitTests
     [TestClass]
     public class UnitTestsJsonRpcConnection
     {
-        //private JsonRpcConnection connection = new JsonRpcConnection("192.168.92.185", 3333);
         string Host = "192.168.92.185";
         int Port = 3333;
+
+        [TestMethod]
+        /// <summary>
+        /// Копирование файла на Пк
+        /// </summary>
+        public void TestCustomClass()
+        {
+            try
+            {
+                ConnectionUnitTests.Resource.JsonRpcConnection connection = new ConnectionUnitTests.Resource.JsonRpcConnection(Host, Port);
+
+            }
+            catch (Exception ex)
+            {
+                string mess = ex.Message;
+            }
+        }
 
         [TestMethod]
         /// <summary>
