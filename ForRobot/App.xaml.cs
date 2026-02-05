@@ -435,7 +435,7 @@ namespace ForRobot
         }
 
         /// <summary>
-        /// Установка начтроек приложения
+        /// Установка настроек приложения
         /// </summary>
         /// <returns></returns>
         private ForRobot.Models.Settings.Settings GetSettings()
@@ -443,8 +443,22 @@ namespace ForRobot
             ForRobot.Models.Settings.Settings settings = ForRobot.Models.Settings.Settings.GetSettings();
             var robotConfig = ConfigProvider.GetRobotConfig();
             var plateConfig = ConfigProvider.GetPlateConfig();
-            settings.PlitaProgramName = plateConfig.PlateProgramName;
-            settings.PlitaScriptName = plateConfig.PlateScriptName;
+
+            settings.DetalsProgramNames.RemoveAll(x => x.Item1 == Models.Detals.DetalType.Plate);
+            settings.DetalsProgramNames.Add(Tuple.Create(Models.Detals.DetalType.Plate, Libr.EnumExtensions.GetDescription(Models.Detals.DetalType.Plate), plateConfig.PlateProgramName));
+
+            settings.DetalsScriptNames.RemoveAll(x => x.Item1 == Models.Detals.DetalType.Plate);
+            settings.DetalsScriptNames.Add(Tuple.Create(Models.Detals.DetalType.Plate, Libr.EnumExtensions.GetDescription(Models.Detals.DetalType.Plate), plateConfig.PlateScriptName));
+
+            //settings.DetalsProgramNames.Where(x => x.Item1 == Models.Detals.DetalType.Plate).First() = (ForRobot.Models.Detals.DetalType.Plate, "", "");
+
+            //settings.DetalsProgramNames.Where(x => x.Item1 == Models.Detals.DetalType.Plate).First().Deconstruct(out Models.Detals.DetalType type, out string program);
+            //program = plateConfig.PlateProgramName;
+            //settings.DetalsScriptNames.Where(x => x.Item1 == Models.Detals.DetalType.Plate).First().Deconstruct(out Models.Detals.DetalType type2, out string script);
+            //script = plateConfig.PlateScriptName;
+
+            //settings.PlitaProgramName = plateConfig.PlateProgramName;
+            //settings.PlitaScriptName = plateConfig.PlateScriptName;
             settings.PathFolderOfGeneration = robotConfig.PathFolderGeneration;
             settings.ControlerFolder = robotConfig.ControlFolderPath;
             return settings;

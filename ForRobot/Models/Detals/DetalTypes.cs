@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace ForRobot.Models.Detals
 {
@@ -57,5 +58,7 @@ namespace ForRobot.Models.Detals
                     return Plate;
             }
         }
+
+        public static System.Collections.Generic.IList<DetalType> DetalTypeCollection() => Enum.GetValues(typeof(Detals.DetalType)).Cast<Detals.DetalType>().Where(t => t != Detals.DetalType.All).ToList();
     }
 }

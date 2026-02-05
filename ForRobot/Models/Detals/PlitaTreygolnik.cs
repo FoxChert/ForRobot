@@ -4,6 +4,7 @@ using System.Windows.Media.Imaging;
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Windows.Media.Media3D;
 
 namespace ForRobot.Models.Detals
 {

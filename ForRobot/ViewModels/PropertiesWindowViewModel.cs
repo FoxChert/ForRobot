@@ -26,8 +26,8 @@ namespace ForRobot.ViewModels
         private Settings _settings;
         //private ForRobot.Libr.Settings.Settings _settings = ForRobot.Libr.Settings.Settings.GetSettings();
         private System.Windows.Controls.TreeViewItem _selectedItem;
-        private string _selectedDetalTypeName;
-        private string _selectedDetalTypeScript;
+        private Tuple<DetalType, string, string> _selectedTumpleProgramName;
+        private Tuple<DetalType, string, string> _selectedTumpleScriptsName;
 
         #region Commands
         
@@ -47,112 +47,130 @@ namespace ForRobot.ViewModels
         public System.Windows.Controls.TreeViewItem SelectedItem { get => this._selectedItem; set => Set(ref this._selectedItem, value); }
 
         /// <summary>
-        /// Выбранный тип детали для названия программы
+        /// Выбранный кортеж представляющий тип детали и имя итоговой программы
         /// </summary>
-        public string SelectedDetalTypeName
+        public Tuple<DetalType, string, string> SelectedTumpleProgramName
         {
-            get => this._selectedDetalTypeName ?? (this._selectedDetalTypeName = ForRobot.Models.Detals.DetalTypes.Plate);
-            set
-            {
-                Set(ref this._selectedDetalTypeName, value);
-                this.RaisePropertyChanged(nameof(this.StandartNameFile));
-            }
+            get => this._selectedTumpleProgramName;
+            set => Set(ref this._selectedTumpleProgramName, value);
         }
 
         /// <summary>
-        /// Выбранный тип детали для имени скрипта
+        /// Выбранный кортеж представляющий тип детали и имя скрипта-генератора
         /// </summary>
-        public string SelectedDetalTypeScript
+        public Tuple<DetalType, string, string> SelectedTumpleScriptsName
         {
-            get => this._selectedDetalTypeScript ?? (this._selectedDetalTypeScript = ForRobot.Models.Detals.DetalTypes.Plate);
-            set
-            {
-                Set(ref this._selectedDetalTypeScript, value);
-                this.RaisePropertyChanged(nameof(this.ScriptName));
-            }
+            get => this._selectedTumpleScriptsName;
+            set => Set(ref this._selectedTumpleScriptsName, value);
         }
 
-        /// <summary>
-        /// Стандарное название генерируемой программы
-        /// </summary>
-        public string StandartNameFile
-        {
-            get
-            {
-                switch (this.SelectedDetalTypeName)
-                {
-                    case string a when a == DetalTypes.Plate:
-                        return this.Settings.PlitaProgramName;
+        ///// <summary>
+        ///// Выбранный тип детали для названия программы
+        ///// </summary>
+        //public string SelectedDetalTypeName
+        //{
+        //    get => this._selectedDetalTypeName ?? (this._selectedDetalTypeName = ForRobot.Models.Detals.DetalTypes.Plate);
+        //    set
+        //    {
+        //        Set(ref this._selectedDetalTypeName, value);
+        //        this.RaisePropertyChanged(nameof(this.StandartNameFile));
+        //    }
+        //}
 
-                    case string b when b == DetalTypes.Plate:
-                        return this.Settings.PlitaStringerProgramName;
+        ///// <summary>
+        ///// Выбранный тип детали для имени скрипта
+        ///// </summary>
+        //public string SelectedDetalTypeScript
+        //{
+        //    get => this._selectedDetalTypeScript ?? (this._selectedDetalTypeScript = ForRobot.Models.Detals.DetalTypes.Plate);
+        //    set
+        //    {
+        //        Set(ref this._selectedDetalTypeScript, value);
+        //        this.RaisePropertyChanged(nameof(this.ScriptName));
+        //    }
+        //}
 
-                    case string c when c == DetalTypes.Plate:
-                        return this.Settings.PlitaTreugolnikProgramName;
+        ///// <summary>
+        ///// Стандарное название генерируемой программы
+        ///// </summary>
+        //public string StandartNameFile
+        //{
+        //    get
+        //    {
+        //        switch (this.SelectedDetalTypeName)
+        //        {
+        //            case string a when a == DetalTypes.Plate:
+        //                return this.Settings.PlitaProgramName;
 
-                    default:
-                        return string.Empty;
-                }
-            }
-            set
-            {
-                switch (this.SelectedDetalTypeName)
-                {
-                    case string a when a == DetalTypes.Plate:
-                        this.Settings.PlitaProgramName = value;
-                        break;
+        //            case string b when b == DetalTypes.Plate:
+        //                return this.Settings.PlitaStringerProgramName;
 
-                    case string b when b == DetalTypes.Plate:
-                        this.Settings.PlitaStringerProgramName = value;
-                        break;
+        //            case string c when c == DetalTypes.Plate:
+        //                return this.Settings.PlitaTreugolnikProgramName;
 
-                    case string c when c == DetalTypes.Plate:
-                        this.Settings.PlitaTreugolnikProgramName = value;
-                        break;
-                }
-            }
-        }
+        //            default:
+        //                return string.Empty;
+        //        }
+        //    }
+        //    set
+        //    {
+        //        switch (this.SelectedDetalTypeName)
+        //        {
+        //            case string a when a == DetalTypes.Plate:
+        //                this.Settings.PlitaProgramName = value;
+        //                break;
 
-        /// <summary>
-        /// Название скрипта-генератора
-        /// </summary>
-        public string ScriptName
-        {
-            get
-            {
-                switch (this.SelectedDetalTypeScript)
-                {
-                    case string a when a == DetalTypes.Plate:
-                        return this.Settings.PlitaScriptName;
+        //            case string b when b == DetalTypes.Plate:
+        //                this.Settings.PlitaStringerProgramName = value;
+        //                break;
 
-                    case string b when b == DetalTypes.Plate:
-                        return this.Settings.PlitaStringerScriptName;
+        //            case string c when c == DetalTypes.Plate:
+        //                this.Settings.PlitaTreugolnikProgramName = value;
+        //                break;
+        //        }
+        //    }
+        //}
 
-                    case string c when c == DetalTypes.Plate:
-                        return this.Settings.PlitaTreugolnikScriptName;
+        ///// <summary>
+        ///// Название скрипта-генератора
+        ///// </summary>
+        //public string ScriptName
+        //{
+        //    get
+        //    {
+        //        switch (this.SelectedDetalTypeScript)
+        //        {
+        //            case string a when a == DetalTypes.Plate:
+        //                return this.Settings.PlitaScriptName;
 
-                    default:
-                        return string.Empty;
-                }
-            }
-            set
-            {
-                switch (this.SelectedDetalTypeScript)
-                {
-                    case string a when a == DetalTypes.Plate:
-                        this.Settings.PlitaScriptName = value;
-                        break;
+        //            case string b when b == DetalTypes.Plate:
+        //                return this.Settings.PlitaStringerScriptName;
 
-                    case string b when b == DetalTypes.Plate:
-                        this.Settings.PlitaStringerScriptName = value;
-                        break;
+        //            case string c when c == DetalTypes.Plate:
+        //                return this.Settings.PlitaTreugolnikScriptName;
 
-                    case string c when c == DetalTypes.Plate:
-                        this.Settings.PlitaTreugolnikScriptName = value;
-                        break;
-                }
-            }
-        }
+        //            default:
+        //                return string.Empty;
+        //        }
+        //    }
+        //    set
+        //    {
+        //        switch (this.SelectedDetalTypeScript)
+        //        {
+        //            case string a when a == DetalTypes.Plate:
+        //                this.Settings.PlitaScriptName = value;
+        //                break;
+
+        //            case string b when b == DetalTypes.Plate:
+        //                this.Settings.PlitaStringerScriptName = value;
+        //                break;
+
+        //            case string c when c == DetalTypes.Plate:
+        //                this.Settings.PlitaTreugolnikScriptName = value;
+        //                break;
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Коллекция панелей макета интерфейса
@@ -168,22 +186,6 @@ namespace ForRobot.ViewModels
                 }
                 else
                     return null;
-            }
-        }
-
-        /// <summary>
-        /// Коллекция видов деталей
-        /// </summary>
-        public ObservableCollection<string> DetalTypesCollection
-        {
-            get
-            {
-                List<string> detalTypesList = new List<string>();
-                foreach (var f in typeof(ForRobot.Models.Detals.DetalTypes).GetFields())
-                {
-                    detalTypesList.Add(f.GetValue(null).ToString());
-                }
-                return new ObservableCollection<string>(detalTypesList);
             }
         }
 

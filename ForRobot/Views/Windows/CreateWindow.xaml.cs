@@ -18,9 +18,9 @@ namespace ForRobot.Views.Windows
     {
         private string _selectedDetalType = DetalTypes.Plate;
         private string _path = string.Empty;
-        private string _plitaProgramName = App.Current.Settings.PlitaProgramName;
-        private string _plitaStringerProgramName = App.Current.Settings.PlitaStringerProgramName;
-        private string _plitaTreugolnikProgramName = App.Current.Settings.PlitaTreugolnikProgramName;
+        //private string _plitaProgramName = App.Current.Settings.PlitaProgramName;
+        //private string _plitaStringerProgramName = App.Current.Settings.PlitaStringerProgramName;
+        //private string _plitaTreugolnikProgramName = App.Current.Settings.PlitaTreugolnikProgramName;
 
         /// <summary>
         /// Выбранный тип детали
@@ -35,43 +35,43 @@ namespace ForRobot.Views.Windows
             }
         }
 
-        public string FileName
-        {
-            get
-            {
-                switch (this.SelectedDetalType)
-                {
-                    case string a when a == DetalTypes.Plate:
-                        return this._plitaProgramName;
+        //public string FileName
+        //{
+        //    get
+        //    {
+        //        switch (this.SelectedDetalType)
+        //        {
+        //            case string a when a == DetalTypes.Plate:
+        //                return this._plitaProgramName;
 
-                    case string b when b == DetalTypes.Stringer:
-                        return this._plitaStringerProgramName;
+        //            case string b when b == DetalTypes.Stringer:
+        //                return this._plitaStringerProgramName;
 
-                    case string c when c == DetalTypes.Treygolnik:
-                        return this._plitaTreugolnikProgramName;
+        //            case string c when c == DetalTypes.Treygolnik:
+        //                return this._plitaTreugolnikProgramName;
 
-                    default:
-                        return string.Empty;
-                }
-            }
-            set
-            {
-                switch (this.SelectedDetalType)
-                {
-                    case string a when a == DetalTypes.Plate:
-                        this._plitaProgramName = value;
-                        break;
+        //            default:
+        //                return string.Empty;
+        //        }
+        //    }
+        //    set
+        //    {
+        //        switch (this.SelectedDetalType)
+        //        {
+        //            case string a when a == DetalTypes.Plate:
+        //                this._plitaProgramName = value;
+        //                break;
 
-                    case string b when b == DetalTypes.Stringer:
-                        this._plitaStringerProgramName = value;
-                        break;
+        //            case string b when b == DetalTypes.Stringer:
+        //                this._plitaStringerProgramName = value;
+        //                break;
 
-                    case string c when c == DetalTypes.Treygolnik:
-                        this._plitaTreugolnikProgramName = value;
-                        break;
-                }
-            }
-        }
+        //            case string c when c == DetalTypes.Treygolnik:
+        //                this._plitaTreugolnikProgramName = value;
+        //                break;
+        //        }
+        //    }
+        //}
 
         public string Path
         {

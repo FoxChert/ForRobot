@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Media.Media3D;
 
 using ForRobot.Libr.Modeling;
@@ -12,12 +13,23 @@ namespace ForRobot.Models.File3D
         #region Private variables
 
         private Model3DGroup _currentModel = new Model3DGroup();
+        private IList<DependencyObject> _sceneItems = new List<DependencyObject>();
 
         #endregion private variables
 
         #region Public variables
 
         public override string Filter { get; } = "3D Mesh Files (*.stl;*.obj;*.ply)|*.stl;*.obj;*.ply";
+        
+        //public override IList<SceneItem> SceneItems
+        //{
+        //    get => this._sceneItems;
+        //    protected set
+        //    {
+        //        this._sceneItems = value;
+        //        this.OnSceneChanged();
+        //    }
+        //}
 
         public override Model3DGroup CurrentModel
         {
@@ -35,6 +47,7 @@ namespace ForRobot.Models.File3D
 
         public MeshModelFile3D(string path) : base(path)
         {
+            //this.SceneItems.Add(this.LoadModel3D(path) as Model3DGroup);
             this.CurrentModel = this.LoadModel3D(path);
         }
 

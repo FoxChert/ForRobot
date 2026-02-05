@@ -861,7 +861,7 @@
                 <Setter Property="ItemTemplate">
                     <Setter.Value>
                         <DataTemplate>
-                            <TextBlock Text="{Binding}" Padding="5"/>
+                            <TextBlock Text="{Binding Path=Item2}" Padding="5"/>
                         </DataTemplate>
                     </Setter.Value>
                 </Setter>
@@ -883,9 +883,9 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <CheckBox Grid.Row="0" Content="Спрашивать при каждой генерации имя файла" IsChecked="{Binding Path=Settings.AskNameFile, Mode=TwoWay}"/>
+            <CheckBox Grid.Row="0" Content="Запрашивать имя файла при каждой генерации" IsChecked="{Binding Path=Settings.AskNameFile, Mode=TwoWay}"/>
 
-            <GroupBox Grid.Row="1" Header="Стандартное наименование файла для типа детали:">
+            <GroupBox Grid.Row="1" Header="Стандартное наименование итогового файла от типа детали:">
                 <GroupBox.Style>
                     <Style TargetType="{x:Type GroupBox}" BasedOn="{StaticResource GroupBoxBase}">
                         <Style.Triggers>
@@ -903,11 +903,11 @@
                     </Grid.ColumnDefinitions>
 
                     <ComboBox Grid.Column="0"
-                              ItemsSource="{Binding Path=DetalTypesCollection, Mode=OneWay}"
-                              SelectedItem="{Binding Path=SelectedDetalTypeName, Mode=TwoWay}"
+                              ItemsSource="{Binding Path=Settings.DetalsProgramNames, Source={x:Static Application.Current}, Mode=OneWay}"
+                              SelectedItem="{Binding Path=SelectedTumpleProgramName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               SelectedIndex="0"/>
 
-                    <TextBox Grid.Column="1" Text="{Binding StandartNameFile, Mode=TwoWay}">
+                    <TextBox Grid.Column="1" Text="{Binding Path=SelectedTumpleProgramName.Item3, Mode=OneWay}">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="GotFocus">
                                 <i:InvokeCommandAction Command="{Binding Path=SelectClosedControlCommand}" CommandParameter="{Binding Path=., RelativeSource={RelativeSource AncestorType={x:Type TextBox}, Mode=FindAncestor}}"/>
@@ -917,7 +917,7 @@
                 </Grid>
             </GroupBox>
             
-            <GroupBox Grid.Row="2" Header="Стандартное наименование скрипта-генератора для типа детали:">
+            <GroupBox Grid.Row="2" Header="Стандартный скрипт-генератор деталей:">
                 <Grid TextElement.FontWeight="Normal" Margin="4">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -925,11 +925,11 @@
                     </Grid.ColumnDefinitions>
 
                     <ComboBox Grid.Column="0"
-                              ItemsSource="{Binding Path=DetalTypesCollection, Mode=OneWay}"
-                              SelectedItem="{Binding Path=SelectedDetalTypeScript, Mode=TwoWay}"
+                              ItemsSource="{Binding Path=Settings.DetalsScriptNames, Source={x:Static Application.Current}, Mode=OneWay}"
+                              SelectedItem="{Binding Path=SelectedTumpleScriptsName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               SelectedIndex="0"/>
 
-                    <TextBox Grid.Column="1" Text="{Binding ScriptName, Mode=TwoWay}">
+                    <TextBox Grid.Column="1" Text="{Binding Path=SelectedTumpleScriptsName.Item3, Mode=OneWay}">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="GotFocus">
                                 <i:InvokeCommandAction Command="{Binding Path=SelectClosedControlCommand}" CommandParameter="{Binding Path=., RelativeSource={RelativeSource AncestorType={x:Type TextBox}, Mode=FindAncestor}}"/>
@@ -939,7 +939,18 @@
                 </Grid>
             </GroupBox>
 
-            <CheckBox Grid.Row="3" Content="Копирование сгенерированной программы на контроллер" IsChecked="{Binding Path=Settings.SendingGeneratedFiles, Source={x:Static Application.Current}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <CheckBox Grid.Column="0" Content="Выбор скрипта перед запуском" IsChecked="{Binding Path=Settings.AskScriptFile, Source={x:Static Application.Current}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                <Button Grid.Column="1" Content="Изменения перечня скриптов"/>
+            </Grid>
+
+            <CheckBox Grid.Row="4" Content="Копирование сгенерированной программы на контроллер" IsChecked="{Binding Path=Settings.SendingGeneratedFiles, Source={x:Static Application.Current}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
         </Grid>
     </DataTemplate>
 </ResourceDictionary>

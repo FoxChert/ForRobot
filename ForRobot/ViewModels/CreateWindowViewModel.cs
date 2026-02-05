@@ -21,67 +21,67 @@ namespace ForRobot.ViewModels
         private string _selectedDetalType;
         private string _filePath = string.Empty;
 
-        private string _plitaProgramName = App.Current.Settings.PlitaProgramName;
-        private string _plitaStringerProgramName = App.Current.Settings.PlitaStringerProgramName;
-        private string _plitaTreugolnikProgramName = App.Current.Settings.PlitaTreugolnikProgramName;
+        //private string _plitaProgramName = App.Current.Settings.PlitaProgramName;
+        //private string _plitaStringerProgramName = App.Current.Settings.PlitaStringerProgramName;
+        //private string _plitaTreugolnikProgramName = App.Current.Settings.PlitaTreugolnikProgramName;
         private Models.File3D.File3D _file3D;
 
         #endregion Private variables
 
         #region Public variables
 
-        /// <summary>
-        /// Выбранный тип детали
-        /// </summary>
-        public string SelectedDetalType
-        {
-            get => this._selectedDetalType ?? (this._selectedDetalType = DetalType.Plate.ToString());
-            set
-            {
-                this._selectedDetalType = value;
-                //this.File3D = new Models.File3D.File3D(Detal.GetDetal(this._selectedDetalType));
-                RaisePropertyChanged(nameof(this.SelectedDetalType), nameof(this.FileName));
-            }
-        }
+        ///// <summary>
+        ///// Выбранный тип детали
+        ///// </summary>
+        //public string SelectedDetalType
+        //{
+        //    get => this._selectedDetalType ?? (this._selectedDetalType = DetalType.Plate.ToString());
+        //    set
+        //    {
+        //        this._selectedDetalType = value;
+        //        //this.File3D = new Models.File3D.File3D(Detal.GetDetal(this._selectedDetalType));
+        //        RaisePropertyChanged(nameof(this.SelectedDetalType), nameof(this.FileName));
+        //    }
+        //}
 
-        public string FileName
-        {
-            get
-            {
-                switch (this.SelectedDetalType)
-                {
-                    case string a when a == DetalTypes.Plate:
-                        return this._plitaProgramName;
+        //public string FileName
+        //{
+        //    get
+        //    {
+        //        switch (this.SelectedDetalType)
+        //        {
+        //            case string a when a == DetalTypes.Plate:
+        //                return this._plitaProgramName;
 
-                    case string b when b == DetalTypes.Stringer:
-                        return this._plitaStringerProgramName;
+        //            case string b when b == DetalTypes.Stringer:
+        //                return this._plitaStringerProgramName;
 
-                    case string c when c == DetalTypes.Treygolnik:
-                        return this._plitaTreugolnikProgramName;
+        //            case string c when c == DetalTypes.Treygolnik:
+        //                return this._plitaTreugolnikProgramName;
 
-                    default:
-                        return string.Empty;
-                }
-            }
-            set
-            {
-                switch (this.SelectedDetalType)
-                {
-                    case string a when a == DetalTypes.Plate:
-                        this._plitaProgramName = value;
-                        break;
+        //            default:
+        //                return string.Empty;
+        //        }
+        //    }
+        //    set
+        //    {
+        //        switch (this.SelectedDetalType)
+        //        {
+        //            case string a when a == DetalTypes.Plate:
+        //                this._plitaProgramName = value;
+        //                break;
 
-                    case string b when b == DetalTypes.Stringer:
-                        this._plitaStringerProgramName = value;
-                        break;
+        //            case string b when b == DetalTypes.Stringer:
+        //                this._plitaStringerProgramName = value;
+        //                break;
                         
-                    case string c when c == DetalTypes.Treygolnik:
-                        this._plitaTreugolnikProgramName = value;
-                        break;
-                }
-                RaisePropertyChanged(nameof(this.FileName));
-            }
-        }
+        //            case string c when c == DetalTypes.Treygolnik:
+        //                this._plitaTreugolnikProgramName = value;
+        //                break;
+        //        }
+        //        RaisePropertyChanged(nameof(this.FileName));
+        //    }
+        //}
 
         public string FilePath { get => this._filePath; set => Set(ref this._filePath, value); }
 
@@ -148,8 +148,8 @@ namespace ForRobot.ViewModels
 
         private void CreatedFile()
         {
-            if (string.IsNullOrEmpty(this.FilePath) || string.IsNullOrEmpty(this.FileName))
-                return;
+            //if (string.IsNullOrEmpty(this.FilePath) || string.IsNullOrEmpty(this.FileName))
+            //    return;
 
             //this.File3D.Path = Path.Combine(this.FileName, this.FilePath);
             

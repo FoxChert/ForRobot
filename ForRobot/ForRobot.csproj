@@ -321,6 +321,7 @@
     <Compile Include="Libr\Modeling\CacheModel3DProvider.cs" />
     <Compile Include="Libr\Modeling\Model3DCollection.cs" />
     <Compile Include="Libr\Collections\RibPropertyChangedEventArgs.cs" />
+    <Compile Include="Libr\Modeling\Model3DExtensions.cs" />
     <Compile Include="Libr\Modeling\Model3DManager.cs" />
     <Compile Include="Libr\Modeling\Model3DProvider.cs" />
     <Compile Include="Libr\Modeling\Transform3DBuilder.cs" />
@@ -380,6 +381,7 @@
     <Compile Include="Models\RoboticComplex\PC.cs" />
     <Compile Include="Models\RoboticComplex\RobotExtensions.cs" />
     <Compile Include="Models\RoboticComplex\WeldingCell.cs" />
+    <Compile Include="Models\SceneItem.cs" />
     <Compile Include="Models\Welding\WeldingSchemaExtension.cs" />
     <Compile Include="Models\Welding\WeldingSchemaItem.cs" />
     <Compile Include="Models\Welding\WeldingSchemaTypes.cs" />
@@ -445,6 +447,9 @@
     <Compile Include="Views\Pages\PageMain3.xaml.cs">
       <DependentUpon>PageMain3.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Windows\AddInAppWindow.xaml.cs">
+      <DependentUpon>AddInAppWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Windows\CreateWindow.xaml.cs">
       <DependentUpon>CreateWindow.xaml</DependentUpon>
     </Compile>
@@ -482,6 +487,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Pages\PageMain3.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Windows\AddInAppWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

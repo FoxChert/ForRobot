@@ -396,7 +396,6 @@ namespace ForRobot.Models.Detals
 
         #region Public functions
 
-
         #endregion Public functions
 
         #region Implementations of IDisposable

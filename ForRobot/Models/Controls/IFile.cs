@@ -5,6 +5,11 @@ using System.Collections.ObjectModel;
 
 namespace ForRobot.Models.Controls
 {
+    //public interface IFileElement
+    //{
+
+    //}
+
     public interface IFile : INotifyPropertyChanged
     {
         string Name { get; set; }

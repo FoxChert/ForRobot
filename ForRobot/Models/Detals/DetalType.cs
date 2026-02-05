@@ -27,6 +27,6 @@ namespace ForRobot.Models.Detals
         /// </summary>
         Treygolnik = 3,
 
-        All = Plate | Stringer | Treygolnik
+        All = Plate & Stringer & Treygolnik
     }
 }

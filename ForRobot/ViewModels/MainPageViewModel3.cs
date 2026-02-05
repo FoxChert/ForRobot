@@ -551,26 +551,26 @@ namespace ForRobot.ViewModels
             // Если нет открываемых файлов, проверяет - нужно ли создать файл детали.
             if (App.Current.OpenedFiles.Count == 0 && App.Current.Settings.CreatedDetalFile)
             {
-                string programName = this.GetStandartProgramName(App.Current.Settings.StartedDetalType);
-                string path = Path.Combine(Path.GetTempPath(), programName);
+                //string programName = this.GetStandartProgramName(App.Current.Settings.StartedDetalType);
+                //string path = Path.Combine(Path.GetTempPath(), programName);
 
-                Models.File3D.File3D file3D;
-                if (App.Current.Settings.SaveDetalProperties && File.Exists(path))
-                {
-                    file3D = ForRobot.Models.File3D.File3D.Load(path);
-                }
-                else
-                {
-                    file3D = Models.File3D.NativeFile3D.Create(path, DetalTypes.StringToEnum(App.Current.Settings.StartedDetalType));
-                }
-
-                if (App.Current.Settings.SaveDetalProperties)
-                    file3D.PropertyChanged += (s, e) => System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() => (s as Models.File3D.File3D).Save()));
+                //Models.File3D.File3D file3D;
+                //if (App.Current.Settings.SaveDetalProperties && File.Exists(path))
                 //{
-                //    (s as Models.File3D.File3D).Save();
-                //};
+                //    file3D = ForRobot.Models.File3D.File3D.Load(path);
+                //}
+                //else
+                //{
+                //    file3D = Models.File3D.NativeFile3D.Create(path, DetalTypes.StringToEnum(App.Current.Settings.StartedDetalType));
+                //}
 
-                App.Current.OpenedFiles.Add(file3D);
+                //if (App.Current.Settings.SaveDetalProperties)
+                //    file3D.PropertyChanged += (s, e) => System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() => (s as Models.File3D.File3D).Save()));
+                ////{
+                ////    (s as Models.File3D.File3D).Save();
+                ////};
+
+                //App.Current.OpenedFiles.Add(file3D);
             }
         }
 
@@ -684,30 +684,30 @@ namespace ForRobot.ViewModels
         /// </summary>
         /// <param name="startedDetalType"></param>
         /// <returns></returns>
-        private string GetStandartProgramName(string startedDetalType)
-        {
-            string programName;
-            switch (startedDetalType)
-            {
-                case DetalTypes.Plate:
-                    programName = App.Current.Settings.PlitaProgramName;
-                    break;
+        //private string GetStandartProgramName(string startedDetalType)
+        //{
+        //    string programName;
+        //    switch (startedDetalType)
+        //    {
+        //        case DetalTypes.Plate:
+        //            programName = App.Current.Settings.PlitaProgramName;
+        //            break;
 
-                case DetalTypes.Stringer:
-                    programName = App.Current.Settings.PlitaStringerProgramName;
-                    break;
+        //        case DetalTypes.Stringer:
+        //            programName = App.Current.Settings.PlitaStringerProgramName;
+        //            break;
                     
-                case DetalTypes.Treygolnik:
-                    programName = App.Current.Settings.PlitaTreugolnikProgramName;
-                    break;
+        //        case DetalTypes.Treygolnik:
+        //            programName = App.Current.Settings.PlitaTreugolnikProgramName;
+        //            break;
 
-                default:
-                    programName = string.Empty;
-                    break;
-            }
-            programName = string.Format("{0}.json", programName);
-            return programName;
-        }
+        //        default:
+        //            programName = string.Empty;
+        //            break;
+        //    }
+        //    programName = string.Format("{0}.json", programName);
+        //    return programName;
+        //}
 
         /// <summary>
         /// Обновление выбранного LayoutDocumentPane.

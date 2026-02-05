@@ -5,9 +5,8 @@ using ForRobot.Libr.Modeling;
 
 namespace ForRobot.Models.RoboticComplex
 {
-    public class PC : ISceneItem
+    public class PC : SceneItem
     {
-        public string Name { get; }
         //public Type ObjectType { get => this.GetType(); }
 
         /// <summary>
@@ -46,7 +45,12 @@ namespace ForRobot.Models.RoboticComplex
         /// </summary>
         public double RotationZ { get; set; } // C
 
-        public Model3DGroup GetModel()
+        public PC()
+        {
+            this.Children.Add(this.GetModel());
+        }
+
+        public override Model3DGroup GetModel()
         {
             //Vector3D pcTranslate = new Vector3D(this.X, this.Y, this.Z);
             Transform3DGroup transform3DGroup = Transform3DBuilder.Create().Translate(this.X, this.Y, this.Z);

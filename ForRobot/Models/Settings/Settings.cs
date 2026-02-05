@@ -12,6 +12,8 @@ using Newtonsoft.Json.Linq;
 
 using HelixToolkit.Wpf;
 
+using ForRobot.Libr;
+
 namespace ForRobot.Models.Settings
 {
     /// <summary>
@@ -20,15 +22,14 @@ namespace ForRobot.Models.Settings
     public class Settings : ICloneable
     {
         #region Private variables
-
-        private const string _fileName = "interfaceOfRobot_settings.json";
-
-        private static string _path = Path.Combine(Path.GetTempPath(), Settings._fileName);
+        
+        private static string _path = Path.Combine(Path.GetTempPath(), Settings.FileName);
 
         private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings()
         {
             Formatting = Formatting.Indented,
-            NullValueHandling = NullValueHandling.Ignore
+            NullValueHandling = NullValueHandling.Ignore,
+            ObjectCreationHandling = ObjectCreationHandling.Replace
         };
 
         private Tuple<string, Theme> _selectedTheme;
@@ -60,7 +61,7 @@ namespace ForRobot.Models.Settings
         /// <summary>
         /// Наименование файла настроек
         /// </summary>
-        public static string FileName = "interfaceOfRobot_settings.json";
+        public const string FileName = "interfaceOfRobot_settings.json";
 
         #region Properties
 
@@ -164,21 +165,6 @@ namespace ForRobot.Models.Settings
                 Properties.Settings.Default.Save();
             }
         }
-
-        /// <summary>
-        /// Отображение рёбер
-        /// </summary>
-        public bool VisibilityPictures { get; set; } = true; // Устареет в версии 3.0
-
-        /// <summary>
-        /// Доступность вкладок интерфейса
-        /// </summary>
-        public SortedDictionary<string, bool> AvailableTab { get; set; } = new SortedDictionary<string, bool>()
-                                                                                    {
-                                                                                        { "Роботы", true },
-                                                                                        { "Управление", true },
-                                                                                        { "Программа", true }
-                                                                                    }; // Устареет в версии 3.0
 
         #region 3DView
 
@@ -488,39 +474,52 @@ namespace ForRobot.Models.Settings
         #region Generation
 
         /// <summary>
-        /// При каждой генерации будет спрашивать имя генерируемого файла
+        /// Ввод имени итогового файла при каждом запуске
         /// </summary>
         public bool AskNameFile { get; set; } = false;
+        /// <summary>
+        /// Выбор скрипта-генератора при каждом запуске
+        /// </summary>
+        public bool AskScriptFile { get; set; } = false;
         /// <summary>
         /// Отправляются ли сгенерированные файлы на робота/ов
         /// </summary>
         public bool SendingGeneratedFiles { get; set; } = true;
 
         /// <summary>
-        /// Имя сгенерированной программы (настил с рёбрами)
+        /// Наименования для сгенерированных программ (в зависимости от типа детали)
         /// </summary>
-        public string PlitaProgramName { get; set; }
+        public List<Tuple<Detals.DetalType, string, string>> DetalsProgramNames { get; } = Detals.DetalTypes.DetalTypeCollection().Select(t => new Tuple<Detals.DetalType, string, string>(t, t.GetDescription(), string.Empty)).ToList();
         /// <summary>
-        /// Имя сгенерированной программы (плита со стрингерами)
+        /// Наименования скриптов-генератов (зависят от типа детали)
         /// </summary>
-        public string PlitaStringerProgramName { get; set; }
-        /// <summary>
-        /// Имя сгенерированной программы (плита с треугольником)
-        /// </summary>
-        public string PlitaTreugolnikProgramName { get; set; }
+        public List<Tuple<Detals.DetalType, string, string>> DetalsScriptNames { get; } = Detals.DetalTypes.DetalTypeCollection().Select(t => new Tuple<Detals.DetalType, string, string>(t, t.GetDescription(), string.Empty)).ToList();
 
-        /// <summary>
-        /// Имя скрапта-генератора (настил с рёбрами)
-        /// </summary>
-        public string PlitaScriptName { get; set; }
-        /// <summary>
-        /// Имя скрапта-генератора (плита со стрингерами)
-        /// </summary>
-        public string PlitaStringerScriptName { get; set; }
-        /// <summary>
-        /// Имя скрапта-генератора (плита с треугольником)
-        /// </summary>
-        public string PlitaTreugolnikScriptName { get; set; }
+        ///// <summary>
+        ///// Имя сгенерированной программы (настил с рёбрами)
+        ///// </summary>
+        //public string PlitaProgramName { get; set; }
+        ///// <summary>
+        ///// Имя сгенерированной программы (плита со стрингерами)
+        ///// </summary>
+        //public string PlitaStringerProgramName { get; set; }
+        ///// <summary>
+        ///// Имя сгенерированной программы (плита с треугольником)
+        ///// </summary>
+        //public string PlitaTreugolnikProgramName { get; set; }
+
+        ///// <summary>
+        ///// Имя скрапта-генератора (настил с рёбрами)
+        ///// </summary>
+        //public string PlitaScriptName { get; set; }
+        ///// <summary>
+        ///// Имя скрапта-генератора (плита со стрингерами)
+        ///// </summary>
+        //public string PlitaStringerScriptName { get; set; }
+        ///// <summary>
+        ///// Имя скрапта-генератора (плита с треугольником)
+        ///// </summary>
+        //public string PlitaTreugolnikScriptName { get; set; }
 
         /// <summary>
         /// Путь к папке для генерации
@@ -584,11 +583,11 @@ namespace ForRobot.Models.Settings
         /// <returns></returns>
         public static Settings GetSettings()
         {
-            if (!File.Exists(_path))
-                return new Settings();
-
             try
             {
+                if (!File.Exists(_path))
+                    throw new FileNotFoundException("Не найден файл настроек", _path);
+
                 string json = File.ReadAllText(_path);
                 Settings settings =  JsonConvert.DeserializeObject<Settings>(json, _jsonSettings) ?? new Settings();
                 settings.Colors = JObject.Parse(json)["Colors"].ToObject<Dictionary<string, System.Windows.Media.Color>>();

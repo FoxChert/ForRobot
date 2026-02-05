@@ -133,7 +133,7 @@ namespace ForRobot.Libr.Behavior
             helixSceneTracker.OnPropertyChanged(nameof(helixSceneTracker.SceneItems));
         }
 
-        #region Implementations of IDisposable
+        #region Implementations of INotifyPropertyChanged
 
         private void OnPropertyChanged(string propertyName) => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 

@@ -63,11 +63,13 @@ namespace ForRobot.Models.File3D
         public bool CanRedo => this._undoRedoManager == null ? false : this._undoRedoManager.CanRedo;
 
         public abstract Model3DGroup CurrentModel { get; protected set; }
+        //public abstract System.Collections.Generic.IList<SceneItem> SceneItems { get; protected set; }
 
         #region Events
 
         public event PropertyChangedEventHandler PropertyChanged;
         public event ForRobot.Libr.ValueChangedEventHandler ValueChangedEvent;
+        //public event EventHandler SceneChangedEvent;
         public event EventHandler ModelChangedEvent;
         public event EventHandler SaveEvent;
 
@@ -80,6 +82,7 @@ namespace ForRobot.Models.File3D
         public File3D()
         {
             this.dispatcher = Dispatcher.CurrentDispatcher;
+            //this.SceneChangedEvent += (s, e) => this.OnPropertyChanged(nameof(this.SceneItems));
             this.ModelChangedEvent += (s, e) => this.OnPropertyChanged(nameof(this.CurrentModel));
             this.PropertyChanged += (s, e) => { if(e.PropertyName != nameof(this.IsSaved)) this.IsSaved = false; };
             this.ValueChangedEvent += HandleValueChangedEvent;
@@ -139,10 +142,15 @@ namespace ForRobot.Models.File3D
         {
             this.ValueChangedEvent?.Invoke(target, new ForRobot.Libr.ValueChangedEventArgs(oldValue, newValue, propertyName));
         }
+
         /// <summary>
         /// Вызов события изменения <see cref="CurrentModel"/>
         /// </summary>
         protected virtual void OnModelChanged() => this.ModelChangedEvent?.Invoke(this, null);
+
+
+        //protected virtual void OnSceneChanged() => this.SceneChangedEvent?.Invoke(this, null);
+
         /// <summary>
         /// Вызов события сохранения файла
         /// </summary>
@@ -192,6 +200,7 @@ namespace ForRobot.Models.File3D
                     this._undoRedoManager.ClearUndoRedoHistory();
                     this._undoRedoManager.UndoRedoStateChanged -= this.HandleUndoRedoStateChangedEvent;
                 }
+                //this.SceneChangedEvent -= (s, e) => this.OnPropertyChanged(nameof(this.SceneItems));
                 this.ModelChangedEvent -= (s, e) => this.OnPropertyChanged(nameof(this.CurrentModel));
                 this.PropertyChanged -= (s, e) => { if (e.PropertyName != nameof(this.IsSaved)) this.IsSaved = false; };
                 this.ValueChangedEvent -= HandleValueChangedEvent;

@@ -12,7 +12,7 @@ using ForRobot.Models.Welding;
 
 namespace ForRobot.Models.Detals
 {
-    public abstract class Detal : INotifyPropertyChanged, IDisposable, IChangeNotificationControl
+    public abstract class Detal : SceneItem, INotifyPropertyChanged, IDisposable, IChangeNotificationControl
     {
         #region Private variables
 
@@ -296,6 +296,8 @@ namespace ForRobot.Models.Detals
         #endregion
 
         #region Public functions
+
+        public override System.Windows.Media.Media3D.Model3DGroup GetModel() => ForRobot.Libr.Modeling.ModelingService.GetDetalModel(this);
 
         public virtual object Clone()
         {
