@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Media.Media3D;
+using System.ComponentModel;
 
 namespace ForRobot.Models
 {
@@ -12,5 +13,7 @@ namespace ForRobot.Models
         //Type ObjectType { get; }
 
         Model3DGroup GetModel();
+
+        void UpdateTransform(Matrix3D transform);
     }
 }

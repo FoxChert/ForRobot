@@ -10,6 +10,7 @@ using Newtonsoft.Json.Serialization;
 using ForRobot.Libr.Clipboard;
 using ForRobot.Libr.Converters;
 using ForRobot.Libr.Collections;
+using System.Windows.Media.Media3D;
 
 namespace ForRobot.Models.Detals
 {
@@ -48,7 +49,7 @@ namespace ForRobot.Models.Detals
             set
             {
                 this._diferentDistance = value;
-                this.OnChangeProperty(nameof(this.DiferentDistance));
+                this.OnPropertyChanged(nameof(this.DiferentDistance));
             }
         }
 
@@ -62,7 +63,7 @@ namespace ForRobot.Models.Detals
             set
             {
                 this._paralleleRibs = value;
-                this.OnChangeProperty(nameof(this.ParalleleRibs));
+                this.OnPropertyChanged(nameof(this.ParalleleRibs));
             }
         }
                
@@ -76,7 +77,7 @@ namespace ForRobot.Models.Detals
             set
             {
                 this._ribsHeight = value;
-                this.OnChangeProperty(nameof(this.RibsHeight));
+                this.OnPropertyChanged(nameof(this.RibsHeight));
             }
         }
         
@@ -90,7 +91,7 @@ namespace ForRobot.Models.Detals
             set
             {
                 this._ribsThickness = value;
-                this.OnChangeProperty(nameof(this.RibsThickness));
+                this.OnPropertyChanged(nameof(this.RibsThickness));
             }
         }
 
@@ -109,7 +110,7 @@ namespace ForRobot.Models.Detals
 
                 this._ribCount = value;
                 
-                this.OnChangeProperty(nameof(this.RibsCount));
+                this.OnPropertyChanged(nameof(this.RibsCount));
             }
         }
         
@@ -123,7 +124,7 @@ namespace ForRobot.Models.Detals
             set
             {
                 this._distanceToFirstRib = value;
-                this.OnChangeProperty();
+                this.OnPropertyChanged();
             }
         }
         
@@ -137,7 +138,7 @@ namespace ForRobot.Models.Detals
             set
             {
                 this._distanceBetweenRibs = value;
-                this.OnChangeProperty();
+                this.OnPropertyChanged();
             }
         }
         
@@ -151,7 +152,7 @@ namespace ForRobot.Models.Detals
             set
             {
                 this._ribsIdentToLeft = value;
-                this.OnChangeProperty();
+                this.OnPropertyChanged();
             }
         }
         
@@ -165,7 +166,7 @@ namespace ForRobot.Models.Detals
             set
             {
                 this._ribsIdentToRight = value;
-                this.OnChangeProperty();
+                this.OnPropertyChanged();
             }
         }
        
@@ -196,7 +197,7 @@ namespace ForRobot.Models.Detals
 
                 this._ribsCollection.RibPropertyChanged += this.HandleChangeProperty_RibsCollection;
                 this._ribsCollection.CollectionChanged += this.HandleCollectionChanged_RibsCollection;
-                this.OnChangeProperty();
+                this.OnPropertyChanged();
             }
         }
 
@@ -341,7 +342,7 @@ namespace ForRobot.Models.Detals
                             e.Rib.DistanceRight = e.Rib.DistanceLeft;
                     break;
             }
-            this.OnChangeProperty(nameof(this.RibsCollection));
+            this.OnPropertyChanged(nameof(this.RibsCollection));
         }
 
         /// <summary>
@@ -371,7 +372,7 @@ namespace ForRobot.Models.Detals
         }
 
         /// <summary>
-        /// Выполнение комплексного каскадного изменения с подавлением уведомлений свойств <see cref="WeldingProperties"/> и <see cref="RibsCollection"/>
+        /// Выполнение комплексного каскадного изменения с подавлением уведомлений свойств <see cref="Detal.WeldingProperties"/> и <see cref="RibsCollection"/>
         /// </summary>
         /// <param name="changeAction">Делегат, выполняющий изменения</param>
         private void ComplexCascadingChange(Action changeAction)

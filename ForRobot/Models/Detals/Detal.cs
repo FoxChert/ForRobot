@@ -12,7 +12,7 @@ using ForRobot.Models.Welding;
 
 namespace ForRobot.Models.Detals
 {
-    public abstract class Detal : SceneItem, INotifyPropertyChanged, IDisposable, IChangeNotificationControl
+    public abstract class Detal : SceneItem, IDisposable, IChangeNotificationControl
     {
         #region Private variables
 
@@ -54,7 +54,7 @@ namespace ForRobot.Models.Detals
             set
             {
                 this._scoseType = value;
-                this.OnChangeProperty(nameof(this.ScoseType));
+                this.OnPropertyChanged(nameof(this.ScoseType));
             }
         }
 
@@ -69,7 +69,7 @@ namespace ForRobot.Models.Detals
             set
             {
                 this._reverseDeflection = value;
-                this.OnChangeProperty(nameof(this.ReverseDeflection));
+                this.OnPropertyChanged(nameof(this.ReverseDeflection));
             }
         }
 
@@ -84,7 +84,7 @@ namespace ForRobot.Models.Detals
             set
             {
                 this._plateWidth = value;
-                this.OnChangeProperty(nameof(this.PlateWidth));
+                this.OnPropertyChanged(nameof(this.PlateWidth));
             }
         }
 
@@ -99,7 +99,7 @@ namespace ForRobot.Models.Detals
             set
             {
                 this._plateLength = value;
-                this.OnChangeProperty(nameof(this.PlateLength));
+                this.OnPropertyChanged(nameof(this.PlateLength));
             }
         }
 
@@ -114,7 +114,7 @@ namespace ForRobot.Models.Detals
             set
             {
                 this._plateThickness = value;
-                this.OnChangeProperty(nameof(this.PlateThickness));
+                this.OnPropertyChanged(nameof(this.PlateThickness));
             }
         }
 
@@ -129,7 +129,7 @@ namespace ForRobot.Models.Detals
             set
             {
                 this._plateBevelToLeft = value;
-                this.OnChangeProperty(nameof(this.PlateBevelToLeft));
+                this.OnPropertyChanged(nameof(this.PlateBevelToLeft));
             }
         }
 
@@ -144,7 +144,7 @@ namespace ForRobot.Models.Detals
             set
             {
                 this._plateBevelToRight = value;
-                this.OnChangeProperty(nameof(this.PlateBevelToRight));
+                this.OnPropertyChanged(nameof(this.PlateBevelToRight));
             }
         }
 
@@ -165,7 +165,7 @@ namespace ForRobot.Models.Detals
             set
             {
                 this._xOffset = value;
-                this.OnChangeProperty(nameof(this.XOffset));
+                this.OnPropertyChanged(nameof(this.XOffset));
             }
         }
         [JsonIgnore]
@@ -178,7 +178,7 @@ namespace ForRobot.Models.Detals
             set
             {
                 this._yOffset = value;
-                this.OnChangeProperty(nameof(this.YOffset));
+                this.OnPropertyChanged(nameof(this.YOffset));
             }
         }
         [JsonIgnore]
@@ -191,7 +191,7 @@ namespace ForRobot.Models.Detals
             set
             {
                 this._zOffset = value;
-                this.OnChangeProperty(nameof(this.ZOffset));
+                this.OnPropertyChanged(nameof(this.ZOffset));
             }
         }
         
@@ -213,18 +213,18 @@ namespace ForRobot.Models.Detals
                 if (this._weldingProperties != null)
                     this._weldingProperties.PropertyChanged += this.HandleChangeProperty_WeldingProperties;
 
-                this.OnChangeProperty(nameof(WeldingProperties));
+                this.OnPropertyChanged(nameof(WeldingProperties));
             }
         }
+
+        /// <summary>
+        /// Визуальная модель элемента сцены
+        /// </summary>
+        public override System.Windows.Media.Media3D.Model3D VisualModel { get => ForRobot.Libr.Modeling.ModelingService.GetDetalModel(this); }
 
         #endregion
 
         #region Event
-
-        /// <summary>
-        /// Событие изменения параметра детали
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
 
@@ -274,7 +274,7 @@ namespace ForRobot.Models.Detals
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>,
-        private void HandleChangeProperty_WeldingProperties(object sender, PropertyChangedEventArgs e) => this.OnChangeProperty(e.PropertyName);
+        private void HandleChangeProperty_WeldingProperties(object sender, PropertyChangedEventArgs e) => this.OnPropertyChanged(e.PropertyName);
 
         /// <summary>
         /// Выполнение комплексного каскадного изменения с подавлением уведомлений свойства <see cref="WeldingProperties"/>
@@ -297,7 +297,12 @@ namespace ForRobot.Models.Detals
 
         #region Public functions
 
-        public override System.Windows.Media.Media3D.Model3DGroup GetModel() => ForRobot.Libr.Modeling.ModelingService.GetDetalModel(this);
+        //public override System.Windows.Media.Media3D.Model3DGroup GetModel()
+
+        public override void UpdateTransform(System.Windows.Media.Media3D.Matrix3D transform)
+        {
+            throw new NotImplementedException();
+        }
 
         public virtual object Clone()
         {
@@ -320,12 +325,12 @@ namespace ForRobot.Models.Detals
         /// Вызов события изменения свойства
         /// </summary>
         /// <param name="propertyName">Наименование свойства</param>
-        protected void OnChangeProperty([CallerMemberName] string propertyName = null)
+        protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             if (this._suppressNotifications)
                 return;
 
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            base.OnPropertyChanged(propertyName);
         }
 
         #endregion

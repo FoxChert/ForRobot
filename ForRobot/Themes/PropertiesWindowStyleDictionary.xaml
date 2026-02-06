@@ -947,7 +947,7 @@
 
                 <CheckBox Grid.Column="0" Content="Выбор скрипта перед запуском" IsChecked="{Binding Path=Settings.AskScriptFile, Source={x:Static Application.Current}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                <Button Grid.Column="1" Content="Изменения перечня скриптов"/>
+                <Button Grid.Column="1" Content="Изменение перечня скриптов"/>
             </Grid>
 
             <CheckBox Grid.Row="4" Content="Копирование сгенерированной программы на контроллер" IsChecked="{Binding Path=Settings.SendingGeneratedFiles, Source={x:Static Application.Current}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>

@@ -63,16 +63,4 @@ namespace ForRobot.Libr.Clipboard
             this._suppressions.Clear();
         }
     }
-
-    /// <summary>
-    /// Фабрика для создания контекста подавления уведомлений
-    /// </summary>
-    public static class NotificationSuppression
-    {
-        public static IDisposable Suppress(params IChangeNotificationControl[] controls) => new MultiNotificationSuppression(controls);
-
-        public static IDisposable Suppress(IEnumerable<IChangeNotificationControl> controls) => new MultiNotificationSuppression(controls);
-
-        public static MultiNotificationSuppression CreateContext() => new MultiNotificationSuppression(false);
-    }
 }
