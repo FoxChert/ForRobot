@@ -95,10 +95,10 @@ namespace ForRobot.ViewModels
             get
             {
                 List<string> detalTypesList = new List<string>();
-                foreach (var f in typeof(ForRobot.Models.Detals.DetalTypes).GetFields())
-                {
-                    detalTypesList.Add(f.GetValue(null).ToString());
-                }
+                //foreach (var f in typeof(ForRobot.Models.Detals.DetalTypes).GetFields())
+                //{
+                //    detalTypesList.Add(f.GetValue(null).ToString());
+                //}
                 return new ObservableCollection<string>(detalTypesList);
             }
         }

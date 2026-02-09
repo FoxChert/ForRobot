@@ -285,11 +285,11 @@ namespace ForRobot.Models.File3D
             if (this.CurrentDetal == null)
                 return;
 
-            var detal = this._detalFactory.CreateDetal(DetalTypes.StringToEnum(this.CurrentDetal.DetalType));
+            var detal = this._detalFactory.CreateDetal(this.CurrentDetal.DetalType);
 
             switch (this.CurrentDetal.DetalType)
             {
-                case DetalTypes.Plate:
+                case DetalType.Plate:
                     Plate plita = this.CurrentDetal as Plate;
                     (detal as Plate).ScoseType = plita.ScoseType;
                     (detal as Plate).DiferentDistance = plita.DiferentDistance;

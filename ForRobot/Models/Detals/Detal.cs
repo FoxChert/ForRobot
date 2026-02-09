@@ -39,9 +39,9 @@ namespace ForRobot.Models.Detals
         #region Public variables
 
         /// <summary>
-        /// Тип детали. Использует <see cref="ForRobot.Models.Detals.DetalTypes"/>
+        /// Тип детали. Использует <see cref="ForRobot.Models.Detals.DetalType"/>
         /// </summary>
-        public virtual string DetalType { get; }
+        public virtual DetalType DetalType { get; }
 
         [JsonProperty("d_type")]
         [JsonConverter(typeof(JsonCommentConverter), "Тип скоса")]

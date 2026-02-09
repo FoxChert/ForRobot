@@ -5,7 +5,7 @@ using ForRobot.Libr.Modeling;
 
 namespace ForRobot.Models.RoboticComplex
 {
-    public class PC : SceneItem
+    public class PC
     {
         //public Type ObjectType { get => this.GetType(); }
 
@@ -47,15 +47,15 @@ namespace ForRobot.Models.RoboticComplex
 
         public PC()
         {
-            this.Children.Add(this.GetModel());
+            //this.Children.Add(this.GetModel());
         }
 
-        public override Model3DGroup GetModel()
-        {
-            //Vector3D pcTranslate = new Vector3D(this.X, this.Y, this.Z);
-            Transform3DGroup transform3DGroup = Transform3DBuilder.Create().Translate(this.X, this.Y, this.Z);
-            Model3DGroup model = ModelingService.GetPcModel(this.X, this.Y, this.Z, transform3DGroup);
-            return model;
-        }
+        //public override Model3DGroup GetModel()
+        //{
+        //    //Vector3D pcTranslate = new Vector3D(this.X, this.Y, this.Z);
+        //    Transform3DGroup transform3DGroup = Transform3DBuilder.Create().Translate(this.X, this.Y, this.Z);
+        //    Model3DGroup model = ModelingService.GetPcModel(this.X, this.Y, this.Z, transform3DGroup);
+        //    return model;
+        //}
     }
 }

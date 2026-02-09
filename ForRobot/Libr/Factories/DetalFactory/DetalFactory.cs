@@ -144,7 +144,7 @@ namespace ForRobot.Libr.Factories.DetalFactory
                         return this._detalProvider.CreatePlita();
 
                     default:
-                        throw new ArgumentException($"Тип детали {DetalTypes.EnumToString(type)} не поддерживается", nameof(type));
+                        throw new ArgumentException($"Тип детали \"{type.GetDescription()}\" не поддерживается", nameof(type));
                 }
             }
             catch (Exception ex) when (!(ex is ArgumentException))
@@ -206,11 +206,11 @@ namespace ForRobot.Libr.Factories.DetalFactory
                 if (detalTypeToken == null)
                     throw new ArgumentException("JSON должен содержать поле DetalType", nameof(jsonString));
 
-                string detalType = detalTypeToken.ToString();
+                var detalType = DetalTypeExtensions.StringToEnum(detalTypeToken.ToString());
 
                 switch (detalType)
                 {
-                    case DetalTypes.Plate:
+                    case DetalType.Plate:
                         bool isValid = this.ValidationJsonString<Plate>(jsonString, exception =>
                         {
                             validationException = exception;
@@ -221,7 +221,7 @@ namespace ForRobot.Libr.Factories.DetalFactory
                         return this.DeserializePlate(jsonString, serSettings, loadSettings);
 
                     default:
-                        throw new ArgumentException($"Тип детали {detalType} не поддерживается", detalType);
+                        throw new ArgumentException($"Тип детали \"{detalTypeToken.ToString()}\" не поддерживается", nameof(detalTypeToken));
                 }
             }
             catch (JsonReaderException ex)
@@ -279,7 +279,7 @@ namespace ForRobot.Libr.Factories.DetalFactory
             {
                 switch (detal.DetalType)
                 {
-                    case DetalTypes.Plate:
+                    case DetalType.Plate:
                         jsonString = JsonConvert.SerializeObject(detal, settings);
 
                         if (this._serializationError != null)
@@ -294,7 +294,7 @@ namespace ForRobot.Libr.Factories.DetalFactory
                         break;
 
                     default:
-                        string typeName = detal.DetalType ?? detal.GetType().Name;
+                        string typeName = detal.DetalType.EnumToString() ?? detal.GetType().Name;
                         throw new ArgumentException($"Тип детали {typeName} не поддерживается", nameof(detal));
                 }
             }

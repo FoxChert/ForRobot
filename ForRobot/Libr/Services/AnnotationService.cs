@@ -24,7 +24,7 @@ namespace ForRobot.Libr.Services
 
         public ObservableCollection<Annotation> GetAnnotations(Detal detal)
         {
-            var strategy = _strategies.FirstOrDefault(s => s.CanHandle(DetalTypes.StringToEnum(detal.DetalType)));
+            var strategy = _strategies.FirstOrDefault(s => s.CanHandle(detal.DetalType));
             return strategy?.CreateAnnotations(detal) ?? null;
         }
 
@@ -36,7 +36,7 @@ namespace ForRobot.Libr.Services
         /// <returns></returns>
         public object GetAnnotation(Detal detal, string propertyName)
         {
-            var strategy = _strategies.FirstOrDefault(s => s.CanHandle(DetalTypes.StringToEnum(detal.DetalType)));
+            var strategy = _strategies.FirstOrDefault(s => s.CanHandle(detal.DetalType));
 
             var method = strategy.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
                                            .FirstOrDefault(m => m.GetCustomAttribute<ForRobot.Libr.Attributes.PropertyNameAttribute>()?.PropertyName == propertyName);

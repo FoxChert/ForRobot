@@ -14,7 +14,7 @@ namespace ForRobot.Models.Detals
         /// <summary>
         /// Тип детали
         /// </summary>
-        public override string DetalType { get => DetalTypes.Stringer; }
+        public override DetalType DetalType { get => DetalType.Stringer; }
 
         //public override sealed BitmapImage GenericImage { get => (BitmapImage)Application.Current.FindResource("ImagePlitaStringerFull"); }
 

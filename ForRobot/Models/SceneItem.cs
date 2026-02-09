@@ -31,25 +31,41 @@ namespace ForRobot.Models
         }
     }
 
+    public interface ISceneItem
+    {
+        string Name { get; }
+
+        //bool IsVisible { get; set; }
+
+        //Type ObjectType { get; }
+
+        //Model3DGroup GetModel();
+
+        void UpdateTransform(Matrix3D transform);
+    }
+
     /// <summary>
     /// Абстрактный класс элемента 3д сцены
     /// </summary>
     public abstract class SceneItem : DependencyObject, ISceneItem
     {
-        private string _name;
+        //private string _name;
         private bool _isVisible = true;
         private bool _isSelected = false;
         private Transform3D _transform;
+        private Material _originalMaterial; // Поле для запоминания оригенального материала.
 
-        public string Name { get; }
+        public static readonly Material TransparentMaterial = new DiffuseMaterial(System.Windows.Media.Brushes.Transparent);
 
-        public bool ISVisible
+        public virtual string Name { get; }
+
+        public bool IsVisible
         {
             get => this._isVisible;
             set
             {
                 this._isVisible = value;
-                this.UpdateVisibility();
+                this.UpdateVisibility(this);
                 this.OnPropertyChanged();
             }
         }
@@ -111,14 +127,15 @@ namespace ForRobot.Models
         {
             switch (element)
             {
-                case Model3DGroup model3DGroup:
-                    foreach (var item in model3DGroup.Children)
-                    {
-                        this.Children.Add(item as SceneItem);
-                    }
-                    break;
+                //case Model3DGroup model3DGroup:
+                //    //foreach (var item in model3DGroup.Children)
+                //    //{
+                //    //    this.Children.Add(item as SceneItem);
+                //    //}
+                //    break;
 
                 case GeometryModel3D geometryModel3D:
+                    this._originalMaterial = geometryModel3D.Material;
                     break;
 
                 default:
@@ -191,9 +208,17 @@ namespace ForRobot.Models
         /// <summary>
         /// Обновление видимости элемента и его потомков
         /// </summary>
-        protected virtual void UpdateVisibility()
+        protected virtual void UpdateVisibility(object element)
         {
+            switch (element)
+            {
+                case GeometryModel3D geometryModel3D:
+                    geometryModel3D.Material = this.IsVisible ? this._originalMaterial : TransparentMaterial;
+                    break;
 
+                default:
+                    return;
+            }
         }
         
         public override string ToString() => this.GetType().ToString();

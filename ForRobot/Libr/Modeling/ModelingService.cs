@@ -165,7 +165,7 @@ namespace ForRobot.Libr.Modeling
         /// <returns></returns>
         public static Model3DGroup GetDetalModel(Detal detal)
         {
-            IDetalModelingStrategy strategy = _strategies.FirstOrDefault(s => s.CanHandle(DetalTypes.StringToEnum(detal.DetalType)));
+            IDetalModelingStrategy strategy = _strategies.FirstOrDefault(s => s.CanHandle(detal.DetalType));
             Model3DGroup detalModel3D = strategy?.CreateModel3D(detal) ?? null;
             return detalModel3D;
         }

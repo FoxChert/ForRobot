@@ -4,16 +4,16 @@ using System.ComponentModel;
 
 namespace ForRobot.Models
 {
-    public interface ISceneItem
-    {
-        string Name { get; }
+    //public interface ISceneItem
+    //{
+    //    string Name { get; }
 
-        //bool IsVisible { get; set; }
+    //    //bool IsVisible { get; set; }
 
-        //Type ObjectType { get; }
+    //    //Type ObjectType { get; }
 
-        Model3DGroup GetModel();
+    //    Model3DGroup GetModel();
 
-        void UpdateTransform(Matrix3D transform);
-    }
+    //    void UpdateTransform(Matrix3D transform);
+    //}
 }

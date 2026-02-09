@@ -134,7 +134,7 @@ namespace ForRobot.Libr.Services
         {
             switch (detal.DetalType)
             {
-                case DetalTypes.Plate:
+                case DetalType.Plate:
                     return new ObservableCollection<Weld>(this.GetPlateWelds(detal as Plate));
 
                 default:

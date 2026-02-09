@@ -13,6 +13,7 @@ using Newtonsoft.Json.Linq;
 using HelixToolkit.Wpf;
 
 using ForRobot.Libr;
+using ForRobot.Models.Detals;
 
 namespace ForRobot.Models.Settings
 {
@@ -105,7 +106,7 @@ namespace ForRobot.Models.Settings
         /// <summary>
         /// Тип детали, для которой создаётся стартовый файл
         /// </summary>
-        public string StartedDetalType { get; set; } = Models.Detals.DetalTypes.Plate;
+        public DetalType StartedDetalType { get; set; } = Models.Detals.DetalType.Plate;
 
         /// <summary>
         /// Выбранное приложение для открытия файлов
@@ -489,11 +490,11 @@ namespace ForRobot.Models.Settings
         /// <summary>
         /// Наименования для сгенерированных программ (в зависимости от типа детали)
         /// </summary>
-        public List<Tuple<Detals.DetalType, string, string>> DetalsProgramNames { get; } = Detals.DetalTypes.DetalTypeCollection().Select(t => new Tuple<Detals.DetalType, string, string>(t, t.GetDescription(), string.Empty)).ToList();
+        public List<Tuple<DetalType, string, string>> DetalsProgramNames { get; } = DetalTypeExtensions.DetalTypeCollection().Select(t => new Tuple<DetalType, string, string>(t, t.GetDescription(), string.Empty)).ToList();
         /// <summary>
         /// Наименования скриптов-генератов (зависят от типа детали)
         /// </summary>
-        public List<Tuple<Detals.DetalType, string, string>> DetalsScriptNames { get; } = Detals.DetalTypes.DetalTypeCollection().Select(t => new Tuple<Detals.DetalType, string, string>(t, t.GetDescription(), string.Empty)).ToList();
+        public List<Tuple<DetalType, string, string>> DetalsScriptNames { get; } = DetalTypeExtensions.DetalTypeCollection().Select(t => new Tuple<DetalType, string, string>(t, t.GetDescription(), string.Empty)).ToList();
 
         ///// <summary>
         ///// Имя сгенерированной программы (настил с рёбрами)
@@ -561,6 +562,16 @@ namespace ForRobot.Models.Settings
         #endregion Constructors
 
         #region Public functions
+
+        /// <summary>
+        /// Возвращает стандартное имя программы
+        /// </summary>
+        /// <param name="startedDetalType"></param>
+        /// <returns></returns>
+        public string GetStandartProgramName(DetalType type)
+        {
+            return App.Current.Settings.DetalsProgramNames.Where(x => x.Item1 == type).FirstOrDefault().Item3;
+        }
 
         /// <summary>
         /// Сохранение json-файла настроек во временных файлах

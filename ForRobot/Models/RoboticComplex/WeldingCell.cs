@@ -6,7 +6,7 @@ namespace ForRobot.Models.RoboticComplex
     /// <summary>
     /// Сварочная ячейка
     /// </summary>
-    public class WeldingCell : ISceneItem
+    public class WeldingCell
     {
         public string Name { get; }
 

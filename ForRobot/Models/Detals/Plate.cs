@@ -37,7 +37,7 @@ namespace ForRobot.Models.Detals
         public const int MIN_RIB_COUNT = 1;
         
         /// <inheritdoc cref="Detal.DetalType"/>
-        public override string DetalType { get => DetalTypes.Plate; }
+        public override DetalType DetalType { get => DetalType.Plate; }
 
         [JsonConverter(typeof(JsonCommentConverter), "Разное ли рассояние между рёбрами")]
         /// <summary>
