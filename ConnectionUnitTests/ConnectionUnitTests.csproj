@@ -139,6 +139,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CadModeling.cs" />
+    <Compile Include="MatrixTests.cs" />
     <Compile Include="Resource\JsonRpcConnection.cs" />
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
