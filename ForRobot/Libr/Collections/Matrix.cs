@@ -169,13 +169,7 @@ namespace ForRobot.Libr.Collections
             }
             return true;
         }
-
-        public static double Minor(this Matrix matrix, int rowIndex, int columnIndex)
-        {
-            if (!matrix.IsSquareMatrix() && matrix.RowsCount != 3)
-                throw new InvalidOperationException("");
-        }
-
+        
         /// <summary>
         /// Транспонированная матрица
         /// </summary>
@@ -222,6 +216,13 @@ namespace ForRobot.Libr.Collections
 
         #region Constructors
 
+        public Matrix(int length)
+        {
+            this.RowsCount = length;
+            this.ColumnsCount = length;
+            this.Items = new double[length, length];
+        }
+
         public Matrix(int rows, int cols)
         {
             this.RowsCount = rows;
@@ -251,16 +252,31 @@ namespace ForRobot.Libr.Collections
 
         #region Private functions
 
-        private double Determinant2() => this[0, 0] * this[1, 1] - this[0, 1] * this[1, 0];
-
-        private double Determinant3()
+        /// <summary>
+        /// Определитель квадратной матрицы п-го порядка
+        /// </summary>
+        /// <returns></returns>
+        private double DetN()
         {
+            double determinant = 0;
 
-        }
-
-        private double DeterminantN()
-        {
-
+            if (this.IsTriangularMatrix()) // Для треугольной матрицы определитель определяется умножением элементов главной диагонали
+            {
+                var md = this.ElementsMainDiagonal();
+                determinant = 1;
+                for (int i = 0; i < md.Length; i++)
+                {
+                    determinant *= md[i];
+                }
+            }
+            else
+            {
+                for (int i = 0; i < this.ColumnsCount; i++)
+                {
+                    determinant += this[0, i] * A_ij(0, i);
+                }
+            }
+            return determinant;
         }
 
         #endregion Private functions
@@ -336,9 +352,9 @@ namespace ForRobot.Libr.Collections
 
             double[,] matrixC = new double[matrixA.RowsCount, matrixB.ColumnsCount];
 
-            for (int i = 0; i < matrixC.GetLength(0); i++)
+            for (int i = 0; i < matrixA.RowsCount; i++)
             {
-                for (int j = 0; j < matrixC.GetLength(1); j++)
+                for (int j = 0; j < matrixB.ColumnsCount; j++)
                 {
                     for (int k = 0; k < matrixA.ColumnsCount; k++)
                     {
@@ -371,19 +387,10 @@ namespace ForRobot.Libr.Collections
             if (matrixA == null || matrixB == null)
                 throw new ArgumentNullException("Один из аргументов равен null");
 
-            if (matrixA.RowsCount != matrixB.RowsCount || matrixA.ColumnsCount != matrixB.ColumnsCount)
-                throw new InvalidOperationException("Для матриц с разным размером деление невозможно!");
+            if (!matrixA.IsSquareMatrix() || !matrixB.IsSquareMatrix())
+                throw new InvalidOperationException("Операция применима только к квадратным матрицам!");
 
-            double[,] matrixC = new double[matrixA.RowsCount, matrixB.ColumnsCount];
-
-            //for (int i = 0; i < matrixC.GetLength(0); i++)
-            //{
-            //    for (int j = 0; j < matrixC.GetLength(1); j++)
-            //    {
-            //        matrixC[i, j] = matrixA[i, j] / matrixB[i, j];
-            //    }
-            //}
-            return new Matrix(matrixC);
+            return matrixA * matrixB.Inverse();
         }
 
         public static Matrix operator /(Matrix matrix, double divisor)
@@ -403,7 +410,7 @@ namespace ForRobot.Libr.Collections
                     result[i, j] = matrix[i, j] / divisor;
                 }
             }
-            return matrix;
+            return result;
         }
         
         public static bool operator ==(Matrix matrixA, Matrix matrixB)
@@ -428,6 +435,52 @@ namespace ForRobot.Libr.Collections
 
         #endregion Operators
 
+        #region Static
+
+        /// <summary>
+        /// Вычисление евклидовой нормы вектора
+        /// </summary>
+        /// <param name="vector">Входной вектор</param>
+        /// <returns></returns>
+        public static double Normalize(double[] vector)
+        {
+            double sum = 0;
+
+            for (int i = 0; i < vector.Length; i++)
+                sum += vector[i] * vector[i];
+
+            return Math.Sqrt(sum);
+        }
+
+        /// <summary>
+        /// Приведение вектора к единичной длине (унитарной норме)
+        /// </summary>
+        /// <param name="vector">Входной вектор</param>
+        /// <param name="norm"></param>
+        public static double[] NormLength(double[] vector)
+        {
+            double norm = Normalize(vector);
+
+            if (norm <= 0)
+                throw new ArgumentException($"Невозможно нормализовать вектор: норма = {norm}. Вектор должен иметь положительную длину.", nameof(norm));
+
+            double[] result = new double[vector.Length];
+
+            for (int i = 0; i < vector.Length; i++)
+                result[i] = vector[i] / norm;
+
+            return result;
+        }
+
+        /// <summary>
+        /// Скалярное произведение двух векторов
+        /// </summary>
+        public static double Dot(double[] a, double[] b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+
+        public static double Cross(double[] a, double[] b) => 0;
+
+        #endregion Static
+
         public override bool Equals(object obj)
         {
             if (obj is Matrix other)
@@ -436,16 +489,6 @@ namespace ForRobot.Libr.Collections
         }
 
         public override int GetHashCode() => Items?.GetHashCode() ?? 0;
-
-        //public static double Normalize(double[] vector)
-        //{
-        //    double x = 0;
-        //    for(int i = 0; i < vector.Length; i++)
-        //    {
-        //        x += vector[i] * vector[i];
-        //    }
-        //    return Math.Sqrt(x);
-        //}
 
         /// <summary>
         /// Вывод матрицы-столбца длиной m, где m - <see cref="RowsCount"/>
@@ -461,8 +504,41 @@ namespace ForRobot.Libr.Collections
         ///     
         /// </example>
         /// <returns></returns>
-        public double[] GetColumnMatrix() => this.GetColumn(this.RowsCount);
+        public Matrix GetColumnMatrix() => this.GetColumnMatrix(this.RowsCount);
 
+        /// <summary>
+        /// Вывод матрицы-столбца длиной m
+        /// </summary>
+        /// <example>
+        /// 
+        /// Матрица:
+        /// 
+        ///     | a_11 |
+        /// A = | a_21 | = (a_j1), размера m x 1
+        ///     |  ... |
+        ///     | a_m1 |
+        ///     
+        /// </example>
+        /// <param name="colIndex">Индекс столбца - m</param>
+        /// <returns></returns>
+        public Matrix GetColumnMatrix(int colIndex)
+        {
+            var col = this.GetColumn(colIndex);
+
+            double[,] result = new double[col.Length, 1];
+
+            for (int j = 0; j < col.Length; j++)
+            {
+                result[j, 0] = col[j];
+            }
+            return new Matrix(result);
+        }
+
+        /// <summary>
+        /// Вывод столбца матрицы
+        /// </summary>
+        /// <param name="columnIndex">Индекс столбца</param>
+        /// <returns></returns>
         public double[] GetColumn(int columnIndex)
         {
             if (columnIndex < 0 || columnIndex >= this.ColumnsCount)
@@ -487,8 +563,38 @@ namespace ForRobot.Libr.Collections
         /// 
         /// </example>
         /// <returns></returns>
-        public double[] GetRowMatrix() => this.GetRow(this.ColumnsCount);
+        public Matrix GetRowMatrix() => GetRowMatrix(this.ColumnsCount);
 
+        /// <summary>
+        /// Вывод матрицы-строки длиной n
+        /// </summary>
+        /// <example>
+        /// 
+        /// Матрица:
+        /// 
+        /// A = | a_11   a_12   ...    a_1n | = (a_1i), размера 1 x n
+        /// 
+        /// </example>
+        /// <param name="rowIndex">Индекс строки - n</param>
+        /// <returns></returns>
+        public Matrix GetRowMatrix(int rowIndex)
+        {
+            var row = this.GetRow(rowIndex);
+
+            double[,] result = new double[1, row.Length];
+
+            for(int i = 0; i < row.Length; i++)
+            {
+                result[0, i] = row[i];
+            }
+            return new Matrix(result);
+        }
+
+        /// <summary>
+        /// Вывод строки матрицы
+        /// </summary>
+        /// <param name="rowIndex">Индекс строки</param>
+        /// <returns></returns>
         public double[] GetRow(int rowIndex)
         {
             if (rowIndex < 0 || rowIndex >= this.RowsCount)
@@ -528,17 +634,260 @@ namespace ForRobot.Libr.Collections
         /// Вычисление определителя матрицы
         /// </summary>
         /// <returns></returns>
-        public double Determinant()
+        public double Det()
         {
             if (!this.IsSquareMatrix())
                 throw new InvalidOperationException("Вычисление определителя возможно только для квадратной матрицы!");
 
-            if (this.RowsCount == 2)
-                return this.Determinant2();
-            else if (this.RowsCount == 3)
-                return this.Determinant3();
-            else
-                return this.DeterminantN();
+            int size = this.Items.GetLength(0);
+
+            if (size == 1) return this[0, 0];
+            if (size == 2) return this[0, 0] * this[1, 1] - this[0, 1] * this[1, 0];
+            if (size == 3) return this[0, 0] * this[1, 1] * this[2, 2] + this[0, 1] * this[1, 2] * this[2, 0] + this[0, 2] * this[1, 0] * this[2, 1] - (this[0, 2] * this[1, 1] * this[2, 0] + this[0, 0] * this[1, 2] * this[2, 1] + this[0, 1] * this[1, 0] * this[2, 2]);
+            else return this.DetN();
+        }
+
+        /// <summary>
+        /// Вычисление минора элемента матрицы.
+        /// <para>
+        /// Минор - определитель порядка (n-1), полученный из элементов матрицы путем вычеркивания i–строки и j–столбца, на пересечении которых стоит этот элемент
+        /// </para>
+        /// </summary>
+        /// <param name="rowIndex">Индекс строки элемента</param>
+        /// <param name="columnIndex">Индекс столбца элемента</param>
+        /// <returns></returns>
+        public double M_ij(int rowIndex, int columnIndex)
+        {
+            if (!this.IsSquareMatrix())
+                throw new InvalidOperationException("Вычисление минора возможно только для квадратной матрицы!");
+            
+            double[,] matrix = new double[this.RowsCount - 1, this.ColumnsCount - 1];
+
+            int mi = 0; // Индекс строки минора.
+            for(int i = 0; i < this.RowsCount; i++)
+            {
+                if (i == rowIndex) continue;
+
+                int mj = 0; // Индекс столбца минора.
+
+                for (int j = 0; j < this.ColumnsCount; j++)
+                {
+                    if (j == columnIndex) continue;
+                    matrix[mi, mj] = this[i, j];
+                    mj++;
+                }
+                mi++;
+            }
+            return new Matrix(matrix).Det();
+        }
+
+        /// <summary>
+        /// Алгебраическое дополнение элемента
+        /// <para>
+        /// Это определитель матрицы, полученной вычеркиванием i-ой строки и j-го столбца, в которых находится элемент, с учетом знака (минус - для нечётной сумме индексов; плюс - для чётной).
+        /// </para>
+        /// </summary>
+        /// <param name="rowIndex">Индекс строки элемента</param>
+        /// <param name="columnIndex">Индекс столбца элемента</param>
+        /// <returns></returns>
+        public double A_ij(int rowIndex, int columnIndex) => Math.Pow(-1, rowIndex + columnIndex) * this.M_ij(rowIndex, columnIndex);
+
+        /// <summary>
+        /// Бесконечная норма
+        /// <para>
+        /// Матричная норма на бесконечности, максимальная абсолютная сумма элементов по строкам
+        /// </para>
+        /// </summary>
+        /// <returns></returns>
+        public double Normi()
+        {
+            double[] norm = new double[this.RowsCount];
+            for(int i = 0; i < this.RowsCount; i++)
+            {
+                for(int j = 0; j < this.ColumnsCount; j++)
+                {
+                    norm[i] += Math.Abs(this[i, j]);
+                }
+            }
+            return norm.Max();
+        }
+
+        /// <summary>
+        /// Первая норма
+        /// <para>
+        /// Матричная норма в пространстве L1, максимальная абсолютная сумма элементов по столбцам
+        /// </para>
+        /// </summary>
+        /// <returns></returns>
+        public double Norm1()
+        {
+            double[] norm = new double[this.ColumnsCount];
+            for (int j = 0; j < this.ColumnsCount; j++)
+            {
+                for (int i = 0; i < this.RowsCount; i++)
+                {
+                    norm[j] += Math.Abs(this[i, j]);
+                }
+            }
+            return norm.Max();
+        }
+
+        /// <summary>
+        /// Спектральная норма (вторая норма, норма Гильберта)
+        /// <para>
+        ///  максимальное сингулярное число матрицы, равное квадратному корню из максимального собственного значения матрицы A^T * A
+        /// </para>
+        /// </summary>
+        /// <returns></returns>
+        public double Norm2()
+        {
+            int m = this.ColumnsCount; // Размерность пространства
+
+            // Инициализация случайным ненулевым вектором
+            Random rand = new Random(42);
+            double[] b = CreateNonZeroRandomVector(m, rand);
+            TryNormalizeToUnitLength(b);
+
+            double[] bPrev = new double[m];
+            double[] temp = new double[this.RowsCount];
+
+            double eigenvalue = 0;
+            double prevEigenvalue = 0;
+            int maxIterations = 1000;
+            double epsilon = 1e-12;
+
+            for (int iter = 0; iter < maxIterations; iter++)
+            {
+                // Сохраняем предыдущий вектор
+                Array.Copy(b, bPrev, m);
+
+                // Умножаем на A^T * A без явного построения матрицы:
+                // 1. Сначала A * bPrev -> temp
+                for (int i = 0; i < this.RowsCount; i++)
+                {
+                    temp[i] = 0;
+                    for (int j = 0; j < m; j++)
+                        temp[i] += this[i, j] * bPrev[j];
+                }
+
+                // 2. Затем A^T * temp -> b
+                for (int i = 0; i < m; i++)
+                {
+                    b[i] = 0;
+                    for (int j = 0; j < this.RowsCount; j++)
+                        b[i] += this[j, i] * temp[j];
+                }
+
+                // Проверка на нулевой вектор
+                double norm = VectorNorm(b);
+                if (norm <= 0)
+                {
+                    // Если получили нулевой вектор (маловероятно для случайного начального вектора),
+                    // создаем новый случайный вектор
+                    b = CreateNonZeroRandomVector(m, rand);
+                    TryNormalizeToUnitLength(b);
+                    continue;
+                }
+
+                // Оценка собственного значения (отношение Рэлея)
+                eigenvalue = DotProduct(b, bPrev) / DotProduct(bPrev, bPrev);
+
+                // Нормализация вектора для следующей итерации
+                TryNormalizeToUnitLength(b, norm);
+
+                // Проверка сходимости
+                if (Math.Abs(eigenvalue - prevEigenvalue) < epsilon)
+                    break;
+
+                prevEigenvalue = eigenvalue;
+            }
+
+            // Вторая норма - квадратный корень из максимального собственного значения
+            return Math.Sqrt(Math.Abs(eigenvalue));
+        }
+
+        /// <summary>
+        /// Сферическая норма (норма Фробениуса, евклидова норма)
+        /// <para>
+        /// Матричная норма в евклидовом пространстве, корень из суммы квадратов всех элементов матрицы
+        /// </para>
+        /// </summary>
+        /// <returns></returns>
+        public double Norme()
+        {
+            double norm = 0;
+            for (int i = 0; i < this.RowsCount; i++)
+            {
+                for (int j = 0; j < this.ColumnsCount; j++)
+                {
+                    norm += Math.Pow(this[i, j], 2);
+                }
+            }
+            return Math.Sqrt(norm);
+        }
+               
+        ///// <summary>
+        ///// Ранг матрицы
+        ///// <para>
+        ///// Это наибольший из порядков миноров матрицы, отличных от нуля
+        ///// </para>
+        ///// </summary>
+        ///// <returns></returns>
+        //public int Rang()
+        //{
+        //    int maxK = Math.Min(this.ColumnsCount, this.RowsCount);
+
+        //}
+
+        /// <summary>
+        /// Является ли представленная матрица обратной к исходной
+        /// </summary>
+        /// <param name="matrix"></param>
+        /// <returns></returns>
+        public bool IsInverseMatrix(Matrix matrix) => (this * matrix).IsIdentityMatrix();
+
+        /// <summary>
+        /// Присоединённая (союзная, взаимная) матрица
+        /// <para>
+        /// Матрица из алгебраических дополнений
+        /// </para>
+        /// </summary>
+        /// <returns></returns>
+        public Matrix Adj()
+        {
+            Matrix matrix = new Matrix(this.RowsCount, this.ColumnsCount);
+            var t = this.TransposedMatrix();
+            for (int i = 0; i < this.RowsCount; i++)
+            {
+                for(int j = 0; j < this.ColumnsCount; j++)
+                {
+                    matrix[i, j] = t.A_ij(i, j);
+                }
+            }
+            return matrix;
+        }
+
+        /// <summary>
+        /// Обратная матрица
+        /// </summary>
+        /// <returns></returns>
+        public Matrix Inverse()
+        {
+            if (this.Det() == 0)
+                throw new InvalidOperationException("Вырождённая матрица не имеет обратной!");
+
+            double[,] matrix = new double[this.RowsCount, this.ColumnsCount];
+            var t = this.TransposedMatrix();
+
+            for(int i = 0; i < this.RowsCount; i++)
+            {
+                for(int j = 0; j < this.ColumnsCount; j++)
+                {
+                    matrix[i, j] = t.A_ij(i, j);
+                }
+            }
+
+            return new Matrix(matrix) / this.Det();
         }
 
         public Matrix Clone()
