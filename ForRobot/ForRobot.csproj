@@ -318,6 +318,7 @@
     <Compile Include="Libr\Clipboard\NotificationSuppression.cs" />
     <Compile Include="Libr\Clipboard\UndoRedoManager.cs" />
     <Compile Include="Libr\Clipboard\UndoRedo\UndoRedoStacks.cs" />
+    <Compile Include="Libr\Collections\HomogeneousMatrix.cs" />
     <Compile Include="Libr\Collections\LimitedStack.cs" />
     <Compile Include="Libr\Collections\Matrix.cs" />
     <Compile Include="Libr\Collections\RibCollection.cs" />
