@@ -359,8 +359,7 @@ namespace ForRobot.Models.RoboticComplex
         ///// <summary>
         ///// Массив значений силы подачи
         ///// </summary>
-        //public decimal[] WireFeedArray { get => this._wireFeedArray; set => Set(ref this._wireFeedArray, value); }
-        
+        //public decimal[] WireFeedArray { get => this._wireFeedArray; set => Set(ref this._wireFeedArray, value); }        
 
         #endregion
 

@@ -7,6 +7,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Collections;
 
+using ForRobot.Libr.Collections;
+
 namespace ForRobot.Models
 {
     /// <summary>
@@ -35,13 +37,28 @@ namespace ForRobot.Models
     {
         string Name { get; }
 
-        //bool IsVisible { get; set; }
+        bool IsVisible { get; set; }
+        bool IsSelected { get; set; }
+
+        Model3DGroup VisualModel { get; }
 
         //Type ObjectType { get; }
 
         //Model3DGroup GetModel();
 
-        void UpdateTransform(Matrix3D transform);
+        //void UpdateTransform(Matrix3D transform);
+    }
+
+    public class TransformChangedEventArgs : EventArgs
+    {
+        public HomogeneousMatrix OldTransform { get; }
+        public HomogeneousMatrix NewTransform { get; }
+
+        public TransformChangedEventArgs(HomogeneousMatrix old, HomogeneousMatrix newTransform)
+        {
+            OldTransform = old;
+            NewTransform = newTransform;
+        }
     }
 
     /// <summary>
@@ -52,8 +69,13 @@ namespace ForRobot.Models
         //private string _name;
         private bool _isVisible = true;
         private bool _isSelected = false;
-        private Transform3D _transform;
+        private bool _worldTransformDirty = true;
+        //private Transform3D _transform;
         private Material _originalMaterial; // Поле для запоминания оригенального материала.
+        private HomogeneousMatrix _localTransform;
+        private HomogeneousMatrix _cachedWorldTransform; // Кэшированная мировая матрица
+
+        #region Public variables
 
         public static readonly Material TransparentMaterial = new DiffuseMaterial(System.Windows.Media.Brushes.Transparent);
 
@@ -80,20 +102,28 @@ namespace ForRobot.Models
             }
         }
 
-        public Transform3D Transform
-        {
-            get => this._transform;
-            set
-            {
-                this._transform = value;
-                this.OnPropertyChanged();
-            }
-        }
+        public double LocalPositionX { get; set; }
+        public double LocalPositionY { get; set; }
+        public double LocalPositionZ { get; set; }
+
+        public double RotationX { get; set; }
+        public double RotationY { get; set; }
+        public double RotationZ { get; set; }
+
+        //public Transform3D Transform
+        //{
+        //    get => this._transform;
+        //    set
+        //    {
+        //        this._transform = value;
+        //        this.OnPropertyChanged();
+        //    }
+        //}
 
         /// <summary>
         /// Визуальная модель элемента сцены
         /// </summary>
-        public virtual Model3D VisualModel => null;
+        public virtual Model3DGroup VisualModel { get; private set; }
 
         /// <summary>
         /// Визуальный элемент
@@ -110,11 +140,34 @@ namespace ForRobot.Models
         /// </summary>
         public SceneItem Parent { get; private set; }
 
+        public HomogeneousMatrix LocalTransform
+        {
+            get => this.CalculateLocalTransform();
+            set => _localTransform = value;
+        }
+
+        public HomogeneousMatrix WorldTransform
+        {
+            get
+            {
+                if (_worldTransformDirty)
+                {
+                    RecalculateWorldTransform();
+                    _worldTransformDirty = false;
+                }
+                return _cachedWorldTransform;
+            }
+        }
+
         //public IList<DependencyObject> Children { get; }
 
         public SceneItem this[int index] { get => this.Children[index]; set => this.Children[index] = value; }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public event EventHandler<TransformChangedEventArgs> TransformChanged;
+
+        #endregion Public variables
 
         public SceneItem()
         {
@@ -122,6 +175,41 @@ namespace ForRobot.Models
             this.Children = new SceneItemCollection();
             this.AddChildren(this);
         }
+
+        private HomogeneousMatrix CalculateLocalTransform()
+        {
+            var transform = HomogeneousMatrix.Identity4x4();
+            transform = transform * HomogeneousMatrix.Translation3D(LocalPositionX, LocalPositionY, LocalPositionZ);
+            transform = transform * HomogeneousMatrix.Rotation3DAxisX(RotationX);
+            transform = transform * HomogeneousMatrix.Rotation3DAxisY(RotationY);
+            transform = transform * HomogeneousMatrix.Rotation3DAxisZ(RotationZ);
+            return transform;
+        }
+
+        private void RecalculateWorldTransform()
+        {
+            _cachedWorldTransform = this.LocalTransform.Clone();
+
+            var parent = this.Parent;
+            while (parent != null)
+            {
+                _cachedWorldTransform = parent.LocalTransform * _cachedWorldTransform;
+                parent = parent.Parent;
+            }
+        }
+
+        //private HomogeneousMatrix CalculateWorldTransform()
+        //{
+        //    var world = this.LocalTransform.Clone();
+        //    var currentParent = this.Parent;
+
+        //    while (currentParent != null)
+        //    {
+        //        world = currentParent.LocalTransform * world;
+        //        currentParent = currentParent.Parent;
+        //    }
+        //    return world as HomogeneousMatrix;
+        //}
 
         private void AddChildren(object element)
         {
@@ -151,6 +239,17 @@ namespace ForRobot.Models
         /// Вызов события изменения свойства
         /// </summary>
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        protected virtual void OnTransformChanged(HomogeneousMatrix oldTransform, HomogeneousMatrix newTransform)
+        {
+            TransformChanged?.Invoke(this, new TransformChangedEventArgs(oldTransform, newTransform));
+
+            // Уведомление дочерних элементов об изменении
+            foreach (var child in this.Children)
+            {
+                child.InvalidateWorldTransform();
+            }
+        }
 
         //public abstract Model3DGroup GetModel();
 
@@ -204,6 +303,8 @@ namespace ForRobot.Models
             this.Children.Clear();
             this.OnPropertyChanged(nameof(Children));
         }
+
+        //public virtual void InvalidateWorldTransform() => this._worldTransform = null;
 
         /// <summary>
         /// Обновление видимости элемента и его потомков

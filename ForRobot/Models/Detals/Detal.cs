@@ -220,7 +220,8 @@ namespace ForRobot.Models.Detals
         /// <summary>
         /// Визуальная модель элемента сцены
         /// </summary>
-        public override System.Windows.Media.Media3D.Model3D VisualModel { get => ForRobot.Libr.Modeling.ModelingService.GetDetalModel(this); }
+        public override System.Windows.Media.Media3D.Model3DGroup VisualModel { get; private set; }
+        //{ get => ForRobot.Libr.Modeling.ModelingService.GetDetalModel(this); }
 
         #endregion
 

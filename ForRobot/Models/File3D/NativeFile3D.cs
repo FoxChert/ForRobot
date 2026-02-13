@@ -105,9 +105,9 @@ namespace ForRobot.Models.File3D
         /// Инициализация объекта <see cref="NativeFile3D"/> для чтения существующего файла
         /// </summary>
         /// <param name="path"></param>
-        public NativeFile3D(string path, ForRobot.Libr.Factories.DetalFactory.IDetalFactory detalFactory) : base(path)
+        public NativeFile3D(string path, ForRobot.Libr.Factories.DetalFactory.IDetalFactory detalFactory = null) : base(path)
         {
-            this._detalFactory = detalFactory;
+            this._detalFactory = detalFactory ?? new ForRobot.Libr.Factories.DetalFactory.DetalFactory(new ForRobot.Models.Detals.DetalProvider(new ForRobot.Libr.Configuration.ConfigurationProvider()), new ForRobot.Libr.Json.Schemas.JsonSchemaProvider());
 
             this.PropertyChanged += HandlePropertyChange;
 
@@ -121,9 +121,9 @@ namespace ForRobot.Models.File3D
         /// <param name="path"></param>
         /// <param name="detalType"></param>
         /// <param name="detalFactory"></param>
-        public NativeFile3D(string path, DetalType detalType, ForRobot.Libr.Factories.DetalFactory.IDetalFactory detalFactory) : base(path)
+        public NativeFile3D(string path, DetalType detalType, ForRobot.Libr.Factories.DetalFactory.IDetalFactory detalFactory = null) : base(path)
         {
-            this._detalFactory = detalFactory;
+            this._detalFactory = detalFactory ?? new ForRobot.Libr.Factories.DetalFactory.DetalFactory(new ForRobot.Models.Detals.DetalProvider(new ForRobot.Libr.Configuration.ConfigurationProvider()), new ForRobot.Libr.Json.Schemas.JsonSchemaProvider());
 
             this.PropertyChanged += HandlePropertyChange;
 

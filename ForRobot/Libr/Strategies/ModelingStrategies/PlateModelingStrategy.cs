@@ -324,7 +324,7 @@ namespace ForRobot.Libr.Strategies.ModelingStrategies
         public Model3DGroup CreateModel3D(Detal detal)
         {
             Model3DGroup model3DGroup = new Model3DGroup();
-            Plate plate = (Plate)detal;            
+            Plate plate = (Plate)detal;
             model3DGroup.Children.Add(this.AddPlate(plate)); // Создание плиты.            
             model3DGroup.Children.Add(this.AddRibs(plate)); // Добавление рёбер.
             model3DGroup.SetName("DetalModel");

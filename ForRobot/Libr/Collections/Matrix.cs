@@ -606,12 +606,6 @@ namespace ForRobot.Libr.Collections
             return matrix;
         }
 
-        ///// <summary>
-        ///// Генерация матрицы размерностью 4x4
-        ///// </summary>
-        ///// <returns></returns>
-        //public static Matrix IdentityMatrix4x4() => IdentityMatrix(4, 4);
-
         #endregion Static
 
         public override bool Equals(object obj)

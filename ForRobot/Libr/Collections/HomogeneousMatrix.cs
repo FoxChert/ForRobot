@@ -311,6 +311,8 @@ namespace ForRobot.Libr.Collections
 
         #endregion Static
 
+        public new HomogeneousMatrix Clone() => base.Clone() as HomogeneousMatrix;
+
         #endregion Public functions
     }
 }
