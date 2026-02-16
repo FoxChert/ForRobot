@@ -27,9 +27,9 @@ namespace ForRobot.Models.Detals
         private decimal _plateBevelToLeftSave;
         private decimal _plateBevelToRightSave;
 
-        private decimal _xOffset = decimal.Zero;
-        private decimal _yOffset = decimal.Zero;
-        private decimal _zOffset = decimal.Zero;
+        //private double _localPositionX = 0.0;
+        //private double _localPositionY = 0.0;
+        //private double _localPositionZ = 0.0;
         //private decimal[] _XYZOffset = new decimal[3] { 0, 0, 0 };
 
         private WeldingProperties _weldingProperties = new WeldingProperties();
@@ -153,47 +153,47 @@ namespace ForRobot.Models.Detals
         /// <summary>
         /// Смещение детали от 0 точки по осям XYZ
         /// </summary>
-        public decimal[] XYZOffset { get => new decimal[3] { this.XOffset, this.YOffset, this.ZOffset }; }        
+        public override double[] XYZ { get => base.XYZ; }        
 
-        [JsonIgnore]
-        /// <summary>
-        /// Смещение детали от 0 точки по оси X
-        /// </summary>
-        public decimal XOffset
-        {
-            get => this._xOffset;
-            set
-            {
-                this._xOffset = value;
-                this.OnPropertyChanged(nameof(this.XOffset));
-            }
-        }
-        [JsonIgnore]
-        /// <summary>
-        /// Смещение детали от 0 точки по оси Y
-        /// </summary>
-        public decimal YOffset
-        {
-            get => this._yOffset;
-            set
-            {
-                this._yOffset = value;
-                this.OnPropertyChanged(nameof(this.YOffset));
-            }
-        }
-        [JsonIgnore]
-        /// <summary>
-        /// Смещение детали от 0 точки по оси Z
-        /// </summary>
-        public decimal ZOffset
-        {
-            get => this._zOffset;
-            set
-            {
-                this._zOffset = value;
-                this.OnPropertyChanged(nameof(this.ZOffset));
-            }
-        }
+        //[JsonIgnore]
+        ///// <summary>
+        ///// Смещение детали от 0 точки по оси X
+        ///// </summary>
+        //public override double LocalPositionX
+        //{
+        //    get => base.LocalPositionX;
+        //    set
+        //    {
+        //        base.LocalPositionX = value;
+        //        this.OnPropertyChanged(nameof(this.LocalPositionX));
+        //    }
+        //}
+        //[JsonIgnore]
+        ///// <summary>
+        ///// Смещение детали от 0 точки по оси Y
+        ///// </summary>
+        //public override double LocalPositionY
+        //{
+        //    get => this._localPositionY;
+        //    set
+        //    {
+        //        this._localPositionY = value;
+        //        this.OnPropertyChanged(nameof(this.LocalPositionY));
+        //    }
+        //}
+        //[JsonIgnore]
+        ///// <summary>
+        ///// Смещение детали от 0 точки по оси Z
+        ///// </summary>
+        //public override double LocalPositionZ
+        //{
+        //    get => this._localPositionZ;
+        //    set
+        //    {
+        //        this._localPositionZ = value;
+        //        this.OnPropertyChanged(nameof(this.LocalPositionZ));
+        //    }
+        //}
         
         [JsonProperty("welding_properties")]
         [JsonConverter(typeof(JsonCommentConverter), "Параметры сварки")]
@@ -220,7 +220,7 @@ namespace ForRobot.Models.Detals
         /// <summary>
         /// Визуальная модель элемента сцены
         /// </summary>
-        public override System.Windows.Media.Media3D.Model3DGroup VisualModel { get; private set; }
+        public override System.Windows.Media.Media3D.Model3DGroup VisualModel { get; protected set; }
         //{ get => ForRobot.Libr.Modeling.ModelingService.GetDetalModel(this); }
 
         #endregion
@@ -268,6 +268,8 @@ namespace ForRobot.Models.Detals
                     }
                 });
             }
+
+            //this.VisualModel = ForRobot.Libr.Modeling.ModelingService.GetDetalModel(this);
         }
 
         /// <summary>

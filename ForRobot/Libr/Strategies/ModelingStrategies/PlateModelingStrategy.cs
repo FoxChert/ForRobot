@@ -206,7 +206,7 @@ namespace ForRobot.Libr.Strategies.ModelingStrategies
             double ribLeftPositionY = -modelPlateWidth / 2; // Начальная позиция по Y.
             double ribRightPositionY = -modelPlateWidth / 2;
 
-            for (int i = 0; i < plate.RibsCount; i++)
+            for (int i = 0; i < plate.RibsCollection.Count; i++)
             {
                 var rib = plate.RibsCollection[i];
                 double modelRibDistanceLeft = (double)rib.DistanceLeft;

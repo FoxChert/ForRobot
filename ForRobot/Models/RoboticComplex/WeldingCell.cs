@@ -6,7 +6,7 @@ namespace ForRobot.Models.RoboticComplex
     /// <summary>
     /// Сварочная ячейка
     /// </summary>
-    public class WeldingCell
+    public class WeldingCell : SceneItem
     {
         public string Name { get; }
 
@@ -15,10 +15,15 @@ namespace ForRobot.Models.RoboticComplex
         //public double Height { get; set; }
         public double Diagonal { get => Math.Sqrt(Math.Pow(this.Length, 2) + Math.Pow(this.Width, 2)); }
 
-        public Model3DGroup GetModel()
+        //public Model3DGroup GetModel()
+        //{
+        //    Model3DGroup model = new Model3DGroup();
+        //    return model;
+        //}
+
+        public override void UpdateTransform(Matrix3D transform)
         {
-            Model3DGroup model = new Model3DGroup();
-            return model;
+            throw new NotImplementedException();
         }
     }
 }

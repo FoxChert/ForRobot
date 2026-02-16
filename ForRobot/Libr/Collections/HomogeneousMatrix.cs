@@ -61,7 +61,7 @@ namespace ForRobot.Libr.Collections
             if (matrixA == null || matrixB == null)
                 throw new ArgumentNullException("Один из аргументов равен null");
 
-            Matrix result = matrixA * matrixB;
+            Matrix result = (Matrix)matrixA * (Matrix)matrixB;
             return new HomogeneousMatrix(result);
         }
 

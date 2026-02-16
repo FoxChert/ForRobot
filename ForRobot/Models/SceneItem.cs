@@ -66,14 +66,19 @@ namespace ForRobot.Models
     /// </summary>
     public abstract class SceneItem : DependencyObject, ISceneItem
     {
+        #region Private variables
+
         //private string _name;
         private bool _isVisible = true;
         private bool _isSelected = false;
         private bool _worldTransformDirty = true;
+        //private double[] _XYZ = new double[3] { 0.0, 0.0, 0.0 };
         //private Transform3D _transform;
         private Material _originalMaterial; // Поле для запоминания оригенального материала.
         private HomogeneousMatrix _localTransform;
         private HomogeneousMatrix _cachedWorldTransform; // Кэшированная мировая матрица
+
+        #endregion
 
         #region Public variables
 
@@ -102,13 +107,92 @@ namespace ForRobot.Models
             }
         }
 
-        public double LocalPositionX { get; set; }
-        public double LocalPositionY { get; set; }
-        public double LocalPositionZ { get; set; }
+        /// <summary>
+        /// Смещение от точки 0.0 по осям XYZ
+        /// </summary>
+        public virtual double[] XYZ { get; } = new double[3] { 0.0, 0.0, 0.0 };
 
-        public double RotationX { get; set; }
-        public double RotationY { get; set; }
-        public double RotationZ { get; set; }
+        /// <summary>
+        /// Смещение от точки 0.0 по оси X
+        /// </summary>
+        public virtual double LocalPositionX
+        {
+            get => this.XYZ[0];
+            set
+            {
+                this.XYZ[0] = value;
+                this.OnPropertyChanged();
+                this.OnPropertyChanged(nameof(this.XYZ));
+            }
+        }
+        /// <summary>
+        /// Смещение от точки 0.0 по оси Y
+        /// </summary>
+        public virtual double LocalPositionY
+        {
+            get => this.XYZ[1];
+            set
+            {
+                this.XYZ[1] = value;
+                this.OnPropertyChanged();
+                this.OnPropertyChanged(nameof(this.XYZ));
+            }
+        }
+        /// <summary>
+        /// Смещение от точки 0.0 по оси Z
+        /// </summary>
+        public virtual double LocalPositionZ
+        {
+            get => this.XYZ[2];
+            set
+            {
+                this.XYZ[2] = value;
+                this.OnPropertyChanged();
+                this.OnPropertyChanged(nameof(this.XYZ));
+            }
+        }
+
+        public virtual double[] ABC { get; } = new double[3] { 0.0, 0.0, 0.0 };
+        
+        /// <summary>
+        /// Вращение по оси X
+        /// </summary>
+        public virtual double RotationX // A
+        {
+            get => this.ABC[0];
+            set
+            {
+                this.ABC[0] = value;
+                this.OnPropertyChanged();
+                this.OnPropertyChanged(nameof(this.ABC));
+            }
+        }
+        /// <summary>
+        /// Вращение по оси Y
+        /// </summary>
+        public virtual double RotationY // B
+        {
+            get => this.ABC[1];
+            set
+            {
+                this.ABC[1] = value;
+                this.OnPropertyChanged();
+                this.OnPropertyChanged(nameof(this.ABC));
+            }
+        }
+        /// <summary>
+        /// Вращение по оси Z
+        /// </summary>
+        public virtual double RotationZ // C
+        {
+            get => this.ABC[2];
+            set
+            {
+                this.ABC[2] = value;
+                this.OnPropertyChanged();
+                this.OnPropertyChanged(nameof(this.ABC));
+            }
+        }
 
         //public Transform3D Transform
         //{
@@ -123,12 +207,12 @@ namespace ForRobot.Models
         /// <summary>
         /// Визуальная модель элемента сцены
         /// </summary>
-        public virtual Model3DGroup VisualModel { get; private set; }
+        public virtual Model3DGroup VisualModel { get; protected set; }
 
-        /// <summary>
-        /// Визуальный элемент
-        /// </summary>
-        public virtual ModelVisual3D VisualElement => null;
+        ///// <summary>
+        ///// Визуальный элемент
+        ///// </summary>
+        //public virtual ModelVisual3D VisualElement => null;
 
         /// <summary>
         /// Дочерние элементы сцены
@@ -139,15 +223,17 @@ namespace ForRobot.Models
         /// Родительский элемент
         /// </summary>
         public SceneItem Parent { get; private set; }
-
+        
         public HomogeneousMatrix LocalTransform
         {
+            //get;
             get => this.CalculateLocalTransform();
             set => _localTransform = value;
         }
-
+        
         public HomogeneousMatrix WorldTransform
         {
+            //get;
             get
             {
                 if (_worldTransformDirty)
@@ -176,13 +262,15 @@ namespace ForRobot.Models
             this.AddChildren(this);
         }
 
+        #region Private functions
+        
         private HomogeneousMatrix CalculateLocalTransform()
         {
             var transform = HomogeneousMatrix.Identity4x4();
-            transform = transform * HomogeneousMatrix.Translation3D(LocalPositionX, LocalPositionY, LocalPositionZ);
-            transform = transform * HomogeneousMatrix.Rotation3DAxisX(RotationX);
-            transform = transform * HomogeneousMatrix.Rotation3DAxisY(RotationY);
-            transform = transform * HomogeneousMatrix.Rotation3DAxisZ(RotationZ);
+            transform *= HomogeneousMatrix.Translation3D(LocalPositionX, LocalPositionY, LocalPositionZ);
+            transform *= HomogeneousMatrix.Rotation3DAxisX(RotationX);
+            transform *= HomogeneousMatrix.Rotation3DAxisY(RotationY);
+            transform *= HomogeneousMatrix.Rotation3DAxisZ(RotationZ);
             return transform;
         }
 
@@ -235,6 +323,10 @@ namespace ForRobot.Models
             }
         }
 
+        #endregion Private functions
+
+        #region Public functions
+        
         /// <summary>
         /// Вызов события изменения свойства
         /// </summary>
@@ -247,7 +339,23 @@ namespace ForRobot.Models
             // Уведомление дочерних элементов об изменении
             foreach (var child in this.Children)
             {
-                child.InvalidateWorldTransform();
+                //child.InvalidateWorldTransform();
+            }
+        }
+
+        /// <summary>
+        /// Обновление видимости элемента и его потомков
+        /// </summary>
+        protected virtual void UpdateVisibility(object element)
+        {
+            switch (element)
+            {
+                case GeometryModel3D geometryModel3D:
+                    geometryModel3D.Material = this.IsVisible ? this._originalMaterial : TransparentMaterial;
+                    break;
+
+                default:
+                    return;
             }
         }
 
@@ -306,22 +414,25 @@ namespace ForRobot.Models
 
         //public virtual void InvalidateWorldTransform() => this._worldTransform = null;
 
-        /// <summary>
-        /// Обновление видимости элемента и его потомков
-        /// </summary>
-        protected virtual void UpdateVisibility(object element)
-        {
-            switch (element)
-            {
-                case GeometryModel3D geometryModel3D:
-                    geometryModel3D.Material = this.IsVisible ? this._originalMaterial : TransparentMaterial;
-                    break;
+        public override string ToString() => this.GetType().ToString();
 
-                default:
-                    return;
+        public static IEnumerable<MeshGeometry3D> ExtractMeshes(Model3DGroup group)
+        {
+            foreach (var model in group.Children)
+            {
+                if (model is Model3DGroup subGroup)
+                {
+                    foreach (var mesh in ExtractMeshes(subGroup))
+                        yield return mesh;
+                }
+                else if (model is GeometryModel3D geomModel)
+                {
+                    if (geomModel.Geometry is MeshGeometry3D mesh)
+                        yield return mesh;
+                }
             }
         }
-        
-        public override string ToString() => this.GetType().ToString();
+
+        #endregion Public functions
     }
 }

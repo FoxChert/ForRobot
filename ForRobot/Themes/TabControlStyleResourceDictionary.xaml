@@ -304,8 +304,8 @@
             <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding Path=WeldingProperties.TechOffsetSeamEnd, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
             <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding Path=WeldingProperties.DistanceForWelding, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
             <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding Path=WeldingProperties.DistanceForSearch, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
-            <TextBox Grid.Row="10" Grid.Column="1" Text="{Binding Path=XOffset, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
-            <TextBox Grid.Row="11" Grid.Column="1" Text="{Binding Path=YOffset, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="10" Grid.Column="1" Text="{Binding Path=LocalPositionX, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="11" Grid.Column="1" Text="{Binding Path=LocalPositionY, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
             <TextBox Grid.Row="12" Grid.Column="1" Text="{Binding Path=ReverseDeflection, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
         </Grid>
     </DataTemplate>
