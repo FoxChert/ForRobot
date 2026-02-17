@@ -323,6 +323,7 @@
     <Compile Include="Libr\Collections\Matrix.cs" />
     <Compile Include="Libr\Collections\RibCollection.cs" />
     <Compile Include="Libr\Collections\File3DCollection.cs" />
+    <Compile Include="Libr\Converters\MatrixConverter.cs" />
     <Compile Include="Libr\Modeling\CacheModel3DProvider.cs" />
     <Compile Include="Libr\Modeling\Model3DCollectionExtensions.cs" />
     <Compile Include="Libr\Collections\RibPropertyChangedEventArgs.cs" />
@@ -452,9 +453,6 @@
     <Compile Include="Views\Pages\PageMain3.xaml.cs">
       <DependentUpon>PageMain3.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Windows\AddInAppWindow.xaml.cs">
-      <DependentUpon>AddInAppWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Windows\CreateWindow.xaml.cs">
       <DependentUpon>CreateWindow.xaml</DependentUpon>
     </Compile>
@@ -464,8 +462,8 @@
     <Compile Include="Views\Windows\PropertiesWindow.xaml.cs">
       <DependentUpon>PropertiesWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Windows\SelectWindow.xaml.cs">
-      <DependentUpon>SelectWindow.xaml</DependentUpon>
+    <Compile Include="Views\Windows\SelectorWindow.xaml.cs">
+      <DependentUpon>SelectorWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="Themes\PropertiesWindowStyleDictionary.xaml">
       <SubType>Designer</SubType>
@@ -492,10 +490,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Pages\PageMain3.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Windows\AddInAppWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -587,7 +581,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Windows\SelectWindow.xaml">
+    <Page Include="Views\Windows\SelectorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

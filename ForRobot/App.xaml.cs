@@ -63,6 +63,8 @@ namespace ForRobot
         public static ForRobot.Libr.Services.Providers.IDetalProvider DetalProvider = new ForRobot.Models.Detals.CachedDetalProvider(new ForRobot.Models.Detals.DetalProvider(ConfigProvider));
         public static ForRobot.Libr.Clipboard.CacheClipboardProvider ClipboardProvider = new Libr.Clipboard.CacheClipboardProvider();
 
+        public Version Version { get; } = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
+
         /// <summary>
         /// Директория AvalonDock.config файла, в котором сохраняется макет интерфейса.
         /// </summary>
@@ -450,15 +452,6 @@ namespace ForRobot
             settings.DetalsScriptNames.RemoveAll(x => x.Item1 == Models.Detals.DetalType.Plate);
             settings.DetalsScriptNames.Add(Tuple.Create(Models.Detals.DetalType.Plate, Libr.EnumExtensions.GetDescription(Models.Detals.DetalType.Plate), plateConfig.PlateScriptName));
 
-            //settings.DetalsProgramNames.Where(x => x.Item1 == Models.Detals.DetalType.Plate).First() = (ForRobot.Models.Detals.DetalType.Plate, "", "");
-
-            //settings.DetalsProgramNames.Where(x => x.Item1 == Models.Detals.DetalType.Plate).First().Deconstruct(out Models.Detals.DetalType type, out string program);
-            //program = plateConfig.PlateProgramName;
-            //settings.DetalsScriptNames.Where(x => x.Item1 == Models.Detals.DetalType.Plate).First().Deconstruct(out Models.Detals.DetalType type2, out string script);
-            //script = plateConfig.PlateScriptName;
-
-            //settings.PlitaProgramName = plateConfig.PlateProgramName;
-            //settings.PlitaScriptName = plateConfig.PlateScriptName;
             settings.PathFolderOfGeneration = robotConfig.PathFolderGeneration;
             settings.ControlerFolder = robotConfig.ControlFolderPath;
             return settings;

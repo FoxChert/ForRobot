@@ -143,7 +143,7 @@ namespace ForRobot.ViewModels
         //public bool CanRedo => SelectedFile == null ? false : this.SelectedFile.CanRedo;
         public bool IsDividedWelds { get => this._isDividedWelds; set => Set(ref this._isDividedWelds, value); }
 
-        public Version Version { get => System.Reflection.Assembly.GetEntryAssembly().GetName().Version; }
+        //public Version Version { get => System.Reflection.Assembly.GetEntryAssembly().GetName().Version; }
 
         /// <summary>
         /// Выбранный файл

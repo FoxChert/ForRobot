@@ -214,6 +214,8 @@ namespace ForRobot.Libr.Collections
 
         #region Constructors
 
+        protected Matrix() { }
+
         public Matrix(int length) : this(length, length) { }
 
         public Matrix(int rows, int cols)

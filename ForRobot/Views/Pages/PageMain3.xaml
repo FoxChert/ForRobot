@@ -26,7 +26,7 @@
     
     <Page.Title>
         <MultiBinding Converter="{StaticResource StringFormatMultiConvert}" ConverterParameter="Интерфейс генерации программ - v.{0}">
-            <Binding Path="Version" Mode="OneWay"/>
+            <Binding Path="Version" Source="{x:Static Application.Current}" Mode="OneWay"/>
         </MultiBinding>
     </Page.Title>
 

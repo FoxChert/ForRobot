@@ -230,35 +230,35 @@ namespace ForRobot.ViewModels
         /// Команда изменения директивы каталога с новой версией программы
         /// </summary>
         public ICommand EditPathForUpdateCommand { get => this._editPathForUpdateCommand ?? (this._editPathForUpdateCommand = new RelayCommand(_ => this.EditPathForUpdat())); }
-        public ICommand EditAppForOpenFile { get => this._editAppForOpenFile ?? (this._editAppForOpenFile = new RelayCommand(_ => 
-        {
-            try
-            {
-                System.Collections.IEnumerable selectedItems = null;
-                using (ForRobot.Views.Windows.SelectWindow selectWindow = new ForRobot.Views.Windows.SelectWindow(ForRobot.Libr.Services.SelectAppsOnDeviceService.GetAllApplicationsOnDevice(), this.Settings.SavedAppsForOpened))
-                {
-                    ResourceDictionary resource = (ResourceDictionary)Application.Current.Resources["SelectAppsWindowResource"];
+        //public ICommand EditAppForOpenFile { get => this._editAppForOpenFile ?? (this._editAppForOpenFile = new RelayCommand(_ => 
+        //{
+        //    try
+        //    {
+        //        System.Collections.IEnumerable selectedItems = null;
+        //        using (ForRobot.Views.Windows.SelectWindow selectWindow = new ForRobot.Views.Windows.SelectWindow(ForRobot.Libr.Services.SelectAppsOnDeviceService.GetAllApplicationsOnDevice(), this.Settings.SavedAppsForOpened))
+        //        {
+        //            ResourceDictionary resource = (ResourceDictionary)Application.Current.Resources["SelectAppsWindowResource"];
 
-                    if (resource == null)
-                        throw new Exception("Не найден словарь ресурсов SelectAppsWindowResource.");
+        //            if (resource == null)
+        //                throw new Exception("Не найден словарь ресурсов SelectAppsWindowResource.");
 
-                    selectWindow.Resources.MergedDictionaries.Clear();
-                    selectWindow.Resources.MergedDictionaries.Add(resource);
+        //            selectWindow.Resources.MergedDictionaries.Clear();
+        //            selectWindow.Resources.MergedDictionaries.Add(resource);
 
-                    if (selectWindow.ShowDialog() == true)
-                        selectedItems = selectWindow.SelectedItems;
-                }
-                if (selectedItems == null)
-                    return;
+        //            if (selectWindow.ShowDialog() == true)
+        //                selectedItems = selectWindow.SelectedItems;
+        //        }
+        //        if (selectedItems == null)
+        //            return;
 
-                this.Settings.SavedAppsForOpened = selectedItems.Cast<ApplicationInfo>().ToList<ApplicationInfo>();
-                RaisePropertyChanged(nameof(this.Settings));
-            }
-            catch(Exception ex)
-            {
+        //        this.Settings.SavedAppsForOpened = selectedItems.Cast<ApplicationInfo>().ToList<ApplicationInfo>();
+        //        RaisePropertyChanged(nameof(this.Settings));
+        //    }
+        //    catch(Exception ex)
+        //    {
 
-            }
-        })); }
+        //    }
+        //})); }
         /// <summary>
         /// Изменение ПИН-кода
         /// </summary>
@@ -272,6 +272,19 @@ namespace ForRobot.ViewModels
         /// Удаление изменений интерфейса
         /// </summary>
         public ICommand DeleteLayoutAnchorableConfigCommand { get; } = new RelayCommand(_ => DeleteLayoutAnchorable());
+        /// <summary>
+        /// Команда открытия окна выбора скриптов
+        /// </summary>
+        public ICommand OpenScriptsSelectorCommand { get => new RelayCommand(_ =>
+        {
+            using (ForRobot.Views.Windows.SelectorWindow selectorWindow = new ForRobot.Views.Windows.SelectorWindow(this.Settings.ScriptsCollection))
+            {
+                selectorWindow.CanAddItems = true;
+                selectorWindow.CanDeleteItems = true;
+                selectorWindow.ShowDialog();
+                RaisePropertyChanged(nameof(this.Settings));
+            }
+        }); }
 
         #endregion
 

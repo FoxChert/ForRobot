@@ -64,7 +64,7 @@ namespace ForRobot.Libr.Services
         /// </summary>
         private ForRobot.Views.Windows.PropertiesWindow _propertiesWindow;
 
-        private ForRobot.Views.Windows.SelectWindow _selectedAppsForOpenedFile { get; set; }
+        private ForRobot.Views.Windows.SelectorWindow _selectedAppsForOpenedFile { get; set; }
 
         public Views.Windows.MainWindow AppMainWindow { get => _appMainWindow ?? (_appMainWindow = new Views.Windows.MainWindow()); }
 
@@ -81,7 +81,7 @@ namespace ForRobot.Libr.Services
 
         public IEnumerable SelectWindowShow(IEnumerable itemsSource, IEnumerable selectedItems = null)
         {
-            using (ForRobot.Views.Windows.SelectWindow selectWindow = new ForRobot.Views.Windows.SelectWindow(itemsSource, selectedItems))
+            using (ForRobot.Views.Windows.SelectorWindow selectWindow = new ForRobot.Views.Windows.SelectorWindow(itemsSource, selectedItems))
             {
                 if(selectWindow.ShowDialog() == true)
                     selectedItems = selectWindow.SelectedItems;

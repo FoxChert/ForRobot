@@ -227,36 +227,36 @@ namespace ForRobot.Views.Controls
 
         private async Task OpenFileAsync(string path)
         {
-            string finalPath = Path.GetTempPath();
+            //string finalPath = Path.GetTempPath();
 
-            await DownladeFileAsync(path, finalPath);
+            //await DownladeFileAsync(path, finalPath);
 
-            var app = App.Current.Settings.SelectedAppForOpened;
-            if (app == null)
-                throw new Exception("В настройках не выбранно приложение для открытия файлов.");
+            //var app = App.Current.Settings.SelectedAppForOpened;
+            //if (app == null)
+            //    throw new Exception("В настройках не выбранно приложение для открытия файлов.");
 
-            string newPath = Path.Combine(finalPath, Path.GetFileName(path));
-            newPath = Uri.UnescapeDataString(newPath);
+            //string newPath = Path.Combine(finalPath, Path.GetFileName(path));
+            //newPath = Uri.UnescapeDataString(newPath);
 
-            if (!System.IO.File.Exists(newPath))
-                return;
+            //if (!System.IO.File.Exists(newPath))
+            //    return;
 
-            Process process = new Process()
-            {
-                StartInfo = new ProcessStartInfo()
-                {
-                    UseShellExecute = false,
-                    RedirectStandardInput = false,
-                    RedirectStandardOutput = false,
-                    RedirectStandardError = true,
-                    CreateNoWindow = true,
-                    WorkingDirectory = new FileInfo(app.Path).DirectoryName,
-                    FileName = app.Path,
-                    Arguments = newPath
-                }
-            };
-            process.ErrorDataReceived += (s, e) => { throw new Exception(e.Data); };
-            process.Start();
+            //Process process = new Process()
+            //{
+            //    StartInfo = new ProcessStartInfo()
+            //    {
+            //        UseShellExecute = false,
+            //        RedirectStandardInput = false,
+            //        RedirectStandardOutput = false,
+            //        RedirectStandardError = true,
+            //        CreateNoWindow = true,
+            //        WorkingDirectory = new FileInfo(app.Path).DirectoryName,
+            //        FileName = app.Path,
+            //        Arguments = newPath
+            //    }
+            //};
+            //process.ErrorDataReceived += (s, e) => { throw new Exception(e.Data); };
+            //process.Start();
         }
 
         private async Task DownladeFileAsync(string filePath, string finalPath = null)

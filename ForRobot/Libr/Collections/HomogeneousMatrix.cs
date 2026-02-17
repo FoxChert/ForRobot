@@ -13,6 +13,8 @@ namespace ForRobot.Libr.Collections
     {
         #region Constructors
 
+        protected HomogeneousMatrix() { }
+
         public HomogeneousMatrix(int rowCount, int colCount) : base(rowCount, colCount)
         {
             this.ValidateHomogeneousMatrix();

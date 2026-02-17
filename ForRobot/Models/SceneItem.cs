@@ -71,7 +71,7 @@ namespace ForRobot.Models
         //private string _name;
         private bool _isVisible = true;
         private bool _isSelected = false;
-        private bool _worldTransformDirty = true;
+        private bool _transformDirty = true;
         //private double[] _XYZ = new double[3] { 0.0, 0.0, 0.0 };
         //private Transform3D _transform;
         private Material _originalMaterial; // Поле для запоминания оригенального материала.
@@ -226,20 +226,23 @@ namespace ForRobot.Models
         
         public HomogeneousMatrix LocalTransform
         {
-            //get;
-            get => this.CalculateLocalTransform();
-            set => _localTransform = value;
+            get => this._localTransform ?? (this._localTransform = HomogeneousMatrix.Identity4x4());
+            set
+            {
+                var oldTransform = _localTransform?.Clone() ?? HomogeneousMatrix.Identity4x4();
+                this._localTransform = value;
+                this.OnTransformChanged(oldTransform, this._localTransform);
+            }
         }
         
         public HomogeneousMatrix WorldTransform
         {
-            //get;
             get
             {
-                if (_worldTransformDirty)
+                if (_transformDirty)
                 {
                     RecalculateWorldTransform();
-                    _worldTransformDirty = false;
+                    _transformDirty = false;
                 }
                 return _cachedWorldTransform;
             }
@@ -286,18 +289,11 @@ namespace ForRobot.Models
             }
         }
 
-        //private HomogeneousMatrix CalculateWorldTransform()
-        //{
-        //    var world = this.LocalTransform.Clone();
-        //    var currentParent = this.Parent;
-
-        //    while (currentParent != null)
-        //    {
-        //        world = currentParent.LocalTransform * world;
-        //        currentParent = currentParent.Parent;
-        //    }
-        //    return world as HomogeneousMatrix;
-        //}
+        private void InvalidateTransform()
+        {
+            _transformDirty = true;
+            UpdateVisualModel();
+        }
 
         private void AddChildren(object element)
         {
@@ -334,12 +330,25 @@ namespace ForRobot.Models
 
         protected virtual void OnTransformChanged(HomogeneousMatrix oldTransform, HomogeneousMatrix newTransform)
         {
+            _transformDirty = true;
+
+            UpdateVisualModel();
+            
             TransformChanged?.Invoke(this, new TransformChangedEventArgs(oldTransform, newTransform));
 
             // Уведомление дочерних элементов об изменении
             foreach (var child in this.Children)
             {
-                //child.InvalidateWorldTransform();
+                child.InvalidateTransform();
+            }
+        }
+
+        protected virtual void UpdateVisualModel()
+        {
+            if (this.VisualModel != null)
+            {
+                var matrix = ForRobot.Libr.Converters.MatrixConverter.MatrixToMatrix3D(this.WorldTransform);
+                ForRobot.Libr.Converters.MatrixConverter.ApplyTransformToModel(this.VisualModel, matrix);
             }
         }
 
@@ -358,9 +367,7 @@ namespace ForRobot.Models
                     return;
             }
         }
-
-        //public abstract Model3DGroup GetModel();
-
+        
         public abstract void UpdateTransform(Matrix3D transform);
 
         /// <summary>
@@ -411,9 +418,7 @@ namespace ForRobot.Models
             this.Children.Clear();
             this.OnPropertyChanged(nameof(Children));
         }
-
-        //public virtual void InvalidateWorldTransform() => this._worldTransform = null;
-
+       
         public override string ToString() => this.GetType().ToString();
 
         public static IEnumerable<MeshGeometry3D> ExtractMeshes(Model3DGroup group)

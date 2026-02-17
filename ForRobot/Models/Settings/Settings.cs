@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Reflection;
+using System.Collections;
 using System.Collections.Generic;
 
 using AvalonDock.Themes;
@@ -68,6 +69,8 @@ namespace ForRobot.Models.Settings
 
         #region Generic
 
+        public Version Version { get; } = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
+
         /// <summary>
         /// Обновляется ли приложение автоматически
         /// </summary>
@@ -96,7 +99,7 @@ namespace ForRobot.Models.Settings
         /// <summary>
         /// Ограничено ли время ожидания ответа от сервера
         /// </summary>
-        public bool LimitedConnectionTimeOut { get; set; } = false; // Не используется
+        public bool LimitedConnectionTimeOut { get; set; } = false; // Не используется, хм
 
         /// <summary>
         /// Время ожидания ответа от сервера, сек.
@@ -107,17 +110,7 @@ namespace ForRobot.Models.Settings
         /// Тип детали, для которой создаётся стартовый файл
         /// </summary>
         public DetalType StartedDetalType { get; set; } = Models.Detals.DetalType.Plate;
-
-        /// <summary>
-        /// Выбранное приложение для открытия файлов
-        /// </summary>
-        public ApplicationInfo SelectedAppForOpened { get; set; } // Убрать. Открывать через "с помощью"
-
-        /// <summary>
-        /// Сохранённые приложения для открытия файлов
-        /// </summary>
-        public List<ApplicationInfo> SavedAppsForOpened { get; set; }  // Убрать. Открывать через "с помощью"
-
+        
         #endregion Generic
 
         #region Navigation
@@ -496,6 +489,8 @@ namespace ForRobot.Models.Settings
         /// </summary>
         public List<Tuple<DetalType, string, string>> DetalsScriptNames { get; } = DetalTypeExtensions.DetalTypeCollection().Select(t => new Tuple<DetalType, string, string>(t, t.GetDescription(), string.Empty)).ToList();
 
+        public List<string> ScriptsCollection { get; } = GetScripts();
+
         ///// <summary>
         ///// Имя сгенерированной программы (настил с рёбрами)
         ///// </summary>
@@ -564,31 +559,6 @@ namespace ForRobot.Models.Settings
         #region Public functions
 
         /// <summary>
-        /// Возвращает стандартное имя программы
-        /// </summary>
-        /// <param name="startedDetalType"></param>
-        /// <returns></returns>
-        public string GetStandartProgramName(DetalType type)
-        {
-            return App.Current.Settings.DetalsProgramNames.Where(x => x.Item1 == type).FirstOrDefault().Item3;
-        }
-
-        /// <summary>
-        /// Сохранение json-файла настроек во временных файлах
-        /// </summary>
-        public void Save()
-        {
-            string filePath = Path.Combine(Path.GetTempPath(), FileName);
-            this.Save(filePath);
-        }
-
-        /// <summary>
-        /// Сохранение файла настроек
-        /// </summary>
-        /// <param name="filePath">Путь для сохранения</param>
-        public void Save(string filePath) => File.WriteAllText(filePath, JsonConvert.SerializeObject(this, _jsonSettings));
-
-        /// <summary>
         /// Инициализация настроек (при первой загрузки) или выгрузка из временных файлов
         /// </summary>
         /// <returns></returns>
@@ -601,6 +571,10 @@ namespace ForRobot.Models.Settings
 
                 string json = File.ReadAllText(_path);
                 Settings settings =  JsonConvert.DeserializeObject<Settings>(json, _jsonSettings) ?? new Settings();
+
+                //if (JObject.Parse(json)["Version"].ToObject<Version>() != System.Reflection.Assembly.GetEntryAssembly().GetName().Version)
+                //    throw new Exception("Версия файла настроек не совпадает с версией приложения. Файл пересоздаётся.");
+
                 settings.Colors = JObject.Parse(json)["Colors"].ToObject<Dictionary<string, System.Windows.Media.Color>>();
                 return settings;
             }
@@ -609,6 +583,40 @@ namespace ForRobot.Models.Settings
                 Settings settings = new Settings();
                 settings.Save();
                 return settings;
+            }
+        }
+
+        /// <summary>
+        /// Возврат содержимого папки Scripts
+        /// </summary>
+        /// <returns></returns>
+        public static List<string> GetScripts()
+        {
+            string path = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Scripts");
+
+            if (!Directory.Exists(path))
+                throw new DirectoryNotFoundException("Не найдена папка Scripts!");
+
+            List<string> fileList = new List<string>();
+            foreach(var file in Directory.GetFiles(path))
+            {
+                fileList.Add(file);
+            }
+            return fileList;
+        }
+
+        /// <summary>
+        /// Установка цвета объекта 3д сцена
+        /// </summary>
+        /// <param name="propertyName">Имя свойства</param>
+        /// <param name="color">Значение цвета</param>
+        public static void SetColor(string propertyName, System.Windows.Media.Color color)
+        {
+            foreach (var f in typeof(ForRobot.Themes.Colors).GetProperties(BindingFlags.Static | BindingFlags.Public))
+            {
+                var attribute = f.GetCustomAttributes(typeof(ForRobot.Libr.Attributes.PropertyNameAttribute), false).FirstOrDefault() as ForRobot.Libr.Attributes.PropertyNameAttribute;
+                if (attribute.PropertyName == propertyName)
+                    f.SetValue(null, color);
             }
         }
 
@@ -637,22 +645,32 @@ namespace ForRobot.Models.Settings
             return colors;
         }
 
+        public object Clone() => (Settings)this.MemberwiseClone();
+
         /// <summary>
-        /// Установка цвета объекта 3д сцена
+        /// Возвращает стандартное имя программы
         /// </summary>
-        /// <param name="propertyName">Имя свойства</param>
-        /// <param name="color">Значение цвета</param>
-        public static void SetColor(string propertyName, System.Windows.Media.Color color)
+        /// <param name="startedDetalType"></param>
+        /// <returns></returns>
+        public string GetStandartProgramName(DetalType type)
         {
-            foreach (var f in typeof(ForRobot.Themes.Colors).GetProperties(BindingFlags.Static | BindingFlags.Public))
-            {
-                var attribute = f.GetCustomAttributes(typeof(ForRobot.Libr.Attributes.PropertyNameAttribute), false).FirstOrDefault() as ForRobot.Libr.Attributes.PropertyNameAttribute;
-                if (attribute.PropertyName == propertyName)
-                    f.SetValue(null, color);
-            }
+            return App.Current.Settings.DetalsProgramNames.Where(x => x.Item1 == type).FirstOrDefault().Item3;
         }
 
-        public object Clone() => (Settings)this.MemberwiseClone();
+        /// <summary>
+        /// Сохранение json-файла настроек во временных файлах
+        /// </summary>
+        public void Save()
+        {
+            string filePath = Path.Combine(Path.GetTempPath(), FileName);
+            this.Save(filePath);
+        }
+
+        /// <summary>
+        /// Сохранение файла настроек
+        /// </summary>
+        /// <param name="filePath">Путь для сохранения</param>
+        public void Save(string filePath) => File.WriteAllText(filePath, JsonConvert.SerializeObject(this, _jsonSettings));
 
         #endregion Public functions
 
