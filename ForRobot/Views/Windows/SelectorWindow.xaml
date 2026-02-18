@@ -29,7 +29,7 @@
 
         <ListBox x:Name="SelectedListBox" Grid.Row="0" 
                  SelectionMode="{Binding Path=SelectionMode, RelativeSource={RelativeSource AncestorType={x:Type local:SelectorWindow}, Mode=FindAncestor}}"
-                 ItemsSource="{Binding Path=ItemsSource, RelativeSource={RelativeSource AncestorType={x:Type local:SelectorWindow}, Mode=FindAncestor}}"
+                 ItemsSource="{Binding Path=ItemsSource, RelativeSource={RelativeSource AncestorType={x:Type local:SelectorWindow}, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged}"
                  ScrollViewer.CanContentScroll="True"
                  ScrollViewer.VerticalScrollBarVisibility="Auto"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
@@ -89,7 +89,7 @@
             </Grid.ColumnDefinitions>
 
             <Button Grid.Column="0" Content="_Отмена" IsCancel="True"/>
-            <Button Grid.Column="1" Content="_Добавить" Margin="0, 5"/>
+            <Button Grid.Column="1" Content="_Добавить" Margin="0, 5" Click="BtnAddRecord_Click"/>
             <Button Name="btnDialogOk" Grid.Column="2" Content="_OK" IsDefault="True" Click="BtnDialogOk_Click"/>
         </Grid>
     </Grid>

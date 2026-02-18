@@ -23,7 +23,11 @@ namespace ForRobot.Views.Windows
         public IEnumerable ItemsSource
         {
             get { return (IEnumerable)GetValue(ItemsSourceProperty); }
-            set { SetValue(ItemsSourceProperty, value); }
+            set
+            {
+                SetValue(ItemsSourceProperty, value);
+                this.OnPropertyChanged(nameof(this.ItemsSource));
+            }
         }
 
         public static readonly DependencyProperty SelectedItemsProperty = DependencyProperty.Register(nameof(SelectedItems),
@@ -34,7 +38,11 @@ namespace ForRobot.Views.Windows
         public IEnumerable SelectedItems
         {
             get => this.SelectedListBox.SelectedItems;
-            set => this.SelectedListBox.SelectedItem = value;
+            set
+            {
+                this.SelectedListBox.SelectedItem = value;
+                this.OnPropertyChanged(nameof(this.SelectedItems));
+            }
         }
 
         public static readonly DependencyProperty SelectionModeProperty = DependencyProperty.Register(nameof(SelectionMode),
@@ -45,7 +53,11 @@ namespace ForRobot.Views.Windows
         public SelectionMode SelectionMode
         {
             get => this.SelectedListBox.SelectionMode;
-            set => this.SelectedListBox.SelectionMode = value;
+            set
+            {
+                this.SelectedListBox.SelectionMode = value;
+                this.OnPropertyChanged(nameof(this.SelectionMode));
+            }
         }
 
         public static readonly DependencyProperty CanDeleteItemsProperty = DependencyProperty.Register(nameof(CanDeleteItems),
@@ -56,7 +68,11 @@ namespace ForRobot.Views.Windows
         public bool CanDeleteItems
         {
             get { return (bool)GetValue(CanDeleteItemsProperty); }
-            set { SetValue(CanDeleteItemsProperty, value); }
+            set
+            {
+                SetValue(CanDeleteItemsProperty, value);
+                this.OnPropertyChanged(nameof(this.CanDeleteItems));
+            }
         }
 
         public static readonly DependencyProperty CanAddItemsProperty = DependencyProperty.Register(nameof(CanAddItems),
@@ -67,10 +83,20 @@ namespace ForRobot.Views.Windows
         public bool CanAddItems
         {
             get { return (bool)GetValue(CanAddItemsProperty); }
-            set { SetValue(CanAddItemsProperty, value); }
+            set
+            {
+                SetValue(CanAddItemsProperty, value);
+                this.OnPropertyChanged(nameof(this.CanAddItems));
+            }
         }
 
-        public EventHandler ItemsSourceChangedEvent;
+        public event EventHandler AddRecordEvent;
+            //= EventManager.RegisterRoutedEvent("BtnAddRecordClick", RoutingStrategy.Direct, typeof(RoutedEventHandler), typeof(SelectorWindow));
+
+        /// <summary>
+        /// Событие изменения свойства
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion Public variables
 
@@ -136,7 +162,7 @@ namespace ForRobot.Views.Windows
             
             var itemsList = ItemsSource as IList;
             if (itemsList == null)
-                return; // Удаление невозможно: источник данных не поддерживает удаление.
+                return;
 
             if (!(sender is FrameworkElement element))
                 return;
@@ -146,8 +172,17 @@ namespace ForRobot.Views.Windows
             if (itemToRemove != null && itemsList.Contains(itemToRemove))
             {
                 itemsList.Remove(itemToRemove);
+                this.OnPropertyChanged(nameof(this.ItemsSource));
             }
         }
+
+        private void BtnAddRecord_Click(object sender, RoutedEventArgs e) => this.AddRecordEvent?.Invoke(this, null);
+
+        /// <summary>
+        /// Вызов события изменения свойства
+        /// </summary>
+        /// <param name="propertyName">Наименование свойства</param>
+        private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null) => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         #endregion Private functions
 

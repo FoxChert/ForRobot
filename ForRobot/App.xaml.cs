@@ -446,10 +446,12 @@ namespace ForRobot
             var robotConfig = ConfigProvider.GetRobotConfig();
             var plateConfig = ConfigProvider.GetPlateConfig();
 
-            settings.DetalsProgramNames.RemoveAll(x => x.Item1 == Models.Detals.DetalType.Plate);
+            foreach (var names in settings.DetalsProgramNames.Where(x => x.Item1 == Models.Detals.DetalType.Plate).ToList())
+                settings.DetalsProgramNames.Remove(names);
             settings.DetalsProgramNames.Add(Tuple.Create(Models.Detals.DetalType.Plate, Libr.EnumExtensions.GetDescription(Models.Detals.DetalType.Plate), plateConfig.PlateProgramName));
 
-            settings.DetalsScriptNames.RemoveAll(x => x.Item1 == Models.Detals.DetalType.Plate);
+            foreach (var names in settings.DetalsScriptNames.Where(x => x.Item1 == Models.Detals.DetalType.Plate).ToList())
+                settings.DetalsScriptNames.Remove(names);
             settings.DetalsScriptNames.Add(Tuple.Create(Models.Detals.DetalType.Plate, Libr.EnumExtensions.GetDescription(Models.Detals.DetalType.Plate), plateConfig.PlateScriptName));
 
             settings.PathFolderOfGeneration = robotConfig.PathFolderGeneration;

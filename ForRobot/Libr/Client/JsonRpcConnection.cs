@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Net.Sockets;
 
-using Newtonsoft.Json.Linq;
-
 using StreamJsonRpc;
 
 using ForRobot.Libr.Logging;

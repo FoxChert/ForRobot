@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace ForRobot.ViewModels
 {
-    public class MainPageViewModel4 : BaseClass
+    public class MainPageViewModel3_new : BaseClass
     {
         #region Private variables
 
@@ -18,7 +18,7 @@ namespace ForRobot.ViewModels
 
         #endregion Public variables
 
-        public MainPageViewModel4()
+        public MainPageViewModel3_new()
         {
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
                 return;

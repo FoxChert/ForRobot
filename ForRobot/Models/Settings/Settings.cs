@@ -5,6 +5,7 @@ using System.Windows;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 using AvalonDock.Themes;
 
@@ -176,7 +177,7 @@ namespace ForRobot.Models.Settings
             set
             {
                 this._showCoordinateSystem = value;
-                this.OnChangeProperty();
+                this.OnPropertyChanged();
             }
         }
         /// <summary>
@@ -188,7 +189,7 @@ namespace ForRobot.Models.Settings
             set
             {
                 this._showViewCube = value;
-                this.OnChangeProperty();
+                this.OnPropertyChanged();
             }
         }
         /// <summary>
@@ -204,7 +205,7 @@ namespace ForRobot.Models.Settings
             set
             {
                 this._showTriangleCountInfo = value;
-                this.OnChangeProperty();
+                this.OnPropertyChanged();
             }
         }
 
@@ -255,7 +256,7 @@ namespace ForRobot.Models.Settings
             set
             {
                 this._weldsThickness = value;
-                this.OnChangeProperty();
+                this.OnPropertyChanged();
             }
         }
 
@@ -268,7 +269,7 @@ namespace ForRobot.Models.Settings
             set
             {
                 this._annotationFontSize = value;
-                this.OnChangeProperty();
+                this.OnPropertyChanged();
             }
         }
 
@@ -281,7 +282,7 @@ namespace ForRobot.Models.Settings
             set
             {
                 this._annotationThickness = value;
-                this.OnChangeProperty();
+                this.OnPropertyChanged();
             }
         }
 
@@ -294,7 +295,7 @@ namespace ForRobot.Models.Settings
         //    set
         //    {
         //        this._paramsIsVisibale = value;
-        //        this.OnChangeProperty();
+        //        this.OnPropertyChanged();
         //    }
         //}
 
@@ -311,7 +312,7 @@ namespace ForRobot.Models.Settings
             set
             {
                 this._orthographic = value;
-                this.OnChangeProperty();
+                this.OnPropertyChanged();
             }
         }
         /// <summary>
@@ -323,7 +324,7 @@ namespace ForRobot.Models.Settings
             set
             {
                 this._showCameraInfo = value;
-                this.OnChangeProperty();
+                this.OnPropertyChanged();
             }
         }
         /// <summary>
@@ -335,7 +336,7 @@ namespace ForRobot.Models.Settings
             set
             {
                 this._showCameraTarget = value;
-                this.OnChangeProperty();
+                this.OnPropertyChanged();
             }
         }
         /// <summary>
@@ -347,7 +348,7 @@ namespace ForRobot.Models.Settings
             set
             {
                 this._rotateAroundMouseDownPoint = value;
-                this.OnChangeProperty();
+                this.OnPropertyChanged();
             }
         }
         /// <summary>
@@ -359,7 +360,7 @@ namespace ForRobot.Models.Settings
             set
             {
                 this._zoomAroundMouseDownPoint = value;
-                this.OnChangeProperty();
+                this.OnPropertyChanged();
             }
         }
         /// <summary>
@@ -371,7 +372,7 @@ namespace ForRobot.Models.Settings
             set
             {
                 this._isInertiaEnabled = value;
-                this.OnChangeProperty();
+                this.OnPropertyChanged();
             }
         }
         /// <summary>
@@ -383,7 +384,7 @@ namespace ForRobot.Models.Settings
             set
             {
                 this._isPanEnabled = value;
-                this.OnChangeProperty();
+                this.OnPropertyChanged();
             }
         }
         /// <summary>
@@ -395,7 +396,7 @@ namespace ForRobot.Models.Settings
             set
             {
                 this._isMoveEnabled = value;
-                this.OnChangeProperty();
+                this.OnPropertyChanged();
             }
         }
         /// <summary>
@@ -407,7 +408,7 @@ namespace ForRobot.Models.Settings
             set
             {
                 this._isRotationEnabled = value;
-                this.OnChangeProperty();
+                this.OnPropertyChanged();
             }
         }
         /// <summary>
@@ -419,7 +420,7 @@ namespace ForRobot.Models.Settings
             set
             {
                 this._isZoomEnabled = value;
-                this.OnChangeProperty();
+                this.OnPropertyChanged();
             }
         }
 
@@ -483,13 +484,27 @@ namespace ForRobot.Models.Settings
         /// <summary>
         /// Наименования для сгенерированных программ (в зависимости от типа детали)
         /// </summary>
-        public List<Tuple<DetalType, string, string>> DetalsProgramNames { get; } = DetalTypeExtensions.DetalTypeCollection().Select(t => new Tuple<DetalType, string, string>(t, t.GetDescription(), string.Empty)).ToList();
+        public ObservableCollection<Tuple<DetalType, string, string>> DetalsProgramNames { get; } = new ObservableCollection<Tuple<DetalType, string, string>>(DetalTypeExtensions.DetalTypeCollection().Select(t => new Tuple<DetalType, string, string>(t, t.GetDescription(), string.Empty)).ToList());
         /// <summary>
         /// Наименования скриптов-генератов (зависят от типа детали)
         /// </summary>
-        public List<Tuple<DetalType, string, string>> DetalsScriptNames { get; } = DetalTypeExtensions.DetalTypeCollection().Select(t => new Tuple<DetalType, string, string>(t, t.GetDescription(), string.Empty)).ToList();
+        public ObservableCollection<Tuple<DetalType, string, string>> DetalsScriptNames { get; } = new ObservableCollection<Tuple<DetalType, string, string>>(DetalTypeExtensions.DetalTypeCollection().Select(t => new Tuple<DetalType, string, string>(t, t.GetDescription(), string.Empty)).ToList());
 
-        public List<string> ScriptsCollection { get; } = GetScripts();
+        private ObservableCollection<string> _scriptsCollection;
+        [JsonIgnore]
+        public ObservableCollection<string> ScriptsCollection
+        {
+            get
+            {
+                if (this._scriptsCollection == null)
+                {
+                    this._scriptsCollection = GetScripts();
+                    this._scriptsCollection.CollectionChanged += HandleCollectionChanged;
+                }
+
+                return this._scriptsCollection;
+            }
+        }
 
         ///// <summary>
         ///// Имя сгенерированной программы (настил с рёбрами)
@@ -572,8 +587,8 @@ namespace ForRobot.Models.Settings
                 string json = File.ReadAllText(_path);
                 Settings settings =  JsonConvert.DeserializeObject<Settings>(json, _jsonSettings) ?? new Settings();
 
-                //if (JObject.Parse(json)["Version"].ToObject<Version>() != System.Reflection.Assembly.GetEntryAssembly().GetName().Version)
-                //    throw new Exception("Версия файла настроек не совпадает с версией приложения. Файл пересоздаётся.");
+                if (JObject.Parse(json)["Version"].ToObject<Version>() != System.Reflection.Assembly.GetEntryAssembly().GetName().Version)
+                    throw new Exception("Версия файла настроек не совпадает с версией приложения. Файл пересоздаётся.");
 
                 settings.Colors = JObject.Parse(json)["Colors"].ToObject<Dictionary<string, System.Windows.Media.Color>>();
                 return settings;
@@ -590,7 +605,7 @@ namespace ForRobot.Models.Settings
         /// Возврат содержимого папки Scripts
         /// </summary>
         /// <returns></returns>
-        public static List<string> GetScripts()
+        public static ObservableCollection<string> GetScripts()
         {
             string path = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Scripts");
 
@@ -602,7 +617,7 @@ namespace ForRobot.Models.Settings
             {
                 fileList.Add(file);
             }
-            return fileList;
+            return new ObservableCollection<string>(fileList);
         }
 
         /// <summary>
@@ -656,7 +671,7 @@ namespace ForRobot.Models.Settings
         {
             return App.Current.Settings.DetalsProgramNames.Where(x => x.Item1 == type).FirstOrDefault().Item3;
         }
-
+        
         /// <summary>
         /// Сохранение json-файла настроек во временных файлах
         /// </summary>
@@ -676,10 +691,30 @@ namespace ForRobot.Models.Settings
 
         #region Private functions
 
+        private void HandleCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
+                    string path = e.NewItems.Cast<string>().ToList().First();
+                    if (!File.Exists(path))
+                        throw new FileNotFoundException($"Файл {path} ненайден для удаления!");
+                    //File.Move()
+                    break;
+
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
+                    path = e.OldItems.Cast<string>().ToList().First();
+                    if (!File.Exists(path))
+                        throw new FileNotFoundException($"Файл {path} ненайден для удаления!");
+                    File.Delete(path);
+                    break;
+            }
+        }
+
         /// <summary>
         /// Вызов события изменения свойства
         /// </summary>
-        public void OnChangeProperty() => this.ChangePropertyEvent?.Invoke(this, null);
+        public void OnPropertyChanged() => this.ChangePropertyEvent?.Invoke(this, null);
 
         /// <summary>
         /// Логирование исключений выгрузки настроек
