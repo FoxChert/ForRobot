@@ -137,7 +137,7 @@ namespace ForRobot
         /// <summary>
         /// Обработчик сохранения настроек
         /// </summary>
-        public EventHandler SaveAppSettings;
+        public System.ComponentModel.PropertyChangedEventHandler HandleSaveAppSettings;
 
         #endregion Public variables
 
@@ -255,8 +255,8 @@ namespace ForRobot
             }
 
             Application.Current.MainWindow = WindowsAppService.AppMainWindow;
-            SaveAppSettings += (s, o) => Settings.Save();
-            Settings.ChangePropertyEvent += SaveAppSettings;
+            HandleSaveAppSettings += (s, o) => Settings.Save();
+            Settings.PropertyChanged += HandleSaveAppSettings;
 
             // Вход в приложение по пин-коду
             if (this.Settings.LoginByPINCode)

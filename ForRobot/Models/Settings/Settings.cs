@@ -3,9 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Reflection;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 using AvalonDock.Themes;
 
@@ -22,7 +22,7 @@ namespace ForRobot.Models.Settings
     /// <summary>
     /// Класс представляющий настройки приложения
     /// </summary>
-    public class Settings : ICloneable
+    public class Settings : INotifyPropertyChanged, ICloneable
     {
         #region Private variables
         
@@ -553,7 +553,7 @@ namespace ForRobot.Models.Settings
         /// <summary>
         /// Событие изменения свойства настроек
         /// </summary>
-        public event EventHandler ChangePropertyEvent;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion Public variables
 
@@ -635,6 +635,15 @@ namespace ForRobot.Models.Settings
             }
         }
 
+        public object Clone() => (Settings)this.MemberwiseClone();
+
+        /// <summary>
+        /// Возвращает стандартное имя программы
+        /// </summary>
+        /// <param name="startedDetalType"></param>
+        /// <returns></returns>
+        public string GetStandartProgramName(DetalType type) => App.Current.Settings.DetalsProgramNames.Where(x => x.Item1 == type).FirstOrDefault().Item3;
+
         /// <summary>
         /// Выгрузка установленных цветов для 3д сцены
         /// </summary>
@@ -660,17 +669,22 @@ namespace ForRobot.Models.Settings
             return colors;
         }
 
-        public object Clone() => (Settings)this.MemberwiseClone();
+        //public void AddScripts(string path)
+        //{
+        //    if (!File.Exists(path))
+        //        throw new FileNotFoundException($"Исходный файл не найден!", path);
 
-        /// <summary>
-        /// Возвращает стандартное имя программы
-        /// </summary>
-        /// <param name="startedDetalType"></param>
-        /// <returns></returns>
-        public string GetStandartProgramName(DetalType type)
-        {
-            return App.Current.Settings.DetalsProgramNames.Where(x => x.Item1 == type).FirstOrDefault().Item3;
-        }
+        //    string directory = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Scripts");
+
+        //    if (!Directory.Exists(directory))
+        //    {
+        //        Directory.CreateDirectory(directory);
+        //    }
+
+        //    string finalPath = Path.Combine(directory, Path.GetFileName(path));
+        //    File.Copy(path, finalPath, true);
+        //    this.OnPropertyChanged(nameof(this.ScriptsCollection));
+        //}
         
         /// <summary>
         /// Сохранение json-файла настроек во временных файлах
@@ -691,30 +705,108 @@ namespace ForRobot.Models.Settings
 
         #region Private functions
 
+        /// <summary>
+        /// Добавляет скрипт в коллекцию
+        /// </summary>
+        /// <param name="sourcePath">Путь к исходному файлу</param>
+        public void AddScript(string sourcePath)
+        {
+            if (!File.Exists(sourcePath))
+                throw new FileNotFoundException($"Исходный файл не найден!", sourcePath);
+
+            string directory = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Scripts");
+
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
+
+            string fileName = Path.GetFileName(sourcePath);
+            string finalPath = Path.Combine(directory, fileName);
+            
+            File.Copy(sourcePath, finalPath, true);
+            
+            this.ScriptsCollection.Add(finalPath);
+        }
+
+        /// <summary>
+        /// Удаляет скрипт из коллекции
+        /// </summary>
+        /// <param name="scriptPath">Путь к файлу скрипта</param>
+        public void RemoveScript(string scriptPath)
+        {
+            if (this.ScriptsCollection.Contains(scriptPath))
+            {
+                if (!File.Exists(scriptPath))
+                    throw new FileNotFoundException($"Файл для удалния не найден!", scriptPath);
+
+                File.Delete(scriptPath);
+
+                this.ScriptsCollection.Remove(scriptPath);
+            }
+        }
+
         private void HandleCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
-                    string path = e.NewItems.Cast<string>().ToList().First();
-                    if (!File.Exists(path))
-                        throw new FileNotFoundException($"Файл {path} ненайден для удаления!");
-                    //File.Move()
+                    //string directory = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Scripts");
+
+                    //if (!Directory.Exists(directory))
+                    //    Directory.CreateDirectory(directory);
+
+                    //foreach (var newItem in e.NewItems)
+                    //{
+                    //    if (!(newItem is string path))
+                    //        return;
+
+                    //    if (!File.Exists(path))
+                    //        throw new FileNotFoundException($"Исходный файл не найден!", path);
+
+                    //    string finalPath = Path.Combine(directory, Path.GetFileName(path));
+                    //    File.Copy(path, finalPath, true);
+                    //}
+
+                    //this._scriptsCollection = GetScripts();
+
+
+                    //string sourcePath = e.NewItems.Cast<string>().ToList().First();
+
+                    //if (!File.Exists(sourcePath))
+                    //    throw new FileNotFoundException($"Исходный файл не найден!", sourcePath);
+
+                    //string directory = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Scripts");
+
+                    //if (!Directory.Exists(directory))
+                    //{
+                    //    Directory.CreateDirectory(directory);
+                    //}
+
+                    //string finalPath = Path.Combine(directory, Path.GetFileName(sourcePath));
+
+                    //foreach (var newItem in e.NewItems)
+                    //{
+                    //    if (newItem is String item)
+                    //        item = finalPath;
+                    //}
+                    //File.Copy(sourcePath, finalPath, true);
                     break;
 
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
-                    path = e.OldItems.Cast<string>().ToList().First();
-                    if (!File.Exists(path))
-                        throw new FileNotFoundException($"Файл {path} ненайден для удаления!");
-                    File.Delete(path);
+                    //string sourcePath = e.OldItems.Cast<string>().ToList().First();
+
+                    //if (!File.Exists(sourcePath))
+                    //    throw new FileNotFoundException($"Файл для удалния не найден!", sourcePath);
+
+                    //File.Delete(sourcePath);
                     break;
             }
+            this.OnPropertyChanged(nameof(this.ScriptsCollection));
         }
 
         /// <summary>
         /// Вызов события изменения свойства
         /// </summary>
-        public void OnPropertyChanged() => this.ChangePropertyEvent?.Invoke(this, null);
+        private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null) => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         /// <summary>
         /// Логирование исключений выгрузки настроек

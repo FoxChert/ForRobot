@@ -19,7 +19,7 @@ namespace ForRobot.Views.Windows
                                                                                                     typeof(IEnumerable),
                                                                                                     typeof(SelectorWindow),
                                                                                                     new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnItemsSourceChanged));
-
+        
         public IEnumerable ItemsSource
         {
             get { return (IEnumerable)GetValue(ItemsSourceProperty); }
@@ -122,12 +122,14 @@ namespace ForRobot.Views.Windows
         {
             var control = (SelectorWindow)d;
             control.SelectedListBox.ItemsSource = e.NewValue as IEnumerable;
+            control.OnPropertyChanged(nameof(control.ItemsSource));
         }
 
         private static void OnSelectedItemsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = (SelectorWindow)d;
             control.UpdateSelectedItems();
+            control.OnPropertyChanged(nameof(control.SelectedItems));
         }
 
         private static void OnSelectionModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

@@ -747,7 +747,7 @@ namespace ForRobot.ViewModels
             if (robot == null)
                 return;
 
-            if (robot.Host == Robot.DefaultHost ||
+            if (robot.Host == ForRobot.Libr.Client.JsonRpcConnection.DEFAULT_HOST ||
                 System.Windows.MessageBox.Show($"Удалить робота с соединением {robot.Host}:{robot.Port}?", robot.Name, MessageBoxButton.OKCancel, MessageBoxImage.Question) == MessageBoxResult.OK)
             {
                 this.RobotsCollection.Remove(robot);

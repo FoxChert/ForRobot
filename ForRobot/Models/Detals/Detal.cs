@@ -371,7 +371,7 @@ namespace ForRobot.Models.Detals
 
         private volatile int _disposed;
 
-        ~Detal() => Dispose(false);
+        ~Detal() => Dispose();
 
         public void Dispose() => this.Dispose(true);
 

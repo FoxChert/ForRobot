@@ -58,7 +58,7 @@ namespace ForRobot.ViewModels
 
         private static void SelectHomeDirection(Robot robot)
         {
-            robot.PathControllerFolder = ForRobot.Libr.Client.JsonRpcConnection.DefaulRoot;
+            robot.PathControllerFolder = ForRobot.Libr.Client.JsonRpcConnection.DEFAULT_ROOT;
             //RaisePropertyChanged()
         }
 

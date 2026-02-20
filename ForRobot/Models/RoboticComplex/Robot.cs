@@ -85,10 +85,10 @@ namespace ForRobot.Models.RoboticComplex
 
         [JsonIgnore]
         public const string PathOfTempFolder = @"C:\Windows\Temp";
-        [JsonIgnore]
-        public const string DefaultHost = "0.0.0.0";
-        [JsonIgnore]
-        public const int DefaultPort = 3333;
+        //[JsonIgnore]
+        //public const string DefaultHost = "0.0.0.0";
+        //[JsonIgnore]
+        //public const int DefaultPort = 3333;
         [JsonIgnore]
         /// <summary>
         /// Задержка запроса состояния процесса на роботе
@@ -365,12 +365,12 @@ namespace ForRobot.Models.RoboticComplex
 
         #region Constructor
 
-        public Robot(string hostname = DefaultHost, int port = DefaultPort)
+        public Robot(string hostname = JsonRpcConnection.DEFAULT_HOST, int port = JsonRpcConnection.DEFAULT_PORT)
         {
             this.Host = hostname;
             this.Port = port;
 
-            this.Files = new Controls.File(JsonRpcConnection.DefaulRoot);
+            this.Files = new Controls.File(JsonRpcConnection.DEFAULT_ROOT);
             this.Files.Children.CollectionChanged += (s, e) =>
             {
                 this.OnChangeProperty(nameof(this.Files));
@@ -418,8 +418,8 @@ namespace ForRobot.Models.RoboticComplex
             try
             { 
                 this.Connection = new JsonRpcConnection(this.Host, this.Port);
-                this.Connection.Log += this.Log;
-                this.Connection.LogError += this.LogError;
+                this.Connection.LoggingEvent += this.Log;
+                this.Connection.LoggingErrorEvent += this.LogError;
                 this.Connection.Connected += (sender, e) => this.OnChangeProperty();
                 this.Connection.Aborted += (sender, e) =>
                 {
@@ -435,7 +435,7 @@ namespace ForRobot.Models.RoboticComplex
                 };
 
                 this.LogMessage($"Открытие соединения с сервером . . .");
-                if (this.Connection.Open(this.ConnectionTimeOutMilliseconds))
+                if (this.Connection.Open())
                 {
                     this.LogMessage($"Открыто соединение");
                     this.SetIsConnection();
@@ -483,7 +483,7 @@ namespace ForRobot.Models.RoboticComplex
                     foreach (var file in files)
                     {
                         ForRobot.Models.Controls.File fileData = new ForRobot.Models.Controls.File(file.Key.TrimEnd(new char[] { '\\' }), file.Value.TrimStart(';').TrimEnd(';'));
-                        fileData.Path = Path.Combine(JsonRpcConnection.DefaulRoot, fileData.Path);
+                        fileData.Path = Path.Combine(JsonRpcConnection.DEFAULT_ROOT, fileData.Path);
                         fileDatas.Add(fileData);
                     }
                 }

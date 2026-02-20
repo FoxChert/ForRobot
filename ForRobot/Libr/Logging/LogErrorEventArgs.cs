@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ForRobot.Libr.Logging
 {
@@ -11,29 +9,23 @@ namespace ForRobot.Libr.Logging
     {
         #region Private variables
 
-        private readonly Exception exception;
+        private readonly Exception _exception;
 
         #endregion
 
         #region Public variables
 
-        public Exception Exception
-        {
-            get { return this.exception; }
-        }
+        public Exception Exception { get => this._exception; }
 
         #endregion
 
         #region Constructors
 
-        public LogErrorEventArgs(string message)
-            : base(message)
-        { }
+        public LogErrorEventArgs(string message) : base(message) { }
 
-        public LogErrorEventArgs(string message, Exception exception)
-            : base(message)
+        public LogErrorEventArgs(string message, Exception exception) : base(message)
         {
-            this.exception = exception;
+            this._exception = exception;
         }
 
         #endregion

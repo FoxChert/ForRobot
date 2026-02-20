@@ -281,6 +281,27 @@ namespace ForRobot.ViewModels
             {
                 selectorWindow.CanAddItems = true;
                 selectorWindow.CanDeleteItems = true;
+                selectorWindow.AddRecordEvent += (s, e) => 
+                {
+                    System.Windows.Forms.OpenFileDialog openFileDialog = new System.Windows.Forms.OpenFileDialog()
+                    {
+                        Multiselect = false,
+                        Filter = "Python Files (*.py)|*.py|All files (*.*)|*.*",
+                        Title = "Добавление файла скрипта"
+                    };
+
+                    if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.Cancel && string.IsNullOrEmpty(openFileDialog.FileName))
+                        return;
+
+                    this.Settings.ScriptsCollection.Add(openFileDialog.FileName);
+                    //this.Settings.AddScripts(openFileDialog.FileName);
+                };
+                //var executablePathBinding = new System.Windows.Data.Binding()
+                //{
+                //    Source = this,
+                //    Path = new PropertyPath(nameof(this.Settings.ScriptsCollection))
+                //};
+                //System.Windows.Data.BindingOperations.SetBinding(selectorWindow, ForRobot.Views.Windows.SelectorWindow.ItemsSourceProperty, executablePathBinding);
                 selectorWindow.ShowDialog();
                 RaisePropertyChanged(nameof(this.Settings));
             }
@@ -298,7 +319,7 @@ namespace ForRobot.ViewModels
                 return;
 
             this.Settings = App.Current.Settings.Clone() as ForRobot.Models.Settings.Settings;
-            this.Settings.ChangePropertyEvent -= App.Current.SaveAppSettings;
+            this.Settings.PropertyChanged -= App.Current.HandleSaveAppSettings;
         }
 
         #endregion

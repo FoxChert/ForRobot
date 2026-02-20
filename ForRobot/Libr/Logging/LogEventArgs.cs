@@ -1,35 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ForRobot.Libr.Logging
 {
-    /// <summary>
-    /// Класс логирования событий
-    /// </summary>
-    public class LogEventArgs : EventArgs
+    public class LogEventArgs
     {
         #region Private variables
 
-        private readonly string message;
+        private readonly string _message;
 
         #endregion
 
         #region Public variables
 
-        public string Message
-        {
-            get { return this.message; }
-        }
+        public string Message { get => this._message; }
 
         #endregion
 
         #region Constructors
 
-        public LogEventArgs(string message)
-            : base()
+        public LogEventArgs(string message) : base()
         {
-            this.message = message;
+            this._message = message;
         }
 
         #endregion

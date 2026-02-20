@@ -321,6 +321,7 @@
     <Compile Include="Libr\Behavior\FocusBehavior.cs" />
     <Compile Include="Libr\Behavior\HelixAddCollectionBehavior.cs" />
     <Compile Include="Libr\Behavior\DataGridStretchLastColumn.cs" />
+    <Compile Include="Libr\Client\ConnectionLogErrorEventArgs.cs" />
     <Compile Include="Libr\Clipboard\CacheClipboardProvider.cs" />
     <Compile Include="Libr\Clipboard\IChangeNotificationControl.cs" />
     <Compile Include="Libr\Clipboard\MultiNotificationSuppression.cs" />
@@ -333,6 +334,7 @@
     <Compile Include="Libr\Collections\RibCollection.cs" />
     <Compile Include="Libr\Collections\File3DCollection.cs" />
     <Compile Include="Libr\Converters\MatrixConverter.cs" />
+    <Compile Include="Libr\Logging\LogEventArgs.cs" />
     <Compile Include="Libr\Modeling\CacheModel3DProvider.cs" />
     <Compile Include="Libr\Modeling\Model3DCollectionExtensions.cs" />
     <Compile Include="Libr\Collections\RibPropertyChangedEventArgs.cs" />
@@ -474,6 +476,9 @@
     <Compile Include="Views\Windows\SelectorWindow.xaml.cs">
       <DependentUpon>SelectorWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Windows\SelectWindow.xaml.cs">
+      <DependentUpon>SelectWindow.xaml</DependentUpon>
+    </Compile>
     <Page Include="Themes\PropertiesWindowStyleDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -555,7 +560,7 @@
     <Compile Include="Libr\Client\SocketStateObject.cs" />
     <Compile Include="Libr\ErrorException.cs" />
     <Compile Include="Libr\Logging\LogErrorEventArgs.cs" />
-    <Compile Include="Libr\Logging\LogEventArgs.cs" />
+    <Compile Include="Libr\Client\ConnectionLogEventArgs.cs" />
     <Compile Include="Libr\Font.cs" />
     <Compile Include="Models\RoboticComplex\Robot.cs" />
     <Compile Include="Models\Detals\Detal.cs" />
@@ -591,6 +596,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Windows\SelectorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Windows\SelectWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

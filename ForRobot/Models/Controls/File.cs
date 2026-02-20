@@ -108,7 +108,7 @@ namespace ForRobot.Models.Controls
         public File(string path) : this()
         {
             this.Path = path;
-            this.Name = path == Libr.Client.JsonRpcConnection.DefaulRoot ? path : System.IO.Path.GetFileName(path);
+            this.Name = path == Libr.Client.JsonRpcConnection.DEFAULT_ROOT ? path : System.IO.Path.GetFileName(path);
         }
 
         public File(string path, string inf) : this(path)

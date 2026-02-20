@@ -1,16 +1,310 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Net.Sockets;
 
 using StreamJsonRpc;
 
-using ForRobot.Libr.Logging;
-
 namespace ForRobot.Libr.Client
 {
+    /// <summary>
+    /// Класс-модель комманды
+    /// </summary>
+    public class Command
+    {
+        public string Id { get; private set; }
+        public string MethodName { get; }
+        public object[] Parameters { get; }
+        public TimeSpan Timeout { get; private set; }
+        public CancellationTokenSource CancellationTokenSource { get; set; }
+        public Task<object> Task { get; set; }
+        public DateTime CreatedAt { get; private set; }
+        public DateTime? StartedAt { get; set; }
+        public DateTime? CompletedAt { get; set; } // Нужен для логирования завершения команды
+
+        public Command(string methodName, object parameter)
+        {
+            this.Initialisation();
+            MethodName = methodName;
+        }
+
+        public Command(string methodName, params object[] parameters)
+        {
+            this.Initialisation();
+            MethodName = methodName;
+            Parameters = parameters ?? Array.Empty<object>();
+        }
+
+        /// <summary>
+        /// Метод-инициализатор для повторяющихся свойств
+        /// </summary>
+        private void Initialisation()
+        {
+            Id = Guid.NewGuid().ToString();
+            Timeout = new TimeSpan(JsonRpcConnection.DEFAULT_TIMEOUT_MILLISECONDS);
+            CancellationTokenSource = new CancellationTokenSource();
+            CreatedAt = DateTime.UtcNow;
+        }
+
+        public bool IsTimeout => this.CancellationTokenSource.IsCancellationRequested && !CancellationTokenSource.Token.IsCancellationRequested;
+
+        public void Cancel()
+        {
+            CancellationTokenSource.Cancel();
+        }
+    }
+
+    public class CommandEventArgs : EventArgs
+    {
+        public Command Command { get; }
+
+        public CommandEventArgs(Command command)
+        {
+            Command = command ?? throw new ArgumentNullException(nameof(command));
+        }
+    }
+
+    public static class TaskExtensions
+    {
+        public static async Task<T> WithCancellation<T>(this Task<T> task, CancellationToken cancellationToken)
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            using (cancellationToken.Register(s => ((TaskCompletionSource<bool>)s).TrySetResult(true), tcs))
+            {
+                if (task != await Task.WhenAny(task, tcs.Task))
+                    throw new OperationCanceledException(cancellationToken);
+            }
+            return await task;
+        }
+    }
+
+    public class CommandQueueManager : IDisposable
+    {
+        private readonly ConcurrentDictionary<string, Command> _activeCommands;
+        private readonly JsonRpcConnection _connection;
+        private readonly object _lockObject = new object();
+        private volatile int _disposed;
+
+        public event EventHandler<CommandEventArgs> CommandAdded;
+        public event EventHandler<CommandEventArgs> CommandCompleted;
+        public event EventHandler<CommandEventArgs> CommandCancelled;
+        public event EventHandler<CommandEventArgs> CommandTimedOut;
+
+        public CommandQueueManager(JsonRpcConnection connection)
+        {
+            _activeCommands = new ConcurrentDictionary<string, Command>();
+            _connection = connection ?? throw new ArgumentNullException(nameof(connection));
+        }
+
+        #region Private functions
+
+        //private async Task<T> ExecuteCommandWithTrackingAsync<T>(Command command)
+        //{
+        //    if (!_activeCommands.TryAdd(command.Id, command))
+        //    {
+        //        throw new InvalidOperationException("Ошибка добавления команды в очередь.");
+        //    }
+
+        //    command.StartedAt = DateTime.UtcNow;
+        //    this.OnCommandAdded(command);
+
+        //    try
+        //    {
+        //        var result = await ExecuteCommandAsync<T>(command);
+        //        command.CompletedAt = DateTime.UtcNow;
+        //        this.OnCommandCompleted(command);
+        //        return result;
+        //    }
+        //    catch (OperationCanceledException) when (command.CancellationTokenSource.IsCancellationRequested)
+        //    {
+        //        command.CompletedAt = DateTime.UtcNow;
+        //        if (command.CancellationTokenSource.Token.IsCancellationRequested)
+        //        {
+        //            this.OnCommandTimedOut(command);
+        //            throw new TimeoutException($"Command '{command.MethodName}' timed out after {command.Timeout.TotalSeconds} seconds");
+        //        }
+        //        else
+        //        {
+        //            this.OnCommandCancelled(command);
+        //            throw;
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
+        //        command.CompletedAt = DateTime.UtcNow;
+        //        throw;
+        //    }
+        //    finally
+        //    {
+        //        _activeCommands.TryRemove(command.Id, out _);
+        //    }
+        //}
+
+        //private async Task<T> ExecuteCommandAsync<T>(Command command)
+        //{
+        //    var cts = new CancellationTokenSource(command.Timeout);
+
+        //    try
+        //    {
+        //        return await command.Task.WithCancellation<T>(cts.Token);
+        //    }
+        //    catch (OperationCanceledException) when (cts.Token.IsCancellationRequested)
+        //    {
+        //        throw new TimeoutException($"Команда \"{command.MethodName}\" была остановлена после {command.Timeout.TotalSeconds} секунд.");
+        //    }
+        //}
+
+        private async Task CancelCommandWithTimeout(Command command, CancellationToken cancellationToken)
+        {
+            try
+            {
+                command.Cancel();
+                this.OnCommandCancelled(command);
+                await Task.CompletedTask;
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { }
+        }
+
+        #endregion Private functions
+
+        #region Public functions
+
+        protected virtual void OnCommandAdded(Command command) => CommandAdded?.Invoke(this, new CommandEventArgs(command));
+        protected virtual void OnCommandCompleted(Command command) => CommandCompleted?.Invoke(this, new CommandEventArgs(command));
+        protected virtual void OnCommandCancelled(Command command) => CommandCancelled?.Invoke(this, new CommandEventArgs(command));
+        protected virtual void OnCommandTimedOut(Command command) => CommandTimedOut?.Invoke(this, new CommandEventArgs(command));
+
+        public string AddCommand(string methodName, object[] parameters, TimeSpan timeout)
+        {
+            if (_disposed == 1)
+                throw new ObjectDisposedException(nameof(CommandQueueManager));
+
+            var command = new Command(methodName, parameters, timeout);
+
+            if (!_activeCommands.TryAdd(command.Id, command))
+            {
+                throw new InvalidOperationException("Failed to enqueue command");
+            }
+
+            this.OnCommandAdded(command);
+            return command.Id;
+        }
+
+        //public async Task<T> EnqueueCommandAsync<T>(Command command)
+        //{
+        //    if (_disposed)
+        //        throw new ObjectDisposedException(nameof(CommandQueueManager));
+
+        //    return await ExecuteCommandWithTrackingAsync<T>(command);
+        //}
+
+        //public async Task<T> EnqueueCommandAsync<T>(string methodName, TimeSpan timeout, params object[] parameters)
+        //{
+        //    if (_disposed)
+        //        throw new ObjectDisposedException(nameof(CommandQueueManager));
+
+        //    var command = new Command(methodName, parameters, timeout);
+        //    return await ExecuteCommandWithTrackingAsync<T>(command);
+        //}
+
+        //public async Task<T> EnqueueCommandAsync<T>(string methodName, params object[] parameters) => await EnqueueCommandAsync<T>(methodName, _defaultTimeout, parameters);
+
+        //public async Task<T> EnqueueCommandAsync<T>(string methodName, CancellationToken cancellationToken, params object[] parameters)
+        //{
+        //    if (_disposed)
+        //        throw new ObjectDisposedException(nameof(CommandQueueManager));
+
+        //    var command = new Command(methodName, parameters, _defaultTimeout);
+
+        //    var combinedCts = CancellationTokenSource.CreateLinkedTokenSource(command.CancellationTokenSource.Token, cancellationToken);
+
+        //    command.CancellationTokenSource = combinedCts;
+
+        //    return await ExecuteCommandWithTrackingAsync<T>(command);
+        //}
+
+        public IReadOnlyList<Command> GetActiveCommands() => _activeCommands.Values.ToList();
+
+        public bool ContainsCommand(string commandId) => _activeCommands.ContainsKey(commandId);
+
+        public bool CancelCommand(string commandId)
+        {
+            if (_activeCommands.TryRemove(commandId, out var command))
+            {
+                command.Cancel();
+                this.OnCommandCancelled(command);
+                return true;
+            }
+            return false;
+        }
+
+        public void CancelAllCommands(TimeSpan? timeout = null)
+        {
+            var commandsToCancel = _activeCommands.Values.ToList();
+
+            if (timeout.HasValue)
+            {
+                var cts = new CancellationTokenSource(timeout.Value);
+                var tasks = commandsToCancel.Select(cmd => CancelCommandWithTimeout(cmd, cts.Token)).ToArray();
+
+                try
+                {
+                    Task.WaitAll(tasks, timeout.Value);
+                }
+                catch (Exception)
+                {
+                    // Логирование или обработка частичной отмены
+                }
+            }
+            else
+            {
+                foreach (var command in commandsToCancel)
+                {
+                    command.Cancel();
+                    OnCommandCancelled(command);
+                }
+            }
+
+            _activeCommands.Clear();
+        }
+
+        public bool RemoveCompletedCommand(string commandId)
+        {
+            if (_activeCommands.TryRemove(commandId, out var command))
+            {
+                this.OnCommandCompleted(command);
+                return true;
+            }
+            return false;
+        }
+
+        #endregion Public functions
+
+        #region Implementations of IDisposable
+
+        ~CommandQueueManager() => Dispose();
+
+        public void Dispose()
+        {
+            if (Interlocked.CompareExchange(ref _disposed, 1, 0) == 0)
+            {
+                foreach (var command in _activeCommands.Values)
+                {
+                    command.CancellationTokenSource?.Dispose();
+                }
+                _activeCommands.Clear();
+                _disposed = 1;
+                GC.SuppressFinalize(this);
+            }
+        }
+
+        #endregion
+    }
+
     /// <summary>
     /// Класс <c>JsonRpcConnection</c>
     /// </summary>
@@ -18,45 +312,73 @@ namespace ForRobot.Libr.Client
     {
         #region Constants
 
-        //private const string AnnouncementEnd = "}";
-        //private const string AnnouncementEndAlternative = "}\n";
-        private const int DefaultPort = 0000;
-        private const string DefaultHost = "0.0.0.0";
-        private const string OkResponse = "Ok";
-        public const string DefaulRoot = "KRC:\\";
+        public const int DEFAULT_PORT = 0000;
+        public const int DEFAULT_TIMEOUT_MILLISECONDS = 3000;
+        public const string DEFAULT_HOST = "0.0.0.0";
+        public const string OK_RESPONSE = "Ok";
+        public const string DEFAULT_ROOT = "KRC:\\";
 
         #endregion
 
         #region Private variables
 
-        private volatile int _disposed;
+        /// <summary>
+        /// Обработчик исключений
+        /// </summary>
+        private static readonly Action<Exception> _exceptionCallback = new Action<Exception>(e =>
+        {
+            //try
+            //{
+            //    throw e;
+            //}
+            //catch (ConnectionLogEventArgs )
+            //{
+
+            //}
+        });
+
+        private readonly CommandQueueManager _commandQueueManager;
+
+        /// <summary>
+        /// Управляет подключением JSON-RPC к серверу через Stream
+        /// </summary>
+        private JsonRpc JsonRpc;
+
+        #endregion
+
+        #region Public variables
 
         /// <summary>
         /// Используется классом для указания, что соединение установлено
         /// </summary>
-        protected bool _isActive
+        protected bool IsConnected
         {
             get
             {
-                bool actived = false;
                 try
                 {
                     if (this.Client == null || !this.Client.Connected)
-                        return actived;
+                        return false;
                 }
                 catch (Exception ex)
                 {
                     throw new Exception("Не удалось определить состояние TCP-сокета", ex);
                 }
 
-                if (this.CheckKey())
-                    actived = true;
-
-                return actived;
+                return this.CheckKey();
             }
         }
 
-        #endregion
+        public string Host { get; set; }
+
+        public int Port { get; set; }
+
+        public int Timeout { get; set; }
+
+        /// <summary>
+        /// Клиент
+        /// </summary>
+        public TcpClient Client { get; set; }
 
         #region Events
 
@@ -72,44 +394,32 @@ namespace ForRobot.Libr.Client
         /// Событие закрытия соединения
         /// </summary>
         public event EventHandler Disconnected;
-         
+
         /// <summary>
         /// Событие записи лога
         /// </summary>
-        public event EventHandler<LogEventArgs> Log;
+        public event EventHandler<ConnectionLogEventArgs> LoggingEvent;
         /// <summary>
         /// Событие логирования ошибки
         /// </summary>
-        public event EventHandler<LogErrorEventArgs> LogError;
+        public event EventHandler<ConnectionLogErrorEventArgs> LoggingErrorEvent;
 
         #endregion
-
-        #region Public variables
-        
-        public string Host { get; set; }
-
-        public int Port { get; set; }
-
-        /// <summary>
-        /// Клиент
-        /// </summary>
-        public TcpClient Client { get; set; }
-
-        /// <summary>
-        /// Управляет подключением JSON-RPC к серверу через Stream
-        /// </summary>
-        private JsonRpc JsonRpc { get; set; }
 
         #endregion
 
         #region Constructors
 
-        public JsonRpcConnection() : this(null, 0) { }
+        public JsonRpcConnection() : this(null, 0, 0)
+        {
+            this._commandQueueManager = new CommandQueueManager(this);
+        }
 
-        public JsonRpcConnection(string hostname = DefaultHost, int port = DefaultPort)
+        public JsonRpcConnection(string hostname = DEFAULT_HOST, int port = DEFAULT_PORT, int timeout_milliseconds = DEFAULT_TIMEOUT_MILLISECONDS)
         {
             this.Host = hostname;
             this.Port = port;
+            this.Timeout = timeout_milliseconds;
         }
 
         #endregion
@@ -120,13 +430,24 @@ namespace ForRobot.Libr.Client
         /// Запрос ключа с сервера
         /// </summary>
         /// <returns></returns>
-        private bool CheckKey()
-        {
-            Task<string> task = Task.Run(() => this.JsonRpc.InvokeAsync<string>("auth", "My_example_KEY"));
-            if (task.Result == OkResponse)
-                return true;
-            return false;
-        }
+        private bool CheckKey() => Task.Run(async () => await this.JsonRpc.InvokeAsync<string>("auth", "My_example_KEY")).Result == OK_RESPONSE;
+
+        private bool IsCommandCancelled(string commandId) => !_commandQueueManager.ContainsCommand(commandId);
+
+        //private async Task<T> CreateCommand<T>(string method, object parametr)
+        //{
+        //    var task = await this.JsonRpc.InvokeAsync<T>(method, parametr);
+
+        //    return await this._commandQueueManager.EnqueueCommandAsync<T>(new Command(method, parametr) { Task = task });
+        //}
+
+        //private async Task<T> CreateCommand<T>(string method, params object[] parametrs)
+        //{
+        //    var task = await this.JsonRpc.InvokeAsync<T>(method, parametrs);
+        //    return await this._commandQueueManager.EnqueueCommandAsync<T>(new Command(method, parametrs) { Task = task });
+        //}
+
+        //private async Task<T> CreateCommand<T>(string method, params object[] parametrs) => await this.JsonRpc.InvokeAsync<T>(method, parametrs);
 
         /// <summary>
         /// Срабатывание события подключения
@@ -166,42 +487,16 @@ namespace ForRobot.Libr.Client
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnLog(object sender, LogEventArgs e) => this.Log?.Invoke(this, e);
+        private void OnLoggingEvent(string message) => this.LoggingEvent?.Invoke(this, new ConnectionLogEventArgs(this.Host, this.Port, message));
 
         /// <summary>
         /// Вызов события записи ошибки в журнал логгирования
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnLogError(object sender, LogErrorEventArgs e) => this.LogError?.Invoke(this, e);
+        private void OnLoggingErrorEvent(string message, Exception exception = null) => this.LoggingErrorEvent?.Invoke(this, new ConnectionLogErrorEventArgs(this.Host, this.Port, message, exception));
 
-        #endregion
-
-        #region Internal functions
-
-        internal void LogMessage(string message)
-        {
-            if (string.IsNullOrEmpty(message) || this.Log == null)
-            {
-                return;
-            }
-
-            this.Log(this, new LogEventArgs(String.Format("{0}:{1}\t{2}", this.Host, this.Port, message)));
-        }
-
-        internal void LogErrorMessage(string message) => this.LogErrorMessage(message, null);
-
-        internal void LogErrorMessage(string message, Exception exception)
-        {
-            if (string.IsNullOrEmpty(message) || this.LogError == null)
-            {
-                return;
-            }
-
-            this.LogError(this, new LogErrorEventArgs(String.Format("{0}:{1}\t{2}", this.Host, this.Port, message), exception));
-        }
-
-        #endregion
+        #endregion Private functions
 
         #region Public function
 
@@ -209,15 +504,15 @@ namespace ForRobot.Libr.Client
         /// Открытие соединения
         /// </summary>
         /// <returns></returns>
-        public bool Open(int timeout_milliseconds)
+        public bool Open()
         {
             bool opened = false;
             try
             {
                 this.Client = new TcpClient(this.Host, this.Port)
                 {
-                    SendTimeout = timeout_milliseconds,
-                    ReceiveTimeout = timeout_milliseconds + 500
+                    SendTimeout = (int)this.Timeout,
+                    ReceiveTimeout = (int)this.Timeout + 500
                 };
                 this.JsonRpc = new JsonRpc(new NewLineDelimitedMessageHandler(Client.GetStream(), Client.GetStream(), new JsonMessageFormatter()));
                 this.JsonRpc.StartListening();
@@ -229,7 +524,7 @@ namespace ForRobot.Libr.Client
                         this.OnDisconnected();
                 };
 
-                if (!this._isActive)
+                if (!this.IsConnected)
                 {
                     this.Close();
                     return opened;
@@ -253,12 +548,12 @@ namespace ForRobot.Libr.Client
             bool closed = false;
             if (this.Client.Connected)
             {
-                this.LogMessage($"Закрытие соединения . . .");
+                this.OnLoggingEvent($"Закрытие соединения . . .");
                 try
                 {
                     this.Client.Client.Disconnect(false);
                     closed = true;
-                    this.LogMessage($"Соединение закрыто");
+                    this.OnLoggingEvent($"Соединение закрыто");
                 }
                 catch (Exception ex)
                 {
@@ -289,6 +584,13 @@ namespace ForRobot.Libr.Client
         public async Task<string> InAsync() => await this.JsonRpc.InvokeAsync<string>("Var_ShowVar", "$IN[]");
 
         /// <summary>
+        /// Вывод содержимого файла
+        /// </summary>
+        /// <param name="sFilePath">Путь файла</param>
+        /// <returns></returns>
+        public async Task<string> CopyFile2MemAsync(string sFilePath) => await this.JsonRpc.InvokeAsync<string>("File_CopyFile2Mem", sFilePath);
+
+        /// <summary>
         /// Копирование файла в дерективу робота
         /// </summary>
         /// <param name="sFilePath">Директория файла</param>
@@ -296,10 +598,10 @@ namespace ForRobot.Libr.Client
         /// <returns></returns>
         public async Task<bool> CopyAsync(string sFilePath, string sNewPath)
         {
-            this.LogMessage($"Копирование файла программы в директорию робота {sNewPath} . . .");
+            this.OnLoggingEvent($"Копирование файла программы в директорию робота {sNewPath} . . .");
             object[] args = { sFilePath, sNewPath, 64 };
             string result = await this.JsonRpc.InvokeAsync<string>("File_Copy", args);
-            if (result == OkResponse)
+            if (result == OK_RESPONSE)
                 return true;
             return false;
         }
@@ -312,10 +614,10 @@ namespace ForRobot.Libr.Client
         /// <returns></returns>
         public async Task<bool> CopyMem2FileAsync(string sFilePath, string sFinalPath)
         {
-            this.LogMessage($"Копирование содержание файла {sFilePath} в {sFinalPath} . . .");
+            this.OnLoggingEvent($"Копирование содержание файла {sFilePath} в {sFinalPath} . . .");
 
             if (!File.Exists(Path.Combine(sFilePath)))
-                this.LogErrorMessage($"Не существует файла {sFilePath}");
+                this.OnLoggingErrorEvent($"Не существует файла {sFilePath}");
 
             string content;
             using (StreamReader reader = new StreamReader(sFilePath))
@@ -326,17 +628,10 @@ namespace ForRobot.Libr.Client
             object[] args = { content, sFinalPath, 64 };
             string result = await this.JsonRpc.InvokeAsync<string>("File_CopyMem2File", args);
 
-            if (result == OkResponse)
+            if (result == OK_RESPONSE)
                 return true;
             return false;
         }
-
-        /// <summary>
-        /// Вывод содержимого файла
-        /// </summary>
-        /// <param name="sFilePath">Путь файла</param>
-        /// <returns></returns>
-        public async Task<string> CopyFile2MemAsync(string sFilePath) => await this.JsonRpc.InvokeAsync<string>("File_CopyFile2Mem", sFilePath);
 
         /// <summary>
         /// Выбор файла программы
@@ -345,11 +640,10 @@ namespace ForRobot.Libr.Client
         /// <returns></returns>
         public async Task<bool> SelectAsync(string sFilePath)
         {
-            this.LogMessage($"Выбор программы {sFilePath} . . .");
+            this.OnLoggingEvent($"Выбор программы {sFilePath} . . .");
 
             string result = await this.JsonRpc.InvokeAsync<string>("Select_Select", sFilePath);
-
-            return result == OkResponse;
+            return result == OK_RESPONSE;
         }
 
         /// <summary>
@@ -358,11 +652,11 @@ namespace ForRobot.Libr.Client
         /// <returns></returns>
         public async Task<bool> SelectCancelAsync()
         {
-            this.LogMessage($"Отмена выбора текущего файла . . .");
+            this.OnLoggingEvent($"Отмена выбора текущего файла . . .");
 
             string result = await this.JsonRpc.InvokeAsync<string>("Select_Cancel");
 
-            return result == OkResponse;
+            return result == OK_RESPONSE;
         }
 
         /// <summary>
@@ -372,11 +666,11 @@ namespace ForRobot.Libr.Client
         /// <returns></returns>
         public async Task<bool> FileDeleteAsync(string sFilePath)
         {
-            this.LogMessage($"Удаление файла {sFilePath} . . .");
+            this.OnLoggingEvent($"Удаление файла {sFilePath} . . .");
 
             string result = await this.JsonRpc.InvokeAsync<string>("File_Delete", sFilePath);
 
-            return result == OkResponse;
+            return result == OK_RESPONSE;
         }
 
         /// <summary>
@@ -385,11 +679,11 @@ namespace ForRobot.Libr.Client
         /// <returns></returns>
         public async Task<bool> StartAsync()
         {
-            this.LogMessage($"Запуск текущей программы . . .");
+            this.OnLoggingEvent($"Запуск текущей программы . . .");
 
             string result = await this.JsonRpc.InvokeAsync<string>("Select_Start");
 
-            return result == OkResponse;
+            return result == OK_RESPONSE;
         }
 
         /// <summary>
@@ -399,11 +693,11 @@ namespace ForRobot.Libr.Client
         /// <returns></returns>
         public async Task<bool> RunAsync(string sFilePath)
         {
-            this.LogMessage($"Запуск программы {sFilePath} . . .");
+            this.OnLoggingEvent($"Запуск программы {sFilePath} . . .");
 
             string result = await this.JsonRpc.InvokeAsync<string>("Select_Run", sFilePath);
 
-            return result == OkResponse;
+            return result == OK_RESPONSE;
         }
 
         /// <summary>
@@ -412,13 +706,13 @@ namespace ForRobot.Libr.Client
         /// <returns></returns>
         public async Task<bool> PauseAsync()
         {
-            this.LogMessage($"Остановка текущей программы . . .");
+            this.OnLoggingEvent($"Остановка текущей программы . . .");
 
             object[] args = { 1 };
 
             string result = await this.JsonRpc.InvokeAsync<string>("Select_Stop", args);
 
-            return result == OkResponse;
+            return result == OK_RESPONSE;
         }
 
         /// <summary>
@@ -426,7 +720,7 @@ namespace ForRobot.Libr.Client
         /// </summary>
         /// <param name="sFolderPath">Директория папки для запроса</param>
         /// <returns></returns>
-        public async Task<Dictionary<String, String>> File_NameListAsync(string sFolderPath = DefaulRoot)
+        public async Task<Dictionary<String, String>> File_NameListAsync(string sFolderPath = DEFAULT_ROOT)
         {
             Dictionary<String, String> result = new Dictionary<string, string>();
             try
@@ -443,9 +737,11 @@ namespace ForRobot.Libr.Client
 
         #endregion
 
-        #endregion
+        #endregion Public functions
 
         #region Implementations of IDisposable
+
+        private volatile int _disposed;
 
         ~JsonRpcConnection() => Dispose(false);
 
