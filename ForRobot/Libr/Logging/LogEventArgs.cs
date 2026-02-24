@@ -2,7 +2,7 @@
 
 namespace ForRobot.Libr.Logging
 {
-    public class LogEventArgs
+    public class LogEventArgs : Exception
     {
         #region Private variables
 

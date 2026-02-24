@@ -418,8 +418,8 @@ namespace ForRobot.Models.RoboticComplex
             try
             { 
                 this.Connection = new JsonRpcConnection(this.Host, this.Port);
-                this.Connection.LoggingEvent += this.Log;
-                this.Connection.LoggingErrorEvent += this.LogError;
+                //this.Connection.LoggingEvent += this.Log;
+                //this.Connection.LoggingErrorEvent += this.LogError;
                 this.Connection.Connected += (sender, e) => this.OnChangeProperty();
                 this.Connection.Aborted += (sender, e) =>
                 {

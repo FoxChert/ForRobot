@@ -68,6 +68,16 @@ namespace ForRobot.Libr.Client
         }
     }
 
+    //public class CommandException : Exception
+    //{
+    //    public Command Command { get; }
+
+    //    public CommandException(Command command)
+    //    {
+    //        Command = command ?? throw new ArgumentNullException(nameof(command));
+    //    }
+    //}
+
     public static class TaskExtensions
     {
         public static async Task<T> WithCancellation<T>(this Task<T> task, CancellationToken cancellationToken)
@@ -178,7 +188,7 @@ namespace ForRobot.Libr.Client
         protected virtual void OnCommandCancelled(Command command) => CommandCancelled?.Invoke(this, new CommandEventArgs(command));
         protected virtual void OnCommandTimedOut(Command command) => CommandTimedOut?.Invoke(this, new CommandEventArgs(command));
 
-        public string AddCommand(string methodName, object[] parameters, TimeSpan timeout)
+        public string EnqueueCommand(string methodName, object[] parameters, TimeSpan timeout)
         {
             if (_disposed == 1)
                 throw new ObjectDisposedException(nameof(CommandQueueManager));
@@ -272,6 +282,11 @@ namespace ForRobot.Libr.Client
             _activeCommands.Clear();
         }
 
+        /// <summary>
+        /// Удаление выполненной команды
+        /// </summary>
+        /// <param name="commandId"></param>
+        /// <returns></returns>
         public bool RemoveCompletedCommand(string commandId)
         {
             if (_activeCommands.TryRemove(commandId, out var command))
@@ -325,15 +340,41 @@ namespace ForRobot.Libr.Client
         /// <summary>
         /// Обработчик исключений
         /// </summary>
-        private static readonly Action<Exception> _exceptionCallback = new Action<Exception>(e =>
+        private static readonly Action<CommandQueueManager, Command, Exception> _exceptionCallback = new Action<CommandQueueManager, Command, Exception>((sender, command, e) =>
         {
-            //try
+            try
+            {
+                throw e;
+            }
+            catch (OperationCanceledException ex) when (!(sender as CommandQueueManager).ContainsCommand(command.Id))
+            {
+                (sender as CommandQueueManager).CancelCommand(command.Id);
+                //exceptionCallback?.Invoke(new OperationCanceledException($"Command {methodName} was cancelled"));
+                throw new OperationCanceledException($"Команда {command.MethodName} была отменена");
+            }
+            catch (TimeoutException)
+            {
+                (sender as CommandQueueManager).RemoveCompletedCommand(command.Id);
+                //exceptionCallback?.Invoke(new TimeoutException($"Command {methodName} timed out"));
+                throw new TimeoutException($"Время ожидания команды {command.MethodName} превысело установленный лимит {command.Timeout.Seconds} сек.");
+            }
+            catch (Exception ex)
+            {
+                (sender as CommandQueueManager).RemoveCompletedCommand(command.Id);
+                //exceptionCallback?.Invoke(ex);
+                throw ex;
+            }
+            //catch (CommandException commandEx)
             //{
-            //    throw e;
+            //    //throw new ConnectionLogErrorEventArgs(Host)
             //}
-            //catch (ConnectionLogEventArgs )
+        ////catch (ConnectionLogEventArgs connectionException)
+        ////{
+        ////    throw()
+        ////}
+        //catch (ConnectionLogErrorEventArgs connectionErrorException)
             //{
-
+            //    throw ()
             //}
         });
 
@@ -373,6 +414,9 @@ namespace ForRobot.Libr.Client
 
         public int Port { get; set; }
 
+        /// <summary>
+        /// Время ожидания ответа, тик
+        /// </summary>
         public int Timeout { get; set; }
 
         /// <summary>
@@ -432,6 +476,67 @@ namespace ForRobot.Libr.Client
         /// <returns></returns>
         private bool CheckKey() => Task.Run(async () => await this.JsonRpc.InvokeAsync<string>("auth", "My_example_KEY")).Result == OK_RESPONSE;
 
+        public async Task<T> ExecuteCommandAsync<T>(string methodName, TimeSpan? timeout = null, Action<Exception> exceptionCallback = null, params object[] parameters)
+        {
+            var effectiveTimeout = timeout ?? TimeSpan.FromTicks(this.Timeout);
+            var commandId = _commandQueueManager.EnqueueCommand(methodName, parameters, effectiveTimeout);
+            Command activeCommand = null;
+            try
+            {
+                activeCommand = _commandQueueManager.GetActiveCommands().FirstOrDefault(c => c.Id == commandId);
+
+                if (activeCommand != null)
+                    activeCommand.StartedAt = DateTime.UtcNow;
+
+                T result = await InvokeMethodAsync<T>(methodName, parameters, effectiveTimeout);
+                _commandQueueManager.RemoveCompletedCommand(commandId);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                //await _exceptionCallback?.Invoke(_commandQueueManager, activeCommand, ex);
+                //await new System.Windows.Threading.Dispatcher()?.BeginInvoke(_exceptionCallback, _commandQueueManager, activeCommand, ex);
+                throw new ConnectionLogErrorEventArgs(this.Host, this.Port, ex.Message, ex);
+            }
+        }
+
+        public async Task<T> ExecuteCommandAsync<T>(string methodName, object parameters = null, TimeSpan? timeout = null, Action<Exception> exceptionCallback = null) => await this.ExecuteCommandAsync<T>(methodName, timeout, exceptionCallback, parameters);
+        //{
+            //var effectiveTimeout = timeout ?? TimeSpan.FromTicks(this.Timeout);
+            //var commandId = _commandQueueManager.EnqueueCommand(methodName, parameters, effectiveTimeout);
+            //Command activeCommand = null;
+            //try
+            //{
+            //    activeCommand = _commandQueueManager.GetActiveCommands().FirstOrDefault(c => c.Id == commandId);
+
+            //    if (activeCommand != null)
+            //        activeCommand.StartedAt = DateTime.UtcNow;
+
+            //    T result = await InvokeMethodAsync<T>(methodName, parameters, effectiveTimeout);
+            //    _commandQueueManager.RemoveCompletedCommand(commandId);
+            //    return result;
+            //}
+            //catch (Exception ex)
+            //{
+            //    //await _exceptionCallback?.Invoke(_commandQueueManager, activeCommand, ex);
+            //    //await new System.Windows.Threading.Dispatcher()?.BeginInvoke(_exceptionCallback, _commandQueueManager, activeCommand, ex);
+            //    throw new ConnectionLogErrorEventArgs(this.Host, this.Port, ex.Message, ex);
+            //}
+        //}
+
+        private async Task<T> InvokeMethodAsync<T>(string methodName, object[] parameters, TimeSpan timeout)
+        {
+            using (var cts = new CancellationTokenSource(timeout))
+            {
+                return await this.JsonRpc.InvokeAsync<T>(methodName, parameters).WithCancellation(cts.Token);
+            }
+        }
+
+        /// <summary>
+        /// Проверка отмены команды
+        /// </summary>
+        /// <param name="commandId"></param>
+        /// <returns></returns>
         private bool IsCommandCancelled(string commandId) => !_commandQueueManager.ContainsCommand(commandId);
 
         //private async Task<T> CreateCommand<T>(string method, object parametr)
@@ -569,26 +674,30 @@ namespace ForRobot.Libr.Client
         /// Запрос статуса процесса
         /// </summary>
         /// <returns></returns>
-        public async Task<string> Process_StateAsync() => await this.JsonRpc.InvokeAsync<string>("Var_ShowVar", "$PRO_STATE");
+        public async Task<string> Process_StateAsync() => await this.ExecuteCommandAsync<string>("Var_ShowVar", "$PRO_STATE");
+        //public async Task<string> Process_StateAsync() => await this.JsonRpc.InvokeAsync<string>("Var_ShowVar", "$PRO_STATE");
 
         /// <summary>
         /// Название программы
         /// </summary>
         /// <returns></returns>
-        public async Task<string> Pro_NameAsync() => await this.JsonRpc.InvokeAsync<string>("Var_ShowVar", "$PRO_NAME[]");
+        public async Task<string> Pro_NameAsync() => await this.ExecuteCommandAsync<string>("Var_ShowVar", "$PRO_NAME[]");
+        //public async Task<string> Pro_NameAsync() => await this.JsonRpc.InvokeAsync<string>("Var_ShowVar", "$PRO_NAME[]");
 
         /// <summary>
         /// Запрос состояния входов
         /// </summary>
         /// <returns></returns>
-        public async Task<string> InAsync() => await this.JsonRpc.InvokeAsync<string>("Var_ShowVar", "$IN[]");
+        public async Task<string> InAsync() => await this.ExecuteCommandAsync<string>("Var_ShowVar", "$IN[]");
+        //public async Task<string> InAsync() => await this.JsonRpc.InvokeAsync<string>("Var_ShowVar", "$IN[]");
 
         /// <summary>
         /// Вывод содержимого файла
         /// </summary>
         /// <param name="sFilePath">Путь файла</param>
         /// <returns></returns>
-        public async Task<string> CopyFile2MemAsync(string sFilePath) => await this.JsonRpc.InvokeAsync<string>("File_CopyFile2Mem", sFilePath);
+        public async Task<string> CopyFile2MemAsync(string sFilePath) => await this.ExecuteCommandAsync<string>("File_CopyFile2Mem", sFilePath);
+        //public async Task<string> CopyFile2MemAsync(string sFilePath) => await this.JsonRpc.InvokeAsync<string>("File_CopyFile2Mem", sFilePath);
 
         /// <summary>
         /// Копирование файла в дерективу робота
@@ -600,7 +709,8 @@ namespace ForRobot.Libr.Client
         {
             this.OnLoggingEvent($"Копирование файла программы в директорию робота {sNewPath} . . .");
             object[] args = { sFilePath, sNewPath, 64 };
-            string result = await this.JsonRpc.InvokeAsync<string>("File_Copy", args);
+            string result = await this.ExecuteCommandAsync<string>("File_Copy", args);
+            //string result = await this.JsonRpc.InvokeAsync<string>("File_Copy", args);
             if (result == OK_RESPONSE)
                 return true;
             return false;
@@ -626,7 +736,8 @@ namespace ForRobot.Libr.Client
             }
 
             object[] args = { content, sFinalPath, 64 };
-            string result = await this.JsonRpc.InvokeAsync<string>("File_CopyMem2File", args);
+            string result = await this.ExecuteCommandAsync<string>("File_CopyMem2File", args);
+            //string result = await this.JsonRpc.InvokeAsync<string>("File_CopyMem2File", args);
 
             if (result == OK_RESPONSE)
                 return true;
@@ -642,7 +753,8 @@ namespace ForRobot.Libr.Client
         {
             this.OnLoggingEvent($"Выбор программы {sFilePath} . . .");
 
-            string result = await this.JsonRpc.InvokeAsync<string>("Select_Select", sFilePath);
+            string result = await this.ExecuteCommandAsync<string>("Select_Select", sFilePath);
+            //string result = await this.JsonRpc.InvokeAsync<string>("Select_Select", sFilePath);
             return result == OK_RESPONSE;
         }
 
@@ -654,7 +766,8 @@ namespace ForRobot.Libr.Client
         {
             this.OnLoggingEvent($"Отмена выбора текущего файла . . .");
 
-            string result = await this.JsonRpc.InvokeAsync<string>("Select_Cancel");
+            string result = await this.ExecuteCommandAsync<string>("Select_Cancel");
+            //string result = await this.JsonRpc.InvokeAsync<string>("Select_Cancel");
 
             return result == OK_RESPONSE;
         }
@@ -668,7 +781,8 @@ namespace ForRobot.Libr.Client
         {
             this.OnLoggingEvent($"Удаление файла {sFilePath} . . .");
 
-            string result = await this.JsonRpc.InvokeAsync<string>("File_Delete", sFilePath);
+            string result = await this.ExecuteCommandAsync<string>("File_Delete", sFilePath);
+            //string result = await this.JsonRpc.InvokeAsync<string>("File_Delete", sFilePath);
 
             return result == OK_RESPONSE;
         }
@@ -681,7 +795,8 @@ namespace ForRobot.Libr.Client
         {
             this.OnLoggingEvent($"Запуск текущей программы . . .");
 
-            string result = await this.JsonRpc.InvokeAsync<string>("Select_Start");
+            string result = await this.ExecuteCommandAsync<string>("Select_Start");
+            //string result = await this.JsonRpc.InvokeAsync<string>("Select_Start");
 
             return result == OK_RESPONSE;
         }
@@ -695,7 +810,8 @@ namespace ForRobot.Libr.Client
         {
             this.OnLoggingEvent($"Запуск программы {sFilePath} . . .");
 
-            string result = await this.JsonRpc.InvokeAsync<string>("Select_Run", sFilePath);
+            string result = await this.ExecuteCommandAsync<string>("Select_Run", sFilePath);
+            //string result = await this.JsonRpc.InvokeAsync<string>("Select_Run", sFilePath);
 
             return result == OK_RESPONSE;
         }
@@ -710,7 +826,8 @@ namespace ForRobot.Libr.Client
 
             object[] args = { 1 };
 
-            string result = await this.JsonRpc.InvokeAsync<string>("Select_Stop", args);
+            string result = await this.ExecuteCommandAsync<string>("Select_Stop", args);
+            //string result = await this.JsonRpc.InvokeAsync<string>("Select_Stop", args);
 
             return result == OK_RESPONSE;
         }
@@ -726,7 +843,8 @@ namespace ForRobot.Libr.Client
             try
             {
                 object[] args = { sFolderPath, 511, 127 };
-                result = await this.JsonRpc.InvokeAsync<Dictionary<String, String>>("File_NameList", args);
+                result = await this.ExecuteCommandAsync<Dictionary<String, String>>("File_NameList", args);
+                //result = await this.JsonRpc.InvokeAsync<Dictionary<String, String>>("File_NameList", args);
             }
             catch (Exception e)
             {
