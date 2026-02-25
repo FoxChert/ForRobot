@@ -554,10 +554,8 @@
     </Compile>
     <Compile Include="RelayCommand.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Libr\Client\StatusEventArgs.cs" />
     <Compile Include="Libr\Client\TaskHelper.cs" />
     <Compile Include="Libr\Client\JsonRpcConnection.cs" />
-    <Compile Include="Libr\Client\SocketStateObject.cs" />
     <Compile Include="Libr\ErrorException.cs" />
     <Compile Include="Libr\Logging\LogErrorEventArgs.cs" />
     <Compile Include="Libr\Client\ConnectionLogEventArgs.cs" />

@@ -58,27 +58,6 @@ namespace ForRobot.Models.RoboticComplex
 
         #endregion
 
-        #region Events
-        
-        /// <summary>
-        /// Событие выгрузки файлов
-        /// </summary>
-        public event EventHandler LoadedFilesEvent;
-        /// <summary>
-        /// Событие логирования действия
-        /// </summary>
-        public event EventHandler<LogEventArgs> Log;
-        /// <summary>
-        /// Событие логирования ошибки
-        /// </summary>
-        public event EventHandler<LogErrorEventArgs> LogError;
-        /// <summary>
-        /// Событие изменения свойств робота
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        #endregion
-
         #region Public variables
 
         #region Constants
@@ -360,6 +339,27 @@ namespace ForRobot.Models.RoboticComplex
         ///// Массив значений силы подачи
         ///// </summary>
         //public decimal[] WireFeedArray { get => this._wireFeedArray; set => Set(ref this._wireFeedArray, value); }        
+
+        #region Events
+
+        /// <summary>
+        /// Событие выгрузки файлов
+        /// </summary>
+        public event EventHandler LoadedFilesEvent;
+        ///// <summary>
+        ///// Событие логирования действия
+        ///// </summary>
+        //public event EventHandler<LogEventArgs> Log;
+        ///// <summary>
+        ///// Событие логирования ошибки
+        ///// </summary>
+        //public event EventHandler<LogErrorEventArgs> LogError;
+        /// <summary>
+        /// Событие изменения свойств робота
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
 
         #endregion
 
