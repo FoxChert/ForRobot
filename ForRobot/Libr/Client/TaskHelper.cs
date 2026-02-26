@@ -6,7 +6,6 @@ namespace ForRobot.Libr.Client
 {
     public static class TaskHelper
     {
-        // returns true if task
         public static bool TryAwaitTask(object task, out object result)
         {
             result = null;
@@ -16,7 +15,6 @@ namespace ForRobot.Libr.Client
                 return false;
             }
 
-            // ValueTask<T>
             var returnType = task.GetType();
             if (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(ValueTask<>))
             {
@@ -26,8 +24,7 @@ namespace ForRobot.Libr.Client
 
             if (task is ValueTask valueTask)
                 task = valueTask.AsTask();
-
-            // Task or Task<T>
+            
             if (task is Task t)
             {
                 if (TryGetTaskResult(t, out var taskResult))

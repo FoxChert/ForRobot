@@ -64,10 +64,6 @@ namespace ForRobot.Models.RoboticComplex
 
         [JsonIgnore]
         public const string PathOfTempFolder = @"C:\Windows\Temp";
-        //[JsonIgnore]
-        //public const string DefaultHost = "0.0.0.0";
-        //[JsonIgnore]
-        //public const int DefaultPort = 3333;
         [JsonIgnore]
         /// <summary>
         /// Задержка запроса состояния процесса на роботе
@@ -346,14 +342,14 @@ namespace ForRobot.Models.RoboticComplex
         /// Событие выгрузки файлов
         /// </summary>
         public event EventHandler LoadedFilesEvent;
-        ///// <summary>
-        ///// Событие логирования действия
-        ///// </summary>
-        //public event EventHandler<LogEventArgs> Log;
-        ///// <summary>
-        ///// Событие логирования ошибки
-        ///// </summary>
-        //public event EventHandler<LogErrorEventArgs> LogError;
+        /// <summary>
+        /// Событие логирования действия
+        /// </summary>
+        public event EventHandler<LogEventArgs> LoggingEvent;
+        /// <summary>
+        /// Событие логирования ошибки
+        /// </summary>
+        public event EventHandler<LogErrorEventArgs> LoggingErrorEvent;
         /// <summary>
         /// Событие изменения свойств робота
         /// </summary>
@@ -392,22 +388,22 @@ namespace ForRobot.Models.RoboticComplex
             this.OnChangeProperty(nameof(this.IsConnection));
         }
 
-        private void LogMessage(string message)
+        private void OnLogginMessage(string message)
         {
-            if (string.IsNullOrEmpty(message) || this.Log == null)
+            if (string.IsNullOrEmpty(message) || this.LoggingEvent == null)
                 return;
 
-            this.Log(this, new LogEventArgs(String.Format("{0}:{1}\t{2}", this.Host, this.Port, message)));
+            this.LoggingEvent(this, new LogEventArgs(String.Format("{0} : {1}\t{2}", this.Host, this.Port, message)));
         }
 
-        private void LogErrorMessage(string message) => this.LogErrorMessage(message, null);
+        private void OnLoggingErrorMessage(string message) => this.OnLoggingErrorMessage(message, null);
 
-        private void LogErrorMessage(string message, Exception exception)
+        private void OnLoggingErrorMessage(string message, Exception exception)
         {
-            if (string.IsNullOrEmpty(message) || this.LogError == null)
+            if (string.IsNullOrEmpty(message) || this.LoggingErrorEvent == null)
                 return;
 
-            this.LogError(this, new LogErrorEventArgs(String.Format("{0}:{1}\t{2}", this.Host, this.Port, message), exception));
+            this.LoggingErrorEvent(this, new LogErrorEventArgs(String.Format("{0} : {1}\t{2}", this.Host, this.Port, message), exception));
         }
 
         /// <summary>
@@ -418,12 +414,12 @@ namespace ForRobot.Models.RoboticComplex
             try
             { 
                 this.Connection = new JsonRpcConnection(this.Host, this.Port);
-                //this.Connection.LoggingEvent += this.Log;
-                //this.Connection.LoggingErrorEvent += this.LogError;
+                this.Connection.LoggingEvent += (s, e) => this.OnLogginMessage(e.Message);
+                this.Connection.LoggingErrorEvent += (s, e) => this.OnLoggingErrorMessage(e.Message, e.Exception);
                 this.Connection.Connected += (sender, e) => this.OnChangeProperty();
                 this.Connection.Aborted += (sender, e) =>
                 {
-                    this.LogMessage("Соединение разорвано со стороны сервера");
+                    this.OnLogginMessage("Соединение разорвано со стороны сервера");
                     this.SetIsConnection();
                     this.OnChangeProperty();
                 };
@@ -434,10 +430,10 @@ namespace ForRobot.Models.RoboticComplex
                     this.OnChangeProperty();
                 };
 
-                this.LogMessage($"Открытие соединения с сервером . . .");
+                this.OnLogginMessage($"Открытие соединения с сервером . . .");
                 if (this.Connection.Open())
                 {
-                    this.LogMessage($"Открыто соединение");
+                    this.OnLogginMessage($"Открыто соединение");
                     this.SetIsConnection();
                 }
 
@@ -457,7 +453,7 @@ namespace ForRobot.Models.RoboticComplex
             }
             catch (Exception ex)
             {
-                this.LogErrorMessage(ex.Message, ex);
+                this.OnLoggingErrorMessage(ex.Message, ex);
             }
         }
 
@@ -489,7 +485,7 @@ namespace ForRobot.Models.RoboticComplex
                 }
                 catch (Exception ex)
                 {
-                    this.LogErrorMessage(ex.Message, ex);
+                    this.OnLoggingErrorMessage(ex.Message, ex);
                 }
                 LoadFiles(fileDatas.OrderBy(item => item.Path).ToList<ForRobot.Models.Controls.IFile>(), node, index);
             }
@@ -597,7 +593,7 @@ namespace ForRobot.Models.RoboticComplex
                     if (!Task.Run<bool>(async () => await this.Connection.StartAsync()).Result)
                         throw new Exception($"Ошибка перезапуска программы {RobotProgramName}");
                     else
-                        this.LogMessage($"Программа {this.RobotProgramName} перезапущена");
+                        this.OnLogginMessage($"Программа {this.RobotProgramName} перезапущена");
                 }
 
                 if (this.Pro_State == ProcessStatuses.Reset || this.Pro_State == ProcessStatuses.Stop)
@@ -605,14 +601,14 @@ namespace ForRobot.Models.RoboticComplex
                     if (!Task.Run<bool>(async () => await this.Connection.StartAsync()).Result)
                         throw new Exception($"Ошибка запуска программы {RobotProgramName}");
                     else
-                        this.LogMessage($"Программа {this.RobotProgramName} запущена");
+                        this.OnLogginMessage($"Программа {this.RobotProgramName} запущена");
                 }
 
                 do
                 {
                     if (string.Equals(this.Pro_State, ProcessStatuses.Stop) || string.Equals(this.Pro_State, ProcessStatuses.End))
                     {
-                        this.LogMessage($"Программа {this.RobotProgramName} остановлена/завершена");
+                        this.OnLogginMessage($"Программа {this.RobotProgramName} остановлена/завершена");
                         return;
                     }
                 }
@@ -620,7 +616,7 @@ namespace ForRobot.Models.RoboticComplex
             }
             catch (Exception ex)
             {
-                this.LogErrorMessage(ex.Message, ex);
+                this.OnLoggingErrorMessage(ex.Message, ex);
             }
         }
 
@@ -637,12 +633,12 @@ namespace ForRobot.Models.RoboticComplex
                     if (!Task.Run<bool>(async () => await this.Connection.PauseAsync()).Result)
                         throw new Exception($"Ошибка остановки программы {RobotProgramName}");
                     else
-                        this.LogMessage($"Программа {RobotProgramName} остановлена");
+                        this.OnLogginMessage($"Программа {RobotProgramName} остановлена");
                 }
             }
             catch (Exception ex)
             {
-                this.LogErrorMessage(ex.Message, ex);
+                this.OnLoggingErrorMessage(ex.Message, ex);
             }
         }
 
@@ -666,12 +662,12 @@ namespace ForRobot.Models.RoboticComplex
                     if (!Task.Run<bool>(async () => await this.Connection.SelectCancelAsync()).Result)
                         throw new Exception("Не удаётся отменить выбор программы");
                     else
-                        this.LogMessage("Текущий выбор программы отменён");
+                        this.OnLogginMessage("Текущий выбор программы отменён");
                 }
             }
             catch (Exception ex)
             {
-                this.LogErrorMessage(ex.Message, ex);
+                this.OnLoggingErrorMessage(ex.Message, ex);
             }
         }
 
@@ -695,18 +691,18 @@ namespace ForRobot.Models.RoboticComplex
 
                     case ProcessStatuses.Active:
                     case ProcessStatuses.Stop:
-                        this.LogMessage("Отмена копирования: уже запущен процесс!");
+                        this.OnLogginMessage("Отмена копирования: уже запущен процесс!");
                         return false;
                 }
 
                 if (Task.Run<bool>(async () => await this.Connection.CopyAsync(sPathOnPC, sPathOnController)).Result)
-                    this.LogMessage($"Файл {sPathOnPC} скопирован в {sPathOnController}");
+                    this.OnLogginMessage($"Файл {sPathOnPC} скопирован в {sPathOnController}");
                 else
                     throw new Exception($"Ошибка копирования файла {sPathOnPC} в {sPathOnController}");
             }
             catch (Exception ex)
             {
-                this.LogErrorMessage(ex.Message, ex);
+                this.OnLoggingErrorMessage(ex.Message, ex);
                 return false;
             }
             return true;
@@ -723,7 +719,7 @@ namespace ForRobot.Models.RoboticComplex
             {
                 if (string.IsNullOrWhiteSpace(this.PathControllerFolder))
                 {
-                    this.LogErrorMessage("Нет пути на коталог на контроллере");
+                    this.OnLoggingErrorMessage("Нет пути на коталог на контроллере");
                     MessageBox.Show("Укажите путь к каталогу на контроллере", "Остановка", MessageBoxButton.OK, MessageBoxImage.Stop, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
                     return false;
                 }
@@ -738,7 +734,7 @@ namespace ForRobot.Models.RoboticComplex
 
                     case ProcessStatuses.Active:
                     case ProcessStatuses.Stop:
-                        this.LogMessage("Отмена копирования: уже запущен процесс!");
+                        this.OnLogginMessage("Отмена копирования: уже запущен процесс!");
                         return false;
                 }
 
@@ -760,7 +756,7 @@ namespace ForRobot.Models.RoboticComplex
             }
             catch (Exception ex)
             {
-                this.LogErrorMessage(ex.Message, ex);
+                this.OnLoggingErrorMessage(ex.Message, ex);
                 return false;
             }
             return true;
@@ -777,13 +773,13 @@ namespace ForRobot.Models.RoboticComplex
             try
             {
                 if (Task.Run<bool>(async () => await Connection.CopyMem2FileAsync(sFilePath, sPCPath)).Result)
-                    this.LogMessage($"Содержимое файла {sFilePath} скопировано");
+                    this.OnLogginMessage($"Содержимое файла {sFilePath} скопировано");
                 else
                     throw new Exception($"Ошибка копирования содержимого файла {sFilePath} в {sPCPath}");
             }
             catch (Exception ex)
             {
-                this.LogErrorMessage(ex.Message, ex);
+                this.OnLoggingErrorMessage(ex.Message, ex);
                 return false;
             }
             return true;
@@ -812,7 +808,7 @@ namespace ForRobot.Models.RoboticComplex
             }
             catch (Exception ex)
             {
-                this.LogErrorMessage(ex.Message, ex);
+                this.OnLoggingErrorMessage(ex.Message, ex);
                 return false;
             }
             return true;
@@ -835,7 +831,7 @@ namespace ForRobot.Models.RoboticComplex
             }
             catch (Exception ex)
             {
-                this.LogErrorMessage(ex.Message, ex);
+                this.OnLoggingErrorMessage(ex.Message, ex);
             }
         }
 
@@ -857,18 +853,18 @@ namespace ForRobot.Models.RoboticComplex
 
                     case ProcessStatuses.Active:
                     case ProcessStatuses.Stop:
-                        this.LogMessage("Отмена выбора: уже запущен процесс!");
+                        this.OnLogginMessage("Отмена выбора: уже запущен процесс!");
                         return;
                 }
 
                 if (Task.Run<bool>(async () => await this.Connection.SelectAsync(sProgramPath)).Result)
-                    this.LogMessage($"Выбран файл {sProgramPath}.");
+                    this.OnLogginMessage($"Выбран файл {sProgramPath}.");
                 else
                     throw new Exception($"Ошибка выбора файла {sProgramPath}.");
             }
             catch (Exception ex)
             {
-                this.LogErrorMessage(ex.Message, ex);
+                this.OnLoggingErrorMessage(ex.Message, ex);
             }
         }
         
@@ -891,18 +887,18 @@ namespace ForRobot.Models.RoboticComplex
 
                     case ProcessStatuses.Active:
                     case ProcessStatuses.Stop:
-                        this.LogMessage("Отмена удаления: уже запущен процесс!");
+                        this.OnLogginMessage("Отмена удаления: уже запущен процесс!");
                         return false;
                 }
 
                 if (!Task.Run<bool>(async () => await this.Connection.FileDeleteAsync(sPathToFile)).Result)
                     throw new Exception($"Ошибка удаления файла {sPathToFile}");
                 else
-                    this.LogMessage($"Файл программы {sPathToFile} удалён");                
+                    this.OnLogginMessage($"Файл программы {sPathToFile} удалён");                
             }
             catch (Exception ex)
             {
-                this.LogErrorMessage(ex.Message, ex);
+                this.OnLoggingErrorMessage(ex.Message, ex);
                 return false;
             }
             return true;
@@ -925,12 +921,12 @@ namespace ForRobot.Models.RoboticComplex
                     if (!Task.Run<bool>(async () => await this.Connection.FileDeleteAsync(Path.Combine(this.PathProgramm, file))).Result)
                         throw new Exception($"Ошибка удаления файла {file}");
                     else
-                        this.LogMessage($"Файл {file} удалён");
+                        this.OnLogginMessage($"Файл {file} удалён");
                 }
             }
             catch (Exception ex)
             {
-                this.LogErrorMessage(ex.Message, ex);
+                this.OnLoggingErrorMessage(ex.Message, ex);
                 return false;
             }
             return true;
@@ -947,7 +943,7 @@ namespace ForRobot.Models.RoboticComplex
             }
             catch (Exception ex)
             {
-                this.LogErrorMessage(ex.Message, ex);
+                this.OnLoggingErrorMessage(ex.Message, ex);
                 return false;
             }
             return true;
@@ -971,7 +967,7 @@ namespace ForRobot.Models.RoboticComplex
             }
             catch (Exception ex)
             {
-                this.LogErrorMessage(ex.Message, ex);
+                this.OnLoggingErrorMessage(ex.Message, ex);
                 return false;
             }
             return true;
@@ -1082,7 +1078,7 @@ namespace ForRobot.Models.RoboticComplex
             }
             catch(Exception ex)
             {
-                this.LogErrorMessage(ex.Message, ex);
+                this.OnLoggingErrorMessage(ex.Message, ex);
             }
         }
 

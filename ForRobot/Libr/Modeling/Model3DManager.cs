@@ -19,7 +19,7 @@ namespace ForRobot.Libr.Modeling
             [".ply"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
             //[".off"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
             //[".lwo"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() }
-            //[".step"] = new List<IModelFileHandler> { new OpenCascadeModelHandler() }
+            [".step"] = new List<IModelFileHandler> { new OpenCascadeModelHandler() }
         };
 
         /// <summary>

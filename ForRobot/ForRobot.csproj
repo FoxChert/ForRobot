@@ -321,7 +321,11 @@
     <Compile Include="Libr\Behavior\FocusBehavior.cs" />
     <Compile Include="Libr\Behavior\HelixAddCollectionBehavior.cs" />
     <Compile Include="Libr\Behavior\DataGridStretchLastColumn.cs" />
+    <Compile Include="Libr\Client\Command.cs" />
+    <Compile Include="Libr\Client\CommandEventArgs.cs" />
+    <Compile Include="Libr\Client\CommandQueueManager.cs" />
     <Compile Include="Libr\Client\ConnectionLogErrorEventArgs.cs" />
+    <Compile Include="Libr\Client\TaskExtensions.cs" />
     <Compile Include="Libr\Clipboard\CacheClipboardProvider.cs" />
     <Compile Include="Libr\Clipboard\IChangeNotificationControl.cs" />
     <Compile Include="Libr\Clipboard\MultiNotificationSuppression.cs" />

@@ -4,285 +4,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
 using System.Net.Sockets;
 
 using StreamJsonRpc;
 
 namespace ForRobot.Libr.Client
 {
-    /// <summary>
-    /// Класс-модель представления JsonRPC команды с метаданными
-    /// </summary>
-    public class Command
-    {
-        public string Id { get; private set; }
-
-        /// <summary>
-        /// Наименование JsonRPC метода
-        /// </summary>
-        public string MethodName { get; }
-
-        /// <summary>
-        /// Параметры метода
-        /// </summary>
-        public object[] Parameters { get; }
-
-        /// <summary>
-        /// Время ожидания выполнения команды
-        /// </summary>
-        public TimeSpan Timeout { get; private set; }
-
-        /// <summary>
-        /// Токен отмены для управления временем жизни команды
-        /// </summary>
-        public CancellationTokenSource CancellationTokenSource { get; set; }
-
-        //public Task<object> Task { get; set; }
-
-        /// <summary>
-        /// Время создания команды
-        /// </summary>
-        public DateTime CreatedAt { get; private set; }
-
-        /// <summary>
-        /// Время начала выполнения команды
-        /// </summary>
-        public DateTime? StartedAt { get; set; }
-
-        /// <summary>
-        /// Время завершения команды, успешного или с ошибкой
-        /// </summary>
-        public DateTime? CompletedAt { get; set; }
-
-        /// <summary>
-        /// Инициализация команды с одним параметром
-        /// </summary>
-        /// <param name="methodName">Наименование метода</param>
-        /// <param name="parameter">Передаваемый параметр</param>
-        /// <param name="timeout">Время ожидания выполнения команды (по-умолчанию используется <see cref="JsonRpcConnection.DEFAULT_TIMEOUT_MILLISECONDS"/>)</param>
-        public Command(string methodName, object parameter, TimeSpan? timeout = null)
-        {
-            if (string.IsNullOrWhiteSpace(methodName))
-                throw new ArgumentNullException(nameof(methodName));
-
-            this.Initialisation();
-            MethodName = methodName;
-            Timeout = timeout ?? new TimeSpan(JsonRpcConnection.DEFAULT_TIMEOUT_MILLISECONDS);
-        }
-
-        /// <summary>
-        /// Инициализация команды
-        /// </summary>
-        /// <param name="methodName">Наименование метода</param>
-        /// <param name="parameters">Массив передаваемых параметров</param>
-        /// <param name="timeout">Время ожидания выполнения команды (по-умолчанию используется <see cref="JsonRpcConnection.DEFAULT_TIMEOUT_MILLISECONDS"/>)</param>
-        public Command(string methodName, object[] parameters, TimeSpan? timeout = null)
-        {
-            if (string.IsNullOrWhiteSpace(methodName))
-                throw new ArgumentNullException(nameof(methodName));
-
-            this.Initialisation();
-            MethodName = methodName;
-            Parameters = parameters ?? Array.Empty<object>();
-            Timeout = timeout ?? new TimeSpan(JsonRpcConnection.DEFAULT_TIMEOUT_MILLISECONDS);
-        }
-
-        /// <summary>
-        /// Метод-инициализатор для повторяющихся свойств команды
-        /// </summary>
-        private void Initialisation()
-        {
-            Id = Guid.NewGuid().ToString();
-            CancellationTokenSource = new CancellationTokenSource();
-            CreatedAt = DateTime.UtcNow;
-        }
-
-        public bool IsTimeout => this.CancellationTokenSource.IsCancellationRequested && !CancellationTokenSource.Token.IsCancellationRequested;
-
-        /// <summary>
-        /// Отмена выполнения команды
-        /// <para>Возможна утечка CancellationTokenSource, лучше использовать using</para>
-        /// </summary>
-        public void Cancel() => CancellationTokenSource?.Cancel();
-
-        public void Dispose()
-        {
-            CancellationTokenSource?.Dispose();
-        }
-    }
-
-    public class CommandEventArgs : EventArgs
-    {
-        public Command Command { get; }
-
-        public CommandEventArgs(Command command)
-        {
-            Command = command ?? throw new ArgumentNullException(nameof(command));
-        }
-    }
-
-    public static class TaskExtensions
-    {
-        public static async Task<T> WithCancellation<T>(this Task<T> task, CancellationToken cancellationToken)
-        {
-            var tcs = new TaskCompletionSource<bool>();
-            using (cancellationToken.Register(s => ((TaskCompletionSource<bool>)s).TrySetResult(true), tcs))
-            {
-                if (task != await Task.WhenAny(task, tcs.Task))
-                    throw new OperationCanceledException(cancellationToken);
-            }
-            return await task;
-        }
-    }
-
-    /// <summary>
-    /// Менеджер очереди JsonRPC команд. Отвечает за отслеживание активных команд и управление их жизненным циклом
-    /// </summary>
-    public class CommandQueueManager : IDisposable
-    {
-        private readonly ConcurrentDictionary<string, Command> _activeCommands;
-        private readonly JsonRpcConnection _connection;
-        private readonly object _lockObject = new object();
-        private volatile int _disposed;
-
-        public event EventHandler<CommandEventArgs> CommandAdded;
-        public event EventHandler<CommandEventArgs> CommandCompleted;
-        public event EventHandler<CommandEventArgs> CommandCancelled;
-        public event EventHandler<CommandEventArgs> CommandTimedOut;
-
-        public CommandQueueManager(JsonRpcConnection connection)
-        {
-            _activeCommands = new ConcurrentDictionary<string, Command>();
-            _connection = connection ?? throw new ArgumentNullException(nameof(connection));
-        }
-
-        #region Private functions
-
-        private async Task CancelCommandWithTimeout(Command command, CancellationToken cancellationToken)
-        {
-            try
-            {
-                command.Cancel();
-                this.OnCommandCancelled(command);
-                await Task.CompletedTask;
-            }
-            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { }
-        }
-
-        #endregion Private functions
-
-        #region Public functions
-
-        protected virtual void OnCommandAdded(Command command) => CommandAdded?.Invoke(this, new CommandEventArgs(command));
-        protected virtual void OnCommandCompleted(Command command) => CommandCompleted?.Invoke(this, new CommandEventArgs(command));
-        protected virtual void OnCommandCancelled(Command command) => CommandCancelled?.Invoke(this, new CommandEventArgs(command));
-        protected virtual void OnCommandTimedOut(Command command) => CommandTimedOut?.Invoke(this, new CommandEventArgs(command));
-
-        public string EnqueueCommand(string methodName, object[] parameters, TimeSpan timeout)
-        {
-            if (_disposed == 1)
-                throw new ObjectDisposedException(nameof(CommandQueueManager));
-
-            var command = new Command(methodName, parameters, timeout);
-
-            if (!_activeCommands.TryAdd(command.Id, command))
-            {
-                throw new InvalidOperationException("Failed to enqueue command");
-            }
-
-            this.OnCommandAdded(command);
-            return command.Id;
-        }
-
-        public IReadOnlyList<Command> GetActiveCommands() => _activeCommands.Values.ToList();
-
-        public bool ContainsCommand(string commandId) => _activeCommands.ContainsKey(commandId);
-
-        public bool CancelCommand(string commandId)
-        {
-            if (_activeCommands.TryRemove(commandId, out var command))
-            {
-                command.Cancel();
-                this.OnCommandCancelled(command);
-                return true;
-            }
-            return false;
-        }
-
-        public void CancelAllCommands(TimeSpan? timeout = null)
-        {
-            var commandsToCancel = _activeCommands.Values.ToArray();
-
-            if (timeout.HasValue)
-            {
-                var cts = new CancellationTokenSource(timeout.Value);
-                var tasks = commandsToCancel.Select(cmd => CancelCommandWithTimeout(cmd, cts.Token)).ToArray();
-
-                Task.WaitAll(tasks, timeout.Value);
-                //try
-                //{
-                //    Task.WaitAll(tasks, timeout.Value);
-                //}
-                //catch (Exception ex)
-                //{
-                //    throw ex;
-                //}
-            }
-            else
-            {
-                foreach (var command in commandsToCancel)
-                {
-                    command.Cancel();
-                    OnCommandCancelled(command);
-                }
-            }
-
-            foreach (var command in commandsToCancel)
-            {
-                _activeCommands.TryRemove(command.Id, out _);
-            }
-        }
-
-        /// <summary>
-        /// Удаление выполненной команды
-        /// </summary>
-        /// <param name="commandId"></param>
-        /// <returns></returns>
-        public bool RemoveCompletedCommand(string commandId)
-        {
-            if (_activeCommands.TryRemove(commandId, out var command))
-            {
-                this.OnCommandCompleted(command);
-                return true;
-            }
-            return false;
-        }
-
-        #endregion Public functions
-
-        #region Implementations of IDisposable
-
-        ~CommandQueueManager() => Dispose();
-
-        public void Dispose()
-        {
-            if (Interlocked.CompareExchange(ref _disposed, 1, 0) == 0)
-            {
-                foreach (var cmd in _activeCommands)
-                {
-                    if (_activeCommands.TryRemove(cmd.Key, out var command))
-                    {
-                        command?.Dispose();
-                    }
-                }
-                GC.SuppressFinalize(this);
-            }
-        }
-
-        #endregion
-    }
-
     /// <summary>
     /// Класс <c>JsonRpcConnection</c>
     /// </summary>
@@ -318,15 +45,16 @@ namespace ForRobot.Libr.Client
             catch (OperationCanceledException) when (command.CancellationTokenSource.IsCancellationRequested)
             {
                 command.CompletedAt = DateTime.UtcNow;
+
                 if (command.CancellationTokenSource.Token.IsCancellationRequested)
                 {
-                    manager.OnCommandTimedOut(command);
+                    //manager.OnCommandTimedOut(command);
                     throw new TimeoutException();
                 }
                 else
                 {
-                    manager.OnCommandCancelled(command);
-                    throw;
+                    manager.CancelCommand(command.Id);
+                    return;
                 }
             }
             catch (TimeoutException)
@@ -336,8 +64,8 @@ namespace ForRobot.Libr.Client
             catch (Exception ex)
             {
                 command.CompletedAt = DateTime.UtcNow;
-                //(sender as JsonRpcConnection).OnLoggingErrorEvent(ex.Message, ex);
-                throw ex;
+                //throw ex;
+                sender.OnLoggingErrorEvent(ex.Message, ex);
             }
             finally
             {
@@ -547,12 +275,12 @@ namespace ForRobot.Libr.Client
         /// <param name="e"></param>
         private void OnLoggingEvent(string message) => this.LoggingEvent?.Invoke(this, new ConnectionLogEventArgs(this.Host, this.Port, message));
 
-        ///// <summary>
-        ///// Вызов события записи ошибки в журнал логгирования
-        ///// </summary>
-        ///// <param name="sender"></param>
-        ///// <param name="e"></param>
-        //private void OnLoggingErrorEvent(string message, Exception exception = null) => this.LoggingErrorEvent?.Invoke(this, new ConnectionLogErrorEventArgs(this.Host, this.Port, message, exception));
+        /// <summary>
+        /// Вызов события записи ошибки в журнал логгирования
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnLoggingErrorEvent(string message, Exception exception = null) => this.LoggingErrorEvent?.Invoke(this, new ConnectionLogErrorEventArgs(this.Host, this.Port, message, exception));
 
         #endregion Private functions
 

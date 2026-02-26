@@ -844,8 +844,8 @@ namespace ForRobot.ViewModels
             if (string.IsNullOrEmpty(robot.Name))
                 robot.Name = $"Соединение {this.RobotsCollection.Count + 1}";
             
-            robot.Log += new EventHandler<ForRobot.Libr.Logging.LogEventArgs>(this.WreteLog);
-            robot.LogError += new EventHandler<ForRobot.Libr.Logging.LogErrorEventArgs>(WreteLogError);
+            robot.LoggingEvent += new EventHandler<ForRobot.Libr.Logging.LogEventArgs>(this.WreteLog);
+            robot.LoggingErrorEvent += new EventHandler<ForRobot.Libr.Logging.LogErrorEventArgs>(WreteLogError);
 
             return robot;
         }
