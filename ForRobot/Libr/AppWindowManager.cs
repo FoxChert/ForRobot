@@ -5,7 +5,7 @@ using System.Collections.Concurrent;
 
 using ForRobot.Views.Windows;
 
-namespace ForRobot.Libr.Services
+namespace ForRobot.Libr
 {
     public static class AppWindowManager
     {
@@ -57,44 +57,67 @@ namespace ForRobot.Libr.Services
                     }
                     window.Closed += (s, e) =>
                     {
-
-                    }
+                        RemoveWindow(nameof(s));
+                    };
                     _activedWindos[key] = window;
                 }
+                else
+                    FocusedWindow(window);
                 return window;
             }
         }
 
-        private static bool RemoveStacks(string key, Window window)
+        private static bool RemoveWindow(string key)
         {
             lock (_lock)
             {
-                return _activedWindos.TryRemove(key, window);
+                return _activedWindos.TryRemove(key, out var window);
             }
         }
 
         /// <summary>
-        /// Окно ввода пин-кода
+        /// Окно ввода пин-кода и его хэширование по SHA256
         /// </summary>
         /// <returns></returns>
-        public static string PinCodeInputWindowShow() => InputWindowShow("Введите пин-код");
+        public static bool PinCodeInputWindowShow(string code)
+        {
+            string pin = InputWindowShow("Введите пин-код");
+            return !string.IsNullOrEmpty(pin) && ForRobot.Libr.Cryptography.Hashing.Sha256(pin) == code;
+        }
         /// <summary>
         /// Окно ввода текста
         /// </summary>
         /// <param name="sInputBoxText"></param>
         /// <returns>Введённый текст</returns>
-        public static string InputWindowShow(string sInputBoxText) => "";
+        public static string InputWindowShow(string sInputBoxText)
+        {
+            string answer = string.Empty;
+            using (InputWindow inputWindow = GetOrAddWindow(nameof(InputWindow)) as InputWindow)
+            {
+                inputWindow.Question.Content = sInputBoxText;
+                if (inputWindow.ShowDialog() == true)
+                    answer = inputWindow.Answer;
+            }
+            return answer;
+        }
         /// <summary>
         /// Главное окно приложения
         /// </summary>
         /// <returns></returns>
-        public static Window AppMainWindowShow() => null;
+        public static Window AppMainWindowShow() => GetOrAddWindow(nameof(MainWindow));
         /// <summary>
         /// Окно одиночного выбора
         /// </summary>
         /// <param name="itemsSource"></param>
         /// <returns></returns>
-        public static object SelectWindowShow(IEnumerable itemsSource) => null;
+        public static object SelectWindowShow(IEnumerable itemsSource)
+        {
+            using (SelectWindow selectWindow = GetOrAddWindow(nameof(SelectWindow)) as SelectWindow)
+            {
+
+            }
+            return null;
+        }
         /// <summary>
         /// Окно множественного выбора
         /// </summary>
@@ -115,6 +138,11 @@ namespace ForRobot.Libr.Services
         /// <returns>Сохранены ли изменения</returns>
         public static bool SettingsWindowShow(out ForRobot.Models.Settings.Settings settings)
         {
+            using (PropertiesWindow propertiesWindow = GetOrAddWindow(nameof(PropertiesWindow)) as PropertiesWindow)
+            {
+                propertiesWindow.Owner = App.Current.MainWindow;
+
+            }
             settings = null;
             return false;
         }

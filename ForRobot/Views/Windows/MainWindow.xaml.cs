@@ -12,15 +12,17 @@ namespace ForRobot.Views.Windows
     {
         #region Private variables
 
-        private ViewModels.MainWindowViewModel _viewModel;
+        private ViewModels.MainPageViewModel3_new _viewModel;
+        //private ViewModels.MainWindowViewModel _viewModel;
 
         #endregion
 
         #region Public variables
 
-        public ViewModels.MainWindowViewModel ViewModel
+        public ViewModels.MainPageViewModel3_new ViewModel
         {
-            get { return _viewModel ?? (ViewModels.MainWindowViewModel)this.DataContext ?? (_viewModel = new ViewModels.MainWindowViewModel()); }
+            get { return _viewModel ?? (ViewModels.MainPageViewModel3_new)this.DataContext ?? (_viewModel = new ViewModels.MainPageViewModel3_new()); }
+            //get { return _viewModel ?? (ViewModels.MainWindowViewModel)this.DataContext ?? (_viewModel = new ViewModels.MainWindowViewModel()); }
         }
 
         #endregion

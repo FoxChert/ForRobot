@@ -94,7 +94,7 @@ namespace ForRobot.ViewModels
 
         private FullyObservableCollection<Robot> _robotsCollection;
         private ObservableCollection<Models.File3D.SceneItem> _sceneItemsCollection = new ObservableCollection<Models.File3D.SceneItem>();
-        private ObservableCollection<AppMessage> _messagesCollection = new ObservableCollection<AppMessage>();
+        private ObservableCollection<ForRobot.Models.Message> _messagesCollection = new ObservableCollection<ForRobot.Models.Message>();
 
         /// <summary>
         /// Обработчик исключений асинхронных комманд
@@ -292,7 +292,7 @@ namespace ForRobot.ViewModels
         /// <summary>
         /// Коллекция сообщений
         /// </summary>
-        public ObservableCollection<AppMessage> MessagesCollection { get => this._messagesCollection; set => Set(ref this._messagesCollection, value); }
+        public ObservableCollection<ForRobot.Models.Message> MessagesCollection { get => this._messagesCollection; set => Set(ref this._messagesCollection, value); }
 
         #endregion
 
@@ -311,7 +311,7 @@ namespace ForRobot.ViewModels
         /// <summary>
         /// Создание файла
         /// </summary>
-        public ICommand CreateNewFileCommand { get; } = new RelayCommand(_ => App.Current.WindowsAppService.OpenCreateWindow(App.Current.Settings.StartedDetalType));
+        public ICommand CreateNewFileCommand { get; } = new RelayCommand(_ => Libr.AppWindowManager.CreateWindowShow(App.Current.Settings.StartedDetalType));
         
         /// <summary>
         /// Открытие файла программы
@@ -459,7 +459,7 @@ namespace ForRobot.ViewModels
         /// <summary>
         /// Открытие окна настроек
         /// </summary>
-        public ICommand PropertiesCommand { get; } = new RelayCommand(_ => App.Current.WindowsAppService.OpenPropertiesWindow());
+        public ICommand PropertiesCommand { get; } = new RelayCommand(_ => Libr.AppWindowManager.SettingsWindowShow(out var settings));
 
         /// <summary>
         /// Открытие chm-справки
@@ -517,11 +517,7 @@ namespace ForRobot.ViewModels
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
                 return;
 
-            if (Properties.Settings.Default.SaveRobots == null)
-                Properties.Settings.Default.SaveRobots = new System.Collections.Specialized.StringCollection();
-
-            Libr.Factories.DetalFactory.DetalFactory.ValidatedError += (exception) => App.Current.Logger.Error(exception);
-            Logger.LoggingEvent += (s, o) => System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() => this.MessagesCollection.Add(new Models.AppMessage(o))));
+            Logger.LoggingEvent += (s, o) => System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() => this.MessagesCollection.Add(new Models.Message(o))));
 
             // Выгрузка сохранённых соединений
             this.RobotsCollection = new FullyObservableCollection<Robot>();
@@ -534,7 +530,6 @@ namespace ForRobot.ViewModels
             }
             else
                 this.RobotsCollection.Add(this.GetNewRobot());
-
             this.SelectedRobot = this.RobotsCollection[0];
 
             // Добавдение делегатов событий изменения коллекции App.Current.OpenedFiles.CollectionChanged
@@ -547,31 +542,6 @@ namespace ForRobot.ViewModels
                         break;
                 }
             };
-
-            // Если нет открываемых файлов, проверяет - нужно ли создать файл детали.
-            if (App.Current.OpenedFiles.Count == 0 && App.Current.Settings.CreatedDetalFile)
-            {
-                string programName = App.Current.Settings.GetStandartProgramName(App.Current.Settings.StartedDetalType);
-                string path = Path.Combine(Path.GetTempPath(), programName);
-
-                Models.File3D.File3D file3D;
-                if (App.Current.Settings.SaveDetalProperties && File.Exists(path))
-                {
-                    file3D = ForRobot.Models.File3D.File3D.Load(path);
-                }
-                else
-                {
-                    file3D = Models.File3D.NativeFile3D.Create(path, App.Current.Settings.StartedDetalType);
-                }
-
-                if (App.Current.Settings.SaveDetalProperties)
-                    file3D.PropertyChanged += (s, e) => System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() => (s as Models.File3D.File3D).Save()));
-                //{
-                //    (s as Models.File3D.File3D).Save();
-                //};
-
-                App.Current.OpenedFiles.Add(file3D);
-            }
         }
 
         #endregion
@@ -648,7 +618,7 @@ namespace ForRobot.ViewModels
         /// Открытие скрытых панелей
         /// </summary>
         /// <param name="contentId"></param>
-        private static void CollapedLayoutAnchorable(string contentId) => GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new Libr.Behavior.CollapedLayoutAnchorableMessage(contentId));
+        private static void CollapedLayoutAnchorable(string contentId) => GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new Libr.Messages.LayoutAnchorableMessage(contentId));
 
         /// <summary>
         /// Повторное соединение с роботом

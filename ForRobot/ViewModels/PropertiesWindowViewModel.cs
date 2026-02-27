@@ -225,7 +225,7 @@ namespace ForRobot.ViewModels
         /// <summary>
         /// Закрытие окна
         /// </summary>
-        public ICommand CancelCommand { get; } = new RelayCommand(_ => App.Current.WindowsAppService.ClosePropertiesWindow());
+        //public ICommand CancelCommand { get; } = new RelayCommand(_ => App.Current.WindowsAppService.ClosePropertiesWindow());
         /// <summary>
         /// Команда изменения директивы каталога с новой версией программы
         /// </summary>
@@ -319,7 +319,7 @@ namespace ForRobot.ViewModels
                 return;
 
             this.Settings = App.Current.Settings.Clone() as ForRobot.Models.Settings.Settings;
-            this.Settings.PropertyChanged -= App.Current.HandleSaveAppSettings;
+            //this.Settings.PropertyChanged -= App.Current.HandleSaveAppSettings;
         }
 
         #endregion
@@ -331,7 +331,7 @@ namespace ForRobot.ViewModels
         /// </summary>
         private void EditPathForUpdat()
         {
-            if (!ForRobot.App.EqualsPinCode())
+            if (!ForRobot.Libr.AppWindowManager.PinCodeInputWindowShow(ForRobot.Properties.Settings.Default.PinCode))
                 return;
 
             using (var fbd = new System.Windows.Forms.FolderBrowserDialog() { SelectedPath = Properties.Settings.Default.UpdatePath })
@@ -365,7 +365,7 @@ namespace ForRobot.ViewModels
         /// <param name="control"></param>
         private static void SelectClosedControl(System.Windows.Controls.Control control)
         {
-            if (ForRobot.App.EqualsPinCode())
+            if (ForRobot.Libr.AppWindowManager.PinCodeInputWindowShow(ForRobot.Properties.Settings.Default.PinCode))
                 return;
 
             _isSelectClosedControl = false;
@@ -487,7 +487,7 @@ namespace ForRobot.ViewModels
                 };
                 new System.Threading.Thread(() => process.Start()).Start();
             }
-            App.Current.WindowsAppService.ClosePropertiesWindow();
+            //App.Current.WindowsAppService.ClosePropertiesWindow();
         }
 
         /// <summary>
@@ -495,8 +495,8 @@ namespace ForRobot.ViewModels
         /// </summary>
         public static void EditPinCode()
         {
-            if (ForRobot.Libr.Cryptography.Hashing.Sha256(new Libr.Services.WindowsAppService().InputWindowShow("Введите старый пин-код")) != Properties.Settings.Default.PinCode)
-                return;
+            //if (ForRobot.Libr.Cryptography.Hashing.Sha256(new Libr.Services.WindowsAppService().InputWindowShow("Введите старый пин-код")) != Properties.Settings.Default.PinCode)
+            //    return;
 
             using (ForRobot.Views.Windows.InputWindow inputWindow = new ForRobot.Views.Windows.InputWindow("Введите новый пин-код"))
             {

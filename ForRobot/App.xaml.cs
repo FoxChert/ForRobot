@@ -53,11 +53,6 @@ namespace ForRobot
 
         public static new App Current => Application.Current as App;
 
-        /// <summary>
-        /// Сервис открытия окон приложения
-        /// </summary>
-        public readonly ForRobot.Libr.Services.IWindowsAppService WindowsAppService = new ForRobot.Libr.Services.WindowsAppService();
-
         public static ForRobot.Libr.Services.Providers.IConfigurationProvider ConfigProvider = new ForRobot.Libr.Configuration.CachedConfigurationProvider(new ForRobot.Libr.Configuration.ConfigurationProvider());
         public static ForRobot.Libr.Services.Providers.IJsonSchemaProvider JsonSchemaProvider = new ForRobot.Libr.Json.Schemas.CachedJsonSchemaProvider(new ForRobot.Libr.Json.Schemas.JsonSchemaProvider());
         public static ForRobot.Libr.Services.Providers.IDetalProvider DetalProvider = new ForRobot.Models.Detals.CachedDetalProvider(new ForRobot.Models.Detals.DetalProvider(ConfigProvider));
@@ -133,12 +128,7 @@ namespace ForRobot
             }
             set => this._openedFiles = value;
         }
-
-        /// <summary>
-        /// Обработчик сохранения настроек
-        /// </summary>
-        public System.ComponentModel.PropertyChangedEventHandler HandleSaveAppSettings;
-
+        
         #endregion Public variables
 
         #region Private functions
@@ -164,13 +154,11 @@ namespace ForRobot
 
                 this.Logger.Trace("Запуск приложения");
 
+                // Установка провайдеров
                 ForRobot.Libr.Factories.File3DFactory.SetDetalProvider(DetalProvider);
                 ForRobot.Libr.Factories.File3DFactory.SetJsonSchemaProvider(JsonSchemaProvider);
 
-                foreach (var i in e.Args) // Исп. для открытия файла модели "с помощью"
-                    this.OpenedFiles.Add(Models.File3D.File3D.Load(i));
-
-                RunApp(e.Args);
+                RunApplication(e.Args);
                 await Task.Run(() => StartPipeServer());
 
                 GC.KeepAlive(_mutex);
@@ -220,29 +208,14 @@ namespace ForRobot
         /// Запуск приложения
         /// </summary>
         /// <param name="args"></param>
-        private void RunApp(string[] args)
+        private void RunApplication(string[] args)
         {
-            // Проверка версии файла в папке с обновлением и запрос к пользователю.
-            string updatePath = Path.Combine(App.Current.UpdatePath, $"{ResourceAssembly.GetName().Name}.exe");
-
-            if (Settings.AutoUpdate)
+            // Проверка версии файла в папке с обновлением
+            if (ValidateUpdateApplication(out string updatePath) &&
+                (!Settings.InformUser || MessageBox.Show($"Обнаружено обновление до версии {FileVersionInfo.GetVersionInfo(updatePath).ProductVersion}\nОбновить приложение?", "Обновление интерфейса", MessageBoxButton.OKCancel, MessageBoxImage.Question, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly) == MessageBoxResult.OK))
             {
-                var taskExistAppFiles = new Task<bool>(() => File.Exists(updatePath));
-                var taskUpdateApp = Task.WhenAny(taskExistAppFiles, Task.Delay(3000)); // Проверка существования файлов для обновления, ограничено по времени.
-
-                bool fileExists = false;
-                if (taskUpdateApp.Result == taskExistAppFiles)
-                {
-                    fileExists = taskExistAppFiles.Result;
-                }
-
-                if (fileExists &&
-                    new Version(FileVersionInfo.GetVersionInfo(updatePath).ProductVersion) > Assembly.GetExecutingAssembly().GetName().Version && // Проверка версии приложения для обновления
-                    (!Settings.InformUser || MessageBox.Show($"Обнаружено обновление до версии {FileVersionInfo.GetVersionInfo(updatePath).ProductVersion}\nОбновить приложение?", "Обновление интерфейса", MessageBoxButton.OKCancel, MessageBoxImage.Question, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly) == MessageBoxResult.OK))
-                {
-                    this.Logger.Trace($"Обновление приложения до версии {FileVersionInfo.GetVersionInfo(updatePath).ProductVersion}");
-                    App.Current.UpDateApp(args);
-                }
+                this.Logger.Trace($"Обновление приложения до версии {FileVersionInfo.GetVersionInfo(updatePath).ProductVersion}");
+                App.Current.UpdateApplication(args);
             }
 
             // Обновление настроек приложения к пользовательским.
@@ -254,9 +227,7 @@ namespace ForRobot
                 ForRobot.Properties.Settings.Default.Save();
             }
 
-            Application.Current.MainWindow = WindowsAppService.AppMainWindow;
-            HandleSaveAppSettings += (s, o) => Settings.Save();
-            Settings.PropertyChanged += HandleSaveAppSettings;
+            Application.Current.MainWindow = Libr.AppWindowManager.AppMainWindowShow();
 
             // Вход в приложение по пин-коду
             if (this.Settings.LoginByPINCode)
@@ -266,7 +237,7 @@ namespace ForRobot
                 // Выполняем проверку пин-кода в UI потоке
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    pinResult = ForRobot.App.EqualsPinCode();
+                    pinResult = Libr.AppWindowManager.PinCodeInputWindowShow(ForRobot.Properties.Settings.Default.PinCode);
                 });
 
                 if (!pinResult)
@@ -277,8 +248,36 @@ namespace ForRobot
                 }
             }
 
-            WindowsAppService.AppMainWindow.Show();
+            foreach (var i in args) // Исп. для открытия файла модели "с помощью"
+                this.OpenedFiles.Add(Models.File3D.File3D.Load(i));
+
+            InitializeGlobalValable();
+            Application.Current.MainWindow.Show();
             SelectAppMainWindow();
+        }
+
+        /// <summary>
+        /// Проверка обновления приложения на сервере
+        /// </summary>
+        /// <param name="sUpdatePath"></param>
+        /// <returns></returns>
+        private bool ValidateUpdateApplication(out string sUpdatePath)
+        {
+            string path = sUpdatePath = Path.Combine(App.Current.UpdatePath, $"{ResourceAssembly.GetName().Name}.exe");
+
+            if (!Settings.AutoUpdate)
+                return false;
+
+            var taskExistAppFiles = new Task<bool>(() => File.Exists(path));
+            var taskUpdateApp = Task.WhenAny(taskExistAppFiles, Task.Delay(3000)); // Проверка существования файлов для обновления, ограничено по времени.
+
+            bool fileExists = false;
+            if (taskUpdateApp.Result == taskExistAppFiles)
+            {
+                fileExists = taskExistAppFiles.Result;
+            }
+
+            return fileExists && new Version(FileVersionInfo.GetVersionInfo(path).ProductVersion) > Assembly.GetExecutingAssembly().GetName().Version;
         }
 
         /// <summary>
@@ -286,7 +285,7 @@ namespace ForRobot
         /// Копирует файлы из каталога на сервере в нынешнюю директорию программы и перезапускает её
         /// </summary>
         /// <param name="e">Аргументы командной стоки</param>
-        private void UpDateApp(string[] args)
+        private void UpdateApplication(string[] args)
         {
             System.Diagnostics.Process process = new System.Diagnostics.Process()
             {
@@ -437,6 +436,39 @@ namespace ForRobot
         }
 
         /// <summary>
+        /// Инициализация глобальных типов и т.п.
+        /// </summary>
+        private void InitializeGlobalValable()
+        {
+            Libr.Factories.DetalFactory.DetalFactory.ValidatedError += (exception) => Logger.Error(exception);
+
+            if (ForRobot.Properties.Settings.Default.SaveRobots == null)
+                ForRobot.Properties.Settings.Default.SaveRobots = new StringCollection();
+
+            // Если нет открываемых файлов, проверяет в настройках - нужно ли создать файл детали.
+            if (OpenedFiles.Count == 0 && Settings.CreatedDetalFile)
+            {
+                string programName = Settings.GetStandartProgramName(Settings.StartedDetalType);
+                string path = Path.Combine(Path.GetTempPath(), programName);
+
+                Models.File3D.File3D file3D;
+                if (Settings.SaveDetalProperties && File.Exists(path))
+                {
+                    file3D = ForRobot.Models.File3D.File3D.Load(path);
+                }
+                else
+                {
+                    file3D = Models.File3D.NativeFile3D.Create(path, Settings.StartedDetalType);
+                }
+
+                if (Settings.SaveDetalProperties)
+                    file3D.PropertyChanged += (s, e) => Application.Current.Dispatcher.BeginInvoke(new Action(() => (s as Models.File3D.File3D).Save()));
+
+                OpenedFiles.Add(file3D);
+            }
+        }
+
+        /// <summary>
         /// Установка настроек приложения
         /// </summary>
         /// <returns></returns>
@@ -462,16 +494,6 @@ namespace ForRobot
         #endregion Private functions
 
         #region Public functions
-
-        /// <summary>
-        /// Ввод и сравнение пин-кода с сохранённым в <see cref="ForRobot.Properties.Settings"/>
-        /// </summary>
-        /// <returns>Верный ли введенный пользователем пин-код</returns>
-        public static bool EqualsPinCode()
-        {
-            string pin = new ForRobot.Libr.Services.WindowsAppService().InputWindowShow();
-            return !string.IsNullOrEmpty(pin) && ForRobot.Libr.Cryptography.Hashing.Sha256(pin) == ForRobot.Properties.Settings.Default.PinCode;
-        }
 
         /// <summary>
         /// Вывод и вокусировка главного окна приложения

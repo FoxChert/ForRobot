@@ -8,7 +8,7 @@ namespace ForRobot.Views.Windows
     /// <summary>
     /// Логика взаимодействия для SelectWindow.xaml
     /// </summary>
-    public partial class SelectWindow : Window, INotifyPropertyChanged
+    public partial class SelectWindow : Window, INotifyPropertyChanged, IDisposable
     {
         public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(nameof(ItemsSource),
                                                                                                     typeof(IEnumerable),
@@ -60,5 +60,16 @@ namespace ForRobot.Views.Windows
             var control = (SelectWindow)d;
             control.OnPropertyChanged(nameof(control.SelectedItem));
         }
+
+        #region IDisposable Support        
+
+        ~SelectWindow() => Dispose();
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
     }
 }

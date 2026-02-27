@@ -132,11 +132,6 @@
                         </Style>
                     </Style.Resources>
                 </Style>
-              
-                <!--<Style TargetType="{x:Type Path}">
-                    <Setter Property="Stretch" Value="Uniform"/>
-                </Style>-->
-                <!--<Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MenuItemTemplate}"></Style>-->
             </Menu.Resources>
 
             <MenuItem Header="_Файл">
@@ -219,8 +214,8 @@
             </MenuItem>
 
             <MenuItem Header="_Правка">
-                <MenuItem Header="_Отменить" InputGestureText="Ctrl+Z"/>
-                <MenuItem Header="_Вернуть" InputGestureText="Ctrl+Y"/>
+                <MenuItem Header="_Отменить" InputGestureText="Ctrl+Z" Command="{Binding Path=UndoCommand}"/>
+                <MenuItem Header="_Вернуть" InputGestureText="Ctrl+Y" Command="{Binding Path=RedoCommand}"/>
                 <!--<Separator/>
                 <MenuItem Header="_Обновить"/>
                 <MenuItem Header="_Выделить всё" InputGestureText="Ctrl+A"/>
@@ -957,7 +952,7 @@
                                             <DataGridTemplateColumn Header="Сообщение" Width="*">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <TextBlock Text="{Binding Message}"
+                                                        <TextBlock Text="{Binding Content}"
                                                                    Style="{StaticResource {x:Type TextBlock}}"
                                                                    TextWrapping="Wrap" VerticalAlignment="Center" TextAlignment="Left"/>
                                                     </DataTemplate>
@@ -1792,7 +1787,7 @@
             </avalonDock:LayoutRoot>
 
             <i:Interaction.Behaviors>
-                <behavior:CollapedLayoutAnchorableBehavior/>
+                <behavior:DockingManagerBehavior/>
             </i:Interaction.Behaviors>
 
             <i:Interaction.Triggers>

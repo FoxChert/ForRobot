@@ -315,8 +315,10 @@
     <Compile Include="Libr\Behavior\BehaviorAttacher.cs" />
     <Compile Include="Libr\Behavior\CameraControllerBehavior.cs" />
     <Compile Include="Libr\Behavior\ClosedLayoutAnchorableBehavior.cs" />
-    <Compile Include="Libr\Behavior\CollapedLayoutAnchorableBehavior.cs" />
-    <Compile Include="Libr\Behavior\CollapedLayoutAnchorableMessage.cs" />
+    <Compile Include="Libr\Behavior\DockingManagerBehavior.cs" />
+    <Compile Include="Libr\Collections\RobotCollection.cs" />
+    <Compile Include="Libr\Collections\RobotPropertyChangedEventArgs.cs" />
+    <Compile Include="Libr\Messages\LayoutAnchorableMessage.cs" />
     <Compile Include="Libr\Behavior\DataGridAutoSizeColumns.cs" />
     <Compile Include="Libr\Behavior\FocusBehavior.cs" />
     <Compile Include="Libr\Behavior\HelixAddCollectionBehavior.cs" />
@@ -443,7 +445,7 @@
     <Compile Include="Libr\Modeling\ModelingService.cs" />
     <Compile Include="Libr\Services\SelectAppsOnDeviceService.cs" />
     <Compile Include="Libr\Services\WeldService.cs" />
-    <Compile Include="Libr\Services\WindowsAppService.cs" />
+    <Compile Include="Libr\AppWindowManager.cs" />
     <Compile Include="Libr\Strategies\AnnotationStrategies\IDetalAnnotationStrategy.cs" />
     <Compile Include="Libr\Strategies\AnnotationStrategies\PlateAnnotationStrategy.cs" />
     <Compile Include="Libr\Strategies\ModelingStrategies\IDetalModelingStrategy.cs" />

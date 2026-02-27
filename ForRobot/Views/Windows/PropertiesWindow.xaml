@@ -186,11 +186,9 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Content="_Настройки по-умолчанию" IsDefault="True" Command="{Binding Path=StandartSettingsCommand}"/>
-            <Button Grid.Column="2" Content="_OK" Width="100" IsDefault="True" 
-                    Command="{Binding Path=SaveSettingsCommand}"
-                    CommandParameter="{Binding Path=Settings}"/>
-            <Button Grid.Column="4" Content="_Отмена" Width="100" IsCancel="True" Command="{Binding Path=CancelCommand}"/>
+            <Button Grid.Column="0" Content="_Настройки по-умолчанию" IsDefault="True" Click="BtnDefaultSettings_Click"/>
+            <Button Grid.Column="2" Content="_OK" Width="100" IsDefault="True" Click="BtnDialogOk_Click"/>
+            <Button Grid.Column="4" Content="_Отмена" Width="100" IsCancel="True"/>
         </Grid>
     </Grid>
 </Window>

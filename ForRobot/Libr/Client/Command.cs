@@ -46,6 +46,21 @@ namespace ForRobot.Libr.Client
         public DateTime? CompletedAt { get; set; }
 
         /// <summary>
+        /// Флаг, указывающий, произошел ли таймаут
+        /// </summary>
+        public bool HasTimedOut { get; private set; } = false;
+
+        /// <summary>
+        /// Флаг, указывающий активна ли команда
+        /// </summary>
+        public bool IsActive => !CancellationTokenSource.IsCancellationRequested && !HasTimedOut;
+
+        /// <summary>
+        /// Событие таймаута команды
+        /// </summary>
+        public event EventHandler TimeoutElapsed;
+
+        /// <summary>
         /// Инициализация команды с одним параметром
         /// </summary>
         /// <param name="methodName">Наименование метода</param>
@@ -56,9 +71,11 @@ namespace ForRobot.Libr.Client
             if (string.IsNullOrWhiteSpace(methodName))
                 throw new ArgumentNullException(nameof(methodName));
 
-            this.Initialisation();
+            Id = Guid.NewGuid().ToString();
+            CreatedAt = DateTime.UtcNow;
             MethodName = methodName;
             Timeout = timeout ?? new TimeSpan(JsonRpcConnection.DEFAULT_TIMEOUT_MILLISECONDS);
+            this.StartTimeoutTimer();
         }
 
         /// <summary>
@@ -72,23 +89,30 @@ namespace ForRobot.Libr.Client
             if (string.IsNullOrWhiteSpace(methodName))
                 throw new ArgumentNullException(nameof(methodName));
 
-            this.Initialisation();
+            Id = Guid.NewGuid().ToString();
+            CreatedAt = DateTime.UtcNow;
             MethodName = methodName;
             Parameters = parameters ?? Array.Empty<object>();
             Timeout = timeout ?? new TimeSpan(JsonRpcConnection.DEFAULT_TIMEOUT_MILLISECONDS);
+            this.StartTimeoutTimer();
         }
 
         /// <summary>
-        /// Метод-инициализатор для повторяющихся свойств команды
+        /// Запуск таймера для отслеживания таймаута
         /// </summary>
-        private void Initialisation()
+        private void StartTimeoutTimer()
         {
-            Id = Guid.NewGuid().ToString();
-            CancellationTokenSource = new CancellationTokenSource();
-            CreatedAt = DateTime.UtcNow;
+            CancellationTokenSource = new CancellationTokenSource(Timeout);
+            
+            CancellationTokenSource.Token.Register(() =>
+            {
+                if (!HasTimedOut) // Защита от повторного срабатывания
+                {
+                    HasTimedOut = true;
+                    TimeoutElapsed?.Invoke(this, EventArgs.Empty);
+                }
+            });
         }
-
-        public bool IsTimeout => this.CancellationTokenSource.IsCancellationRequested && !CancellationTokenSource.Token.IsCancellationRequested;
 
         /// <summary>
         /// Отмена выполнения команды

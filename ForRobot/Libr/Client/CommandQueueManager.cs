@@ -17,9 +17,21 @@ namespace ForRobot.Libr.Client
         private readonly object _lockObject = new object();
         private volatile int _disposed;
 
+        /// <summary>
+        /// Событие добавления команды
+        /// </summary>
         public event EventHandler<CommandEventArgs> CommandAdded;
+        /// <summary>
+        /// Событие выполнения команды
+        /// </summary>
         public event EventHandler<CommandEventArgs> CommandCompleted;
+        /// <summary>
+        /// Событие отмены команды
+        /// </summary>
         public event EventHandler<CommandEventArgs> CommandCancelled;
+        /// <summary>
+        /// Событие окончания времени ожидания команды
+        /// </summary>
         public event EventHandler<CommandEventArgs> CommandTimedOut;
 
         public CommandQueueManager(JsonRpcConnection connection)
@@ -45,9 +57,25 @@ namespace ForRobot.Libr.Client
 
         #region Public functions
 
+        /// <summary>
+        /// Вызов события добавления комманды
+        /// </summary>
+        /// <param name="command"></param>
         protected virtual void OnCommandAdded(Command command) => CommandAdded?.Invoke(this, new CommandEventArgs(command));
+        /// <summary>
+        /// Событие выполнения команды (успешно или с ошибкой)
+        /// </summary>
+        /// <param name="command"></param>
         protected virtual void OnCommandCompleted(Command command) => CommandCompleted?.Invoke(this, new CommandEventArgs(command));
+        /// <summary>
+        /// Вызов события отмены команды
+        /// </summary>
+        /// <param name="command"></param>
         protected virtual void OnCommandCancelled(Command command) => CommandCancelled?.Invoke(this, new CommandEventArgs(command));
+        /// <summary>
+        /// Событие истечения времени ожидания выполнени команды
+        /// </summary>
+        /// <param name="command"></param>
         protected virtual void OnCommandTimedOut(Command command) => CommandTimedOut?.Invoke(this, new CommandEventArgs(command));
 
         public string EnqueueCommand(string methodName, object[] parameters, TimeSpan timeout)
@@ -56,7 +84,11 @@ namespace ForRobot.Libr.Client
                 throw new ObjectDisposedException(nameof(CommandQueueManager));
 
             var command = new Command(methodName, parameters, timeout);
-
+            command.TimeoutElapsed += (s, e) =>
+            {
+                OnCommandTimedOut((Command)s);
+                _activeCommands.TryRemove(((Command)s).Id, out _);
+            };
             if (!_activeCommands.TryAdd(command.Id, command))
             {
                 throw new InvalidOperationException("Failed to enqueue command");
@@ -67,8 +99,18 @@ namespace ForRobot.Libr.Client
 
         public IReadOnlyList<Command> GetActiveCommands() => _activeCommands.Values.ToList();
 
+        /// <summary>
+        /// Содержится ли команда в активных
+        /// </summary>
+        /// <param name="commandId"></param>
+        /// <returns></returns>
         public bool ContainsCommand(string commandId) => _activeCommands.ContainsKey(commandId);
 
+        /// <summary>
+        /// Отмена команды
+        /// </summary>
+        /// <param name="commandId"></param>
+        /// <returns></returns>
         public bool CancelCommand(string commandId)
         {
             if (_activeCommands.TryRemove(commandId, out var command))
@@ -80,6 +122,10 @@ namespace ForRobot.Libr.Client
             return false;
         }
 
+        /// <summary>
+        /// Отмена всех команд
+        /// </summary>
+        /// <param name="timeout">Интервал для отмены команд</param>
         public void CancelAllCommands(TimeSpan? timeout = null)
         {
             var commandsToCancel = _activeCommands.Values.ToArray();
