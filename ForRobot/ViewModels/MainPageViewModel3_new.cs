@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
@@ -16,7 +18,8 @@ namespace ForRobot.ViewModels
     {
         #region Private variables
 
-        private FullyObservableCollection<Robot> _robotsCollection;
+        //private FullyObservableCollection<Robot> _robotsCollection;
+        private RobotCollection _robotsCollection;
         private ObservableCollection<ForRobot.Models.Message> _messagesCollection = new ObservableCollection<ForRobot.Models.Message>();
 
         #endregion Private variables
@@ -25,29 +28,8 @@ namespace ForRobot.ViewModels
 
         #region Collections
 
-        /// <summary>
-        /// Коллекция всех добаленнных роботов
-        /// </summary>
-        public FullyObservableCollection<Robot> RobotsCollection
-        {
-            get => this._robotsCollection;
-            set
-            {
-                if (this._robotsCollection != null)
-                {
-                    this._robotsCollection.ItemPropertyChanged -= HandleRobotPropertyChanged;
-                    this._robotsCollection.CollectionChanged -= HandleRobotsCollectionChanged;
-                }
+        public ObservableCollection<string> RobotsNamesCollection { get => new ObservableCollection<string>(new List<string>() { "Все" }.Union(App.Current.RobotsCollection.GetRobotsNames())); }
 
-                Set(ref this._robotsCollection, value);
-
-                if (this._robotsCollection != null)
-                {
-                    this._robotsCollection.ItemPropertyChanged += HandleRobotPropertyChanged;
-                    this._robotsCollection.CollectionChanged += HandleRobotsCollectionChanged;
-                }
-            }
-        }
         /// <summary>
         /// Коллекция сообщений
         /// </summary>
@@ -164,7 +146,7 @@ namespace ForRobot.ViewModels
                 return;
 
             ForRobot.Libr.Logging.Logger.LoggingEvent += (s, o) => System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() => this.MessagesCollection.Add(new Models.Message(o))));
-
+            
         }
 
         #region Private functions

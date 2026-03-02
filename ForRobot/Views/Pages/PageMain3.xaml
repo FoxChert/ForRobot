@@ -860,7 +860,7 @@
                         <avalonDock:LayoutDocumentPaneGroup>
                             <avalonDock:LayoutDocumentPane></avalonDock:LayoutDocumentPane>
                         </avalonDock:LayoutDocumentPaneGroup>
-                        
+
                         <avalonDock:LayoutAnchorablePaneGroup>
                             <avalonDock:LayoutAnchorablePane>
                                 <avalonDock:LayoutAnchorable Title="Сообщения" ContentId="Messages">
@@ -972,34 +972,13 @@
                             </avalonDock:LayoutAnchorablePane>
                         </avalonDock:LayoutAnchorablePaneGroup>
                     </avalonDock:LayoutPanel>
+                </avalonDock:LayoutPanel>
 
-                    <avalonDock:LayoutPanel Orientation="Vertical">
-                        <avalonDock:LayoutAnchorablePaneGroup>
-                            <avalonDock:LayoutAnchorablePane>
-                                <avalonDock:LayoutAnchorable Title="Состав" ContentId="Components">
-                                    <control:SceneItemsTreeView FontSize="{StaticResource FontSizeNP2}"
-                                                                Style="{StaticResource TextBase}"
-                                                                ItemsSource="{Binding Path=SceneItemsCollection, Mode=OneWay}"/>
-
-                                    <!--<ContentControl ContentTemplate="{StaticResource OtherTemplateStyle}"/>-->
-                                </avalonDock:LayoutAnchorable>
-                            </avalonDock:LayoutAnchorablePane>
-                        </avalonDock:LayoutAnchorablePaneGroup>
-
-                        <avalonDock:LayoutAnchorablePaneGroup>
-                            <avalonDock:LayoutAnchorablePane>
-                                <avalonDock:LayoutAnchorable Title="Свойства" ContentId="Properties">
-                                    <!--<pt:PropertyGrid SelectedObject="{Binding Path=DataContext.SelectedObject, 
-                                                                              RelativeSource={RelativeSource AncestorType={x:Type Page}, Mode=FindAncestor},
-                                                                              UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                                                     TabVisibility="Collapsed"
-                                                    
-                                                     Margin="4"/>-->
-                                    <ContentControl ContentTemplate="{StaticResource OtherTemplateStyle}"/>
-                                </avalonDock:LayoutAnchorable>
-
-                                <avalonDock:LayoutAnchorable Title="Параметры детали" ContentId="ParametrsOfDetal">
-                                    <!--<control:ParamsTreeView>
+                <avalonDock:LayoutRoot.LeftSide>
+                    <avalonDock:LayoutAnchorSide>
+                        <avalonDock:LayoutAnchorGroup>
+                            <avalonDock:LayoutAnchorable Title="Параметры детали" ContentId="ParametrsOfDetal">
+                                <!--<control:ParamsTreeView>
                                         <TreeViewItem Header="Общие">
                                             <ContentControl ContentTemplate="{StaticResource PlitaTemplate3Style}"/>
                                         </TreeViewItem>
@@ -1014,7 +993,7 @@
 
                                         
                                     -->
-                                    <!--<control:ParamsTreeView.Style>
+                                <!--<control:ParamsTreeView.Style>
                                             <Style TargetType="{x:Type control:ParamsTreeView}">
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding Path=SelectedFile.CurrentDetal, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="{x:Null}">
@@ -1023,165 +1002,182 @@
                                                 </Style.Triggers>
                                             </Style>
                                         </control:ParamsTreeView.Style>-->
-                                    <!--</control:ParamsTreeView>-->
+                                <!--</control:ParamsTreeView>-->
 
-                                    <TreeView FontSize="{StaticResource FontSizeNP2}" BorderBrush="Transparent"
+                                <TreeView FontSize="{StaticResource FontSizeNP2}" BorderBrush="Transparent"
                                               VerticalContentAlignment="Top" HorizontalContentAlignment="Stretch"
                                               VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                                        
-                                        <TreeView.Style>
-                                            <Style TargetType="{x:Type TreeView}">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Path=SelectedFile.CurrentDetal}" Value="{x:Null}">
-                                                        <Setter Property="IsEnabled" Value="False"/>
-                                                    </DataTrigger>
 
-                                                    <DataTrigger Binding="{Binding Path=SceneItemsCollection.Count}" Value="{x:Null}">
-                                                        <Setter Property="IsEnabled" Value="False"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TreeView.Style>
+                                    <TreeView.Style>
+                                        <Style TargetType="{x:Type TreeView}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Path=SelectedFile.CurrentDetal}" Value="{x:Null}">
+                                                    <Setter Property="IsEnabled" Value="False"/>
+                                                </DataTrigger>
 
-                                        <TreeView.Resources>
-                                            <SolidColorBrush x:Key="TreeViewItem.TreeArrow.Static.Checked.Fill" Color="#304cff"/>
-                                            <SolidColorBrush x:Key="TreeViewItem.TreeArrow.Static.Checked.Stroke" Color="#001ccf"/>
-                                            <SolidColorBrush x:Key="TreeViewItem.TreeArrow.MouseOver.Stroke" Color="#42fcff"/>
-                                            <SolidColorBrush x:Key="TreeViewItem.TreeArrow.MouseOver.Fill" Color="#FFCCEEFB"/>
-                                            <SolidColorBrush x:Key="TreeViewItem.TreeArrow.MouseOver.Checked.Stroke" Color="#FF1CC4F7"/>
-                                            <SolidColorBrush x:Key="TreeViewItem.TreeArrow.MouseOver.Checked.Fill" Color="#FF82DFFB"/>
-                                            <PathGeometry x:Key="TreeArrow" Figures="M0,0 L0,6 L6,0 z"/>
-                                            <SolidColorBrush x:Key="TreeViewItem.TreeArrow.Static.Fill" Color="#FFFFFFFF"/>
-                                            <SolidColorBrush x:Key="TreeViewItem.TreeArrow.Static.Stroke" Color="#FF818181"/>
+                                                <DataTrigger Binding="{Binding Path=SceneItemsCollection.Count}" Value="{x:Null}">
+                                                    <Setter Property="IsEnabled" Value="False"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TreeView.Style>
 
-                                            <Style TargetType="{x:Type TreeViewItem}">
-                                                <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                                <Setter Property="Focusable" Value="False"/>
-                                                <Setter Property="Margin" Value="5"/>
+                                    <TreeView.Resources>
+                                        <SolidColorBrush x:Key="TreeViewItem.TreeArrow.Static.Checked.Fill" Color="#304cff"/>
+                                        <SolidColorBrush x:Key="TreeViewItem.TreeArrow.Static.Checked.Stroke" Color="#001ccf"/>
+                                        <SolidColorBrush x:Key="TreeViewItem.TreeArrow.MouseOver.Stroke" Color="#42fcff"/>
+                                        <SolidColorBrush x:Key="TreeViewItem.TreeArrow.MouseOver.Fill" Color="#FFCCEEFB"/>
+                                        <SolidColorBrush x:Key="TreeViewItem.TreeArrow.MouseOver.Checked.Stroke" Color="#FF1CC4F7"/>
+                                        <SolidColorBrush x:Key="TreeViewItem.TreeArrow.MouseOver.Checked.Fill" Color="#FF82DFFB"/>
+                                        <PathGeometry x:Key="TreeArrow" Figures="M0,0 L0,6 L6,0 z"/>
+                                        <SolidColorBrush x:Key="TreeViewItem.TreeArrow.Static.Fill" Color="#FFFFFFFF"/>
+                                        <SolidColorBrush x:Key="TreeViewItem.TreeArrow.Static.Stroke" Color="#FF818181"/>
 
-                                                <Setter Property="Template">
-                                                    <Setter.Value>
-                                                        <ControlTemplate TargetType="{x:Type TreeViewItem}">
-                                                            <Grid>
-                                                                <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition MinWidth="19" Width="Auto"/>
-                                                                    <ColumnDefinition Width="*"/>
-                                                                </Grid.ColumnDefinitions>
-                                                                <Grid.RowDefinitions>
-                                                                    <RowDefinition Height="Auto"/>
-                                                                    <RowDefinition/>
-                                                                </Grid.RowDefinitions>
+                                        <Style TargetType="{x:Type TreeViewItem}">
+                                            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                            <Setter Property="Focusable" Value="False"/>
+                                            <Setter Property="Margin" Value="5"/>
 
-                                                                <ToggleButton x:Name="Expander" ClickMode="Press" IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type TreeViewItem}">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition MinWidth="19" Width="Auto"/>
+                                                                <ColumnDefinition Width="*"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="Auto"/>
+                                                                <RowDefinition/>
+                                                            </Grid.RowDefinitions>
+
+                                                            <ToggleButton x:Name="Expander" ClickMode="Press" IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
                                                                               Style="{DynamicResource ExpandCollapseToggleStyle}"/>
 
-                                                                <Border x:Name="Bd" Grid.Column="1" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
-                                                                    <ContentPresenter x:Name="PART_Header" ContentSource="Header" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                                                                </Border>
-
-                                                                <ItemsPresenter x:Name="ItemsHost" Grid.Row="1" Grid.Column="1" />
-                                                            </Grid>
-
-                                                            <ControlTemplate.Triggers>
-                                                                <Trigger Property="IsExpanded" Value="false">
-                                                                    <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
-                                                                </Trigger>
-                                                                <Trigger Property="HasItems" Value="false">
-                                                                    <Setter Property="Visibility" TargetName="Expander" Value="Hidden"/>
-                                                                </Trigger>
-                                                                <Trigger Property="IsSelected" Value="true">
-                                                                    <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
-                                                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
-                                                                </Trigger>
-                                                              
-                                                                <MultiTrigger>
-                                                                    <MultiTrigger.Conditions>
-                                                                        <Condition Property="IsSelected" Value="true"/>
-                                                                        <Condition Property="IsSelectionActive" Value="false"/>
-                                                                    </MultiTrigger.Conditions>
-                                                                    <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightBrushKey}}"/>
-                                                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}}"/>
-                                                                </MultiTrigger>
-                                                                <Trigger Property="IsEnabled" Value="false">
-                                                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
-                                                                </Trigger>
-                                                            </ControlTemplate.Triggers>
-                                                        </ControlTemplate>
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </Style>
-
-                                            <Style x:Key="ExpandCollapseToggleStyle" TargetType="{x:Type ToggleButton}">
-                                                <Setter Property="Focusable" Value="False"/>
-                                                <Setter Property="Template">
-                                                    <Setter.Value>
-                                                        <ControlTemplate TargetType="{x:Type ToggleButton}">
-                                                            <Border Background="Transparent" Height="25" Width="25" Padding="5">
-                                                                <Path x:Name="ExpandPath" Data="{StaticResource TreeArrow}" Fill="{StaticResource TreeViewItem.TreeArrow.Static.Fill}" Stroke="{StaticResource TreeViewItem.TreeArrow.Static.Stroke}">
-                                                                    <Path.RenderTransform>
-                                                                        <RotateTransform Angle="135" CenterY="3" CenterX="3"/>
-                                                                    </Path.RenderTransform>
-                                                                </Path>
+                                                            <Border x:Name="Bd" Grid.Column="1" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                                                                <ContentPresenter x:Name="PART_Header" ContentSource="Header" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
                                                             </Border>
-                                                            
-                                                            <ControlTemplate.Triggers>
-                                                                <Trigger Property="IsChecked" Value="True">
-                                                                    <Setter Property="RenderTransform" TargetName="ExpandPath">
-                                                                        <Setter.Value>
-                                                                            <RotateTransform Angle="180" CenterY="3" CenterX="3"/>
-                                                                        </Setter.Value>
-                                                                    </Setter>
-                                                                    <Setter Property="Fill" TargetName="ExpandPath" Value="{StaticResource TreeViewItem.TreeArrow.Static.Checked.Fill}"/>
-                                                                    <Setter Property="Stroke" TargetName="ExpandPath" Value="{StaticResource TreeViewItem.TreeArrow.Static.Checked.Stroke}"/>
-                                                                </Trigger>
-                                                                <Trigger Property="IsMouseOver" Value="True">
-                                                                    <Setter Property="Stroke" TargetName="ExpandPath" Value="{StaticResource TreeViewItem.TreeArrow.MouseOver.Stroke}"/>
-                                                                    <Setter Property="Fill" TargetName="ExpandPath" Value="{StaticResource TreeViewItem.TreeArrow.MouseOver.Fill}"/>
-                                                                </Trigger>
-                                                                <MultiTrigger>
-                                                                    <MultiTrigger.Conditions>
-                                                                        <Condition Property="IsMouseOver" Value="True"/>
-                                                                        <Condition Property="IsChecked" Value="True"/>
-                                                                    </MultiTrigger.Conditions>
-                                                                    <Setter Property="Stroke" TargetName="ExpandPath" Value="{StaticResource TreeViewItem.TreeArrow.MouseOver.Checked.Stroke}"/>
-                                                                    <Setter Property="Fill" TargetName="ExpandPath" Value="{StaticResource TreeViewItem.TreeArrow.MouseOver.Checked.Fill}"/>
-                                                                </MultiTrigger>
-                                                            </ControlTemplate.Triggers>
-                                                        </ControlTemplate>
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </Style>
 
-                                            <Style TargetType="{x:Type ContentControl}">
-                                                <Setter Property="Margin" Value="-25,0,5,5"/>
-                                                <Setter Property="DataContext" Value="{Binding Path=SelectedFile.CurrentDetal, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                            </Style>
-                                        </TreeView.Resources>
+                                                            <ItemsPresenter x:Name="ItemsHost" Grid.Row="1" Grid.Column="1" />
+                                                        </Grid>
 
-                                        <TreeViewItem Header="Общие">
-                                            <ContentControl ContentTemplate="{StaticResource PlitaTemplateStyle}"/>
-                                        </TreeViewItem>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsExpanded" Value="false">
+                                                                <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
+                                                            </Trigger>
+                                                            <Trigger Property="HasItems" Value="false">
+                                                                <Setter Property="Visibility" TargetName="Expander" Value="Hidden"/>
+                                                            </Trigger>
+                                                            <Trigger Property="IsSelected" Value="true">
+                                                                <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                                                                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
+                                                            </Trigger>
 
-                                        <TreeViewItem Header="Доп.">
-                                            <ContentControl ContentTemplate="{StaticResource PlitaDopTemplateStyle}"/>
-                                        </TreeViewItem>
+                                                            <MultiTrigger>
+                                                                <MultiTrigger.Conditions>
+                                                                    <Condition Property="IsSelected" Value="true"/>
+                                                                    <Condition Property="IsSelectionActive" Value="false"/>
+                                                                </MultiTrigger.Conditions>
+                                                                <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightBrushKey}}"/>
+                                                                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}}"/>
+                                                            </MultiTrigger>
+                                                            <Trigger Property="IsEnabled" Value="false">
+                                                                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
 
-                                        <TreeViewItem Header="Сварка" HorizontalContentAlignment="Stretch">
-                                            <ContentControl ContentTemplate="{StaticResource PlitaSvarkaTemplateStyle}"/>
-                                        </TreeViewItem>
+                                        <Style x:Key="ExpandCollapseToggleStyle" TargetType="{x:Type ToggleButton}">
+                                            <Setter Property="Focusable" Value="False"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                                        <Border Background="Transparent" Height="25" Width="25" Padding="5">
+                                                            <Path x:Name="ExpandPath" Data="{StaticResource TreeArrow}" Fill="{StaticResource TreeViewItem.TreeArrow.Static.Fill}" Stroke="{StaticResource TreeViewItem.TreeArrow.Static.Stroke}">
+                                                                <Path.RenderTransform>
+                                                                    <RotateTransform Angle="135" CenterY="3" CenterX="3"/>
+                                                                </Path.RenderTransform>
+                                                            </Path>
+                                                        </Border>
 
-                                        <i:Interaction.Behaviors>
-                                            <lib:TreeViewSelectedItemBehavior ExpandSelected="True"
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsChecked" Value="True">
+                                                                <Setter Property="RenderTransform" TargetName="ExpandPath">
+                                                                    <Setter.Value>
+                                                                        <RotateTransform Angle="180" CenterY="3" CenterX="3"/>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                                <Setter Property="Fill" TargetName="ExpandPath" Value="{StaticResource TreeViewItem.TreeArrow.Static.Checked.Fill}"/>
+                                                                <Setter Property="Stroke" TargetName="ExpandPath" Value="{StaticResource TreeViewItem.TreeArrow.Static.Checked.Stroke}"/>
+                                                            </Trigger>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="Stroke" TargetName="ExpandPath" Value="{StaticResource TreeViewItem.TreeArrow.MouseOver.Stroke}"/>
+                                                                <Setter Property="Fill" TargetName="ExpandPath" Value="{StaticResource TreeViewItem.TreeArrow.MouseOver.Fill}"/>
+                                                            </Trigger>
+                                                            <MultiTrigger>
+                                                                <MultiTrigger.Conditions>
+                                                                    <Condition Property="IsMouseOver" Value="True"/>
+                                                                    <Condition Property="IsChecked" Value="True"/>
+                                                                </MultiTrigger.Conditions>
+                                                                <Setter Property="Stroke" TargetName="ExpandPath" Value="{StaticResource TreeViewItem.TreeArrow.MouseOver.Checked.Stroke}"/>
+                                                                <Setter Property="Fill" TargetName="ExpandPath" Value="{StaticResource TreeViewItem.TreeArrow.MouseOver.Checked.Fill}"/>
+                                                            </MultiTrigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+
+                                        <Style TargetType="{x:Type ContentControl}">
+                                            <Setter Property="Margin" Value="-25,0,5,5"/>
+                                            <Setter Property="DataContext" Value="{Binding Path=SelectedFile.CurrentDetal, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                        </Style>
+                                    </TreeView.Resources>
+
+                                    <TreeViewItem Header="Общие">
+                                        <ContentControl ContentTemplate="{StaticResource PlitaTemplateStyle}"/>
+                                    </TreeViewItem>
+
+                                    <TreeViewItem Header="Доп.">
+                                        <ContentControl ContentTemplate="{StaticResource PlitaDopTemplateStyle}"/>
+                                    </TreeViewItem>
+
+                                    <TreeViewItem Header="Сварка" HorizontalContentAlignment="Stretch">
+                                        <ContentControl ContentTemplate="{StaticResource PlitaSvarkaTemplateStyle}"/>
+                                    </TreeViewItem>
+
+                                    <i:Interaction.Behaviors>
+                                        <lib:TreeViewSelectedItemBehavior ExpandSelected="True"
                                                                               HierarchyPredicate="{Binding HierarchyPredicate}"
                                                                               SelectedItem="{Binding Path=SelectedItem, Mode=TwoWay}"/>
-                                        </i:Interaction.Behaviors>
-                                    </TreeView>
-                                </avalonDock:LayoutAnchorable>
-                            </avalonDock:LayoutAnchorablePane>
-                        </avalonDock:LayoutAnchorablePaneGroup>
-                    </avalonDock:LayoutPanel>
-                </avalonDock:LayoutPanel>
+                                    </i:Interaction.Behaviors>
+                                </TreeView>
+                            </avalonDock:LayoutAnchorable>
+
+                            <avalonDock:LayoutAnchorable Title="Свойства" ContentId="Properties">
+                                <!--<pt:PropertyGrid SelectedObject="{Binding Path=DataContext.SelectedObject, 
+                                                                              RelativeSource={RelativeSource AncestorType={x:Type Page}, Mode=FindAncestor},
+                                                                              UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                     TabVisibility="Collapsed"
+                                                    
+                                                     Margin="4"/>-->
+                                <ContentControl ContentTemplate="{StaticResource OtherTemplateStyle}"/>
+                            </avalonDock:LayoutAnchorable>
+
+                            <avalonDock:LayoutAnchorable Title="Состав" ContentId="Components">
+                                <control:SceneItemsTreeView FontSize="{StaticResource FontSizeNP2}"
+                                                                Style="{StaticResource TextBase}"
+                                                                ItemsSource="{Binding Path=SceneItemsCollection, Mode=OneWay}"/>
+
+                                <!--<ContentControl ContentTemplate="{StaticResource OtherTemplateStyle}"/>-->
+                            </avalonDock:LayoutAnchorable>
+                        </avalonDock:LayoutAnchorGroup>
+                    </avalonDock:LayoutAnchorSide>
+                </avalonDock:LayoutRoot.LeftSide>
 
                 <avalonDock:LayoutRoot.RightSide>
                     <avalonDock:LayoutAnchorSide>
@@ -1195,7 +1191,6 @@
                                       DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Page}, Mode=FindAncestor}}">
 
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="*"/>
@@ -1349,7 +1344,7 @@
                                         <TextBox Grid.Column="2" Height="40" Text="{Binding Path=SelectedRobot.Port, Mode=TwoWay, FallbackValue=0000, TargetNullValue=0000, UpdateSourceTrigger=LostFocus}"/>
                                     </Grid>
 
-                                    <Grid Grid.Row="2">
+                                    <!--<Grid Grid.Row="2">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="5"/>
@@ -1368,13 +1363,13 @@
                                                 </Path.LayoutTransform>
                                             </Path>
                                         </Button>
-                                    </Grid>
+                                    </Grid>-->
 
                                     <!--<control:Breadcrumb Grid.Row="3" FontSize="{StaticResource FontSizeNP2}"
                                                         Robot="{Binding Path=SelectedRobot, Mode=TwoWay}"
                                                         Root="{x:Static client:JsonRpcConnection.DefaulRoot}"/>-->
 
-                                    <control:NavigationTreeView Grid.Row="3"
+                                    <control:NavigationTreeView Grid.Row="2"
                                                                 Background="White"
                                                                 FontSize="{StaticResource FontSizeNP2}"
                                                                 RobotSource="{Binding Path=DataContext.SelectedRobot, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type Page}, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged}"

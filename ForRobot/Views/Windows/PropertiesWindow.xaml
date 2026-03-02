@@ -66,9 +66,9 @@
                 </i:Interaction.Triggers>-->
             </TreeViewItem>
 
-            <TreeViewItem Header="Генерация" Tag="Generation" IsSelected="True"/>
+            <TreeViewItem Header="Генерация" Tag="Generation"/>
 
-            <!--<TreeViewItem Header="Соединение" Tag="Connection"/>-->
+            <TreeViewItem Header="Соединение" Tag="Connection" IsSelected="True"/>
             
             <!--<TreeViewItem Header="Генерация"/>-->
 

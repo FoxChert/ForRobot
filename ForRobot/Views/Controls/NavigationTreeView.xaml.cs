@@ -94,7 +94,7 @@ namespace ForRobot.Views.Controls
                     return;
 
                 this._selectedPopupItem = value;
-                this.RobotSource.PathControllerFolder = this._selectedPopupItem.Path.TrimEnd(new char[] { '\\' });
+                this.RobotSource.SelectedControllerPath = this._selectedPopupItem.Path.TrimEnd(new char[] { '\\' });
                 this.OnPropertyChanged(nameof(this.RobotSource), nameof(this.FoldersCollection));
             }
         }
@@ -151,7 +151,7 @@ namespace ForRobot.Views.Controls
         /// </summary>
         public List<string> FoldersCollection
         {
-            get => this.RobotSource?.PathControllerFolder.Split('\\').Where(item => item != string.Empty).Select((item, index) => index == 0 ? item + "\\" : item).ToList<string>();
+            get => this.RobotSource?.SelectedControllerPath?.Split('\\').Where(item => item != string.Empty).Select((item, index) => index == 0 ? item + "\\" : item).ToList<string>();
         }
 
         //public ObservableCollection<IFile> FileCollection { get => this.DeleteFolder(); }
@@ -307,7 +307,7 @@ namespace ForRobot.Views.Controls
                 navigationTreeView.RobotSource.PropertyChanged += (s, o) =>
                 {
                     navigationTreeView.OnPropertyChanged(nameof(RobotSource));
-                    if(o.PropertyName == nameof(navigationTreeView.RobotSource.PathControllerFolder))
+                    if(o.PropertyName == nameof(navigationTreeView.RobotSource.SelectedControllerPath))
                     {
                         navigationTreeView.OnPropertyChanged(nameof(FoldersCollection));
                     }

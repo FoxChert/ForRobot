@@ -100,12 +100,12 @@ namespace ForRobot.Models.Settings
         /// <summary>
         /// Ограничено ли время ожидания ответа от сервера
         /// </summary>
-        public bool LimitedConnectionTimeOut { get; set; } = false; // Не используется, хм
+        public bool LimitedConnectionTimeOut { get; set; } = false;
 
         /// <summary>
         /// Время ожидания ответа от сервера, сек.
         /// </summary>
-        public double ConnectionTimeOut { get; set; } = 3; // Не используется
+        public double ConnectionTimeOut { get; set; } = 3;
 
         /// <summary>
         /// Тип детали, для которой создаётся стартовый файл

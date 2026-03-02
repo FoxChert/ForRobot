@@ -30,7 +30,7 @@ namespace ForRobot.Models.RoboticComplex
         private string _name;
         private string _programName;
         private string _pathProgram;
-        private string _pathControllerFolder;
+        private string _selectedControllerPath;
         private string _pro_state;
 
         private decimal _voltage;
@@ -95,31 +95,40 @@ namespace ForRobot.Models.RoboticComplex
             }
         }
 
-        /// <summary>
-        /// Путь к папке с программой
-        /// </summary>
-        public string PathProgramm
-        {
-            get => this._pathProgram;
-            set
-            {
-                this._pathProgram = value;
-                this.OnChangeProperty();
-            }
-        }
+        ///// <summary>
+        ///// Путь к папке с программой
+        ///// </summary>
+        //public string PathProgramm
+        //{
+        //    get => this._pathProgram;
+        //    set
+        //    {
+        //        this._pathProgram = value;
+        //        this.OnChangeProperty();
+        //    }
+        //}
 
         /// <summary>
         /// Путь к выбранной папке на контроллере
         /// </summary>
-        public string PathControllerFolder
+        public string SelectedControllerPath
         {
-            get => this._pathControllerFolder;
+            get => this._selectedControllerPath;
             set
             {
-                this._pathControllerFolder = value;
+                this._selectedControllerPath = value;
                 this.OnChangeProperty();
             }
         }
+        //public string PathControllerFolder
+        //{
+        //    get => this._pathControllerFolder;
+        //    set
+        //    {
+        //        this._pathControllerFolder = value;
+        //        this.OnChangeProperty();
+        //    }
+        //}
 
         public string Host
         {
@@ -715,50 +724,50 @@ namespace ForRobot.Models.RoboticComplex
         /// <returns></returns>
         public bool Copy(string sNameProgram)
         {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(this.PathControllerFolder))
-                {
-                    this.OnLoggingErrorMessage("Нет пути на коталог на контроллере");
-                    MessageBox.Show("Укажите путь к каталогу на контроллере", "Остановка", MessageBoxButton.OK, MessageBoxImage.Stop, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
-                    return false;
-                }
+            //try
+            //{
+            //    if (string.IsNullOrWhiteSpace(this.PathControllerFolder))
+            //    {
+            //        this.OnLoggingErrorMessage("Нет пути на коталог на контроллере");
+            //        MessageBox.Show("Укажите путь к каталогу на контроллере", "Остановка", MessageBoxButton.OK, MessageBoxImage.Stop, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
+            //        return false;
+            //    }
 
-                switch (this.Pro_State)
-                {
-                    case ProcessStatuses.Reset:
-                    case ProcessStatuses.End:
-                        this.Cancel();
-                        System.Threading.Thread.Sleep(1000); // Костыль).
-                        break;
+            //    switch (this.Pro_State)
+            //    {
+            //        case ProcessStatuses.Reset:
+            //        case ProcessStatuses.End:
+            //            this.Cancel();
+            //            System.Threading.Thread.Sleep(1000); // Костыль).
+            //            break;
 
-                    case ProcessStatuses.Active:
-                    case ProcessStatuses.Stop:
-                        this.OnLogginMessage("Отмена копирования: уже запущен процесс!");
-                        return false;
-                }
+            //        case ProcessStatuses.Active:
+            //        case ProcessStatuses.Stop:
+            //            this.OnLogginMessage("Отмена копирования: уже запущен процесс!");
+            //            return false;
+            //    }
 
-                var fileCollection2 = Task.Run<Dictionary<String, String>>(async () => await this.Connection.File_NameListAsync(this.PathProgramm)).Result;
+            //    var fileCollection2 = Task.Run<Dictionary<String, String>>(async () => await this.Connection.File_NameListAsync(this.PathProgramm)).Result;
 
-                foreach (var file in fileCollection2.Keys.Where(i => i.EndsWith(".dat")).ToList<string>())
-                {
-                    this.Copy(Path.Combine(this.PathProgramm, file), Path.Combine(this.PathControllerFolder, file));
-                }
+            //    foreach (var file in fileCollection2.Keys.Where(i => i.EndsWith(".dat")).ToList<string>())
+            //    {
+            //        this.Copy(Path.Combine(this.PathProgramm, file), Path.Combine(this.PathControllerFolder, file));
+            //    }
 
-                foreach (var file in fileCollection2.Keys.Where(i => i.EndsWith(".src") && i != sNameProgram).ToList<string>())
-                {
-                    this.Copy(Path.Combine(this.PathProgramm, file), Path.Combine(this.PathControllerFolder, file));
-                }
+            //    foreach (var file in fileCollection2.Keys.Where(i => i.EndsWith(".src") && i != sNameProgram).ToList<string>())
+            //    {
+            //        this.Copy(Path.Combine(this.PathProgramm, file), Path.Combine(this.PathControllerFolder, file));
+            //    }
 
-                this.Copy(Path.Combine(this.PathProgramm, sNameProgram), Path.Combine(this.PathControllerFolder, sNameProgram));
+            //    this.Copy(Path.Combine(this.PathProgramm, sNameProgram), Path.Combine(this.PathControllerFolder, sNameProgram));
 
-                Task.Run(async () => await this.GetFilesAsync()).Wait();
-            }
-            catch (Exception ex)
-            {
-                this.OnLoggingErrorMessage(ex.Message, ex);
-                return false;
-            }
+            //    Task.Run(async () => await this.GetFilesAsync()).Wait();
+            //}
+            //catch (Exception ex)
+            //{
+            //    this.OnLoggingErrorMessage(ex.Message, ex);
+            //    return false;
+            //}
             return true;
         }
 
@@ -791,26 +800,26 @@ namespace ForRobot.Models.RoboticComplex
         /// <param name="sNameProgram">Имя главной программы (с расширением)</param>
         public bool CopyToPC(string sNameProgram)
         {
-            try
-            {
-                foreach (var file in Directory.GetFiles(this.PathProgramm, "*.dat"))
-                {
-                    this.CopyToPC(file, file);
-                }
+            //try
+            //{
+            //    foreach (var file in Directory.GetFiles(this.PathProgramm, "*.dat"))
+            //    {
+            //        this.CopyToPC(file, file);
+            //    }
 
-                foreach (var file in Directory.GetFiles(this.PathProgramm, "*.src").Where<string>(item => new FileInfo(item).Name != sNameProgram))
-                {
-                    this.CopyToPC(file, file);
-                }
+            //    foreach (var file in Directory.GetFiles(this.PathProgramm, "*.src").Where<string>(item => new FileInfo(item).Name != sNameProgram))
+            //    {
+            //        this.CopyToPC(file, file);
+            //    }
 
-                string mainProgramPath = Path.Combine(this.PathProgramm, sNameProgram);
-                this.CopyToPC(mainProgramPath, mainProgramPath);
-            }
-            catch (Exception ex)
-            {
-                this.OnLoggingErrorMessage(ex.Message, ex);
-                return false;
-            }
+            //    string mainProgramPath = Path.Combine(this.PathProgramm, sNameProgram);
+            //    this.CopyToPC(mainProgramPath, mainProgramPath);
+            //}
+            //catch (Exception ex)
+            //{
+            //    this.OnLoggingErrorMessage(ex.Message, ex);
+            //    return false;
+            //}
             return true;
         }
 
@@ -911,24 +920,24 @@ namespace ForRobot.Models.RoboticComplex
         /// <returns></returns>
         public bool DeleteFileOnPC(string sPathOnFolder)
         {
-            try
-            {
-                Dictionary<String, String> files = Task.Run<Dictionary<String, String>>(async () => await this.Connection.File_NameListAsync(sPathOnFolder)).Result;
-                if (files.Count <= 0)
-                    throw new Exception($"Не удалось найти папку {sPathOnFolder} или она пустая");
-                foreach (var file in files.Keys)
-                {
-                    if (!Task.Run<bool>(async () => await this.Connection.FileDeleteAsync(Path.Combine(this.PathProgramm, file))).Result)
-                        throw new Exception($"Ошибка удаления файла {file}");
-                    else
-                        this.OnLogginMessage($"Файл {file} удалён");
-                }
-            }
-            catch (Exception ex)
-            {
-                this.OnLoggingErrorMessage(ex.Message, ex);
-                return false;
-            }
+            //try
+            //{
+            //    Dictionary<String, String> files = Task.Run<Dictionary<String, String>>(async () => await this.Connection.File_NameListAsync(sPathOnFolder)).Result;
+            //    if (files.Count <= 0)
+            //        throw new Exception($"Не удалось найти папку {sPathOnFolder} или она пустая");
+            //    foreach (var file in files.Keys)
+            //    {
+            //        if (!Task.Run<bool>(async () => await this.Connection.FileDeleteAsync(Path.Combine(this.PathProgramm, file))).Result)
+            //            throw new Exception($"Ошибка удаления файла {file}");
+            //        else
+            //            this.OnLogginMessage($"Файл {file} удалён");
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    this.OnLoggingErrorMessage(ex.Message, ex);
+            //    return false;
+            //}
             return true;
         }
 
@@ -937,15 +946,15 @@ namespace ForRobot.Models.RoboticComplex
         /// </summary>
         public bool DeleteFileOnPC()
         {
-            try
-            {
-                this.DeleteFileOnPC(this.PathProgramm);
-            }
-            catch (Exception ex)
-            {
-                this.OnLoggingErrorMessage(ex.Message, ex);
-                return false;
-            }
+            //try
+            //{
+            //    this.DeleteFileOnPC(this.PathProgramm);
+            //}
+            //catch (Exception ex)
+            //{
+            //    this.OnLoggingErrorMessage(ex.Message, ex);
+            //    return false;
+            //}
             return true;
         }
 

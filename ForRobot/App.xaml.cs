@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.Diagnostics;
 using System.Windows;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Security.Cryptography;
 
@@ -29,6 +30,7 @@ namespace ForRobot
         private const string _pipeName = "InterfaceOfRobots_UniqueAppPipe";
         private CancellationTokenSource _pipeServerCts;
         private ForRobot.Libr.Collections.File3DCollection _openedFiles;
+        private ForRobot.Libr.Collections.RobotCollection _robotsCollection;
 
         /// <summary>
         /// Путь к программе на сервере
@@ -128,6 +130,30 @@ namespace ForRobot
             }
             set => this._openedFiles = value;
         }
+
+        /// <summary>
+        /// Коллекция соединений
+        /// </summary>
+        public ForRobot.Libr.Collections.RobotCollection RobotsCollection
+        {
+            get => this._robotsCollection;
+            set
+            {
+                if (this._robotsCollection != null)
+                {
+                    this._robotsCollection.LoggingEvent -= (s, e) => Logger.Info(e.Message);
+                    this._robotsCollection.LoggingEvent -= (s, e) => Logger.Error(e.Message);
+                }
+
+                this._robotsCollection = value;
+
+                if (this._robotsCollection != null)
+                {
+                    this._robotsCollection.LoggingEvent += (s, e) => Logger.Info(e.Message);
+                    this._robotsCollection.LoggingEvent += (s, e) => Logger.Error(e.Message);
+                }
+            }
+        }
         
         #endregion Public variables
 
@@ -153,10 +179,6 @@ namespace ForRobot
                 }
 
                 this.Logger.Trace("Запуск приложения");
-
-                // Установка провайдеров
-                ForRobot.Libr.Factories.File3DFactory.SetDetalProvider(DetalProvider);
-                ForRobot.Libr.Factories.File3DFactory.SetJsonSchemaProvider(JsonSchemaProvider);
 
                 RunApplication(e.Args);
                 await Task.Run(() => StartPipeServer());
@@ -248,10 +270,15 @@ namespace ForRobot
                 }
             }
 
+            InitializeGlobalValable();
+
             foreach (var i in args) // Исп. для открытия файла модели "с помощью"
                 this.OpenedFiles.Add(Models.File3D.File3D.Load(i));
 
-            InitializeGlobalValable();
+            // Если нет открываемых файлов, проверяет в настройках - нужно ли создать файл детали.
+            if (OpenedFiles.Count == 0 && Settings.CreatedDetalFile)
+                CreatDetalFile();
+
             Application.Current.MainWindow.Show();
             SelectAppMainWindow();
         }
@@ -406,6 +433,10 @@ namespace ForRobot
             }
         }
 
+        /// <summary>
+        /// Обработчик перехвата аргументов приложения.
+        /// </summary>
+        /// <param name="args"></param>
         private void HandleArguments(string[] args)
         {
             if (args.Length > 0)
@@ -440,32 +471,47 @@ namespace ForRobot
         /// </summary>
         private void InitializeGlobalValable()
         {
+            // Обработчик ошибок валидации JSON-схемы
             Libr.Factories.DetalFactory.DetalFactory.ValidatedError += (exception) => Logger.Error(exception);
 
-            if (ForRobot.Properties.Settings.Default.SaveRobots == null)
-                ForRobot.Properties.Settings.Default.SaveRobots = new StringCollection();
+            // Установка провайдеров
+            ForRobot.Libr.Factories.File3DFactory.SetDetalProvider(DetalProvider);
+            ForRobot.Libr.Factories.File3DFactory.SetJsonSchemaProvider(JsonSchemaProvider);
 
-            // Если нет открываемых файлов, проверяет в настройках - нужно ли создать файл детали.
-            if (OpenedFiles.Count == 0 && Settings.CreatedDetalFile)
+            //if (ForRobot.Properties.Settings.Default.SaveRobots == null)
+            //    ForRobot.Properties.Settings.Default.SaveRobots = new StringCollection();
+
+            this.RobotsCollection = new Libr.Collections.RobotCollection();
+            this.RobotsCollection.ConnectionTimeOutMilliseconds = Convert.ToInt32(App.Current.Settings.ConnectionTimeOut * 1000);
+            if (string.IsNullOrEmpty(ForRobot.Properties.Settings.Default.sSavedRobots))
+                this.RobotsCollection.Add();
+            else
+                foreach (var item in Newtonsoft.Json.JsonConvert.DeserializeObject<ObservableCollection<ForRobot.Models.RoboticComplex.Robot>>(ForRobot.Properties.Settings.Default.sSavedRobots).ToList())
+                    this.RobotsCollection.Add(item);
+        }
+
+        /// <summary>
+        /// Создание "стандартного" файла детали
+        /// </summary>
+        private void CreatDetalFile()
+        {
+            string programName = Settings.GetStandartProgramName(Settings.StartedDetalType);
+            string path = Path.Combine(Path.GetTempPath(), programName);
+
+            Models.File3D.File3D file3D;
+            if (Settings.SaveDetalProperties && File.Exists(path))
             {
-                string programName = Settings.GetStandartProgramName(Settings.StartedDetalType);
-                string path = Path.Combine(Path.GetTempPath(), programName);
-
-                Models.File3D.File3D file3D;
-                if (Settings.SaveDetalProperties && File.Exists(path))
-                {
-                    file3D = ForRobot.Models.File3D.File3D.Load(path);
-                }
-                else
-                {
-                    file3D = Models.File3D.NativeFile3D.Create(path, Settings.StartedDetalType);
-                }
-
-                if (Settings.SaveDetalProperties)
-                    file3D.PropertyChanged += (s, e) => Application.Current.Dispatcher.BeginInvoke(new Action(() => (s as Models.File3D.File3D).Save()));
-
-                OpenedFiles.Add(file3D);
+                file3D = ForRobot.Models.File3D.File3D.Load(path);
             }
+            else
+            {
+                file3D = Models.File3D.NativeFile3D.Create(path, Settings.StartedDetalType);
+            }
+
+            if (Settings.SaveDetalProperties)
+                file3D.PropertyChanged += (s, e) => Application.Current.Dispatcher.BeginInvoke(new Action(() => (s as Models.File3D.File3D).Save()));
+
+            OpenedFiles.Add(file3D);
         }
 
         /// <summary>

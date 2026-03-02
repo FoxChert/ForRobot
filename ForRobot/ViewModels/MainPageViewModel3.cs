@@ -734,17 +734,17 @@ namespace ForRobot.ViewModels
         /// </summary>
         private void ChangePathPCFolder()
         {
-            using (var fbd = new FolderBrowserDialog())
-            {
-                DialogResult result = fbd.ShowDialog();
-                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
-                {
-                    for (int i = 0; i < this.RobotsCollection.Count; i++)
-                    {
-                        this.RobotsCollection.ToList<Robot>()[i].PathProgramm = Path.Combine(fbd.SelectedPath, $"R{i + 1}");
-                    }
-                }
-            }
+            //using (var fbd = new FolderBrowserDialog())
+            //{
+            //    DialogResult result = fbd.ShowDialog();
+            //    if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+            //    {
+            //        for (int i = 0; i < this.RobotsCollection.Count; i++)
+            //        {
+            //            this.RobotsCollection.ToList<Robot>()[i].PathProgramm = Path.Combine(fbd.SelectedPath, $"R{i + 1}");
+            //        }
+            //    }
+            //}
         }
 
         /// <summary>
@@ -803,11 +803,11 @@ namespace ForRobot.ViewModels
             {
                 robot = new Robot()
                 {
-                    PathProgramm = (this.RobotsCollection.Count > 0) ?
-                            Path.Combine(Directory.GetParent(this.RobotsCollection.Last().PathProgramm).ToString(), $"R{this.RobotsCollection.Count + 1}")
-                            : Path.Combine(App.Current.Settings.PathFolderOfGeneration, $"R{this.RobotsCollection.Count + 1}"),
-                    PathControllerFolder = App.Current.Settings.ControlerFolder,
-                    ConnectionTimeOutMilliseconds = Convert.ToInt32(App.Current.Settings.ConnectionTimeOut) * 1000
+                    //PathProgramm = (this.RobotsCollection.Count > 0) ?
+                    //        Path.Combine(Directory.GetParent(this.RobotsCollection.Last().PathProgramm).ToString(), $"R{this.RobotsCollection.Count + 1}")
+                    //        : Path.Combine(App.Current.Settings.PathFolderOfGeneration, $"R{this.RobotsCollection.Count + 1}"),
+                    //PathControllerFolder = App.Current.Settings.ControlerFolder,
+                    //ConnectionTimeOutMilliseconds = Convert.ToInt32(App.Current.Settings.ConnectionTimeOut) * 1000
                 };
             }
 
