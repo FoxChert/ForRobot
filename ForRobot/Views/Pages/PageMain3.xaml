@@ -31,7 +31,8 @@
     </Page.Title>
 
     <Page.DataContext>
-        <vm:MainPageViewModel3/>
+        <vm:MainWindowViewModel/>
+        <!--<vm:MainPageViewModel3/>-->
     </Page.DataContext>
 
     <Page.InputBindings>
@@ -463,8 +464,8 @@
                     <ControlTemplate TargetType="{x:Type MenuItem}">
                         <ComboBox VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
                                   FontSize="{StaticResource FontSizeNP4}" Width="Auto" MinWidth="200" Margin="4"
-                                  ItemsSource="{Binding Path=RobotNamesCollection, Mode=OneWay}"
-                                  SelectedItem="{Binding Path=SelectedRobotsName, Mode=TwoWay}"
+                                  ItemsSource="{Binding Path=RobotsNamesCollection, Mode=OneWay}"
+                                  SelectedItem="{Binding Path=SelectedRobotName, Mode=TwoWay}"
                                   SelectedIndex="0">
 
                             <ComboBox.Style>

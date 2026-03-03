@@ -452,7 +452,7 @@
     <Compile Include="Libr\Strategies\ModelingStrategies\PlateModelingStrategy.cs" />
     <Compile Include="ViewModels\CreateWindowViewModel.cs" />
     <Compile Include="ViewModels\MainPageViewModel3.cs" />
-    <Compile Include="ViewModels\MainPageViewModel3_new.cs" />
+    <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\NavigationTreeViewModel.cs" />
     <Compile Include="ViewModels\PropertiesWindowViewModel.cs" />
     <Compile Include="Views\Controls\CustomAttributes.cs" />
@@ -575,7 +575,6 @@
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Themes\MetroStyleResourceDictionary.cs" />
     <Compile Include="Libr\Converters\RowNumberConverter.cs" />
-    <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\Controls\NavigationTreeViewVM.cs" />
     <Compile Include="Views\Controls\NavigationTreeView.xaml.cs">
       <DependentUpon>NavigationTreeView.xaml</DependentUpon>

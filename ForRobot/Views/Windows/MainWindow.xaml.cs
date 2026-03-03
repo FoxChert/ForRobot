@@ -1,7 +1,13 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Interop;
+
+using HelixToolkit.Wpf;
 
 namespace ForRobot.Views.Windows
 {
@@ -10,21 +16,12 @@ namespace ForRobot.Views.Windows
     /// </summary>
     public partial class MainWindow : Window
     {
-        #region Private variables
-
-        private ViewModels.MainPageViewModel3_new _viewModel;
-        //private ViewModels.MainWindowViewModel _viewModel;
-
+        #region Private variables        
+        
         #endregion
 
-        #region Public variables
-
-        public ViewModels.MainPageViewModel3_new ViewModel
-        {
-            get { return _viewModel ?? (ViewModels.MainPageViewModel3_new)this.DataContext ?? (_viewModel = new ViewModels.MainPageViewModel3_new()); }
-            //get { return _viewModel ?? (ViewModels.MainWindowViewModel)this.DataContext ?? (_viewModel = new ViewModels.MainWindowViewModel()); }
-        }
-
+        #region Public variables      
+        
         #endregion
 
         #region Constructr
@@ -32,7 +29,6 @@ namespace ForRobot.Views.Windows
         public MainWindow()
         {
             InitializeComponent();
-            if (this.DataContext == null) { this.DataContext = ViewModel; }
         }
 
         #endregion
@@ -43,23 +39,18 @@ namespace ForRobot.Views.Windows
         {
             if (msg == NativeMethods.WM_SHOWME)
             {
-                ShowMe();
+                Show();
             }
             return IntPtr.Zero;
         }
-
-        /// <summary>
-        /// Настройки приложения
-        /// </summary>
-        private readonly ForRobot.Models.Settings.Settings Settings = ForRobot.Models.Settings.Settings.GetSettings();
-
+        
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             lock (App.Current)
             {
                 GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new Libr.Messages.SaveLayoutMessage());
 
-                if ((this.MainFrame.Content as ForRobot.Views.Pages.PageMain3).ViewModel.RobotsCollection.Where(robot => robot.IsConnection).Count() > 0)
+                if (App.Current.RobotsCollection.Where(robot => robot.IsConnection).Count() > 0)
                 {
                     if (MessageBox.Show($"Закрыть соединение?", "Закрытие приложения", MessageBoxButton.OKCancel, MessageBoxImage.Question) != MessageBoxResult.OK)
                     {
@@ -68,13 +59,45 @@ namespace ForRobot.Views.Windows
                     }
                     else
                     {
-                        foreach (var robot in (this.MainFrame.Content as ForRobot.Views.Pages.PageMain3).ViewModel.RobotsCollection)
+                        foreach (var robot in App.Current.RobotsCollection)
                         {
                             robot.Dispose();
                         }
                     }
                 }
             }
+        }
+
+        private void Expander_Expanded(object sender, RoutedEventArgs e)
+        {
+            for (var vis = sender as Visual; vis != null; vis = VisualTreeHelper.GetParent(vis) as Visual)
+                if (vis is DataGridRow)
+                {
+                    var row = (DataGridRow)vis;
+                    row.DetailsVisibility = row.DetailsVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+                    break;
+                }
+        }
+
+        private void Expander_Collapsed(object sender, RoutedEventArgs e)
+        {
+            for (var vis = sender as Visual; vis != null; vis = VisualTreeHelper.GetParent(vis) as Visual)
+                if (vis is DataGridRow)
+                {
+                    var row = (DataGridRow)vis;
+                    row.DetailsVisibility = row.DetailsVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+                    break;
+                }
+        }
+
+        private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var viewport = sender as HelixViewport3D;
+            var firstHit = viewport?.Viewport.FindHits(e.GetPosition(viewport))?.FirstOrDefault();
+            //if (firstHit != null)
+            //    this.ViewModel.Select(firstHit.Visual);
+            //else
+            //    this.ViewModel.Select(null);
         }
 
         #endregion
@@ -92,8 +115,9 @@ namespace ForRobot.Views.Windows
 
         #region Public functions
 
-        public void ShowMe()
+        public new void Show()
         {
+            base.Show();
             if (this.WindowState == WindowState.Minimized)
             {
                 this.WindowState = WindowState.Normal;

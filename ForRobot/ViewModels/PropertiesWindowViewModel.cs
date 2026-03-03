@@ -179,13 +179,8 @@ namespace ForRobot.ViewModels
         {
             get
             {
-                if ((App.Current.MainWindow as ForRobot.Views.Windows.MainWindow).MainFrame?.Content is Views.Pages.PageMain3)
-                {
-                    var dockingManager = ((App.Current.MainWindow as ForRobot.Views.Windows.MainWindow).MainFrame?.Content as Views.Pages.PageMain3).DockingManeger;
-                    return dockingManager.Layout.Descendents().OfType<LayoutAnchorable>().ToList();
-                }
-                else
-                    return null;
+                var dockingManager = (App.Current.MainWindow as ForRobot.Views.Windows.MainWindow).DockingManeger;
+                return dockingManager.Layout.Descendents().OfType<LayoutAnchorable>().ToList();
             }
         }
 
