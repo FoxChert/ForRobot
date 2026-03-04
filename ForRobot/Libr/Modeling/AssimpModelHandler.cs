@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 
 using Assimp;
@@ -14,18 +15,12 @@ namespace ForRobot.Libr.Modeling
         /// <summary>
         /// Хэшированная коллекция поддерживаемых расширений файлов для импорта
         /// </summary>
-        public HashSet<string> SupportedImportExtensions { get; } = new HashSet<string>()
-        {
-            ".stl", ".obj", ".fbx", ".dae", ".3ds", ".gltf", ".glb", ".ply", ".off", ".lwo", ".ase", ".ifc", ".x", ".mqo", ".smd", ".vta", ".mdl", ".md2", ".md3", ".pk3", ".mdc", ".md5", ".smd", ".vta", ".bvh", ".csm", ".xml", ".irrmesh", ".irr", ".mdl", ".md2", ".md3", ".pk3", ".mdc", ".md5", ".smd", ".vta", ".bvh", ".csm", ".xml", ".irrmesh", ".irr", ".blend", ".dxf", ".lws", ".ter", ".ac", ".ms3d", ".cob", ".scn", ".xgl", ".zgl", ".csm", ".bvh", ".collada", ".uc", ".uc2"
-        };
+        public HashSet<string> SupportedImportExtensions { get; } = new HashSet<string>(new AssimpContext().GetSupportedImportFormats());
 
         /// <summary>
         /// Хэшированная коллекция поддерживаемых расширений файлов для экспорта
         /// </summary>
-        public HashSet<string> SupportedExportExtensions { get; } = new HashSet<string>()
-        {
-            ".stl", ".obj", ".fbx", ".dae", ".3ds", ".gltf", ".glb", ".ply", ".off", ".lwo", ".x", ".assbin", ".assxml", ".x3d", ".fbx.xml", ".stl.ascii", ".stl.binary"
-        };
+        public HashSet<string> SupportedExportExtensions { get; } = new HashSet<string>(new AssimpContext().GetSupportedExportFormats().Select(item => item.FileExtension));
         
         /// <summary>
         /// Выгрузка 3D модели из указанного файла
@@ -51,7 +46,7 @@ namespace ForRobot.Libr.Modeling
             {
                 using (var context = new AssimpContext())
                 {
-                    var scene = context.ImportFile(filePath);
+                    var scene = context.ImportFile(filePath, PostProcessSteps.Triangulate | PostProcessSteps.GenerateSmoothNormals | PostProcessSteps.FlipUVs);
                     if (scene == null)
                         throw new InvalidOperationException($"Не удалось загрузить модель из файла {filePath}");
                     return scene;

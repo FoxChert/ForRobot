@@ -91,10 +91,7 @@ namespace ForRobot.Libr.Factories
         public static File3D Create(string path)
         {
             ValidatePath(path);
-
-            if (!File.Exists(path))
-                throw new FileNotFoundException("Не удалось найти файл", path);
-
+            
             string extension = System.IO.Path.GetExtension(path)?.ToLowerInvariant();
 
             switch (extension)
@@ -102,7 +99,13 @@ namespace ForRobot.Libr.Factories
                 case ".stl":
                 case ".obj":
                 case ".ply":
+                case ".3ds":
+                case ".off":
+                case ".dae":
                     return new MeshModelFile3D(path);
+
+                case ".step":
+                    return new CadFile3D(path);
 
                 case ".json":
                 case ".txt":

@@ -318,6 +318,7 @@
     <Compile Include="Libr\Behavior\DockingManagerBehavior.cs" />
     <Compile Include="Libr\Collections\RobotCollection.cs" />
     <Compile Include="Libr\Collections\RobotPropertyChangedEventArgs.cs" />
+    <Compile Include="Libr\Converters\AssimpConverter.cs" />
     <Compile Include="Libr\Messages\LayoutAnchorableMessage.cs" />
     <Compile Include="Libr\Behavior\DataGridAutoSizeColumns.cs" />
     <Compile Include="Libr\Behavior\FocusBehavior.cs" />
@@ -344,7 +345,7 @@
     <Compile Include="Libr\Modeling\CacheModel3DProvider.cs" />
     <Compile Include="Libr\Modeling\Model3DCollectionExtensions.cs" />
     <Compile Include="Libr\Collections\RibPropertyChangedEventArgs.cs" />
-    <Compile Include="Libr\Modeling\Model3DGroupExtensions.cs" />
+    <Compile Include="Libr\Modeling\Model3DExtensions.cs" />
     <Compile Include="Libr\Modeling\Model3DManager.cs" />
     <Compile Include="Libr\Modeling\Model3DProvider.cs" />
     <Compile Include="Libr\Modeling\Transform3DBuilder.cs" />
@@ -400,6 +401,7 @@
     <Compile Include="Libr\ValueChangedEventHandler.cs" />
     <Compile Include="Models\Detals\CachedDetalProvider.cs" />
     <Compile Include="Models\Detals\DetalProvider.cs" />
+    <Compile Include="Models\File3D\CadFile3D.cs" />
     <Compile Include="Models\ISceneItem.cs" />
     <Compile Include="Models\RoboticComplex\PC.cs" />
     <Compile Include="Models\RoboticComplex\RobotExtensions.cs" />

@@ -1,35 +1,21 @@
 ﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Windows;
 using System.Windows.Media.Media3D;
 
 using ForRobot.Libr.Modeling;
 
 namespace ForRobot.Models.File3D
 {
-    public class MeshModelFile3D : File3D
+    public class CadFile3D : File3D
     {
         #region Private variables
 
         private Model3DGroup _currentModel = new Model3DGroup();
-        //private IList<DependencyObject> _sceneItems = new List<DependencyObject>();
-
-        #endregion private variables
+        
+        #endregion Private variables
 
         #region Public variables
 
-        public override string Filter { get; } = "3D Mesh Files (*.stl;*.obj;*.ply;*.3ds;*.off)|*.stl;*.obj;*.ply;*.3ds;*.off";
-        
-        //public override IList<SceneItem> SceneItems
-        //{
-        //    get => this._sceneItems;
-        //    protected set
-        //    {
-        //        this._sceneItems = value;
-        //        this.OnSceneChanged();
-        //    }
-        //}
+        public override string Filter { get; } = "3D CAD-files (*.step)|*.step";
 
         public override Model3DGroup CurrentModel
         {
@@ -45,7 +31,7 @@ namespace ForRobot.Models.File3D
 
         #region Constructors
 
-        public MeshModelFile3D(string path) : base(path)
+        public CadFile3D(string path) : base(path)
         {
             //this.SceneItems.Add(this.LoadModel3D(path) as Model3DGroup);
             this.CurrentModel = this.LoadModel3D(path);
@@ -61,13 +47,20 @@ namespace ForRobot.Models.File3D
 
         #region Public functions
 
-        public override void Save(string path)
+        protected override void HandleUndoRedoStateChangedEvent(object sender, EventArgs e)
         {
-
+            throw new NotImplementedException();
         }
 
-        protected override void HandleValueChangedEvent(object sender, ForRobot.Libr.ValueChangedEventArgs e) { }
-        protected override void HandleUndoRedoStateChangedEvent(object sender, EventArgs e) { }
+        protected override void HandleValueChangedEvent(object sender, ForRobot.Libr.ValueChangedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Save(string path)
+        {
+            throw new NotImplementedException();
+        }
 
         #endregion Public functions
     }

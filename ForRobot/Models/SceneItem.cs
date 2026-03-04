@@ -348,7 +348,7 @@ namespace ForRobot.Models
             if (this.VisualModel != null)
             {
                 var matrix = ForRobot.Libr.Converters.MatrixConverter.MatrixToMatrix3D(this.WorldTransform);
-                ForRobot.Libr.Converters.MatrixConverter.ApplyTransformToModel(this.VisualModel, matrix);
+                ForRobot.Libr.Modeling.Model3DExtensions.ApplyTransformToModel(this.VisualModel, matrix);
             }
         }
 
