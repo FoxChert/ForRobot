@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
+using System.Collections.Generic;
 
 namespace ForRobot.Libr.Modeling
 {
@@ -9,6 +10,27 @@ namespace ForRobot.Libr.Modeling
     /// </summary>
     public static class Model3DExtensions
     {
+        public static List<MeshGeometry3D> ExtractGeometries(this Model3D model3D)
+        {
+            if (model3D == null)
+                throw new ArgumentNullException(nameof(model3D));
+
+            var geometries = new List<MeshGeometry3D>();
+            switch (model3D)
+            {
+                case Model3DGroup model3DGroup:
+                    foreach (var model in model3DGroup.Children)
+                        geometries.AddRange(ExtractGeometries(model));
+                    break;
+
+                case GeometryModel3D geometryModel:
+                    if (geometryModel.Geometry is MeshGeometry3D mesh)
+                        geometries.Add(mesh);
+                    break;
+            }
+            return geometries;
+        }
+
         /// <summary>
         /// Окрашивание модели в единый цвет
         /// </summary>

@@ -5,6 +5,9 @@ using System.ComponentModel;
 
 namespace ForRobot.Models.File3D
 {
+    /// <summary>
+    /// Базовый класс представляющий файл в приложении
+    /// </summary>
     public abstract class File3D : IFile3D, IDisposable
     {
         #region Private variables
@@ -172,11 +175,11 @@ namespace ForRobot.Models.File3D
         public virtual void Undo() => this._undoRedoManager?.Undo();
         public virtual void Redo() => this._undoRedoManager?.Redo();
 
-        public void SetUndoRedoManager(ForRobot.Libr.Clipboard.CacheClipboardProvider cacheClipboardProvider)
-        {
-            this._undoRedoManager = new Libr.Clipboard.UndoRedoManager(cacheClipboardProvider, this.Path);
-            this._undoRedoManager.UndoRedoStateChanged += this.HandleUndoRedoStateChangedEvent;
-        }
+        //public void SetUndoRedoManager(ForRobot.Libr.Clipboard.CacheClipboardProvider cacheClipboardProvider)
+        //{
+        //    this._undoRedoManager = new Libr.Clipboard.UndoRedoManager(cacheClipboardProvider, this.Path);
+        //    this._undoRedoManager.UndoRedoStateChanged += this.HandleUndoRedoStateChangedEvent;
+        //}
 
         #endregion Public functions
 

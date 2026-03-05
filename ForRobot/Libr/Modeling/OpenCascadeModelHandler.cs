@@ -25,6 +25,11 @@ namespace ForRobot.Libr.Modeling
             ".stp", ".step", ".brep", ".dxf", ".sat", ".sab", ".jt", ".igs", ".iges", ".wrl"
         };
 
+        public bool CanHandle(string path)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Выгрузка 3D модели из указанного файла
         /// </summary>

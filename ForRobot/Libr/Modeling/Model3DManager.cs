@@ -10,22 +10,26 @@ namespace ForRobot.Libr.Modeling
     /// </summary>
     public static class Model3DManager
     {
+        /// <summary>
+        /// Коллекция возможных обработчиков для разных форматов файлов
+        /// </summary>
         private static readonly Dictionary<string, List<IModelFileHandler>> _handlersByFormat = new Dictionary<string, List<IModelFileHandler>>(StringComparer.OrdinalIgnoreCase)
         {
             // Mesh files
-            [".stl"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
+            [".stl"] = new List<IModelFileHandler> { new HelixToolkitModelHandler(), new AssimpModelHandler() },
+            [".ply"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
             [".obj"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
-            //[".fbx"] = new List<IModelFileHandler> { new AssimpModelHandler() },
-            //[".callada"] = new List<IModelFileHandler> { new AssimpModelHandler() },
             [".3ds"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
+            //[".callada"] = new List<IModelFileHandler> { new AssimpModelHandler() },
             [".dae"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
+            //[".fbx"] = new List<IModelFileHandler> { new AssimpModelHandler() },
             //[".gltf"] = new List<IModelFileHandler> { new AssimpModelHandler() },
             //[".glb"] = new List<IModelFileHandler> { new AssimpModelHandler() },
-            [".ply"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
             [".off"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
             //[".lwo"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
 
             // Cad files
+            [".stp"] = new List<IModelFileHandler> { new OpenCascadeModelHandler() },
             [".step"] = new List<IModelFileHandler> { new OpenCascadeModelHandler() }
         };
 
@@ -83,6 +87,11 @@ namespace ForRobot.Libr.Modeling
             return model;
         }
 
+        /// <summary>
+        /// Экспорт 3д модели в файл
+        /// </summary>
+        /// <param name="model3D"></param>
+        /// <param name="path">Путь к получаемому файлу</param>
         public static void ExportModel3D(Model3D model3D, string path)
         {
             string extension = System.IO.Path.GetExtension(path).ToLower();

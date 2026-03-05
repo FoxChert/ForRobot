@@ -99,7 +99,7 @@ namespace ForRobot
                                     if (file == null)
                                         return;
                                     ClipboardProvider.GetOrAddStacks(file.Path);
-                                    file.SetUndoRedoManager(ClipboardProvider);
+                                    //file.SetUndoRedoManager(ClipboardProvider);
                                 }
                                 break;
 
@@ -120,7 +120,7 @@ namespace ForRobot
                                     if (file == null)
                                         return;
                                     ClipboardProvider.GetOrAddStacks(file.Path);
-                                    file.SetUndoRedoManager(ClipboardProvider);
+                                    //file.SetUndoRedoManager(ClipboardProvider);
                                 }
                                 break;
                         }

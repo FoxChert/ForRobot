@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
-using System.Windows.Controls;
-using System.Collections.Generic;
 using System.Globalization;
 
 namespace ForRobot.Libr.Converters
@@ -13,6 +10,14 @@ namespace ForRobot.Libr.Converters
     /// </summary>
     public class ColorToBrushConverter : IValueConverter
     {
+        /// <summary>
+        /// Преобразование <see cref="Color"/> в <see cref="SolidColorBrush"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="targetType"></param>
+        /// <param name="parameter"></param>
+        /// <param name="culture"></param>
+        /// <returns></returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             Color v = (Color)value;
@@ -20,9 +25,17 @@ namespace ForRobot.Libr.Converters
             if (v == null)
                 throw new FormatException("to use this converter, value and parameter shall inherit from Color");
 
-            return new System.Windows.Media.SolidColorBrush(v);
+            return new SolidColorBrush(v);
         }
 
+        /// <summary>
+        /// Обратное преобразование <see cref="SolidColorBrush"/> в <see cref="Color"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="targetType"></param>
+        /// <param name="parameter"></param>
+        /// <param name="culture"></param>
+        /// <returns></returns>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             Brush v = (Brush)value;

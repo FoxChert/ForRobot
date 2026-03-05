@@ -343,6 +343,7 @@
     <Compile Include="Libr\Converters\MatrixConverter.cs" />
     <Compile Include="Libr\Logging\LogEventArgs.cs" />
     <Compile Include="Libr\Modeling\CacheModel3DProvider.cs" />
+    <Compile Include="Libr\Modeling\MeshGeometry3DExtensions.cs" />
     <Compile Include="Libr\Modeling\Model3DCollectionExtensions.cs" />
     <Compile Include="Libr\Collections\RibPropertyChangedEventArgs.cs" />
     <Compile Include="Libr\Modeling\Model3DExtensions.cs" />
@@ -402,6 +403,8 @@
     <Compile Include="Models\Detals\CachedDetalProvider.cs" />
     <Compile Include="Models\Detals\DetalProvider.cs" />
     <Compile Include="Models\File3D\CadFile3D.cs" />
+    <Compile Include="Models\File3D\FileFormatInfo.cs" />
+    <Compile Include="Models\File3D\IFileFormatRegistry.cs" />
     <Compile Include="Models\ISceneItem.cs" />
     <Compile Include="Models\RoboticComplex\PC.cs" />
     <Compile Include="Models\RoboticComplex\RobotExtensions.cs" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 
 using ForRobot.Models.File3D;
 using ForRobot.Libr.Services.Providers;
@@ -79,6 +80,8 @@ namespace ForRobot.Libr.Factories
 
         #region Public functions
 
+        //private static bool CanCreate(this File3D file3D, string extension) => file3D.Extensions.Select(item => item.FilesExtensions).Contains(extension);
+
         /// <summary>
         /// Создание объекта File3D на основе расширения файла
         /// </summary>
@@ -112,7 +115,7 @@ namespace ForRobot.Libr.Factories
                     return new NativeFile3D(path, _cachedDetalFactory);
 
                 default:
-                    throw new Exception(string.Format("Расширение {0} не поддерживается", extension));
+                    throw new Exception(string.Format("Расширение '{0}' не поддерживается", extension));
             }
         }
 

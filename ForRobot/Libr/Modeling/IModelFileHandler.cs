@@ -7,6 +7,7 @@ namespace ForRobot.Libr.Modeling
     {
         HashSet<string> SupportedImportExtensions { get; }
         HashSet<string> SupportedExportExtensions { get; }
+        bool CanHandle(string path);
         object LoadModel(string filePath);
         void SaveModel(object model, string filePath);
     }

@@ -97,10 +97,16 @@ namespace ForRobot.Models.File3D
 
         public Detal CurrentDetal { get => this._currentDetal; set => this.SetDetal(value); }
 
+        //public override IEnumerable<FileFormats> Extensions { get; } = new List<FileFormats>()
+        //{
+        //    new FileFormats("Text Files", ".txt"),
+        //    new FileFormats("Json Files", ".json")
+        //};
+
         #endregion Public variables
 
         #region Constructors
-        
+
         /// <summary>
         /// Инициализация объекта <see cref="NativeFile3D"/> для чтения существующего файла
         /// </summary>

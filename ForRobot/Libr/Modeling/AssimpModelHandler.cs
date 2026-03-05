@@ -21,7 +21,12 @@ namespace ForRobot.Libr.Modeling
         /// Хэшированная коллекция поддерживаемых расширений файлов для экспорта
         /// </summary>
         public HashSet<string> SupportedExportExtensions { get; } = new HashSet<string>(new AssimpContext().GetSupportedExportFormats().Select(item => item.FileExtension));
-        
+
+        public bool CanHandle(string path)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Выгрузка 3D модели из указанного файла
         /// </summary>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media.Media3D;
@@ -19,8 +20,9 @@ namespace ForRobot.Models.File3D
 
         #region Public variables
 
+        //public override string Filter { get => string.Format("3D Mesh Files ({0})|{0}", String.Join(";", this.Extensions.Select(item => $"*{item}"))); }
         public override string Filter { get; } = "3D Mesh Files (*.stl;*.obj;*.ply;*.3ds;*.off)|*.stl;*.obj;*.ply;*.3ds;*.off";
-        
+
         //public override IList<SceneItem> SceneItems
         //{
         //    get => this._sceneItems;
@@ -40,6 +42,17 @@ namespace ForRobot.Models.File3D
                 this.OnModelChanged();
             }
         }
+
+        //public override IEnumerable<FileFormats> Extensions { get; } = new List<FileFormats>()
+        //{
+        //    new FileFormats("STereoLithography", ".stl"),
+        //    new FileFormats("Polygon Model File", ".ply"),
+        //    new FileFormats("Object File Format", ".obj"),
+        //    new FileFormats("3D Mesh Files", ".3ds"),
+        //    new FileFormats("", ".dae"),
+        //    new FileFormats("", ".off")
+        //};
+        //    //= new Dictionary<string, string>() { ".stl", ".ply", ".obj", ".3ds", ".dae", ".off" };
 
         #endregion Public variables
 
@@ -63,7 +76,7 @@ namespace ForRobot.Models.File3D
 
         public override void Save(string path)
         {
-
+            Model3DManager.ExportModel3D(this.CurrentModel, path);
         }
 
         protected override void HandleValueChangedEvent(object sender, ForRobot.Libr.ValueChangedEventArgs e) { }

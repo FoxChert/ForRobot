@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Media.Media3D;
 
 using ForRobot.Libr.Modeling;
@@ -26,6 +27,12 @@ namespace ForRobot.Models.File3D
                 this.OnModelChanged();
             }
         }
+
+        //public override IDictionary<string, string> Extensions { get; }
+        //    = new Dictionary<string, string>()
+        //{
+        //    ".stp", ".step"
+        //};
 
         #endregion Public variables
 

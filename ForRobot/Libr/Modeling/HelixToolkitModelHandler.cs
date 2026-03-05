@@ -27,7 +27,12 @@ namespace ForRobot.Libr.Modeling
         {
             ".png", ".jpg", ".obj", ".objz", ".xaml", ".xml", ".x3d", ".dae", ".stl"
         };
-        
+
+        public bool CanHandle(string path)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Выгрузка 3D модели из указанного файла
         /// </summary>
