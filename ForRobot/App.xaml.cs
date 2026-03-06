@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.IO.Pipes;
-using System.Text;
 using System.Data;
 using System.Linq;
 using System.Threading;
@@ -11,7 +10,6 @@ using System.Diagnostics;
 using System.Windows;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Security.Cryptography;
 
 using NLog;
 
@@ -477,6 +475,22 @@ namespace ForRobot
             // Установка провайдеров
             ForRobot.Libr.Factories.File3DFactory.SetDetalProvider(DetalProvider);
             ForRobot.Libr.Factories.File3DFactory.SetJsonSchemaProvider(JsonSchemaProvider);
+
+            // Регистрация поддерживаемых приложением форматов файлов
+            System.Collections.Generic.List<ForRobot.Models.File3D.FileFormatInfo> fileFormats = new System.Collections.Generic.List<Models.File3D.FileFormatInfo>()
+            {
+                new Models.File3D.FileFormatInfo("STereoLithography", Models.File3D.FormatCategories.MeshFile, ".stl"),
+                new Models.File3D.FileFormatInfo("Wavefront Object", Models.File3D.FormatCategories.MeshFile, ".obj"),
+                new Models.File3D.FileFormatInfo("3D Studio", Models.File3D.FormatCategories.MeshFile, ".3ds"),
+                new Models.File3D.FileFormatInfo("COLLADA DAE", Models.File3D.FormatCategories.MeshFile, ".dae"),
+                new Models.File3D.FileFormatInfo("Polygon Model", Models.File3D.FormatCategories.MeshFile, ".ply"),
+                new Models.File3D.FileFormatInfo("Object Format", Models.File3D.FormatCategories.MeshFile, ".off"),
+                new Models.File3D.FileFormatInfo("Text", Models.File3D.FormatCategories.NativeFile, ".txt"),
+                new Models.File3D.FileFormatInfo("Json", Models.File3D.FormatCategories.NativeFile, ".json"),
+                new Models.File3D.FileFormatInfo("STEP", Models.File3D.FormatCategories.CadFile, "stp", ".step")
+            };
+            foreach (var item in fileFormats)
+                ForRobot.Libr.Registry.FileFormatRegistry.Register(item);
 
             //if (ForRobot.Properties.Settings.Default.SaveRobots == null)
             //    ForRobot.Properties.Settings.Default.SaveRobots = new StringCollection();

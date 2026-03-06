@@ -75,5 +75,28 @@ namespace ForRobot.Libr.Modeling
                     break;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="model3D"></param>
+        /// <param name="axis"></param>
+        /// <param name="angle"></param>
+        public static void Rotate(this Model3D model3D, Vector3D axis, double angle)
+        {
+            Rect3D bounds = model3D.Bounds;
+            Point3D center = new Point3D(bounds.X + bounds.SizeX / 2, bounds.Y + bounds.SizeY / 2, bounds.Z + bounds.SizeZ / 2);
+            model3D.Transform = Transform3DBuilder.Create().Rotate(axis, angle, center);
+        }
+
+        public static void Translate(this Model3D model3D, double x, double y, double z)
+        {
+            model3D.Transform = Transform3DBuilder.Create().Translate(x, y, z);
+        }
+
+        public static void Scale(this Model3D model3D, double x, double y, double z)
+        {
+            model3D.Transform = Transform3DBuilder.Create().Scale(x, y, z);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -82,8 +83,6 @@ namespace ForRobot.Models.File3D
         #endregion private variables
 
         #region Public variables
-
-        public override string Filter { get; } = "Text Files (*.txt)|*.txt|Json Files (*.json)|*.json|All Supported Files (*.txt;*.json)|*.txt;*.json";
 
         public override Model3DGroup CurrentModel
         {
@@ -218,6 +217,18 @@ namespace ForRobot.Models.File3D
         }
 
         #endregion
+
+        protected override string GetFilter()
+        {
+            string filter = string.Empty;
+            string allFormat = string.Empty;
+            foreach (var format in Libr.Registry.FileFormatRegistry.GetByCategory(FormatCategories.NativeFile).ToList())
+            {
+                filter = string.Format("{0} Files {1}|{1}", format.FormatsName, format.Extensions.Select(item => String.Join(";", $"*{item}")));
+                allFormat += format.Extensions.Select(item => String.Join(";", $"*{item}"));
+            }
+            return string.Join("|", filter, $"All Supported Files {allFormat}|{allFormat}");
+        }
 
         /// <summary>
         /// Делегат изменения значения отслеживаемого свойства

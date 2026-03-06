@@ -54,7 +54,7 @@ namespace ForRobot.Models.File3D
         /// <summary>
         /// Фильтер файлового диалога для поиска файлов данного типа
         /// </summary>
-        public abstract string Filter { get; }
+        public string Filter { get; }
 
         /// <summary>
         /// Можно ли отменить изменения отслеживаемого свойства
@@ -85,6 +85,7 @@ namespace ForRobot.Models.File3D
         public File3D()
         {
             this.dispatcher = Dispatcher.CurrentDispatcher;
+            this.Filter = GetFilter();
             //this.SceneChangedEvent += (s, e) => this.OnPropertyChanged(nameof(this.SceneItems));
             this.ModelChangedEvent += (s, e) => this.OnPropertyChanged(nameof(this.CurrentModel));
             this.PropertyChanged += (s, e) => { if(e.PropertyName != nameof(this.IsSaved)) this.IsSaved = false; };
@@ -112,6 +113,11 @@ namespace ForRobot.Models.File3D
 
         #region Protected functions
 
+        /// <summary>
+        /// Возвращает фильтр диалога для каждого типа файла
+        /// </summary>
+        /// <returns></returns>
+        protected abstract string GetFilter();
         /// <summary>
         /// Делегат события изменения значения отслеживаемого свойства
         /// </summary>
@@ -150,7 +156,6 @@ namespace ForRobot.Models.File3D
         /// Вызов события изменения <see cref="CurrentModel"/>
         /// </summary>
         protected virtual void OnModelChanged() => this.ModelChangedEvent?.Invoke(this, null);
-
 
         //protected virtual void OnSceneChanged() => this.SceneChangedEvent?.Invoke(this, null);
 

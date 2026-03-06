@@ -6,15 +6,44 @@ using Assimp;
 
 namespace ForRobot.Libr.Converters
 {
+    /// <summary>
+    /// Класс-преобразователь для типов <see cref="Assimp"/>
+    /// </summary>
     public static class AssimpConverter
     {
-        public static Model3DGroup ConvertSceneToModel3DGroup(Scene scene)
+        /// <summary>
+        /// Преобразование всей <see cref="Assimp.Scene"/> в <see cref="Model3DGroup"/>
+        /// </summary>
+        /// <param name="scene"></param>
+        /// <param name="texturePath">Путь к файлу с текстурами</param>
+        /// <returns></returns>
+        public static Model3DGroup ConvertSceneToModel3DGroup(Scene scene, string texturePath = "")
         {
             Model3DGroup modelGroup = new Model3DGroup();
-
-            ProcessNode(scene.RootNode, scene, modelGroup);
-
+            ProcessNode(scene.RootNode, scene, modelGroup, texturePath);
             return modelGroup;
+        }
+
+        /// <summary>
+        /// Рекурсивная обработка узлов <see cref="Assimp.Scene"/>
+        /// </summary>
+        /// <param name="node">Текущий узел</param>
+        /// <param name="scene">Вся сцена</param>
+        /// <param name="modelGroup">Родительская группа</param>
+        /// <param name="texturePath">Путь к файлу с текстурами</param>
+        private static void ProcessNode(Node node, Scene scene, Model3DGroup modelGroup, string texturePath)
+        {
+            foreach (var meshIndex in node.MeshIndices)
+            {
+                Assimp.Mesh mesh = scene.Meshes[meshIndex];
+                GeometryModel3D geometryModel = ConvertMeshToGeometryModel3D(mesh);
+                modelGroup.Children.Add(geometryModel);
+            }
+
+            foreach (var childNode in node.Children)
+            {
+                ProcessNode(childNode, scene, modelGroup, texturePath);
+            }
         }
 
         public static GeometryModel3D ConvertMeshToGeometryModel3D(Assimp.Mesh mesh)
@@ -52,21 +81,6 @@ namespace ForRobot.Libr.Converters
             };
             materialGroup.Children.Add(new DiffuseMaterial(new SolidColorBrush(diffuseColor)));
             return materialGroup;
-        }
-
-        private static void ProcessNode(Node node, Scene scene, Model3DGroup modelGroup)
-        {
-            foreach (var meshIndex in node.MeshIndices)
-            {
-                Assimp.Mesh mesh = scene.Meshes[meshIndex];
-                GeometryModel3D geometryModel = ConvertMeshToGeometryModel3D(mesh);
-                modelGroup.Children.Add(geometryModel);
-            }
-
-            foreach (var childNode in node.Children)
-            {
-                ProcessNode(childNode, scene, modelGroup);
-            }
         }
     }
 }

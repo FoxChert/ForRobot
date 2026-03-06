@@ -9,8 +9,6 @@ using System.Drawing;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using Microsoft.Win32;
-
 using ForRobot.Models.Settings;
 
 namespace ForRobot.Libr.Services
@@ -178,7 +176,7 @@ namespace ForRobot.Libr.Services
 
             foreach (var registryKey in RegistryKeys)
             {
-                using (var key = Registry.LocalMachine.OpenSubKey(registryKey))
+                using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(registryKey))
                 {
                     if (key == null) continue;
 

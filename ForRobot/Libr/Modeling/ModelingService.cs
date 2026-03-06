@@ -37,23 +37,6 @@ namespace ForRobot.Libr.Modeling
         /// </summary>
         public const double TRAPEZOID_RATIO = 0.2;
 
-        /// <summary>
-        /// Проверка использования в <see cref="Transform3D"/> <see cref="TranslateTransform3D"/>
-        /// </summary>
-        /// <param name="transform"></param>
-        /// <returns></returns>
-        private static bool HasTranslationApplied(this Transform3D transform)
-        {
-            switch (transform)
-            {
-                case Transform3DGroup transform3DGroup:
-                    return transform3DGroup.Children.OfType<TranslateTransform3D>().Any();
-
-                default:
-                    return false;
-            }
-        }
-
         ///// <summary>
         ///// Выгрузка модели из компонентов сборки
         ///// </summary>
@@ -92,7 +75,7 @@ namespace ForRobot.Libr.Modeling
 
             if (transform3DGroup == null)
                 pcModel.Transform = Transform3DBuilder.Create().Translate(x, y, z);
-            else if (!transform3DGroup.HasTranslationApplied())
+            else if (!transform3DGroup.HasTranslationApplied(out _))
             {
                 transform3DGroup.Translate(x, y, z);
                 pcModel.Transform = transform3DGroup;
@@ -118,7 +101,7 @@ namespace ForRobot.Libr.Modeling
 
             if (transform3DGroup == null)
                 robotModel.Transform = Transform3DBuilder.Create().Translate(x, y, z);
-            else if (!transform3DGroup.HasTranslationApplied())
+            else if (!transform3DGroup.HasTranslationApplied(out _))
             {
                 transform3DGroup.Translate(x, y, z);
                 robotModel.Transform = transform3DGroup;
@@ -144,7 +127,7 @@ namespace ForRobot.Libr.Modeling
 
             if (transform3DGroup == null)
                 manModel.Transform = Transform3DBuilder.Create().Translate(x, y, z);
-            else if (!transform3DGroup.HasTranslationApplied())
+            else if (!transform3DGroup.HasTranslationApplied(out _))
             {
                 transform3DGroup.Translate(x, y, z);
                 manModel.Transform = transform3DGroup;

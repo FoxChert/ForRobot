@@ -10,7 +10,7 @@ namespace ForRobot.Libr.Modeling
     public class OpenCascadeModelHandler : IModelFileHandler
     {
         /// <summary>
-        /// Хэшированная коллекция поддерживаемых расширений файлов для импорта
+        /// Поддерживаемые расширения файлов для импорта
         /// </summary>
         public HashSet<string> SupportedImportExtensions { get; } = new HashSet<string>()
         {
@@ -18,16 +18,22 @@ namespace ForRobot.Libr.Modeling
         };
 
         /// <summary>
-        /// Хэшированная коллекция поддерживаемых расширений файлов для экспорта
+        /// Поддерживаемые расширения файлов для экспорта
         /// </summary>
         public HashSet<string> SupportedExportExtensions { get; } = new HashSet<string>()
         {
             ".stp", ".step", ".brep", ".dxf", ".sat", ".sab", ".jt", ".igs", ".iges", ".wrl"
         };
 
+        /// <summary>
+        /// Может ли обработчик работать с файлов
+        /// </summary>
+        /// <param name="path">Путь к рабочему файлу</param>
+        /// <returns></returns>
         public bool CanHandle(string path)
         {
-            throw new NotImplementedException();
+            string extension = Path.GetExtension(path);
+            return SupportedImportExtensions.Contains(extension) || SupportedExportExtensions.Contains(extension);
         }
 
         /// <summary>

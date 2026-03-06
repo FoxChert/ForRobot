@@ -79,9 +79,7 @@ namespace ForRobot.Libr.Factories
         #endregion Private functions
 
         #region Public functions
-
-        //private static bool CanCreate(this File3D file3D, string extension) => file3D.Extensions.Select(item => item.FilesExtensions).Contains(extension);
-
+        
         /// <summary>
         /// Создание объекта File3D на основе расширения файла
         /// </summary>
@@ -97,21 +95,15 @@ namespace ForRobot.Libr.Factories
             
             string extension = System.IO.Path.GetExtension(path)?.ToLowerInvariant();
 
-            switch (extension)
+            switch (Registry.FileFormatRegistry.Category(extension))
             {
-                case ".stl":
-                case ".obj":
-                case ".ply":
-                case ".3ds":
-                case ".off":
-                case ".dae":
+                case FormatCategories.MeshFile:
                     return new MeshModelFile3D(path);
 
-                case ".step":
+                case FormatCategories.CadFile:
                     return new CadFile3D(path);
 
-                case ".json":
-                case ".txt":
+                case FormatCategories.NativeFile:
                     return new NativeFile3D(path, _cachedDetalFactory);
 
                 default:
@@ -131,6 +123,10 @@ namespace ForRobot.Libr.Factories
         {
             ValidatePath(path);
 
+            string extension = Path.GetExtension(path);
+            if (Registry.FileFormatRegistry.Category(extension) != FormatCategories.NativeFile)
+                throw new FieldAccessException($"Формат '{extension}' не может использоваться для создания файла генерации детали.");
+
             return new NativeFile3D(path, detalType, _cachedDetalFactory);
         }
 
@@ -144,6 +140,7 @@ namespace ForRobot.Libr.Factories
             _detalProvider = _detalProvider ?? throw new ArgumentNullException(nameof(detalProvider));
             CreateCachedDetalFactory();
         }
+
         /// <summary>
         /// Установка провайдера json-схем
         /// </summary>
