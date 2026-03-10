@@ -715,6 +715,7 @@
       <SubType>Designer</SubType>
     </Content>
     <EmbeddedResource Include="Libr\Resource\JsonSchemas\plate-schema.json" />
+    <EmbeddedResource Include="Libr\Resource\JsonSchemas\settings-schema.json" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>

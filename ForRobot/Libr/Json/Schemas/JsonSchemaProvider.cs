@@ -17,5 +17,7 @@ namespace ForRobot.Libr.Json.Schemas
         }
 
         public JSchema GetPlateSchema() => SelectSchema<ForRobot.Models.Detals.Plate>();
+
+        public JSchema GetSettingsSchema() => SelectSchema<ForRobot.Models.Settings.Settings>();
     }
 }

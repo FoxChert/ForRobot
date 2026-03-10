@@ -10,7 +10,6 @@ using System.ComponentModel;
 using AvalonDock.Themes;
 
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 using HelixToolkit.Wpf;
 
@@ -26,8 +25,6 @@ namespace ForRobot.Models.Settings
     {
         #region Private variables
         
-        private static string _path = Path.Combine(Path.GetTempPath(), Settings.FileName);
-
         private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings()
         {
             Formatting = Formatting.Indented,
@@ -69,8 +66,6 @@ namespace ForRobot.Models.Settings
         #region Properties
 
         #region Generic
-
-        public Version Version { get; } = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
 
         /// <summary>
         /// Обновляется ли приложение автоматически
@@ -574,34 +569,6 @@ namespace ForRobot.Models.Settings
         #region Public functions
 
         /// <summary>
-        /// Инициализация настроек (при первой загрузки) или выгрузка из временных файлов
-        /// </summary>
-        /// <returns></returns>
-        public static Settings GetSettings()
-        {
-            try
-            {
-                if (!File.Exists(_path))
-                    throw new FileNotFoundException("Не найден файл настроек", _path);
-
-                string json = File.ReadAllText(_path);
-                Settings settings =  JsonConvert.DeserializeObject<Settings>(json, _jsonSettings) ?? new Settings();
-
-                if (JObject.Parse(json)["Version"].ToObject<Version>() != System.Reflection.Assembly.GetEntryAssembly().GetName().Version)
-                    throw new Exception("Версия файла настроек не совпадает с версией приложения. Файл пересоздаётся.");
-
-                settings.Colors = JObject.Parse(json)["Colors"].ToObject<Dictionary<string, System.Windows.Media.Color>>();
-                return settings;
-            }
-            catch (Exception ex) when (LogException(ex))
-            {
-                Settings settings = new Settings();
-                settings.Save();
-                return settings;
-            }
-        }
-
-        /// <summary>
         /// Возврат содержимого папки Scripts
         /// </summary>
         /// <returns></returns>
@@ -808,16 +775,16 @@ namespace ForRobot.Models.Settings
         /// </summary>
         private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null) => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        /// <summary>
-        /// Логирование исключений выгрузки настроек
-        /// </summary>
-        /// <param name="ex"></param>
-        /// <returns></returns>
-        private static bool LogException(Exception ex)
-        {
-            App.Current.Logger.Error(ex, "Ошибка выгрузки настроек приложения");
-            return true;
-        }
+        ///// <summary>
+        ///// Логирование исключений выгрузки настроек
+        ///// </summary>
+        ///// <param name="ex"></param>
+        ///// <returns></returns>
+        //private static bool LogException(Exception ex)
+        //{
+        //    App.Current.Logger.Error(ex, "Ошибка выгрузки настроек приложения");
+        //    return true;
+        //}
 
         #endregion Private functions
     }

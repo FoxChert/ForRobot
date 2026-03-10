@@ -16,7 +16,7 @@ namespace ForRobot.Libr.Modeling
         private static readonly Dictionary<string, List<IModelFileHandler>> _handlersByFormat = new Dictionary<string, List<IModelFileHandler>>(StringComparer.OrdinalIgnoreCase)
         {
             // Mesh files
-            [".stl"] = new List<IModelFileHandler> { new HelixToolkitModelHandler(), new AssimpModelHandler() },
+            [".stl"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
             [".ply"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
             [".obj"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },
             [".3ds"] = new List<IModelFileHandler> { new AssimpModelHandler(), new HelixToolkitModelHandler() },

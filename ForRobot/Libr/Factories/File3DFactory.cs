@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 
 using ForRobot.Models.File3D;
 using ForRobot.Libr.Services.Providers;
@@ -17,42 +16,55 @@ namespace ForRobot.Libr.Factories
     /// </remarks>
     public static class File3DFactory
     {
-        /// <summary>
-        /// Провайдер json-схем для валидации структуры json-строк
-        /// </summary>
         private static IJsonSchemaProvider _jsonSchemaProvider;
-        /// <summary>
-        /// Провайдер создания объектов <see cref="ForRobot.Models.Detals.Detal"/>
-        /// </summary>
         private static IDetalProvider _detalProvider;
-        /// <summary>
-        /// Кэширование фабрики создания детали
-        /// </summary>
         private static DetalFactory.IDetalFactory _cachedDetalFactory;
 
         /// <summary>
-        /// Статический конструктор для инициализации провайдеров по умолчанию
+        /// Провайдер json-схем для валидации структуры json-строк
         /// </summary>
-        /// <remarks>
-        /// Выполняется один раз при первом обращении к классу
-        /// </remarks>
-        static File3DFactory()
+        private static IJsonSchemaProvider JsonSchemaProvider
         {
-            InitializeDefaultProviders();
-            CreateCachedDetalFactory();
+            get
+            {
+                if (_jsonSchemaProvider == null)
+                    _jsonSchemaProvider = new ForRobot.Libr.Json.Schemas.JsonSchemaProvider();
+                return _jsonSchemaProvider;
+            }
+            set => _jsonSchemaProvider = value;
+        }
+        /// <summary>
+        /// Провайдер создания объектов <see cref="ForRobot.Models.Detals.Detal"/>
+        /// </summary>
+        private static IDetalProvider DetalProvider
+        {
+            get
+            {
+                if (_detalProvider == null)
+                    _detalProvider = new ForRobot.Models.Detals.DetalProvider(new ForRobot.Libr.Configuration.ConfigurationProvider());
+                return _detalProvider;
+            }
+            set => _detalProvider = value;
+        }
+        /// <summary>
+        /// Кэширование фабрики создания детали
+        /// </summary>
+        private static DetalFactory.IDetalFactory CachedDetalFactory
+        {
+            get
+            {
+                if (_cachedDetalFactory == null)
+                    CreateCachedDetalFactory();
+                return _cachedDetalFactory;
+            }
+            set => _cachedDetalFactory = value;
         }
 
         #region Private functions
 
-        private static void InitializeDefaultProviders()
-        {
-            _detalProvider = new ForRobot.Models.Detals.DetalProvider(new ForRobot.Libr.Configuration.ConfigurationProvider());
-            _jsonSchemaProvider = new ForRobot.Libr.Json.Schemas.JsonSchemaProvider();
-        }
-
         private static void CreateCachedDetalFactory()
         {
-            _cachedDetalFactory = new ForRobot.Libr.Factories.DetalFactory.DetalFactory(_detalProvider, _jsonSchemaProvider);
+            _cachedDetalFactory = new ForRobot.Libr.Factories.DetalFactory.DetalFactory(DetalProvider, JsonSchemaProvider);
         }
 
         /// <summary>
@@ -137,7 +149,7 @@ namespace ForRobot.Libr.Factories
         /// <exception cref="ArgumentNullException">Если configurationProvider равен null</exception>
         public static void SetDetalProvider(IDetalProvider detalProvider)
         {
-            _detalProvider = _detalProvider ?? throw new ArgumentNullException(nameof(detalProvider));
+            _detalProvider = detalProvider ?? throw new ArgumentNullException(nameof(detalProvider));
             CreateCachedDetalFactory();
         }
 

@@ -35,6 +35,8 @@ namespace ForRobot.Libr.Json.Schemas
 
         public JSchema GetPlateSchema() => GetCached("plate", () => _innerProvider.GetPlateSchema());
 
+        public JSchema GetSettingsSchema() => GetCached("settings", () => _innerProvider.GetSettingsSchema());
+
         public void ClearCache()
         {
             lock (_lock)

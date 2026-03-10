@@ -24,6 +24,20 @@ namespace ForRobot.Libr.Json.Schemas
         public string JsonData { get; }
         public string SchemaTitle { get; }
 
+        public JsonSchemaValidationException(string schemaTitle, ValidationErrorInfo error, string jsonData)
+        {
+            ValidationErrors = new List<ValidationErrorInfo>() { error };
+            JsonData = jsonData;
+            SchemaTitle = schemaTitle;
+        }
+
+        public JsonSchemaValidationException(string schemaTitle, ValidationErrorInfo error, string jsonData)
+        {
+            ValidationErrors = new List<ValidationErrorInfo>() { error };
+            JsonData = jsonData;
+            SchemaTitle = schemaTitle;
+        }
+
         public JsonSchemaValidationException(string schemaTitle, IList<ValidationErrorInfo> errors, string jsonData)
                 : base($"JSON validation failed for schema '{schemaTitle}'. Errors: {string.Join("; ", errors.Select(item => item.Message))}")
         {

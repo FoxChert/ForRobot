@@ -11,6 +11,10 @@ using System.Windows;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
+
 using NLog;
 
 namespace ForRobot
@@ -27,6 +31,7 @@ namespace ForRobot
         private const string _mutexName = "InterfaceOfRobots_UniqueAppMutex";
         private const string _pipeName = "InterfaceOfRobots_UniqueAppPipe";
         private CancellationTokenSource _pipeServerCts;
+        private ForRobot.Models.Settings.Settings _settings;
         private ForRobot.Libr.Collections.File3DCollection _openedFiles;
         private ForRobot.Libr.Collections.RobotCollection _robotsCollection;
 
@@ -74,7 +79,7 @@ namespace ForRobot
         /// Настройки приложения
         /// (выгружаются из временных файлов, иначе инициализируются как класс)
         /// </summary>
-        public ForRobot.Models.Settings.Settings Settings { get => GetSettings(); }
+        public ForRobot.Models.Settings.Settings Settings { get => this._settings ?? (this._settings = GetSettings()); }
 
         /// <summary>
         /// Открытые файлы 3D моделей
@@ -472,10 +477,6 @@ namespace ForRobot
             // Обработчик ошибок валидации JSON-схемы
             Libr.Factories.DetalFactory.DetalFactory.ValidatedError += (exception) => Logger.Error(exception);
 
-            // Установка провайдеров
-            ForRobot.Libr.Factories.File3DFactory.SetDetalProvider(DetalProvider);
-            ForRobot.Libr.Factories.File3DFactory.SetJsonSchemaProvider(JsonSchemaProvider);
-
             // Регистрация поддерживаемых приложением форматов файлов
             System.Collections.Generic.List<ForRobot.Models.File3D.FileFormatInfo> fileFormats = new System.Collections.Generic.List<Models.File3D.FileFormatInfo>()
             {
@@ -492,8 +493,9 @@ namespace ForRobot
             foreach (var item in fileFormats)
                 ForRobot.Libr.Registry.FileFormatRegistry.Register(item);
 
-            //if (ForRobot.Properties.Settings.Default.SaveRobots == null)
-            //    ForRobot.Properties.Settings.Default.SaveRobots = new StringCollection();
+            // Установка провайдеров
+            ForRobot.Libr.Factories.File3DFactory.SetDetalProvider(DetalProvider);
+            ForRobot.Libr.Factories.File3DFactory.SetJsonSchemaProvider(JsonSchemaProvider);
 
             this.RobotsCollection = new Libr.Collections.RobotCollection();
             this.RobotsCollection.ConnectionTimeOutMilliseconds = Convert.ToInt32(App.Current.Settings.ConnectionTimeOut * 1000);
@@ -534,22 +536,90 @@ namespace ForRobot
         /// <returns></returns>
         private ForRobot.Models.Settings.Settings GetSettings()
         {
-            ForRobot.Models.Settings.Settings settings = ForRobot.Models.Settings.Settings.GetSettings();
-            var robotConfig = ConfigProvider.GetRobotConfig();
-            var plateConfig = ConfigProvider.GetPlateConfig();
+            ForRobot.Models.Settings.Settings settings = null;
+            try
+            {
+                string path = Path.Combine(Path.GetTempPath(), ForRobot.Models.Settings.Settings.FileName);
 
-            foreach (var names in settings.DetalsProgramNames.Where(x => x.Item1 == Models.Detals.DetalType.Plate).ToList())
-                settings.DetalsProgramNames.Remove(names);
-            settings.DetalsProgramNames.Add(Tuple.Create(Models.Detals.DetalType.Plate, Libr.EnumExtensions.GetDescription(Models.Detals.DetalType.Plate), plateConfig.PlateProgramName));
+                if (!File.Exists(path))
+                    throw new FileNotFoundException("Не найден файл настроек", path);
 
-            foreach (var names in settings.DetalsScriptNames.Where(x => x.Item1 == Models.Detals.DetalType.Plate).ToList())
-                settings.DetalsScriptNames.Remove(names);
-            settings.DetalsScriptNames.Add(Tuple.Create(Models.Detals.DetalType.Plate, Libr.EnumExtensions.GetDescription(Models.Detals.DetalType.Plate), plateConfig.PlateScriptName));
+                string jsonString = File.ReadAllText(path);
+                JObject jsonObject = JObject.Parse(jsonString);
+                JSchema schema = JsonSchemaProvider.GetSettingsSchema();
+                jsonObject.Validate(schema, (s, e) =>
+                {
+                    var info = new Libr.Json.Schemas.ValidationErrorInfo()
+                    {
+                        Message = e.Message,
+                        Path = e.Path,
+                        ErrorDetails = e
+                    };
+                    var exception = new Libr.Json.Schemas.JsonSchemaValidationException(schema.Title ?? "Unknown Schema", new , jsonString);
+                    //throw new JSchemaValidationException("Ошибка валидации JSON-строки настроек.", s, e.ValidationError)
+                });
+                //JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
+                //{
+                //    Formatting = Formatting.Indented,
+                //    NullValueHandling = NullValueHandling.Ignore,
+                //    ObjectCreationHandling = ObjectCreationHandling.Replace
+                //};
+                //settings = JsonConvert.DeserializeObject<ForRobot.Models.Settings.Settings> (json, jsonSettings) ?? new ForRobot.Models.Settings.Settings();
+            }
+            catch (Exception ex)
+            {
+                App.Current.Logger.Error(ex, "Ошибка выгрузки настроек приложения!");
+                settings = new ForRobot.Models.Settings.Settings();
 
-            settings.PathFolderOfGeneration = robotConfig.PathFolderGeneration;
-            settings.ControlerFolder = robotConfig.ControlFolderPath;
+            }
+
+            settings.Save();
             return settings;
+
+            //ForRobot.Models.Settings.Settings settings = ForRobot.Models.Settings.Settings.GetSettings();
+            //var robotConfig = ConfigProvider.GetRobotConfig();
+            //var plateConfig = ConfigProvider.GetPlateConfig();
+
+            //foreach (var names in settings.DetalsProgramNames.Where(x => x.Item1 == Models.Detals.DetalType.Plate).ToList())
+            //    settings.DetalsProgramNames.Remove(names);
+            //settings.DetalsProgramNames.Add(Tuple.Create(Models.Detals.DetalType.Plate, Libr.EnumExtensions.GetDescription(Models.Detals.DetalType.Plate), plateConfig.PlateProgramName));
+
+            //foreach (var names in settings.DetalsScriptNames.Where(x => x.Item1 == Models.Detals.DetalType.Plate).ToList())
+            //    settings.DetalsScriptNames.Remove(names);
+            //settings.DetalsScriptNames.Add(Tuple.Create(Models.Detals.DetalType.Plate, Libr.EnumExtensions.GetDescription(Models.Detals.DetalType.Plate), plateConfig.PlateScriptName));
+
+            //settings.PathFolderOfGeneration = robotConfig.PathFolderGeneration;
+            //settings.ControlerFolder = robotConfig.ControlFolderPath;
+            //return settings;
         }
+
+        ///// <summary>
+        ///// Инициализация настроек (при первой загрузки) или выгрузка из временных файлов
+        ///// </summary>
+        ///// <returns></returns>
+        //public static Settings GetSettings()
+        //{
+        //    try
+        //    {
+        //        if (!File.Exists(_path))
+        //            throw new FileNotFoundException("Не найден файл настроек", _path);
+
+        //        string json = File.ReadAllText(_path);
+        //        Settings settings = JsonConvert.DeserializeObject<Settings>(json, _jsonSettings) ?? new Settings();
+
+        //        if (JObject.Parse(json)["Version"].ToObject<Version>() != System.Reflection.Assembly.GetEntryAssembly().GetName().Version)
+        //            throw new Exception("Версия файла настроек не совпадает с версией приложения. Файл пересоздаётся.");
+
+        //        settings.Colors = JObject.Parse(json)["Colors"].ToObject<Dictionary<string, System.Windows.Media.Color>>();
+        //        return settings;
+        //    }
+        //    catch (Exception ex) when (LogException(ex))
+        //    {
+        //        Settings settings = new Settings();
+        //        settings.Save();
+        //        return settings;
+        //    }
+        //}
 
         #endregion Private functions
 

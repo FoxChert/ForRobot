@@ -8,7 +8,24 @@ namespace ForRobot.Libr.Registry
     public class FileFormatRegistry : IFileFormatRegistry
     {
         private static FileFormatRegistry _instance;
-        public static FileFormatRegistry Instance => _instance ?? new FileFormatRegistry();
+        private static readonly object _lock = new object();
+
+        public static FileFormatRegistry Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    lock (_lock)
+                    {
+                        if (_instance == null)
+                            _instance = new FileFormatRegistry();
+                    }
+                }
+                return _instance;
+            }
+        }
+            //=> _instance ?? (_instance new FileFormatRegistry();
 
         private readonly Dictionary<string, FileFormatInfo> _formats = new Dictionary<string, FileFormatInfo>(StringComparer.OrdinalIgnoreCase);
 

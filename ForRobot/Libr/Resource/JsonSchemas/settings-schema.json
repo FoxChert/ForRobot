@@ -1,0 +1,272 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "title": "Settings Json-Schema",
+  "description": "JSON-схема для валидации класса Settings",
+  "x-class-name": "Settings",
+  "x-full-name": "ForRobot.Models.Settings.Settings",
+  "x-namespace": "ForRobot.Models.Settings",
+  "type": "object",
+
+  "properties": {
+   "AutoUpdate": {
+      "type": "boolean",
+      "description": "Обновляется ли приложение автоматически"
+    },
+    "InformUser": {
+      "type": "boolean",
+      "description": "Спрашивать пользователя об обновлении"
+    },
+    "LoginByPINCode": {
+      "type": "boolean",
+      "description": "Вход в приложение интерфейса по пин-коду"
+    },
+    "CreatedDetalFile": {
+      "type": "boolean",
+      "description": "Создаётся ли при открытии файл детли. Не работает, если приложение открывает файл \"с помощью\""
+    },
+    "SaveDetalProperties": {
+      "type": "boolean",
+      "description": "Сохраняются ли параметры детали на выходе"
+    },
+    "LimitedConnectionTimeOut": {
+      "type": "boolean",
+      "description": "Ограничено ли время ожидания ответа от сервера"
+    },
+    "ConnectionTimeOut": {
+      "type": "number",
+      "description": "Время ожидания ответа от сервера, сек."
+    },
+    "StartedDetalType": {
+      "type": "string",
+      "enum": [
+        "Plate",
+        "StringerPlate",
+        "TrianglePlate"
+      ],
+      "description": "Тип детали, для которой создаётся стартовый файл"
+    },
+    "AccessDataFile": {
+      "type": "boolean",
+      "description": "Отображаютя ли файлы с расширением .dat"
+    },
+    "AvailableFolders": {
+      "type": "object",
+      "description": "Доступность системных папок в дереве файлов",
+      "properties": {
+        "System": {
+          "type": "boolean"
+        },
+        "Mada": {
+          "type": "boolean"
+        },
+        "TP": {
+          "type": "boolean"
+        },
+        "STEU": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ShowCoordinateSystem": {
+      "type": "boolean",
+      "description": "Показ системы координат"
+    },
+    "ShowViewCube": {
+      "type": "boolean",
+      "description": "Показ пространственного куба"
+    },
+    "IsViewCubeEdgeClicksEnabled": {
+      "type": "boolean",
+      "description": "Доступности нажатия рёбер пространственного куба"
+    },
+    "ShowTriangleCountInfo": {
+      "type": "boolean",
+      "description": "Показ кол-ва полигонов"
+    },
+    "ShowFieldOfView": {
+      "type": "boolean"
+    },
+    "ShowFrameRate": {
+      "type": "boolean"
+    },
+    "CoordinateSystemVerticalPosition": {
+      "type": "string",
+      "enum": [
+        "Top",
+        "Bottom",
+        "Center",
+        "Stretch"
+      ],
+      "description": "Вертикальное положение системы координат"
+    },
+    "CoordinateSystemHorizontalPosition": {
+      "type": "string",
+      "enum": [
+        "Left",
+        "Right",
+        "Center",
+        "Stretch"
+      ],
+      "description": "Горизонтальное положение системы координат"
+    },
+    "Colors": {
+      "type": "object",
+      "description": "Перечень цветов",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^#[0-9A-Fa-f]{6,8}$"
+      }
+    },
+    "WeldsThickness": {
+      "type": "number",
+      "description": "Толщина линий шва на модели"
+    },
+    "AnnotationFontSize": {
+      "type": "number",
+      "description": "Размер шрифта"
+    },
+    "AnnotationThickness": {
+      "type": "number",
+      "description": "Толщина линий"
+    },
+    "Orthographic": {
+      "type": "boolean",
+      "description": "Включена ли ортоганальная камера"
+    },
+    "ShowCameraInfo": {
+      "type": "boolean",
+      "description": "Демонстрация информации о камере"
+    },
+    "ShowCameraTarget": {
+      "type": "boolean",
+      "description": "Демонстрация курсора камеры"
+    },
+    "RotateAroundMouseDownPoint": {
+      "type": "boolean",
+      "description": "Поворот вокруг мыши"
+    },
+    "ZoomAroundMouseDownPoint": {
+      "type": "boolean",
+      "description": "Приближение около мыши"
+    },
+    "IsInertiaEnabled": {
+      "type": "boolean",
+      "description": "Инерция камеры"
+    },
+    "IsPanEnabled": {
+      "type": "boolean",
+      "description": "Вкличено ли панорамирование"
+    },
+    "IsMoveEnabled": {
+      "type": "boolean",
+      "description": "Вкличено ли перемещение"
+    },
+    "IsRotationEnabled": {
+      "type": "boolean",
+      "description": "Вкличено ли вращение"
+    },
+    "IsZoomEnabled": {
+      "type": "boolean",
+      "description": "Вкличено ли маштабирование"
+    },
+    "CameraRotationMode": {
+      "type": "string",
+      "enum": [
+        "Turntable",
+        "Turnball",
+        "Trackball"
+      ],
+      "description": "Режим поворота камеры"
+    },
+    "CameraMode": {
+      "type": "string",
+      "enum": [
+        "Inspect",
+        "WalkAround",
+        "FixedPosition"
+      ],
+      "description": "Режим камеры"
+    },
+    "RotationSensitivity": {
+      "type": "number",
+      "description": "Чувствительность вращения"
+    },
+    "ZoomSensitivity": {
+      "type": "number",
+      "description": "Чувствительность маштабирования"
+    },
+    "CameraInertiaFactor": {
+      "type": "number",
+      "description": "Степень инерции камеры"
+    },
+    "AskNameFile": {
+      "type": "boolean",
+      "description": "Ввод имени итогового файла при каждом запуске"
+    },
+    "AskScriptFile": {
+      "type": "boolean",
+      "description": "Выбор скрипта-генератора при каждом запуске"
+    },
+    "SendingGeneratedFiles": {
+      "type": "boolean",
+      "description": "Отправляются ли сгенерированные файлы на робота/ов"
+    },
+    "DetalsProgramNames": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "minItems": 3,
+        "maxItems": 3,
+        "items": [
+          {
+            "type": "string",
+            "enum": [
+              "Plate",
+              "StringerPlate",
+              "TrianglePlate"
+            ]
+          },
+          {
+            "type": "string"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "DetalsScriptNames": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "minItems": 3,
+        "maxItems": 3,
+        "items": [
+          {
+            "type": "string",
+            "enum": [
+              "Plate",
+              "StringerPlate",
+              "TrianglePlate"
+            ]
+          },
+          {
+            "type": "string"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "PathFolderOfGeneration": {
+      "type": "string",
+      "description": "Путь к папке для генерации"
+    },
+    "ControlerFolder": {
+      "type": "string",
+      "description": "Стандартный путь к папке на роботе"
+    }
+  }
+}

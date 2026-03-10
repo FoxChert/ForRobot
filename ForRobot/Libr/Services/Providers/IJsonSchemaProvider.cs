@@ -7,5 +7,7 @@ namespace ForRobot.Libr.Services.Providers
     public interface IJsonSchemaProvider
     {
         JSchema GetPlateSchema();
+
+        JSchema GetSettingsSchema();
     }
 }

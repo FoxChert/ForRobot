@@ -338,7 +338,13 @@ namespace ForRobot.Libr.Factories.DetalFactory
             try
             {
                 JObject jsonObject = JObject.Parse(jsonString);
-                JSchema schema = _jsonSchemaProvider.GetPlateSchema();
+                JSchema schema = null;
+                switch (GetDetalTypeFromGenericType<T>())
+                {
+                    case DetalType.Plate:
+                        schema = _jsonSchemaProvider.GetPlateSchema();
+                        break;
+                }
                 schemaTitle = schema.Title ?? schemaTitle;
                 var validationErrors = new List<ValidationErrorInfo>();
                 
