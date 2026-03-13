@@ -29,7 +29,6 @@ namespace ForRobot.Models.RoboticComplex
 
         private string _name;
         private string _programName;
-        private string _pathProgram;
         private string _selectedControllerPath;
         private string _pro_state;
 
@@ -68,17 +67,17 @@ namespace ForRobot.Models.RoboticComplex
         /// <summary>
         /// Задержка запроса состояния процесса на роботе
         /// </summary>
-        public const int DelayProcessStatus = 1;
+        public const int DelayProcessStatus = 1500;
         [JsonIgnore]
         /// <summary>
         /// Задержка запроса
         /// </summary>
-        public const int DelayTelegraf = 3;
+        public const int DelayTelegraf = 3000;
         [JsonIgnore]
         /// <summary>
         /// Задержка запроса имени запущенной на роботе программы
         /// </summary>
-        public const int DelayProgramName = 3;
+        public const int DelayProgramName = 3000;
 
         #endregion Constants
 
@@ -95,19 +94,6 @@ namespace ForRobot.Models.RoboticComplex
             }
         }
 
-        ///// <summary>
-        ///// Путь к папке с программой
-        ///// </summary>
-        //public string PathProgramm
-        //{
-        //    get => this._pathProgram;
-        //    set
-        //    {
-        //        this._pathProgram = value;
-        //        this.OnChangeProperty();
-        //    }
-        //}
-
         /// <summary>
         /// Путь к выбранной папке на контроллере
         /// </summary>
@@ -120,6 +106,7 @@ namespace ForRobot.Models.RoboticComplex
                 this.OnChangeProperty();
             }
         }
+
         //public string PathControllerFolder
         //{
         //    get => this._pathControllerFolder;
@@ -157,9 +144,17 @@ namespace ForRobot.Models.RoboticComplex
         }
 
         /// <summary>
-        /// Время ожидания ответа от сервера, сек.
+        /// Время ожидания ответа от сервера, мс.
         /// </summary>
-        public int ConnectionTimeOutMilliseconds { get; set; } = 0;
+        public int? Timeout
+        {
+            get => this.Connection.Timeout;
+            set
+            {
+                this.Connection.Timeout = value ?? JsonRpcConnection.DEFAULT_TIMEOUT_MILLISECONDS;
+                this.OnChangeProperty();
+            }
+        }
 
         [JsonIgnore]
         /// <summary>
@@ -422,7 +417,7 @@ namespace ForRobot.Models.RoboticComplex
         {
             try
             { 
-                this.Connection = new JsonRpcConnection(this.Host, this.Port);
+                this.Connection = new JsonRpcConnection(this.Host, this.Port, this.Timeout);
                 this.Connection.LoggingEvent += (s, e) => this.OnLogginMessage(e.Message);
                 this.Connection.LoggingErrorEvent += (s, e) => this.OnLoggingErrorMessage(e.Message, e.Exception);
                 this.Connection.Connected += (sender, e) => this.OnChangeProperty();
@@ -450,11 +445,11 @@ namespace ForRobot.Models.RoboticComplex
                 {
                     this._periodicTaskCancelTokenSource = new CancellationTokenSource();
 
-                    var task1 = PeriodicTask(() => { if (this.IsConnection) this.Pro_State = this.Connection.Process_StateAsync().Result; }, new TimeSpan(0, 0, 0, 0, DelayProcessStatus * 1000), this._periodicTaskCancelTokenSource.Token); // Переодический запрос состояния процесса на роботе.
+                    var task1 = PeriodicTask(() => { if (this.IsConnection) this.Pro_State = this.Connection.Process_StateAsync().Result; }, new TimeSpan(0, 0, 0, 0, DelayProcessStatus), this._periodicTaskCancelTokenSource.Token); // Переодический запрос состояния процесса на роботе.
 
-                    var task2 = PeriodicTask(() => { if (this.IsConnection) this.ConvertToTelegraf(this.Connection.InAsync().Result.ToArray()); }, new TimeSpan(0, 0, 0, 0, DelayTelegraf * 1000), this._periodicTaskCancelTokenSource.Token); // Переодический запрос тока на роботе.
+                    var task2 = PeriodicTask(() => { if (this.IsConnection) this.ConvertToTelegraf(this.Connection.InAsync().Result.ToArray()); }, new TimeSpan(0, 0, 0, 0, DelayTelegraf), this._periodicTaskCancelTokenSource.Token); // Переодический запрос тока на роботе.
 
-                    var task3 = PeriodicTask(() => { if (this.IsConnection) this.RobotProgramName = this.Connection.Pro_NameAsync().Result.Replace("\"", ""); }, new TimeSpan(0, 0, 0, 0, DelayProgramName * 1000), this._periodicTaskCancelTokenSource.Token); // Переодический запрос имени выбранной на роботе программы
+                    var task3 = PeriodicTask(() => { if (this.IsConnection) this.RobotProgramName = this.Connection.Pro_NameAsync().Result.Replace("\"", ""); }, new TimeSpan(0, 0, 0, 0, DelayProgramName), this._periodicTaskCancelTokenSource.Token); // Переодический запрос имени выбранной на роботе программы
 
                     Task.Run(async () => await Task.WhenAll(task1, task2, task3));
                     Task.Run(async () => await this.GetFilesAsync());
@@ -566,7 +561,7 @@ namespace ForRobot.Models.RoboticComplex
                 IsBackground = true
             };
             thread.Start();
-            thread.Join(this.ConnectionTimeOutMilliseconds);  // Закроется даже при неудачном подключении.
+            thread.Join(this.Timeout ?? JsonRpcConnection.DEFAULT_TIMEOUT_MILLISECONDS);  // Закроется даже при неудачном подключении.
             return this.IsConnection;
         }
 

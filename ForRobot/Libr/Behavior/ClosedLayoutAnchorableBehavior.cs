@@ -65,7 +65,7 @@ namespace ForRobot.Libr.Behavior
                 bool pinResult = false;
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    pinResult = ForRobot.Libr.AppWindowManager.PinCodeInputWindowShow(ForRobot.Properties.Settings.Default.PinCode);
+                    pinResult = ForRobot.Libr.AppWindowManager.PinCode(ForRobot.Properties.Settings.Default.PinCode);
                 });
                 if (pinResult)
                 {

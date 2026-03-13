@@ -5,7 +5,7 @@ using System.Globalization;
 namespace ForRobot.Libr.Converters
 {
     /// <summary>
-    /// Вставляет Binding внутрь строки
+    /// Класс-преобразователь для форматирования строки. Реализует <see cref="IValueConverter"/>
     /// </summary>
     /// <example>
     /// <code>Converter={StaticResource ResourceKey=StringFormat}, ConverterParameter='Hello {0}'</code>
@@ -24,8 +24,15 @@ namespace ForRobot.Libr.Converters
     }
 
     /// <summary>
-    /// Добавление MultiBinding в строку
+    /// Класс-преобразователь для форматирования строки. Реализует <see cref="IMultiValueConverter"/>
     /// </summary>
+    /// <example>
+    /// <code>
+    /// <MultiBinding Converter=\"{StaticResource StringFormatMultiConvert}\" ConverterParameter=\"Hello {0}\">
+    ///     <Binding Path = \"Version" Mode="OneWay\"/>
+    /// </MultiBinding>
+    /// </code>
+    /// </example> 
     public class StringFormatMultiConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)

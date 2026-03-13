@@ -1,15 +1,45 @@
 ﻿using System;
 using System.Windows;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Concurrent;
 
 using ForRobot.Views.Windows;
 
 namespace ForRobot.Libr
 {
-    public static class AppWindowManager
+    /// <summary>
+    /// Класс-менеджер для централизованного управления окнами приложения
+    /// </summary>
+    public class AppWindowManager
     {
-        private static void FocusedWindow(Window window)
+        private static AppWindowManager _instance;
+        private static readonly object _lock = new object();
+
+        /// <summary>
+        /// Словарь активных окон
+        /// </summary>
+        private readonly ConcurrentDictionary<string, Window> _activeWindows = new ConcurrentDictionary<string, Window>();
+
+        public static AppWindowManager Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    lock (_lock)
+                    {
+                        if (_instance == null)
+                            _instance = new AppWindowManager();
+                    }
+                }
+                return _instance;
+            }
+        }
+
+        #region Private functions
+
+        private void FocusedWindow(Window window)
         {
             if (window.WindowState == WindowState.Minimized)
                 window.WindowState = WindowState.Normal;
@@ -19,270 +49,207 @@ namespace ForRobot.Libr
             window.Activate();
             window.Focus();
         }
-
-        private static ConcurrentDictionary<string, Window> _activedWindos = new ConcurrentDictionary<string, Window>();
-        private static readonly object _lock = new object();
-
-        private static Window GetOrAddWindow(string key)
+        
+        private bool RemoveWindow(string key, out Window window)
         {
             lock (_lock)
             {
-                if (!_activedWindos.TryGetValue(key, out var window))
+                return this._activeWindows.TryRemove(key, out window);
+            }
+        }
+
+        /// <summary>
+        /// Получение существующего окна или открытие нового
+        /// </summary>
+        /// <param name="key">Ключ (наименование типа)</param>
+        /// <returns>Окно приложения</returns>
+        private Window GetOrAddWindow(string key)
+        {
+            lock (_lock)
+            {
+                if (!this._activeWindows.TryGetValue(key, out var window))
                 {
-                    switch (key)
+                    window = CreateWindow(key);
+
+                    if (window != null)
                     {
-                        case nameof(InputWindow):
-                            window = new InputWindow();
-                            break;
-
-                        case nameof(SelectWindow):
-                            window = new SelectWindow();
-                            break;
-
-                        case nameof(SelectorWindow):
-                            window = new SelectorWindow();
-                            break;
-
-                        case nameof(MainWindow):
-                            window = new MainWindow();
-                            break;
-
-                        case nameof(CreateWindow):
-                            window = new CreateWindow();
-                            break;
-
-                        case nameof(PropertiesWindow):
-                            window = new PropertiesWindow();
-                            break;
+                        window.Closed += (s, e) =>
+                        {
+                            RemoveWindow(nameof(s), out var w);
+                            if (w != null)
+                                FocusedWindow(w.Owner);
+                        };
+                        this._activeWindows[key] = window;
                     }
-                    window.Closed += (s, e) =>
-                    {
-                        RemoveWindow(nameof(s));
-                    };
-                    _activedWindos[key] = window;
                 }
                 else
-                    FocusedWindow(window);
+                    this.FocusedWindow(window);
                 return window;
             }
         }
 
-        private static bool RemoveWindow(string key)
+        private Window CreateWindow(string key)
         {
-            lock (_lock)
+            Window window = null;
+            switch (key)
             {
-                return _activedWindos.TryRemove(key, out var window);
+                case nameof(InputWindow):
+                    window = new InputWindow();
+                    break;
+
+                case nameof(SelectWindow):
+                    window = new SelectWindow();
+                    break;
+
+                case nameof(SelectorWindow):
+                    window = new SelectorWindow();
+                    break;
+
+                case nameof(MainWindow):
+                    window = new MainWindow();
+                    break;
+
+                case nameof(CreateWindow):
+                    window = new CreateWindow();
+                    break;
+
+                case nameof(PropertiesWindow):
+                    window = new PropertiesWindow();
+                    break;
             }
+            return window;
         }
 
+        #endregion Private functions
+
+        #region Public functions
+
         /// <summary>
-        /// Окно ввода пин-кода и его хэширование по SHA256
+        /// Отображение окна ввода пин-кода и его хэширование
         /// </summary>
-        /// <returns></returns>
-        public static bool PinCodeInputWindowShow(string code)
+        /// <param name="code">Хэш пин-кода</param>
+        /// <returns>Совпабает ли хэш введенного пин-кода с ожидаемым <paramref name="code"/></returns>
+        public bool PinCodeInputWindowShow(string code)
         {
             string pin = InputWindowShow("Введите пин-код");
             return !string.IsNullOrEmpty(pin) && ForRobot.Libr.Cryptography.Hashing.Sha256(pin) == code;
         }
+
         /// <summary>
-        /// Окно ввода текста
+        /// Отображение окна ввода текста
         /// </summary>
-        /// <param name="sInputBoxText"></param>
+        /// <param name="sInputBoxText">Текст подсказки</param>
         /// <returns>Введённый текст</returns>
-        public static string InputWindowShow(string sInputBoxText)
+        public string InputWindowShow(string sInputBoxText)
         {
             string answer = string.Empty;
             using (InputWindow inputWindow = GetOrAddWindow(nameof(InputWindow)) as InputWindow)
             {
+                if (inputWindow == null)
+                    return string.Empty;
+
                 inputWindow.Question.Content = sInputBoxText;
                 if (inputWindow.ShowDialog() == true)
                     answer = inputWindow.Answer;
             }
             return answer;
         }
+
         /// <summary>
         /// Главное окно приложения
         /// </summary>
         /// <returns></returns>
-        public static Window AppMainWindowShow() => GetOrAddWindow(nameof(MainWindow));
+        public Window AppMainWindowShow() => GetOrAddWindow(nameof(MainWindow));
+
         /// <summary>
-        /// Окно одиночного выбора
+        /// Отображение окна одиночного выбора
         /// </summary>
-        /// <param name="itemsSource"></param>
-        /// <returns></returns>
-        public static object SelectWindowShow(IEnumerable itemsSource)
+        /// <param name="itemsSource">Источник данных для выбора</param>
+        /// <returns>Выбранный элемент</returns>
+        public object SelectWindowShow(IEnumerable itemsSource)
         {
+            object selectItem = null;
             using (SelectWindow selectWindow = GetOrAddWindow(nameof(SelectWindow)) as SelectWindow)
             {
+                if (selectWindow == null)
+                    return null;
 
+                selectWindow.ItemsSource = itemsSource;
+                if (selectWindow.ShowDialog() == true)
+                    selectItem = selectWindow.SelectedItem;
             }
-            return null;
+            return selectItem;
         }
+
         /// <summary>
-        /// Окно множественного выбора
+        /// Отображение окна множественного выбора
         /// </summary>
-        /// <param name="itemsSource"></param>
-        /// <param name="selectedItems"></param>
+        /// <param name="itemsSource">Источник данных для выбора</param>
+        /// <param name="selectedItems">Выбранные элементы</param>
         /// <returns></returns>
-        public static IEnumerable SelectorWindowShow(IEnumerable itemsSource, IEnumerable selectedItems = null) => null;
+        public IEnumerable SelectorWindowShow(IEnumerable itemsSource, IEnumerable selectedItems = null)
+        {
+            List<object> result = new List<object>();
+            using (SelectorWindow selectorWindow = GetOrAddWindow(nameof(SelectorWindow)) as SelectorWindow)
+            {
+                if (selectorWindow == null)
+                    return null;
+
+                selectorWindow.ItemsSource = itemsSource;
+                selectorWindow.SelectedItems = selectedItems;
+
+                if (selectorWindow.ShowDialog() == true)
+                    result = selectorWindow.SelectedItems as List<object>;
+            }
+            return result;
+        }
+
         /// <summary>
-        /// Окно создания файла
+        /// Отображение окна создания файла
         /// </summary>
         /// <param name="detalType"></param>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static ForRobot.Models.File3D.IFile3D CreateWindowShow(ForRobot.Models.Detals.DetalType detalType, string path = null) => null;
+        public ForRobot.Models.File3D.IFile3D CreateWindowShow(ForRobot.Models.Detals.DetalType detalType, string path = null) => null;
+
         /// <summary>
-        /// Окно настроек
+        /// Отображение окна настроек
         /// </summary>
+        /// <param name="settings">Настройки приложения</param>
         /// <returns>Сохранены ли изменения</returns>
-        public static bool SettingsWindowShow(out ForRobot.Models.Settings.Settings settings)
+        public bool SettingsWindowShow(out ForRobot.Models.Settings.Settings settings)
         {
+            bool result = false;
+            settings = null;
             using (PropertiesWindow propertiesWindow = GetOrAddWindow(nameof(PropertiesWindow)) as PropertiesWindow)
             {
+                if (propertiesWindow == null)
+                    return false;
+
                 propertiesWindow.Owner = App.Current.MainWindow;
+                propertiesWindow.Settings = App.Current.Settings.Clone() as ForRobot.Models.Settings.Settings;
 
+                if (propertiesWindow.ShowDialog() == true)
+                {
+                    result = true;
+                    settings = propertiesWindow.Settings;
+                }
             }
-            settings = null;
-            return false;
+            return result;
         }
+
+        #region Statics functions
+
+        public static bool PinCode(string code) => Instance.PinCodeInputWindowShow(code);
+        public static string Input(string sInputBoxText) => Instance.InputWindowShow(sInputBoxText);
+        public static Window Main() => Instance.AppMainWindowShow();
+        public static object Select(IEnumerable itemsSource) => Instance.SelectWindowShow(itemsSource);
+        public static IEnumerable Selector(IEnumerable itemsSource, IEnumerable selectedItems = null) => Instance.SelectorWindowShow(itemsSource, selectedItems);
+        public static ForRobot.Models.File3D.IFile3D Create(ForRobot.Models.Detals.DetalType detalType, string path = null) => Instance.CreateWindowShow(detalType, path);
+        public static bool Settings(out ForRobot.Models.Settings.Settings settings) => Instance.SettingsWindowShow(out settings);
+
+        #endregion Statics functions
+
+        #endregion Public functions
     }
-
-    //public interface IWindowsAppService
-    //{
-    //    /// <summary>
-    //    /// Главное окно приложения
-    //    /// </summary>
-    //    ForRobot.Views.Windows.MainWindow AppMainWindow { get; }
-        
-    //    /// <summary>
-    //    /// Вывод окна ввода
-    //    /// </summary>
-    //    /// <param name="sInputBoxText">Question, текст в InputBox</param>
-    //    /// <returns>Введённый пользователем текст</returns>
-    //    string InputWindowShow(string sInputBoxText = "Введите пин-код");
-
-    //    /// <summary>
-    //    /// Вывод окна выбора
-    //    /// </summary>
-    //    /// <param name="itemsSource"></param>
-    //    /// <param name="selectedItems">Выбранные элементы</param>
-    //    /// <returns></returns>
-    //    IEnumerable SelectWindowShow(IEnumerable itemsSource, IEnumerable selectedItems = null);
-
-    //    /// <summary>
-    //    /// Открытие окна создание файла
-    //    /// </summary>
-    //    void OpenCreateWindow(ForRobot.Models.Detals.DetalType detalType, string path = null);
-
-    //    /// <summary>
-    //    /// Открытие окна настроек
-    //    /// </summary>
-    //    void OpenPropertiesWindow();
-        
-    //    /// <summary>
-    //    /// Закрытие окна настроек
-    //    /// </summary>
-    //    void ClosePropertiesWindow();
-    //}
-
-    ///// <summary>
-    ///// Сервис открытия окон приложения
-    ///// </summary>
-    //public sealed class WindowsAppService : IWindowsAppService
-    //{
-    //    /// <summary>
-    //    /// Главное окно приложения
-    //    /// </summary>
-    //    private Views.Windows.MainWindow _appMainWindow;
-    //    /// <summary>
-    //    /// Окно создания окна
-    //    /// </summary>
-    //    private ForRobot.Views.Windows.CreateWindow CreateWindow;
-    //    /// <summary>
-    //    /// Окно настроек
-    //    /// </summary>
-    //    private ForRobot.Views.Windows.PropertiesWindow _propertiesWindow;
-
-    //    private ForRobot.Views.Windows.SelectorWindow _selectedAppsForOpenedFile { get; set; }
-
-    //    public Views.Windows.MainWindow AppMainWindow { get => _appMainWindow ?? (_appMainWindow = new Views.Windows.MainWindow()); }
-
-    //    public string InputWindowShow(string sInputBoxText = "Введите пин-код")
-    //    {
-    //        string answer = null;
-    //        using (ForRobot.Views.Windows.InputWindow inputWindow = new ForRobot.Views.Windows.InputWindow(sInputBoxText))
-    //        {
-    //            if(inputWindow.ShowDialog() == true)
-    //                answer = inputWindow.Answer;
-    //        }
-    //        return answer;
-    //    }
-
-    //    public IEnumerable SelectWindowShow(IEnumerable itemsSource, IEnumerable selectedItems = null)
-    //    {
-    //        using (ForRobot.Views.Windows.SelectorWindow selectWindow = new ForRobot.Views.Windows.SelectorWindow(itemsSource, selectedItems))
-    //        {
-    //            if(selectWindow.ShowDialog() == true)
-    //                selectedItems = selectWindow.SelectedItems;
-    //        }
-    //        return selectedItems;
-    //    }
-
-    //    public void OpenCreateWindow(ForRobot.Models.Detals.DetalType detalType, string path = null)
-    //    {
-    //        using (this.CreateWindow = new ForRobot.Views.Windows.CreateWindow(detalType, path))
-    //        {
-    //            this.CreateWindow.Closing += (s, e) =>
-    //            {
-    //                CreateWindow createWindow = s as CreateWindow;
-    //                if(createWindow.DialogResult == true)
-    //                {
-    //                    if (string.IsNullOrEmpty(createWindow.Path))
-    //                    {
-    //                        e.Cancel = true;
-    //                        System.Windows.MessageBox.Show("Не выбран путь расположения файла.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
-    //                    }
-    //                    else
-    //                    {
-    //                        App.Current.OpenedFiles.Add(createWindow.CreationFile);
-    //                        e.Cancel = false;
-    //                    }
-    //                }
-    //            };
-    //            this.CreateWindow.Owner = App.Current.MainWindow;
-    //            this.CreateWindow.ShowDialog();
-    //        }
-    //    }
-    //    public void OpenPropertiesWindow()
-    //    {
-    //        if (!object.Equals(this._propertiesWindow, null)) // Блокировка открытия 2-ого окна.
-    //        {
-    //            FocusedWindow(this._propertiesWindow);
-    //            return;
-    //        }
-
-    //        this._propertiesWindow = new ForRobot.Views.Windows.PropertiesWindow();
-    //        this._propertiesWindow.Closed += (a, b) =>
-    //        {
-    //            this._propertiesWindow = null;
-    //            App.Current.SelectAppMainWindow();
-    //        };
-    //        this._propertiesWindow.Owner = App.Current.MainWindow;
-    //        this._propertiesWindow.Show();
-    //    }
-        
-    //    public void ClosePropertiesWindow() => this._propertiesWindow.Close();
-
-    //    private void FocusedWindow(Window window)
-    //    {
-    //        if (window.WindowState == WindowState.Minimized)
-    //            window.WindowState = WindowState.Normal;
-
-    //        window.Topmost = true;
-    //        window.Topmost = false;
-    //        window.Activate();
-    //        window.Focus();
-    //    }
-    //}
 }

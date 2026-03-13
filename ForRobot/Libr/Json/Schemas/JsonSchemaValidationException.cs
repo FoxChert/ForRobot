@@ -12,10 +12,7 @@ namespace ForRobot.Libr.Json.Schemas
         public string Path { get; set; }
         public SchemaValidationEventArgs ErrorDetails { get; set; }
 
-        public override string ToString()
-        {
-            return $"Path: {Path}, Message: {Message}";
-        }
+        public override string ToString() => $"Path: {Path}, Message: {Message}";
     }
 
     public class JsonSchemaValidationException : Exception
@@ -24,34 +21,24 @@ namespace ForRobot.Libr.Json.Schemas
         public string JsonData { get; }
         public string SchemaTitle { get; }
 
-        public JsonSchemaValidationException(string schemaTitle, ValidationErrorInfo error, string jsonData)
+        public JsonSchemaValidationException(string schemaTitle, ValidationErrorInfo error, string jsonData, Exception innerException = null)
+           : this(schemaTitle, new List<ValidationErrorInfo> { error }, jsonData, innerException) { }
+
+        public JsonSchemaValidationException(string schemaTitle, IList<ValidationErrorInfo> errors, string jsonData, Exception innerException = null)
+            : base(BuildMessage(schemaTitle, errors), innerException)
         {
-            ValidationErrors = new List<ValidationErrorInfo>() { error };
+            if (string.IsNullOrEmpty(schemaTitle))
+                throw new ArgumentNullException(nameof(schemaTitle));
+
+            ValidationErrors = errors ?? throw new ArgumentNullException(nameof(errors));
             JsonData = jsonData;
             SchemaTitle = schemaTitle;
         }
 
-        public JsonSchemaValidationException(string schemaTitle, ValidationErrorInfo error, string jsonData)
+        private static string BuildMessage(string schemaTitle, IEnumerable<ValidationErrorInfo> errors)
         {
-            ValidationErrors = new List<ValidationErrorInfo>() { error };
-            JsonData = jsonData;
-            SchemaTitle = schemaTitle;
-        }
-
-        public JsonSchemaValidationException(string schemaTitle, IList<ValidationErrorInfo> errors, string jsonData)
-                : base($"JSON validation failed for schema '{schemaTitle}'. Errors: {string.Join("; ", errors.Select(item => item.Message))}")
-        {
-            ValidationErrors = errors;
-            JsonData = jsonData;
-            SchemaTitle = schemaTitle;
-        }
-
-        public JsonSchemaValidationException(string schemaTitle, IList<ValidationErrorInfo> errors, string jsonData, Exception innerException)
-                : base($"JSON validation failed for schema '{schemaTitle}'. Errors: {string.Join("; ", errors.Select(item => item.Message))}", innerException)
-        {
-            ValidationErrors = errors;
-            JsonData = jsonData;
-            SchemaTitle = schemaTitle;
+            var messages = errors?.Select(e => e.Message) ?? Enumerable.Empty<string>();
+            return $"JSON validation failed for schema '{schemaTitle}'. Errors: {string.Join("; ", messages)}";
         }
     }
 }

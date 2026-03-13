@@ -21,7 +21,7 @@ namespace ForRobot.Models.Settings
     /// <summary>
     /// Класс представляющий настройки приложения
     /// </summary>
-    public class Settings : INotifyPropertyChanged, ICloneable
+    public class Settings : ICloneable
     {
         #region Private variables
         
@@ -38,20 +38,6 @@ namespace ForRobot.Models.Settings
         
         #region Properties
 
-        private bool _showCoordinateSystem = true;
-        private bool _showViewCube = true;
-        private bool _showTriangleCountInfo = false;
-        private bool _orthographic = false;
-        private bool _showCameraInfo = false;
-        private bool _showCameraTarget = true;
-        private bool _rotateAroundMouseDownPoint = false;
-        private bool _zoomAroundMouseDownPoint = false;
-        private bool _isInertiaEnabled = false;
-        private bool _isPanEnabled = true;
-        private bool _isMoveEnabled = true;
-        private bool _isRotationEnabled = true;
-        private bool _isZoomEnabled = true;
-
         #endregion
 
         #endregion Private variables
@@ -62,9 +48,7 @@ namespace ForRobot.Models.Settings
         /// Наименование файла настроек
         /// </summary>
         public const string FileName = "interfaceOfRobot_settings.json";
-
-        #region Properties
-
+        
         #region Generic
 
         /// <summary>
@@ -92,10 +76,10 @@ namespace ForRobot.Models.Settings
         /// </summary>
         public bool SaveDetalProperties { get; set; } = true;
 
-        /// <summary>
-        /// Ограничено ли время ожидания ответа от сервера
-        /// </summary>
-        public bool LimitedConnectionTimeOut { get; set; } = false;
+        ///// <summary>
+        ///// Ограничено ли время ожидания ответа от сервера
+        ///// </summary>
+        //public bool LimitedConnectionTimeOut { get; set; } = false;
 
         /// <summary>
         /// Время ожидания ответа от сервера, сек.
@@ -130,9 +114,8 @@ namespace ForRobot.Models.Settings
         #endregion
 
         #region View
-
-        [JsonIgnore]
-        public List<Tuple<string, Theme>> Themes { get; } = new List<Tuple<string, Theme>>()
+        
+        public static List<Tuple<string, Theme>> Themes { get; } = new List<Tuple<string, Theme>>()
         {
             new Tuple<string, Theme>(nameof(GenericTheme), new GenericTheme()),
             new Tuple<string, Theme>(nameof(AeroTheme),new AeroTheme()),
@@ -144,49 +127,33 @@ namespace ForRobot.Models.Settings
             new Tuple<string, Theme>(nameof(Vs2013DarkTheme),new Vs2013DarkTheme()),
             new Tuple<string, Theme>(nameof(Vs2013LightTheme),new Vs2013LightTheme())
         };        
-        [JsonIgnore]
-        public Tuple<string, Theme> SelectedTheme
-        {
-            get => this._selectedTheme;
-            set
-            {
-                this._selectedTheme = value;
-                Properties.Settings.Default.SelectedTheme = this._selectedTheme.Item1;
-                Properties.Settings.Default.Save();
-            }
-        }
+        //[JsonIgnore]
+        //public Tuple<string, Theme> SelectedTheme
+        //{
+        //    get => this._selectedTheme;
+        //    set
+        //    {
+        //        this._selectedTheme = value;
+        //        Properties.Settings.Default.SelectedTheme = this._selectedTheme.Item1;
+        //        Properties.Settings.Default.Save();
+        //    }
+        //}
 
         #region 3DView
 
         /// <summary>
         /// Масштабный коэффициент: 1 единица модели = <see cref="ScaleFactor"/> мм. реальных размеров
         /// </summary>
-        public static decimal ScaleFactor { get; set; } = 1.00M / 100.00M;
+        public decimal ScaleFactor { get; set; } = 1.00M / 100.00M;
 
         /// <summary>
         /// Показ системы координат
         /// </summary>
-        public bool ShowCoordinateSystem
-        {
-            get => this._showCoordinateSystem;
-            set
-            {
-                this._showCoordinateSystem = value;
-                this.OnPropertyChanged();
-            }
-        }
+        public bool ShowCoordinateSystem { get; set; } = true;
         /// <summary>
         /// Показ пространственного куба
         /// </summary>
-        public bool ShowViewCube
-        {
-            get => this._showViewCube;
-            set
-            {
-                this._showViewCube = value;
-                this.OnPropertyChanged();
-            }
-        }
+        public bool ShowViewCube { get; set; } = true;
         /// <summary>
         /// Доступности нажатия рёбер пространственного куба
         /// </summary>
@@ -194,15 +161,7 @@ namespace ForRobot.Models.Settings
         /// <summary>
         /// Показ кол-ва полигонов
         /// </summary>
-        public bool ShowTriangleCountInfo
-        {
-            get => this._showTriangleCountInfo;
-            set
-            {
-                this._showTriangleCountInfo = value;
-                this.OnPropertyChanged();
-            }
-        }
+        public bool ShowTriangleCountInfo { get; set; } = false;
 
         public bool ShowFieldOfView { get; set; } = false;
         public bool ShowFrameRate { get; set; } = false;
@@ -236,50 +195,19 @@ namespace ForRobot.Models.Settings
         #endregion 3DView
 
         #region Params
-
-        private double _annotationFontSize = 20;
-        private double _weldsThickness = 5.0;
-        private double _annotationThickness = 2.0;
-        //private bool _annotationIsVisibale = true;
-
+        
         /// <summary>
         /// Толщина линий шва на модели
         /// </summary>
-        public double WeldsThickness
-        {
-            get => this._weldsThickness;
-            set
-            {
-                this._weldsThickness = value;
-                this.OnPropertyChanged();
-            }
-        }
-
+        public double WeldsThickness { get; set; } = 5.0;
         /// <summary>
         /// Размер шрифта
         /// </summary>
-        public double AnnotationFontSize
-        {
-            get => this._annotationFontSize;
-            set
-            {
-                this._annotationFontSize = value;
-                this.OnPropertyChanged();
-            }
-        }
-
+        public double AnnotationFontSize { get; set; } = 20;
         /// <summary>
         /// Толщина линий
         /// </summary>
-        public double AnnotationThickness
-        {
-            get => this._annotationThickness;
-            set
-            {
-                this._annotationThickness = value;
-                this.OnPropertyChanged();
-            }
-        }
+        public double AnnotationThickness { get; set; } = 2.0;
 
         ///// <summary>
         ///// Видимы ли параметры
@@ -301,126 +229,46 @@ namespace ForRobot.Models.Settings
         /// <summary>
         /// Включена ли ортоганальная камера
         /// </summary>
-        public bool Orthographic
-        {
-            get => this._orthographic;
-            set
-            {
-                this._orthographic = value;
-                this.OnPropertyChanged();
-            }
-        }
+        public bool Orthographic { get; set; } = false;
         /// <summary>
         /// Демонстрация информации о камере
         /// </summary>
-        public bool ShowCameraInfo
-        {
-            get => this._showCameraInfo;
-            set
-            {
-                this._showCameraInfo = value;
-                this.OnPropertyChanged();
-            }
-        }
+        public bool ShowCameraInfo { get; set; } = false;
         /// <summary>
         /// Демонстрация курсора камеры
         /// </summary>
-        public bool ShowCameraTarget
-        {
-            get => this._showCameraTarget;
-            set
-            {
-                this._showCameraTarget = value;
-                this.OnPropertyChanged();
-            }
-        }
+        public bool ShowCameraTarget { get; set; } = true;
         /// <summary>
         /// Поворот вокруг мыши
         /// </summary>
-        public bool RotateAroundMouseDownPoint
-        {
-            get => this._rotateAroundMouseDownPoint;
-            set
-            {
-                this._rotateAroundMouseDownPoint = value;
-                this.OnPropertyChanged();
-            }
-        }
+        public bool RotateAroundMouseDownPoint { get; set; } = false;
         /// <summary>
         /// Приближение около мыши
         /// </summary>
-        public bool ZoomAroundMouseDownPoint
-        {
-            get => this._zoomAroundMouseDownPoint;
-            set
-            {
-                this._zoomAroundMouseDownPoint = value;
-                this.OnPropertyChanged();
-            }
-        }
+        public bool ZoomAroundMouseDownPoint { get; set; } = false;
         /// <summary>
         /// Инерция камеры
         /// </summary>
-        public bool IsInertiaEnabled
-        {
-            get => this._isInertiaEnabled;
-            set
-            {
-                this._isInertiaEnabled = value;
-                this.OnPropertyChanged();
-            }
-        }
+        public bool IsInertiaEnabled { get; set; } = false;
         /// <summary>
         /// Вкличено ли панорамирование
         /// </summary>
-        public bool IsPanEnabled
-        {
-            get => this._isPanEnabled;
-            set
-            {
-                this._isPanEnabled = value;
-                this.OnPropertyChanged();
-            }
-        }
+        public bool IsPanEnabled { get; set; } = true;
         /// <summary>
         /// Вкличено ли перемещение
         /// </summary>
-        public bool IsMoveEnabled
-        {
-            get => this._isMoveEnabled;
-            set
-            {
-                this._isMoveEnabled = value;
-                this.OnPropertyChanged();
-            }
-        }
+        public bool IsMoveEnabled { get; set; } = true;
         /// <summary>
         /// Вкличено ли вращение
         /// </summary>
-        public bool IsRotationEnabled
-        {
-            get => this._isRotationEnabled;
-            set
-            {
-                this._isRotationEnabled = value;
-                this.OnPropertyChanged();
-            }
-        }
+        public bool IsRotationEnabled { get; set; } = true;
         /// <summary>
         /// Вкличено ли маштабирование
         /// </summary>
-        public bool IsZoomEnabled
-        {
-            get => this._isZoomEnabled;
-            set
-            {
-                this._isZoomEnabled = value;
-                this.OnPropertyChanged();
-            }
-        }
+        public bool IsZoomEnabled { get; set; } = true;
 
         ///// <summary>
-        ///// Включено ли панаромирование
+        ///// 
         ///// </summary>
         //public bool IsChangeFieldOfViewEnabled { get; set; } = true;
 
@@ -501,32 +349,6 @@ namespace ForRobot.Models.Settings
             }
         }
 
-        ///// <summary>
-        ///// Имя сгенерированной программы (настил с рёбрами)
-        ///// </summary>
-        //public string PlitaProgramName { get; set; }
-        ///// <summary>
-        ///// Имя сгенерированной программы (плита со стрингерами)
-        ///// </summary>
-        //public string PlitaStringerProgramName { get; set; }
-        ///// <summary>
-        ///// Имя сгенерированной программы (плита с треугольником)
-        ///// </summary>
-        //public string PlitaTreugolnikProgramName { get; set; }
-
-        ///// <summary>
-        ///// Имя скрапта-генератора (настил с рёбрами)
-        ///// </summary>
-        //public string PlitaScriptName { get; set; }
-        ///// <summary>
-        ///// Имя скрапта-генератора (плита со стрингерами)
-        ///// </summary>
-        //public string PlitaStringerScriptName { get; set; }
-        ///// <summary>
-        ///// Имя скрапта-генератора (плита с треугольником)
-        ///// </summary>
-        //public string PlitaTreugolnikScriptName { get; set; }
-
         /// <summary>
         /// Путь к папке для генерации
         /// </summary>
@@ -542,25 +364,13 @@ namespace ForRobot.Models.Settings
         public string ControlerFolder { get; set; }
 
         #endregion
-
-        #endregion Properties
-
-        /// <summary>
-        /// Событие изменения свойства настроек
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
-
+                
         #endregion Public variables
 
         #region Constructors
 
         public Settings()
-        {
-            if (string.IsNullOrEmpty(Properties.Settings.Default.SelectedTheme))
-                this.SelectedTheme = this.Themes.First();
-            else
-                this.SelectedTheme = this.Themes.Where(t => t.Item1 == Properties.Settings.Default.SelectedTheme).First();
-            
+        {            
             if (this.Colors.Count == 0) this.Colors = GetColors();
         }
 
@@ -767,24 +577,8 @@ namespace ForRobot.Models.Settings
                     //File.Delete(sourcePath);
                     break;
             }
-            this.OnPropertyChanged(nameof(this.ScriptsCollection));
+            //this.OnPropertyChanged(nameof(this.ScriptsCollection));
         }
-
-        /// <summary>
-        /// Вызов события изменения свойства
-        /// </summary>
-        private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null) => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
-        ///// <summary>
-        ///// Логирование исключений выгрузки настроек
-        ///// </summary>
-        ///// <param name="ex"></param>
-        ///// <returns></returns>
-        //private static bool LogException(Exception ex)
-        //{
-        //    App.Current.Logger.Error(ex, "Ошибка выгрузки настроек приложения");
-        //    return true;
-        //}
 
         #endregion Private functions
     }

@@ -311,7 +311,7 @@ namespace ForRobot.ViewModels
         /// <summary>
         /// Создание файла
         /// </summary>
-        public ICommand CreateNewFileCommand { get; } = new RelayCommand(_ => Libr.AppWindowManager.CreateWindowShow(App.Current.Settings.StartedDetalType));
+        public ICommand CreateNewFileCommand { get; } = new RelayCommand(_ => Libr.AppWindowManager.Create(App.Current.Settings.StartedDetalType));
         
         /// <summary>
         /// Открытие файла программы
@@ -459,7 +459,7 @@ namespace ForRobot.ViewModels
         /// <summary>
         /// Открытие окна настроек
         /// </summary>
-        public ICommand PropertiesCommand { get; } = new RelayCommand(_ => Libr.AppWindowManager.SettingsWindowShow(out var settings));
+        public ICommand PropertiesCommand { get; } = new RelayCommand(_ => Libr.AppWindowManager.Settings(out var settings));
 
         /// <summary>
         /// Открытие chm-справки
@@ -658,8 +658,8 @@ namespace ForRobot.ViewModels
 
             System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
-                if (ActiveContent is Models.File3D.File3D file3D)
-                    Task.Run(() => GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new Libr.Behavior.SelectLayoutDocumentPane(file3D)));
+                //if (ActiveContent is Models.File3D.File3D file3D)
+                //    Task.Run(() => GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new Libr.Behavior.SelectLayoutDocumentPane(file3D)));
             }), System.Windows.Threading.DispatcherPriority.Background);
 
             if (ActiveContent is Models.File3D.File3D file)

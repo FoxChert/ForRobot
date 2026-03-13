@@ -309,7 +309,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Libr\Attached properties\LayoutAnchorableCommands.cs" />
+    <Compile Include="Libr\AttachedProperties\LayoutAnchorableCommands.cs" />
     <Compile Include="Libr\Attributes\PropertyCameraAttribute.cs" />
     <Compile Include="Libr\Attributes\PropertyNameAttribute.cs" />
     <Compile Include="Libr\Behavior\BehaviorAttacher.cs" />
@@ -321,7 +321,7 @@
     <Compile Include="Libr\Converters\AssimpConverter.cs" />
     <Compile Include="Libr\Messages\LayoutAnchorableMessage.cs" />
     <Compile Include="Libr\Behavior\DataGridAutoSizeColumns.cs" />
-    <Compile Include="Libr\Behavior\FocusBehavior.cs" />
+    <Compile Include="Libr\AttachedProperties\FocusAttachedProperties.cs" />
     <Compile Include="Libr\Behavior\HelixAddCollectionBehavior.cs" />
     <Compile Include="Libr\Behavior\DataGridStretchLastColumn.cs" />
     <Compile Include="Libr\Client\Command.cs" />
@@ -371,7 +371,6 @@
     <Compile Include="Libr\Behavior\HelixSceneTrackerBehavior.cs" />
     <Compile Include="Libr\Messages\LayoutMessage.cs" />
     <Compile Include="Libr\Behavior\HelixWeldsBehavior.cs" />
-    <Compile Include="Libr\Behavior\SelectLayoutDocumentPane.cs" />
     <Compile Include="Libr\Collections\ItemPropertyChangedEventArgs.cs" />
     <Compile Include="Libr\Converters\ArrayMultiValueConverter.cs" />
     <Compile Include="Libr\Converters\BindingToTagConverter.cs" />
@@ -386,7 +385,6 @@
     <Compile Include="Libr\Converters\DictionaryToBindableCollectionConverter.cs" />
     <Compile Include="Libr\Converters\ScaleFactorConverter.cs" />
     <Compile Include="Libr\Converters\StringToVisibilityConverter.cs" />
-    <Compile Include="Libr\DocumentPaneHelper.cs" />
     <Compile Include="Libr\Json\ImageSourceConverter.cs" />
     <Compile Include="Libr\Json\PlitaWithRibsAttributesResolver.cs" />
     <Compile Include="Libr\Logging\Logger.cs" />
@@ -427,6 +425,11 @@
     <Compile Include="Models\File3D\NativeFile3D.cs" />
     <Compile Include="Libr\Modeling\OpenCascadeModelHandler.cs" />
     <Compile Include="Models\Settings\SceneConfiguration.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="Themes\Colors.cs" />
     <Compile Include="Models\Settings\ApplicationInfo.cs" />
     <Compile Include="Models\Settings\PropertyColor.cs" />
@@ -474,9 +477,6 @@
     <Compile Include="Views\Controls\SliderButton.xaml.cs">
       <DependentUpon>SliderButton.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Pages\PageMain3.xaml.cs">
-      <DependentUpon>PageMain3.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Windows\CreateWindow.xaml.cs">
       <DependentUpon>CreateWindow.xaml</DependentUpon>
     </Compile>
@@ -516,10 +516,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Pages\PageMain3.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\Windows\CreateWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -546,33 +542,26 @@
     <Compile Include="Libr\Converters\ThicknessConverter.cs" />
     <Compile Include="Libr\Collections\FileCollection.cs" />
     <Compile Include="Libr\Collections\FullyObservableCollection.cs" />
-    <Compile Include="Libr\Generation.cs" />
     <Compile Include="Libr\Behavior\AutoScrollBehavior.cs" />
     <Compile Include="Libr\Json\SaveAttributesResolver.cs" />
     <Compile Include="Libr\Configuration\ConfigurationProperties\PlateConfigurationSection.cs" />
     <Compile Include="Libr\Configuration\ConfigurationProperties\RobotConfigurationSection.cs" />
-    <Compile Include="Libr\ScrollViewerAttachedProperties.cs" />
+    <Compile Include="Libr\AttachedProperties\ScrollViewerAttachedProperties.cs" />
     <Compile Include="Libr\Converters\StatusColorConverter.cs" />
     <Compile Include="Libr\Converters\StringFormatConverter.cs" />
-    <Compile Include="Libr\TreeViewSelectedItemBehavior.cs" />
+    <Compile Include="Libr\Behavior\TreeViewSelectedItemBehavior.cs" />
     <Compile Include="Models\Controls\File.cs" />
     <Compile Include="Models\Controls\IFile.cs" />
     <Compile Include="Models\Detals\Plate.cs" />
     <Compile Include="Models\Detals\ScoseTypes.cs" />
     <Compile Include="Models\Controls\FileTypes.cs" />
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
     <Compile Include="RelayCommand.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Libr\Client\TaskHelper.cs" />
     <Compile Include="Libr\Client\JsonRpcConnection.cs" />
-    <Compile Include="Libr\ErrorException.cs" />
     <Compile Include="Libr\Logging\LogErrorEventArgs.cs" />
     <Compile Include="Libr\Client\ConnectionLogEventArgs.cs" />
-    <Compile Include="Libr\Font.cs" />
+    <Compile Include="Libr\FontExtensions.cs" />
     <Compile Include="Models\RoboticComplex\Robot.cs" />
     <Compile Include="Models\Detals\Detal.cs" />
     <Compile Include="Models\Detals\DetalType.cs" />

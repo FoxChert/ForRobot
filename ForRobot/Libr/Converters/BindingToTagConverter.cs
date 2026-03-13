@@ -5,6 +5,9 @@ using System.Globalization;
 
 namespace ForRobot.Libr.Converters
 {
+    /// <summary>
+    /// Класс для преобразования свойства привязки элемента <see cref="Binding"/> в свойство Tag
+    /// </summary>
     public class BindingToTagConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

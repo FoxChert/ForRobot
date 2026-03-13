@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.Diagnostics;
 using System.Windows;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
@@ -44,7 +45,7 @@ namespace ForRobot
         /// Путь к программе на коммпьютере
         /// </summary>
         private string FilePathOnPC { get => Directory.GetCurrentDirectory(); }
-        
+
         //private ForRobot.Models.Settings.Settings _settings = ForRobot.App.GetSettings();
 
         ///// <summary>
@@ -79,7 +80,15 @@ namespace ForRobot
         /// Настройки приложения
         /// (выгружаются из временных файлов, иначе инициализируются как класс)
         /// </summary>
-        public ForRobot.Models.Settings.Settings Settings { get => this._settings ?? (this._settings = GetSettings()); }
+        public ForRobot.Models.Settings.Settings Settings
+        {
+            get => this._settings ?? (this._settings = GetSettings());
+            set
+            {
+                this._settings = value;
+                this._settings.Save();
+            }
+        }
 
         /// <summary>
         /// Открытые файлы 3D моделей
@@ -145,7 +154,7 @@ namespace ForRobot
                 if (this._robotsCollection != null)
                 {
                     this._robotsCollection.LoggingEvent -= (s, e) => Logger.Info(e.Message);
-                    this._robotsCollection.LoggingEvent -= (s, e) => Logger.Error(e.Message);
+                    this._robotsCollection.LoggingErrorEvent -= (s, e) => Logger.Error(e.Message);
                 }
 
                 this._robotsCollection = value;
@@ -153,7 +162,7 @@ namespace ForRobot
                 if (this._robotsCollection != null)
                 {
                     this._robotsCollection.LoggingEvent += (s, e) => Logger.Info(e.Message);
-                    this._robotsCollection.LoggingEvent += (s, e) => Logger.Error(e.Message);
+                    this._robotsCollection.LoggingErrorEvent += (s, e) => Logger.Error(e.Message);
                 }
             }
         }
@@ -212,14 +221,6 @@ namespace ForRobot
             if (((Application.Current.Windows.Count == 0) && (Application.Current.ShutdownMode == ShutdownMode.OnLastWindowClose))
                 || (Application.Current.ShutdownMode == ShutdownMode.OnMainWindowClose))
             {
-                //if (Settings.SaveDetalProperties)
-                //{
-                //    Services.File3DService.SaveFiles(OpenedFiles.Where(item => new List<string>() { ForRobot.Properties.Settings.Default.PlitaProgramm,
-                //                                                                                  ForRobot.Properties.Settings.Default.PlitaStringerProgramm,
-                //                                                                                  ForRobot.Properties.Settings.Default.PlitaTreugolnikProgramm
-                //                                                                                }.Contains(item.NameWithoutExtension)));
-                //}
-
                 if (this._isNewInstance)
                     this.Logger.Trace("Закрытие приложения\n\n");
 
@@ -252,7 +253,7 @@ namespace ForRobot
                 ForRobot.Properties.Settings.Default.Save();
             }
 
-            Application.Current.MainWindow = Libr.AppWindowManager.AppMainWindowShow();
+            Application.Current.MainWindow = Libr.AppWindowManager.Main();
 
             // Вход в приложение по пин-коду
             if (this.Settings.LoginByPINCode)
@@ -262,7 +263,7 @@ namespace ForRobot
                 // Выполняем проверку пин-кода в UI потоке
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    pinResult = Libr.AppWindowManager.PinCodeInputWindowShow(ForRobot.Properties.Settings.Default.PinCode);
+                    pinResult = Libr.AppWindowManager.PinCode(ForRobot.Properties.Settings.Default.PinCode);
                 });
 
                 if (!pinResult)
@@ -498,7 +499,7 @@ namespace ForRobot
             ForRobot.Libr.Factories.File3DFactory.SetJsonSchemaProvider(JsonSchemaProvider);
 
             this.RobotsCollection = new Libr.Collections.RobotCollection();
-            this.RobotsCollection.ConnectionTimeOutMilliseconds = Convert.ToInt32(App.Current.Settings.ConnectionTimeOut * 1000);
+            this.RobotsCollection.Timeout = Convert.ToInt32(App.Current.Settings.ConnectionTimeOut * 1000);
             if (string.IsNullOrEmpty(ForRobot.Properties.Settings.Default.sSavedRobots))
                 this.RobotsCollection.Add();
             else
@@ -547,79 +548,65 @@ namespace ForRobot
                 string jsonString = File.ReadAllText(path);
                 JObject jsonObject = JObject.Parse(jsonString);
                 JSchema schema = JsonSchemaProvider.GetSettingsSchema();
+                var validationErrors = new List<Libr.Json.Schemas.ValidationErrorInfo>();
                 jsonObject.Validate(schema, (s, e) =>
                 {
-                    var info = new Libr.Json.Schemas.ValidationErrorInfo()
+                    validationErrors.Add(new Libr.Json.Schemas.ValidationErrorInfo()
                     {
                         Message = e.Message,
                         Path = e.Path,
                         ErrorDetails = e
-                    };
-                    var exception = new Libr.Json.Schemas.JsonSchemaValidationException(schema.Title ?? "Unknown Schema", new , jsonString);
-                    //throw new JSchemaValidationException("Ошибка валидации JSON-строки настроек.", s, e.ValidationError)
+                    });
                 });
-                //JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
-                //{
-                //    Formatting = Formatting.Indented,
-                //    NullValueHandling = NullValueHandling.Ignore,
-                //    ObjectCreationHandling = ObjectCreationHandling.Replace
-                //};
-                //settings = JsonConvert.DeserializeObject<ForRobot.Models.Settings.Settings> (json, jsonSettings) ?? new ForRobot.Models.Settings.Settings();
+
+                if(System.Linq.Enumerable.Count(validationErrors) > 0)
+                    throw new Libr.Json.Schemas.JsonSchemaValidationException(schema.Title ?? "Unknown Schema", validationErrors, jsonString);
+
+                JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
+                {
+                    Formatting = Formatting.Indented,
+                    NullValueHandling = NullValueHandling.Ignore,
+                    ObjectCreationHandling = ObjectCreationHandling.Replace
+                };
+
+                settings = JsonConvert.DeserializeObject<ForRobot.Models.Settings.Settings>(jsonString, jsonSettings);
+
+                if (settings == null)
+                    throw new Exception("Итог десериализации оъекта класса Settings NULL.");
+
+                settings.Colors = JObject.Parse(jsonString)["Colors"].ToObject<Dictionary<string, System.Windows.Media.Color>>();
             }
             catch (Exception ex)
             {
                 App.Current.Logger.Error(ex, "Ошибка выгрузки настроек приложения!");
                 settings = new ForRobot.Models.Settings.Settings();
 
+                //// Установка выбранной темы интерфейса
+                //if (string.IsNullOrEmpty(ForRobot.Properties.Settings.Default.SelectedTheme))
+                //    settings.SelectedTheme = ForRobot.Models.Settings.Settings.Themes[0];
+                //else
+                //    settings.SelectedTheme = ForRobot.Models.Settings.Settings.Themes.Where(t => t.Item1 == ForRobot.Properties.Settings.Default.SelectedTheme).First();
+
+                // Установка имён файлов
+                var robotConfig = ConfigProvider.GetRobotConfig();
+                var plateConfig = ConfigProvider.GetPlateConfig();
+
+                foreach (var names in settings.DetalsProgramNames.Where(x => x.Item1 == Models.Detals.DetalType.Plate).ToList())
+                    settings.DetalsProgramNames.Remove(names);
+                settings.DetalsProgramNames.Add(Tuple.Create(Models.Detals.DetalType.Plate, Libr.EnumExtensions.GetDescription(Models.Detals.DetalType.Plate), plateConfig.PlateProgramName));
+
+                foreach (var names in settings.DetalsScriptNames.Where(x => x.Item1 == Models.Detals.DetalType.Plate).ToList())
+                    settings.DetalsScriptNames.Remove(names);
+                settings.DetalsScriptNames.Add(Tuple.Create(Models.Detals.DetalType.Plate, Libr.EnumExtensions.GetDescription(Models.Detals.DetalType.Plate), plateConfig.PlateScriptName));
+
+                settings.PathFolderOfGeneration = robotConfig.PathFolderGeneration;
+                settings.ControlerFolder = robotConfig.ControlFolderPath;
+
+                settings.Save();
             }
 
-            settings.Save();
             return settings;
-
-            //ForRobot.Models.Settings.Settings settings = ForRobot.Models.Settings.Settings.GetSettings();
-            //var robotConfig = ConfigProvider.GetRobotConfig();
-            //var plateConfig = ConfigProvider.GetPlateConfig();
-
-            //foreach (var names in settings.DetalsProgramNames.Where(x => x.Item1 == Models.Detals.DetalType.Plate).ToList())
-            //    settings.DetalsProgramNames.Remove(names);
-            //settings.DetalsProgramNames.Add(Tuple.Create(Models.Detals.DetalType.Plate, Libr.EnumExtensions.GetDescription(Models.Detals.DetalType.Plate), plateConfig.PlateProgramName));
-
-            //foreach (var names in settings.DetalsScriptNames.Where(x => x.Item1 == Models.Detals.DetalType.Plate).ToList())
-            //    settings.DetalsScriptNames.Remove(names);
-            //settings.DetalsScriptNames.Add(Tuple.Create(Models.Detals.DetalType.Plate, Libr.EnumExtensions.GetDescription(Models.Detals.DetalType.Plate), plateConfig.PlateScriptName));
-
-            //settings.PathFolderOfGeneration = robotConfig.PathFolderGeneration;
-            //settings.ControlerFolder = robotConfig.ControlFolderPath;
-            //return settings;
         }
-
-        ///// <summary>
-        ///// Инициализация настроек (при первой загрузки) или выгрузка из временных файлов
-        ///// </summary>
-        ///// <returns></returns>
-        //public static Settings GetSettings()
-        //{
-        //    try
-        //    {
-        //        if (!File.Exists(_path))
-        //            throw new FileNotFoundException("Не найден файл настроек", _path);
-
-        //        string json = File.ReadAllText(_path);
-        //        Settings settings = JsonConvert.DeserializeObject<Settings>(json, _jsonSettings) ?? new Settings();
-
-        //        if (JObject.Parse(json)["Version"].ToObject<Version>() != System.Reflection.Assembly.GetEntryAssembly().GetName().Version)
-        //            throw new Exception("Версия файла настроек не совпадает с версией приложения. Файл пересоздаётся.");
-
-        //        settings.Colors = JObject.Parse(json)["Colors"].ToObject<Dictionary<string, System.Windows.Media.Color>>();
-        //        return settings;
-        //    }
-        //    catch (Exception ex) when (LogException(ex))
-        //    {
-        //        Settings settings = new Settings();
-        //        settings.Save();
-        //        return settings;
-        //    }
-        //}
 
         #endregion Private functions
 
@@ -640,6 +627,8 @@ namespace ForRobot
             App.Current.MainWindow.Activate();
 
             App.Current.MainWindow.Focus();
+            //App.Current.MainWindow.Left = (SystemParameters.PrimaryScreenWidth / 2) - (App.Current.MainWindow.ActualWidth / 2);
+            //App.Current.MainWindow.Top = (SystemParameters.PrimaryScreenWidth / 2) - (App.Current.MainWindow.ActualHeight / 2);
             App.Current.MainWindow.Left = SystemParameters.WorkArea.Left;
             App.Current.MainWindow.Top = SystemParameters.WorkArea.Top;
         }

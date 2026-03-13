@@ -20,7 +20,7 @@ namespace ForRobot.Libr.Collections
 
         #region Public variables
 
-        public int ConnectionTimeOutMilliseconds
+        public int Timeout
         {
             get => this._connectionTimeOutMilliseconds;
             set
@@ -29,7 +29,7 @@ namespace ForRobot.Libr.Collections
 
                 for (int i = 0; i < 0; i++)
                 {
-                    this.Items[i].ConnectionTimeOutMilliseconds = this.ConnectionTimeOutMilliseconds;
+                    this.Items[i].Timeout = this.Timeout;
                 }
             }
         }
@@ -41,7 +41,8 @@ namespace ForRobot.Libr.Collections
                 _loggingEvent += value;
                 for (int i = 0; i < 0; i++)
                 {
-                    //this.Items[i].LoggingEvent += this.LoggingEvent;
+                    if(this.Items[i] != null)
+                        this.Items[i].LoggingEvent += value;
                 }
             }
             remove
@@ -49,7 +50,8 @@ namespace ForRobot.Libr.Collections
                 _loggingEvent -= value;
                 for (int i = 0; i < 0; i++)
                 {
-                    //this.Items[i].LoggingEvent -= this.LoggingEvent;
+                    if (this.Items[i] != null)
+                        this.Items[i].LoggingEvent -= value;
                 }
             }
         }
@@ -61,7 +63,8 @@ namespace ForRobot.Libr.Collections
                 _loggingErrorEvent += value;
                 for (int i = 0; i < 0; i++)
                 {
-                    //this.Items[i].LoggingEvent += this.LoggingEvent;
+                    if (this.Items[i] != null)
+                        this.Items[i].LoggingErrorEvent += value;
                 }
             }
             remove
@@ -69,7 +72,8 @@ namespace ForRobot.Libr.Collections
                 _loggingErrorEvent -= value;
                 for (int i = 0; i < 0; i++)
                 {
-                    //this.Items[i].LoggingEvent -= this.LoggingEvent;
+                    if (this.Items[i] != null)
+                        this.Items[i].LoggingErrorEvent -= value;
                 }
             }
         }
@@ -93,7 +97,17 @@ namespace ForRobot.Libr.Collections
             foreach (var item in Items)
             {
                 if (item != null)
+                {
                     item.PropertyChanged += OnRobotPropertyChanged;
+                    if (_loggingEvent != null)
+                    {
+                        item.LoggingEvent += _loggingEvent;
+                    }
+                    if (_loggingErrorEvent != null)
+                    {
+                        item.LoggingErrorEvent += _loggingErrorEvent;
+                    }
+                }
             }
         }
 
@@ -105,7 +119,17 @@ namespace ForRobot.Libr.Collections
             foreach (var item in Items)
             {
                 if (item != null)
+                {
                     item.PropertyChanged += OnRobotPropertyChanged;
+                    if (_loggingEvent != null)
+                    {
+                        item.LoggingEvent += _loggingEvent;
+                    }
+                    if (_loggingErrorEvent != null)
+                    {
+                        item.LoggingErrorEvent += _loggingErrorEvent;
+                    }
+                }
             }
         }
 
@@ -126,7 +150,17 @@ namespace ForRobot.Libr.Collections
         protected override void InsertItem(int index, Robot item)
         {
             if (item != null)
+            {
                 item.PropertyChanged += OnRobotPropertyChanged;
+                if (_loggingEvent != null)
+                {
+                    item.LoggingEvent += _loggingEvent;
+                }
+                if (_loggingErrorEvent != null)
+                {
+                    item.LoggingErrorEvent += _loggingErrorEvent;
+                }
+            }
 
             base.InsertItem(index, item);
         }
@@ -136,7 +170,17 @@ namespace ForRobot.Libr.Collections
             var item = this[index];
 
             if (item != null)
+            {
                 item.PropertyChanged -= OnRobotPropertyChanged;
+                if (_loggingEvent != null)
+                {
+                    item.LoggingEvent -= _loggingEvent;
+                }
+                if (_loggingErrorEvent != null)
+                {
+                    item.LoggingErrorEvent -= _loggingErrorEvent;
+                }
+            }
 
             base.RemoveItem(index);
         }
@@ -146,7 +190,17 @@ namespace ForRobot.Libr.Collections
             for (int i = 0; i < this.Count; i++)
             {
                 if (this[i] != null)
+                {
                     this[i].PropertyChanged -= OnRobotPropertyChanged;
+                    if (_loggingEvent != null)
+                    {
+                        this[i].LoggingEvent += _loggingEvent;
+                    }
+                    if (_loggingErrorEvent != null)
+                    {
+                        this[i].LoggingErrorEvent += _loggingErrorEvent;
+                    }
+                }
             }
             base.ClearItems();
         }
@@ -156,11 +210,24 @@ namespace ForRobot.Libr.Collections
             var oldItem = this[index];
 
             if (oldItem != null)
+            {
                 oldItem.PropertyChanged -= OnRobotPropertyChanged;
+                if (_loggingEvent != null)
+                    oldItem.LoggingEvent -= _loggingEvent;
+
+                if (_loggingErrorEvent != null)
+                    oldItem.LoggingErrorEvent -= _loggingErrorEvent;
+            }
 
             if (item != null)
+            {
                 item.PropertyChanged += OnRobotPropertyChanged;
+                if (item != null)
+                    oldItem.LoggingEvent -= _loggingEvent;
 
+                if (_loggingErrorEvent != null)
+                    item.LoggingErrorEvent -= _loggingErrorEvent;
+            }
             base.SetItem(index, item);
         }
 
@@ -179,10 +246,15 @@ namespace ForRobot.Libr.Collections
             if (newItem == null)
                 newItem = new Robot();
 
-            newItem.Name = string.Format("Соединение {0}", this.Count + 1);
-            newItem.ConnectionTimeOutMilliseconds = this.ConnectionTimeOutMilliseconds;
-            //newItem.LoggingEvent += this.LoggingEvent;
-            //newItem.LoggingErrorEvent += this.LoggingEvent;
+            newItem.Name = $"Соединение {this.Count + 1}";
+            newItem.Timeout = this.Timeout;
+
+            if (_loggingEvent != null)
+                newItem.LoggingEvent -= _loggingEvent;
+
+            if (_loggingErrorEvent != null)
+                newItem.LoggingErrorEvent -= _loggingErrorEvent;
+
             base.Add(newItem);
         }
 

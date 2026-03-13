@@ -149,11 +149,11 @@ namespace ForRobot.Libr.Client
 
         #region Constructors
 
-        public JsonRpcConnection(string hostname = DEFAULT_HOST, int port = DEFAULT_PORT, int timeout_milliseconds = DEFAULT_TIMEOUT_MILLISECONDS)
+        public JsonRpcConnection(string hostname = DEFAULT_HOST, int port = DEFAULT_PORT, int? timeout_milliseconds = null)
         {
             this.Host = hostname;
             this.Port = port;
-            this.Timeout = timeout_milliseconds;
+            this.Timeout = timeout_milliseconds ?? DEFAULT_TIMEOUT_MILLISECONDS;
             this._commandQueueManager = new CommandQueueManager(this);
         }
 
@@ -197,9 +197,6 @@ namespace ForRobot.Libr.Client
             {
                 _exceptionCallback?.Invoke(this, activeCommand, ex);
                 throw;
-                //await _exceptionCallback?.Invoke(_commandQueueManager, activeCommand, ex);
-                //await new System.Windows.Threading.Dispatcher()?.BeginInvoke(_exceptionCallback, _commandQueueManager, activeCommand, ex);
-                //throw new ConnectionLogErrorEventArgs(this.Host, this.Port, ex.Message, ex);
             }
         }
 

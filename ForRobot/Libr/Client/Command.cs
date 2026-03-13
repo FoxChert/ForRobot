@@ -106,7 +106,7 @@ namespace ForRobot.Libr.Client
             
             CancellationTokenSource.Token.Register(() =>
             {
-                if (!HasTimedOut) // Защита от повторного срабатывания
+                if (!HasTimedOut)
                 {
                     HasTimedOut = true;
                     TimeoutElapsed?.Invoke(this, EventArgs.Empty);

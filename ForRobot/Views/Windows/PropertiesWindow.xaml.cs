@@ -27,6 +27,7 @@ namespace ForRobot.Views.Windows
         {
             InitializeComponent();
         }
+
         /// <summary>
         /// Вызов события изменения свойства
         /// </summary>

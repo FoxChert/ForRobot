@@ -40,16 +40,7 @@ namespace ForRobot.ViewModels
         public Models.File3D.File3D SelectedFile
         {
             get => this._selectedFile;
-            set
-            {
-                //if (this._selectedFile != null)
-                //    this._selectedFile.PropertyChanged -= HandlePropertyChange_SelectedFile;
-
-                Set(ref this._selectedFile, value);
-
-                //if (this._selectedFile != null)
-                    //this._selectedFile.PropertyChanged += HandlePropertyChange_SelectedFile;
-            }
+            set => Set(ref this._selectedFile, value);
         }
 
         #region Collections
@@ -156,7 +147,11 @@ namespace ForRobot.ViewModels
         /// <summary>
         /// Команда открытия окна настроек
         /// </summary>
-        public ICommand PropertiesCommand { get; }
+        public ICommand OpenPropertiesWindowCommand { get; } = new RelayCommand(_ => 
+        {
+            Libr.AppWindowManager.Settings(out var settings);
+            App.Current.Settings = settings;
+        });
         /// <summary>
         /// Команда открытия chm-справки
         /// </summary>
@@ -172,7 +167,16 @@ namespace ForRobot.ViewModels
                 return;
 
             ForRobot.Libr.Logging.Logger.LoggingEvent += (s, o) => System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() => this.MessagesCollection.Add(new Models.Message(o))));
-            
+
+            App.Current.OpenedFiles.CollectionChanged += (s, e) =>
+            {
+                switch (e.Action)
+                {
+                    case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
+                        this.ActiveContent = e.NewItems[0] as ForRobot.Models.File3D.File3D; // При открытии нового файла, он выбирается как активный
+                        break;
+                }
+            };
         }
 
         #region Private functions
@@ -193,12 +197,6 @@ namespace ForRobot.ViewModels
         private void SetActiveContent(object value)
         {
             Set(ref this._activeContent, value);
-
-            System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                if (ActiveContent is Models.File3D.File3D file3D)
-                    Task.Run(() => GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new Libr.Behavior.SelectLayoutDocumentPane(file3D)));
-            }), System.Windows.Threading.DispatcherPriority.Background);
 
             if (ActiveContent is Models.File3D.File3D file)
             {

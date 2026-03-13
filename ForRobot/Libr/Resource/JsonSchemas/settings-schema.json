@@ -28,21 +28,13 @@
       "type": "boolean",
       "description": "Сохраняются ли параметры детали на выходе"
     },
-    "LimitedConnectionTimeOut": {
-      "type": "boolean",
-      "description": "Ограничено ли время ожидания ответа от сервера"
-    },
     "ConnectionTimeOut": {
       "type": "number",
       "description": "Время ожидания ответа от сервера, сек."
     },
     "StartedDetalType": {
-      "type": "string",
-      "enum": [
-        "Plate",
-        "StringerPlate",
-        "TrianglePlate"
-      ],
+      "type": "integer",
+	  "default": "1",
       "description": "Тип детали, для которой создаётся стартовый файл"
     },
     "AccessDataFile": {
@@ -68,7 +60,11 @@
       },
       "additionalProperties": false
     },
-    "ShowCoordinateSystem": {
+    "ScaleFactor": {
+      "type": "number",
+      "description": "Показ системы координат"
+    },
+	"ShowCoordinateSystem": {
       "type": "boolean",
       "description": "Показ системы координат"
     },
@@ -91,23 +87,13 @@
       "type": "boolean"
     },
     "CoordinateSystemVerticalPosition": {
-      "type": "string",
-      "enum": [
-        "Top",
-        "Bottom",
-        "Center",
-        "Stretch"
-      ],
+      "type": "integer",
+	  "default": "1",
       "description": "Вертикальное положение системы координат"
     },
     "CoordinateSystemHorizontalPosition": {
-      "type": "string",
-      "enum": [
-        "Left",
-        "Right",
-        "Center",
-        "Stretch"
-      ],
+      "type": "integer",
+	  "default": "2",
       "description": "Горизонтальное положение системы координат"
     },
     "Colors": {
@@ -171,21 +157,13 @@
       "description": "Вкличено ли маштабирование"
     },
     "CameraRotationMode": {
-      "type": "string",
-      "enum": [
-        "Turntable",
-        "Turnball",
-        "Trackball"
-      ],
+      "type": "integer",
+	  "default": "1",
       "description": "Режим поворота камеры"
     },
     "CameraMode": {
-      "type": "string",
-      "enum": [
-        "Inspect",
-        "WalkAround",
-        "FixedPosition"
-      ],
+      "type": "integer",
+	  "default": "1",
       "description": "Режим камеры"
     },
     "RotationSensitivity": {
@@ -215,49 +193,43 @@
     "DetalsProgramNames": {
       "type": "array",
       "items": {
-        "type": "array",
+        "type": "object",
         "minItems": 3,
         "maxItems": 3,
-        "items": [
-          {
-            "type": "string",
-            "enum": [
-              "Plate",
-              "StringerPlate",
-              "TrianglePlate"
-            ]
-          },
-          {
-            "type": "string"
-          },
-          {
-            "type": "string"
-          }
-        ]
+        "properties": {
+			"Item1":{
+				"type": "integer",
+				"enum": [ "1", "2", "3" ],
+				"default": "1"
+			},
+			"Item2":{
+				"type": "string"
+			},
+			"Item3":{
+				"type": "string"
+			}
+		}
       }
     },
     "DetalsScriptNames": {
       "type": "array",
       "items": {
-        "type": "array",
+        "type": "object",
         "minItems": 3,
         "maxItems": 3,
-        "items": [
-          {
-            "type": "string",
-            "enum": [
-              "Plate",
-              "StringerPlate",
-              "TrianglePlate"
-            ]
-          },
-          {
-            "type": "string"
-          },
-          {
-            "type": "string"
-          }
-        ]
+        "properties": {
+			"Item1":{
+				"type": "integer",
+				"enum": [ "1", "2", "3" ],
+				"default": "1"
+			},
+			"Item2":{
+				"type": "string"
+			},
+			"Item3":{
+				"type": "string"
+			}
+		}
       }
     },
     "PathFolderOfGeneration": {
@@ -268,5 +240,52 @@
       "type": "string",
       "description": "Стандартный путь к папке на роботе"
     }
-  }
+  },
+  
+  "required":[
+	"AutoUpdate",
+	"InformUser",
+	"LoginByPINCode",
+	"CreatedDetalFile",
+	"SaveDetalProperties",
+	"ConnectionTimeOut",
+	"StartedDetalType",
+	"AccessDataFile",
+	"AvailableFolders",
+	"ScaleFactor",
+	"ShowCoordinateSystem",
+	"ShowViewCube",
+	"IsViewCubeEdgeClicksEnabled",
+	"ShowTriangleCountInfo",
+	"ShowFieldOfView",
+	"ShowFrameRate",
+	"CoordinateSystemVerticalPosition",
+	"CoordinateSystemHorizontalPosition",
+	"Colors",
+	"WeldsThickness",
+	"AnnotationFontSize",
+	"AnnotationThickness",
+	"Orthographic",
+	"ShowCameraInfo",
+	"ShowCameraTarget",
+	"RotateAroundMouseDownPoint",
+	"ZoomAroundMouseDownPoint",
+	"IsInertiaEnabled",
+	"IsPanEnabled",
+	"IsMoveEnabled",
+	"IsRotationEnabled",
+	"IsZoomEnabled",
+	"CameraRotationMode",
+	"CameraMode",
+	"RotationSensitivity",
+	"ZoomSensitivity",
+	"CameraInertiaFactor",
+	"AskNameFile",
+	"AskScriptFile",
+	"SendingGeneratedFiles",
+	"DetalsProgramNames",
+	"DetalsScriptNames",
+	"PathFolderOfGeneration",
+	"ControlerFolder"
+  ]
 }

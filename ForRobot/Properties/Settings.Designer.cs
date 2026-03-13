@@ -72,7 +72,7 @@ namespace ForRobot.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute(nameof(global::AvalonDock.Themes.Vs2013LightTheme))]
         public string SelectedTheme {
             get {
                 return ((string)(this["SelectedTheme"]));

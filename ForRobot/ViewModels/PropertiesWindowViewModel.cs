@@ -39,6 +39,7 @@ namespace ForRobot.ViewModels
         #endregion
 
         #endregion
+        
 
         #region Public variables
 
@@ -88,89 +89,7 @@ namespace ForRobot.ViewModels
         //        Set(ref this._selectedDetalTypeScript, value);
         //        this.RaisePropertyChanged(nameof(this.ScriptName));
         //    }
-        //}
-
-        ///// <summary>
-        ///// Стандарное название генерируемой программы
-        ///// </summary>
-        //public string StandartNameFile
-        //{
-        //    get
-        //    {
-        //        switch (this.SelectedDetalTypeName)
-        //        {
-        //            case string a when a == DetalTypes.Plate:
-        //                return this.Settings.PlitaProgramName;
-
-        //            case string b when b == DetalTypes.Plate:
-        //                return this.Settings.PlitaStringerProgramName;
-
-        //            case string c when c == DetalTypes.Plate:
-        //                return this.Settings.PlitaTreugolnikProgramName;
-
-        //            default:
-        //                return string.Empty;
-        //        }
-        //    }
-        //    set
-        //    {
-        //        switch (this.SelectedDetalTypeName)
-        //        {
-        //            case string a when a == DetalTypes.Plate:
-        //                this.Settings.PlitaProgramName = value;
-        //                break;
-
-        //            case string b when b == DetalTypes.Plate:
-        //                this.Settings.PlitaStringerProgramName = value;
-        //                break;
-
-        //            case string c when c == DetalTypes.Plate:
-        //                this.Settings.PlitaTreugolnikProgramName = value;
-        //                break;
-        //        }
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Название скрипта-генератора
-        ///// </summary>
-        //public string ScriptName
-        //{
-        //    get
-        //    {
-        //        switch (this.SelectedDetalTypeScript)
-        //        {
-        //            case string a when a == DetalTypes.Plate:
-        //                return this.Settings.PlitaScriptName;
-
-        //            case string b when b == DetalTypes.Plate:
-        //                return this.Settings.PlitaStringerScriptName;
-
-        //            case string c when c == DetalTypes.Plate:
-        //                return this.Settings.PlitaTreugolnikScriptName;
-
-        //            default:
-        //                return string.Empty;
-        //        }
-        //    }
-        //    set
-        //    {
-        //        switch (this.SelectedDetalTypeScript)
-        //        {
-        //            case string a when a == DetalTypes.Plate:
-        //                this.Settings.PlitaScriptName = value;
-        //                break;
-
-        //            case string b when b == DetalTypes.Plate:
-        //                this.Settings.PlitaStringerScriptName = value;
-        //                break;
-
-        //            case string c when c == DetalTypes.Plate:
-        //                this.Settings.PlitaTreugolnikScriptName = value;
-        //                break;
-        //        }
-        //    }
-        //}
+        //}        
 
         /// <summary>
         /// Коллекция панелей макета интерфейса
@@ -312,9 +231,6 @@ namespace ForRobot.ViewModels
         {
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
                 return;
-
-            this.Settings = App.Current.Settings.Clone() as ForRobot.Models.Settings.Settings;
-            //this.Settings.PropertyChanged -= App.Current.HandleSaveAppSettings;
         }
 
         #endregion
@@ -326,7 +242,7 @@ namespace ForRobot.ViewModels
         /// </summary>
         private void EditPathForUpdat()
         {
-            if (!ForRobot.Libr.AppWindowManager.PinCodeInputWindowShow(ForRobot.Properties.Settings.Default.PinCode))
+            if (!ForRobot.Libr.AppWindowManager.PinCode(ForRobot.Properties.Settings.Default.PinCode))
                 return;
 
             using (var fbd = new System.Windows.Forms.FolderBrowserDialog() { SelectedPath = Properties.Settings.Default.UpdatePath })
@@ -360,7 +276,7 @@ namespace ForRobot.ViewModels
         /// <param name="control"></param>
         private static void SelectClosedControl(System.Windows.Controls.Control control)
         {
-            if (ForRobot.Libr.AppWindowManager.PinCodeInputWindowShow(ForRobot.Properties.Settings.Default.PinCode))
+            if (ForRobot.Libr.AppWindowManager.PinCode(ForRobot.Properties.Settings.Default.PinCode))
                 return;
 
             _isSelectClosedControl = false;

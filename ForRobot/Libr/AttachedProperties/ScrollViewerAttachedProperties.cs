@@ -5,7 +5,7 @@ using System.Windows.Controls;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 
-namespace ForRobot.Libr
+namespace ForRobot.Libr.AttachedProperties
 {
     public static class ScrollViewerAttachedPropertiesTextBox
     {

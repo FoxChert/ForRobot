@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Interactivity;
 using System.Collections.Specialized;
 
-namespace ForRobot.Libr
+namespace ForRobot.Libr.Behavior
 {
     public class TreeViewSelectedItemBehavior : Behavior<TreeView>
     {

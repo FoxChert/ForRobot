@@ -9,16 +9,17 @@ namespace ForRobot.Libr.Converters
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            var left = (int)values[0];
-            var top = (int)values[1];
-            var right = (int)values[2];
-            var bottom = (int)values[3];
+            var left = (double)values[0];
+            var top = (double)values[1];
+            var right = (double)values[2];
+            var bottom = (double)values[3];
             return new Thickness(left, top, right, bottom);
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            var th = (Thickness)value;
+            return new object[4] { th.Left, th.Top, th.Right, th.Bottom };
         }
     }
 }

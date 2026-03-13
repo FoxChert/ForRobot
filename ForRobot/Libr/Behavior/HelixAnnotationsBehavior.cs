@@ -112,7 +112,7 @@ namespace ForRobot.Libr.Behavior
 
         public HelixAnnotationsBehavior()
         {
-            double scaleFactor = (double)ForRobot.Models.Settings.Settings.ScaleFactor;
+            double scaleFactor = (double)App.Current.Settings.ScaleFactor;
             this._strategies = new List<IDetalAnnotationStrategy>
             {
                 new PlateAnnotationStrategy(scaleFactor)
