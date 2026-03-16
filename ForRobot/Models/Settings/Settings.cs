@@ -5,7 +5,7 @@ using System.Windows;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
+using System.Runtime.Serialization;
 
 using AvalonDock.Themes;
 
@@ -76,11 +76,6 @@ namespace ForRobot.Models.Settings
         /// </summary>
         public bool SaveDetalProperties { get; set; } = true;
 
-        ///// <summary>
-        ///// Ограничено ли время ожидания ответа от сервера
-        ///// </summary>
-        //public bool LimitedConnectionTimeOut { get; set; } = false;
-
         /// <summary>
         /// Время ожидания ответа от сервера, сек.
         /// </summary>
@@ -126,18 +121,19 @@ namespace ForRobot.Models.Settings
             new Tuple<string, Theme>(nameof(Vs2013BlueTheme),new Vs2013BlueTheme()),
             new Tuple<string, Theme>(nameof(Vs2013DarkTheme),new Vs2013DarkTheme()),
             new Tuple<string, Theme>(nameof(Vs2013LightTheme),new Vs2013LightTheme())
-        };        
-        //[JsonIgnore]
-        //public Tuple<string, Theme> SelectedTheme
-        //{
-        //    get => this._selectedTheme;
-        //    set
-        //    {
-        //        this._selectedTheme = value;
-        //        Properties.Settings.Default.SelectedTheme = this._selectedTheme.Item1;
-        //        Properties.Settings.Default.Save();
-        //    }
-        //}
+        };
+
+        [JsonIgnore]
+        public Tuple<string, Theme> SelectedTheme
+        {
+            get => this._selectedTheme;
+            set
+            {
+                this._selectedTheme = value;
+                //Properties.Settings.Default.SelectedTheme = this._selectedTheme.Item1;
+                //Properties.Settings.Default.Save();
+            }
+        }
 
         #region 3DView
 
@@ -324,14 +320,17 @@ namespace ForRobot.Models.Settings
         /// </summary>
         public bool SendingGeneratedFiles { get; set; } = true;
 
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
         /// <summary>
         /// Наименования для сгенерированных программ (в зависимости от типа детали)
         /// </summary>
-        public ObservableCollection<Tuple<DetalType, string, string>> DetalsProgramNames { get; } = new ObservableCollection<Tuple<DetalType, string, string>>(DetalTypeExtensions.DetalTypeCollection().Select(t => new Tuple<DetalType, string, string>(t, t.GetDescription(), string.Empty)).ToList());
+        public List<Tuple<DetalType, string, string>> DetalsProgramNames { get; private set; } = new List<Tuple<DetalType, string, string>>(DetalTypeExtensions.DetalTypeCollection().Select(t => new Tuple<DetalType, string, string>(t, t.GetDescription(), string.Empty)).ToList());
+
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
         /// <summary>
         /// Наименования скриптов-генератов (зависят от типа детали)
         /// </summary>
-        public ObservableCollection<Tuple<DetalType, string, string>> DetalsScriptNames { get; } = new ObservableCollection<Tuple<DetalType, string, string>>(DetalTypeExtensions.DetalTypeCollection().Select(t => new Tuple<DetalType, string, string>(t, t.GetDescription(), string.Empty)).ToList());
+        public List<Tuple<DetalType, string, string>> DetalsScriptNames { get; private set; } = new List<Tuple<DetalType, string, string>>(DetalTypeExtensions.DetalTypeCollection().Select(t => new Tuple<DetalType, string, string>(t, t.GetDescription(), string.Empty)).ToList());
 
         private ObservableCollection<string> _scriptsCollection;
         [JsonIgnore]
@@ -372,6 +371,11 @@ namespace ForRobot.Models.Settings
         public Settings()
         {            
             if (this.Colors.Count == 0) this.Colors = GetColors();
+
+            if (string.IsNullOrEmpty(Properties.Settings.Default.SelectedTheme))
+                this.SelectedTheme = Settings.Themes.First();
+            else
+                this.SelectedTheme = Settings.Themes.Where(t => t.Item1 == Properties.Settings.Default.SelectedTheme).First();
         }
 
         #endregion Constructors
@@ -419,7 +423,7 @@ namespace ForRobot.Models.Settings
         /// </summary>
         /// <param name="startedDetalType"></param>
         /// <returns></returns>
-        public string GetStandartProgramName(DetalType type) => App.Current.Settings.DetalsProgramNames.Where(x => x.Item1 == type).FirstOrDefault().Item3;
+        public string GetStandartProgramName(DetalType type) => this.DetalsProgramNames.Where(x => x.Item1 == type).FirstOrDefault().Item3;
 
         /// <summary>
         /// Выгрузка установленных цветов для 3д сцены
@@ -462,25 +466,6 @@ namespace ForRobot.Models.Settings
         //    File.Copy(path, finalPath, true);
         //    this.OnPropertyChanged(nameof(this.ScriptsCollection));
         //}
-        
-        /// <summary>
-        /// Сохранение json-файла настроек во временных файлах
-        /// </summary>
-        public void Save()
-        {
-            string filePath = Path.Combine(Path.GetTempPath(), FileName);
-            this.Save(filePath);
-        }
-
-        /// <summary>
-        /// Сохранение файла настроек
-        /// </summary>
-        /// <param name="filePath">Путь для сохранения</param>
-        public void Save(string filePath) => File.WriteAllText(filePath, JsonConvert.SerializeObject(this, _jsonSettings));
-
-        #endregion Public functions
-
-        #region Private functions
 
         /// <summary>
         /// Добавляет скрипт в коллекцию
@@ -498,9 +483,9 @@ namespace ForRobot.Models.Settings
 
             string fileName = Path.GetFileName(sourcePath);
             string finalPath = Path.Combine(directory, fileName);
-            
+
             File.Copy(sourcePath, finalPath, true);
-            
+
             this.ScriptsCollection.Add(finalPath);
         }
 
@@ -520,6 +505,25 @@ namespace ForRobot.Models.Settings
                 this.ScriptsCollection.Remove(scriptPath);
             }
         }
+
+        /// <summary>
+        /// Сохранение json-файла настроек во временных файлах
+        /// </summary>
+        public void Save()
+        {
+            string filePath = Path.Combine(Path.GetTempPath(), FileName);
+            this.Save(filePath);
+        }
+
+        /// <summary>
+        /// Сохранение файла настроек
+        /// </summary>
+        /// <param name="filePath">Путь для сохранения</param>
+        public void Save(string filePath) => File.WriteAllText(filePath, JsonConvert.SerializeObject(this, _jsonSettings));
+
+        #endregion Public functions
+
+        #region Private functions
 
         private void HandleCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
@@ -579,6 +583,12 @@ namespace ForRobot.Models.Settings
             }
             //this.OnPropertyChanged(nameof(this.ScriptsCollection));
         }
+
+        //[OnDeserializing]
+        //internal void OnDeserializing(StreamingContext context)
+        //{
+        //    //JObject.Parse(jsonString)["DetalsScriptNames"].ToObject<ObservableCollection<Tuple<ForRobot.Models.Detals.DetalType, string, string>>>()
+        //}
 
         #endregion Private functions
     }

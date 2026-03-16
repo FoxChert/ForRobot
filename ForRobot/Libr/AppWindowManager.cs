@@ -227,12 +227,12 @@ namespace ForRobot.Libr
                     return false;
 
                 propertiesWindow.Owner = App.Current.MainWindow;
-                propertiesWindow.Settings = App.Current.Settings.Clone() as ForRobot.Models.Settings.Settings;
+                //propertiesWindow.Settings = App.Current.Settings.Clone() as ForRobot.Models.Settings.Settings;
 
                 if (propertiesWindow.ShowDialog() == true)
                 {
                     result = true;
-                    settings = propertiesWindow.Settings;
+                    //settings = propertiesWindow.Settings;
                 }
             }
             return result;

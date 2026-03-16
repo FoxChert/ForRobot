@@ -25,17 +25,6 @@ namespace ForRobot.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection SaveRobots {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["SaveRobots"]));
-            }
-            set {
-                this["SaveRobots"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3")]
         public string PinCode {
             get {
@@ -72,18 +61,6 @@ namespace ForRobot.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute(nameof(global::AvalonDock.Themes.Vs2013LightTheme))]
-        public string SelectedTheme {
-            get {
-                return ((string)(this["SelectedTheme"]));
-            }
-            set {
-                this["SelectedTheme"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string sSavedRobots {
             get {
@@ -91,6 +68,18 @@ namespace ForRobot.Properties {
             }
             set {
                 this["sSavedRobots"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SelectedTheme {
+            get {
+                return ((string)(this["SelectedTheme"]));
+            }
+            set {
+                this["SelectedTheme"] = value;
             }
         }
     }

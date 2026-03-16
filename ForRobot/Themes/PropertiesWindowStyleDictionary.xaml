@@ -7,7 +7,8 @@
                     xmlns:sys="clr-namespace:System;assembly=mscorlib"
                     xmlns:conv="clr-namespace:ForRobot.Libr.Converters"
                     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-                    xmlns:pt="clr-namespace:PropertyTools.Wpf;assembly=PropertyTools.Wpf">
+                    xmlns:pt="clr-namespace:PropertyTools.Wpf;assembly=PropertyTools.Wpf"
+                    xmlns:attached="clr-namespace:ForRobot.Libr.AttachedProperties">
 
     <ResourceDictionary x:Key="SelectAppsWindowResource"
                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -81,6 +82,7 @@
             <Style x:Key="textBase" TargetType="{x:Type FrameworkElement}">
                 <Setter Property="TextElement.FontSize" Value="{StaticResource FontSizeNP1}"/>
                 <Setter Property="TextElement.FontFamily" Value="{StaticResource DefaultFont}"/>
+                <EventSetter Event="attached:SelectAttachedProperties.AttemptSelected" Handler="{Binding Path=SelectClosedControlCommand}"/>
             </Style>
 
             <Style TargetType="{x:Type Label}" BasedOn="{StaticResource textBase}">
@@ -164,7 +166,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBox Grid.Column="0" Text="{Binding Source={x:Static properties:Settings.Default}, Path=UpdatePath, Mode=OneWay}" IsEnabled="False"/>
+                        <TextBox Grid.Column="0" Text="{Binding Path=UpdatePath, Mode=OneWay, Source={x:Static properties:Settings.Default}}" IsEnabled="False"/>
 
                         <Button Grid.Column="2" Content="Изменить" Padding="10, 5" 
                                 Command="{Binding Path=EditPathForUpdateCommand}"/>
@@ -172,8 +174,10 @@
                 </Grid>
             </GroupBox>
 
-            <CheckBox Grid.Row="1" Content="Вход в интерфейс по пин-коду" IsChecked="{Binding Path=Settings.LoginByPINCode, Mode=TwoWay}">
-                <i:Interaction.Triggers>
+            <CheckBox Grid.Row="1" Content="Вход в интерфейс по пин-коду" IsChecked="{Binding Path=Settings.LoginByPINCode, Mode=TwoWay}"
+                      attached:SelectAttachedProperties.PreventSelect="True"
+                      attached:SelectAttachedProperties.AttemptSelected="{Binding Path=SelectClosedControlCommand}">
+                <!--<i:Interaction.Triggers>
                     <i:EventTrigger EventName="Checked">
                         <i:InvokeCommandAction Command="{Binding Path=SelectClosedControlCommand}" CommandParameter="{Binding Path=., RelativeSource={RelativeSource AncestorType={x:Type CheckBox}, Mode=FindAncestor}}"/>
                     </i:EventTrigger>
@@ -181,7 +185,7 @@
                     <i:EventTrigger EventName="Unchecked">
                         <i:InvokeCommandAction Command="{Binding Path=SelectClosedControlCommand}" CommandParameter="{Binding Path=., RelativeSource={RelativeSource AncestorType={x:Type CheckBox}, Mode=FindAncestor}}"/>
                     </i:EventTrigger>
-                </i:Interaction.Triggers>
+                </i:Interaction.Triggers>-->
             </CheckBox>
 
             <GroupBox Grid.Row="2" Header="Начальный файл для генерации">

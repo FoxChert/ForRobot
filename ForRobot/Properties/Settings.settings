@@ -2,9 +2,6 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="ForRobot.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="SaveRobots" Type="System.Collections.Specialized.StringCollection" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
     <Setting Name="PinCode" Type="System.String" Scope="User">
       <Value Profile="(Default)">a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3</Value>
     </Setting>
@@ -14,10 +11,10 @@
     <Setting Name="IsSettingsUpgradeRequired" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="SelectedTheme" Type="System.String" Scope="User">
+    <Setting Name="sSavedRobots" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="sSavedRobots" Type="System.String" Scope="User">
+    <Setting Name="SelectedTheme" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>

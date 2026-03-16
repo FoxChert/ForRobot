@@ -6,9 +6,10 @@
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:avalonDock="https://github.com/Dirkster99/AvalonDock"
         xmlns:h="http://helix-toolkit.org/wpf"
-        xmlns:sys="clr-namespace:System;assembly=mscorlib"        
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"   
+        xmlns:properties="clr-namespace:ForRobot.Properties"
         xmlns:attached="clr-namespace:ForRobot.Libr.AttachedProperties"    
-        xmlns:behavior="clr-namespace:ForRobot.Libr.Behavior"        
+        xmlns:behavior="clr-namespace:ForRobot.Libr.Behavior"
         xmlns:model="clr-namespace:ForRobot.Models"
         xmlns:color="clr-namespace:ForRobot.Themes"
         xmlns:local="clr-namespace:ForRobot.Views.Windows" 
@@ -1200,7 +1201,7 @@
                     <avalonDock:LayoutAnchorSide>
                         <avalonDock:LayoutAnchorGroup>
                             <avalonDock:LayoutAnchorable Title="Соединения" ContentId="Connections" AutoHideMinWidth="400" IsVisible="False"
-                                                         attached:SelectAttachedProperties.PreventFocus="True">
+                                                         attached:SelectAttachedProperties.PreventSelect="True">
                                 <!--<i:Interaction.Behaviors>
                                     <behavior:ClosedLayoutAnchorableBehavior/>
                                 </i:Interaction.Behaviors>-->

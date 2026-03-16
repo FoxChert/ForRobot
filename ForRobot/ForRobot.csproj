@@ -309,10 +309,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Libr\AttachedProperties\LayoutAnchorableCommands.cs" />
+    <Compile Include="Libr\AttachedProperties\SelectAttachedProperties.cs" />
     <Compile Include="Libr\Attributes\PropertyCameraAttribute.cs" />
     <Compile Include="Libr\Attributes\PropertyNameAttribute.cs" />
-    <Compile Include="Libr\Behavior\BehaviorAttacher.cs" />
+    <Compile Include="Libr\AttachedProperties\BehaviorAttacher.cs" />
     <Compile Include="Libr\Behavior\CameraControllerBehavior.cs" />
     <Compile Include="Libr\Behavior\ClosedLayoutAnchorableBehavior.cs" />
     <Compile Include="Libr\Behavior\DockingManagerBehavior.cs" />
@@ -465,6 +465,7 @@
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\NavigationTreeViewModel.cs" />
     <Compile Include="ViewModels\PropertiesWindowViewModel.cs" />
+    <Compile Include="ViewModels\PropertiesWindowViewModel_old.cs" />
     <Compile Include="Views\Controls\CustomAttributes.cs" />
     <Compile Include="Views\Controls\Image2D.cs" />
     <Compile Include="Views\Controls\PanesTemplateSelector.cs" />

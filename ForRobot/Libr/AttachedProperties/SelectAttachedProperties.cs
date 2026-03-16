@@ -14,68 +14,71 @@ namespace ForRobot.Libr.AttachedProperties
         private static readonly object _lock = new object();
 
         /// <summary>
-        /// Прикреплённое свойство "PreventSelect" для запреса выбора элемента управления
+        /// Прикреплённое свойство "IsSelected" для управления состоянием выбора элементом
         /// </summary>
-        public static readonly DependencyProperty PreventFocusProperty = DependencyProperty.RegisterAttached("PreventSelect",
-                                                                                                             typeof(bool),
-                                                                                                             typeof(SelectAttachedProperties),
-                                                                                                             new UIPropertyMetadata(false, OnPreventSelectChanged));
+        public static readonly DependencyProperty IsSelectedProperty = DependencyProperty.RegisterAttached("IsSelected",
+                                                                                                           typeof(bool),
+                                                                                                           typeof(SelectAttachedProperties),
+                                                                                                           new UIPropertyMetadata(false, OnIsSelectedChanged));
 
-        public static bool GetPreventFocus(DependencyObject obj)
+        /// <summary>
+        /// Прикреплённое свойство "PreventSelect" для запрета выбора элемента управления
+        /// </summary>
+        public static readonly DependencyProperty PreventSelectProperty = DependencyProperty.RegisterAttached("PreventSelect",
+                                                                                                              typeof(bool),
+                                                                                                              typeof(SelectAttachedProperties),
+                                                                                                              new UIPropertyMetadata(false, OnPreventSelectChanged));
+
+        /// <summary>
+        /// Прикреплённое свойство "AttemptSelected" события попотки получения выбора элементом
+        /// </summary>
+        public static readonly RoutedEvent AttemptSelectedEvent = EventManager.RegisterRoutedEvent("AttemptSelected",
+                                                                                                   RoutingStrategy.Bubble,
+                                                                                                   typeof(RoutedEventHandler),
+                                                                                                   typeof(SelectAttachedProperties));
+
+        #region IsSelcted Property
+
+        public static bool GetIsSelected(DependencyObject obj)
         {
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
 
-            return (bool)obj.GetValue(PreventFocusProperty);
+            return (bool)obj.GetValue(IsSelectedProperty);
         }
 
-        public static void SetPreventFocus(DependencyObject obj, bool value)
+        public static void SetIsSelected(DependencyObject obj, bool value)
         {
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
 
-            obj.SetValue(PreventFocusProperty, value);
+            obj.SetValue(IsSelectedProperty, value);
         }
 
-        public static readonly RoutedEvent SelectedEvent = EventManager.RegisterRoutedEvent("Selected",
-                                                                                            RoutingStrategy.Bubble,
-                                                                                            typeof(RoutedEventHandler),
-                                                                                            typeof(SelectAttachedProperties));
-
-        public static void AddSelectedHandler(UIElement element, RoutedEventHandler handler)
+        private static void OnIsSelectedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            element.AddHandler(SelectedEvent, handler);
+
         }
 
-        public static void RemoveSelectedHandler(UIElement element, RoutedEventHandler handler)
+        #endregion IsSelcted Property
+
+        #region PreventSelect Property
+
+        public static bool GetPreventSelect(DependencyObject obj)
         {
-            element.RemoveHandler(SelectedEvent, handler);
+            if (obj == null)
+                throw new ArgumentNullException(nameof(obj));
+
+            return (bool)obj.GetValue(PreventSelectProperty);
         }
 
-        public static void RaiseSelectedEvent(UIElement source) => source.RaiseEvent(new RoutedEventArgs(SelectedEvent));
+        public static void SetPreventSelect(DependencyObject obj, bool value)
+        {
+            if (obj == null)
+                throw new ArgumentNullException(nameof(obj));
 
-        //public static readonly DependencyProperty PreventFocusProperty = DependencyProperty.RegisterAttached("PreventSelect");
-
-        //public static readonly DependencyProperty SelectedEventProperty = DependencyProperty.RegisterAttached("SelectedEvent",
-        //                                                                                                      typeof(EventHandler),
-        //                                                                                                      typeof(SelectAttachedProperties),
-        //                                                                                                      new UIPropertyMetadata(null));
-
-        //public static EventHandler GetSelectedEvent(DependencyObject obj)
-        //{
-        //    if (obj == null)
-        //        throw new ArgumentNullException(nameof(obj));
-
-        //    return (EventHandler)obj.GetValue(SelectedEventProperty);
-        //}
-
-        //public static void SetSelectedEvent(DependencyObject obj, bool value)
-        //{
-        //    if (obj == null)
-        //        throw new ArgumentNullException(nameof(obj));
-
-        //    obj.SetValue(SelectedEventProperty, value);
-        //}
+            obj.SetValue(PreventSelectProperty, value);
+        }
 
         /// <summary>
         /// Обработка изменения прикрепленного свойства "PreventSelect"
@@ -99,6 +102,24 @@ namespace ForRobot.Libr.AttachedProperties
                     break;
             }
         }
+
+        #endregion PreventSelect Property
+
+        #region AttemptSelected Event
+
+        public static void AddAttemptSelectedHandler(UIElement element, RoutedEventHandler handler)
+        {
+            element.AddHandler(AttemptSelectedEvent, handler);
+        }
+
+        public static void RemoveAttemptSelectedHandler(UIElement element, RoutedEventHandler handler)
+        {
+            element.RemoveHandler(AttemptSelectedEvent, handler);
+        }
+
+        public static void RaiseAttemptSelectedEvent(UIElement source) => source.RaiseEvent(new RoutedEventArgs(AttemptSelectedEvent));
+
+        #endregion AttemptSelected Event
 
         #region Handlers IsSelectedChanged
 

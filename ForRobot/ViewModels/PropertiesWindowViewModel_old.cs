@@ -1,0 +1,451 @@
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Input;
+using System.Diagnostics;
+using System.Configuration;
+using System.ComponentModel;
+using System.Security.Cryptography;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
+using AvalonDock.Layout;
+
+using ForRobot.Models.Detals;
+using ForRobot.Models.Settings;
+
+namespace ForRobot.ViewModels
+{
+    public class PropertiesWindowViewModel_old : BaseClass
+    {
+        #region Private variables
+
+        private Settings _settings;
+        //private ForRobot.Libr.Settings.Settings _settings = ForRobot.Libr.Settings.Settings.GetSettings();
+        //private System.Windows.Controls.TreeViewItem _selectedItem;
+        private Tuple<DetalType, string, string> _selectedTumpleProgramName;
+        private Tuple<DetalType, string, string> _selectedTumpleScriptsName;
+
+        #region Commands
+        
+        private RelayCommand _standartSettingsCommand;  
+        private RelayCommand _editPathForUpdateCommand;
+        private RelayCommand _editAppForOpenFile;
+        private RelayCommand _checkBoxAvailableFolderCommand;
+
+        #endregion
+
+        #endregion
+        
+        #region Public variables
+
+        public Settings Settings { get => this._settings; set => Set(ref this._settings, value); }
+
+        //public System.Windows.Controls.TreeViewItem SelectedItem { get => this._selectedItem; set => Set(ref this._selectedItem, value); }
+
+        /// <summary>
+        /// Выбранный кортеж представляющий тип детали и имя итоговой программы
+        /// </summary>
+        public Tuple<DetalType, string, string> SelectedTumpleProgramName
+        {
+            get => this._selectedTumpleProgramName;
+            set => Set(ref this._selectedTumpleProgramName, value);
+        }
+
+        /// <summary>
+        /// Выбранный кортеж представляющий тип детали и имя скрипта-генератора
+        /// </summary>
+        public Tuple<DetalType, string, string> SelectedTumpleScriptsName
+        {
+            get => this._selectedTumpleScriptsName;
+            set => Set(ref this._selectedTumpleScriptsName, value);
+        }
+
+        ///// <summary>
+        ///// Выбранный тип детали для названия программы
+        ///// </summary>
+        //public string SelectedDetalTypeName
+        //{
+        //    get => this._selectedDetalTypeName ?? (this._selectedDetalTypeName = ForRobot.Models.Detals.DetalTypes.Plate);
+        //    set
+        //    {
+        //        Set(ref this._selectedDetalTypeName, value);
+        //        this.RaisePropertyChanged(nameof(this.StandartNameFile));
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Выбранный тип детали для имени скрипта
+        ///// </summary>
+        //public string SelectedDetalTypeScript
+        //{
+        //    get => this._selectedDetalTypeScript ?? (this._selectedDetalTypeScript = ForRobot.Models.Detals.DetalTypes.Plate);
+        //    set
+        //    {
+        //        Set(ref this._selectedDetalTypeScript, value);
+        //        this.RaisePropertyChanged(nameof(this.ScriptName));
+        //    }
+        //}        
+
+        /// <summary>
+        /// Коллекция панелей макета интерфейса
+        /// </summary>
+        public List<LayoutAnchorable> Anchorables
+        {
+            get
+            {
+                var dockingManager = (App.Current.MainWindow as ForRobot.Views.Windows.MainWindow).DockingManeger;
+                return dockingManager.Layout.Descendents().OfType<LayoutAnchorable>().ToList();
+            }
+        }
+
+        public ObservableCollection<HorizontalAlignment> HorizontalAlignments { get; } = new ObservableCollection<HorizontalAlignment>(Enum.GetValues(typeof(HorizontalAlignment)).Cast<HorizontalAlignment>().ToList<HorizontalAlignment>());
+        public ObservableCollection<VerticalAlignment> VerticalAlignments { get; } = new ObservableCollection<VerticalAlignment>(Enum.GetValues(typeof(VerticalAlignment)).Cast<VerticalAlignment>().ToList<VerticalAlignment>());
+
+        #region Commands
+
+        /// <summary>
+        /// Выбор закрытого элемента управления
+        /// </summary>
+        public ICommand SelectClosedControlCommand { get; } = new RelayCommand(obj => SelectClosedControl(obj as System.Windows.Controls.Control), _ => _isSelectClosedControl);
+        /// <summary>
+        /// Возвращение к стандартным настройкам
+        /// </summary>
+        public ICommand StandartSettingsCommand
+        {
+            get => this._standartSettingsCommand ?? (this._standartSettingsCommand = new RelayCommand(_ => 
+                                                                                                          {
+                                                                                                              ForRobot.Themes.Colors.DefaultColors();
+                                                                                                              this.Settings = new Settings();
+                                                                                                          }));
+        }
+        /// <summary>
+        /// Сохранение настроек
+        /// </summary>
+        public ICommand SaveSettingsCommand { get; } = new RelayCommand(obj => 
+                                                                              {
+                                                                                  Settings settings = obj as Settings;
+                                                                                  settings.Colors = App.Current.Settings.Colors;
+                                                                                  SaveSettings(settings);
+                                                                              });
+        /// <summary>
+        /// Закрытие окна
+        /// </summary>
+        //public ICommand CancelCommand { get; } = new RelayCommand(_ => App.Current.WindowsAppService.ClosePropertiesWindow());
+        /// <summary>
+        /// Команда изменения директивы каталога с новой версией программы
+        /// </summary>
+        public ICommand EditPathForUpdateCommand { get => this._editPathForUpdateCommand ?? (this._editPathForUpdateCommand = new RelayCommand(_ => this.EditPathForUpdat())); }
+        //public ICommand EditAppForOpenFile { get => this._editAppForOpenFile ?? (this._editAppForOpenFile = new RelayCommand(_ => 
+        //{
+        //    try
+        //    {
+        //        System.Collections.IEnumerable selectedItems = null;
+        //        using (ForRobot.Views.Windows.SelectWindow selectWindow = new ForRobot.Views.Windows.SelectWindow(ForRobot.Libr.Services.SelectAppsOnDeviceService.GetAllApplicationsOnDevice(), this.Settings.SavedAppsForOpened))
+        //        {
+        //            ResourceDictionary resource = (ResourceDictionary)Application.Current.Resources["SelectAppsWindowResource"];
+
+        //            if (resource == null)
+        //                throw new Exception("Не найден словарь ресурсов SelectAppsWindowResource.");
+
+        //            selectWindow.Resources.MergedDictionaries.Clear();
+        //            selectWindow.Resources.MergedDictionaries.Add(resource);
+
+        //            if (selectWindow.ShowDialog() == true)
+        //                selectedItems = selectWindow.SelectedItems;
+        //        }
+        //        if (selectedItems == null)
+        //            return;
+
+        //        this.Settings.SavedAppsForOpened = selectedItems.Cast<ApplicationInfo>().ToList<ApplicationInfo>();
+        //        RaisePropertyChanged(nameof(this.Settings));
+        //    }
+        //    catch(Exception ex)
+        //    {
+
+        //    }
+        //})); }
+        /// <summary>
+        /// Изменение ПИН-кода
+        /// </summary>
+        public ICommand EditPinCodeCommand { get; } = new RelayCommand(_ => EditPinCode());
+        /// <summary>
+        /// Комманда изменения checkBox отображающихся папок
+        /// </summary>
+        public ICommand CheckBoxAvailableFolderCommand { get => this._checkBoxAvailableFolderCommand ?? 
+                                                               (this._checkBoxAvailableFolderCommand = new RelayCommand(obj => CheckBoxAvailableFolder((System.Collections.Generic.KeyValuePair<string, bool>)obj))); }
+        /// <summary>
+        /// Удаление изменений интерфейса
+        /// </summary>
+        public ICommand DeleteLayoutAnchorableConfigCommand { get; } = new RelayCommand(_ => DeleteLayoutAnchorable());
+        /// <summary>
+        /// Команда открытия окна выбора скриптов
+        /// </summary>
+        public ICommand OpenScriptsSelectorCommand { get => new RelayCommand(_ =>
+        {
+            using (ForRobot.Views.Windows.SelectorWindow selectorWindow = new ForRobot.Views.Windows.SelectorWindow(this.Settings.ScriptsCollection))
+            {
+                selectorWindow.CanAddItems = true;
+                selectorWindow.CanDeleteItems = true;
+                selectorWindow.AddRecordEvent += (s, e) => 
+                {
+                    System.Windows.Forms.OpenFileDialog openFileDialog = new System.Windows.Forms.OpenFileDialog()
+                    {
+                        Multiselect = false,
+                        Filter = "Python Files (*.py)|*.py|All files (*.*)|*.*",
+                        Title = "Добавление файла скрипта"
+                    };
+
+                    if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.Cancel && string.IsNullOrEmpty(openFileDialog.FileName))
+                        return;
+
+                    this.Settings.ScriptsCollection.Add(openFileDialog.FileName);
+                    //this.Settings.AddScripts(openFileDialog.FileName);
+                };
+                //var executablePathBinding = new System.Windows.Data.Binding()
+                //{
+                //    Source = this,
+                //    Path = new PropertyPath(nameof(this.Settings.ScriptsCollection))
+                //};
+                //System.Windows.Data.BindingOperations.SetBinding(selectorWindow, ForRobot.Views.Windows.SelectorWindow.ItemsSourceProperty, executablePathBinding);
+                selectorWindow.ShowDialog();
+                RaisePropertyChanged(nameof(this.Settings));
+            }
+        }); }
+
+        #endregion
+
+        #endregion
+
+        #region Constructor
+
+        public PropertiesWindowViewModel_old()
+        {
+            if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
+                return;
+        }
+
+        #endregion
+
+        #region Private functions
+
+        /// <summary>
+        /// Изменение пути к папке с обновлениями
+        /// </summary>
+        private void EditPathForUpdat()
+        {
+            if (!ForRobot.Libr.AppWindowManager.PinCode(ForRobot.Properties.Settings.Default.PinCode))
+                return;
+
+            using (var fbd = new System.Windows.Forms.FolderBrowserDialog() { SelectedPath = Properties.Settings.Default.UpdatePath })
+            {
+                System.Windows.Forms.DialogResult result = fbd.ShowDialog();
+                if (result == System.Windows.Forms.DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                {
+                    Properties.Settings.Default.UpdatePath = fbd.SelectedPath;
+                    Properties.Settings.Default.Save();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Выбор доступности системных папок
+        /// </summary>
+        /// <param name="folder"></param>
+        public void CheckBoxAvailableFolder(System.Collections.Generic.KeyValuePair<string, bool> folder)
+        {
+            this.Settings.AvailableFolders.Remove(this.Settings.AvailableFolders.Where(x => x.Key == folder.Key).First().Key);
+            this.Settings.AvailableFolders.Add(folder.Key, !folder.Value);
+        }
+
+        #region Static
+
+        private static bool _isSelectClosedControl = true;
+
+        /// <summary>
+        /// Выбор закрытого элемента управления
+        /// </summary>
+        /// <param name="control"></param>
+        private static void SelectClosedControl(System.Windows.Controls.Control control)
+        {
+            if (ForRobot.Libr.AppWindowManager.PinCode(ForRobot.Properties.Settings.Default.PinCode))
+                return;
+
+            _isSelectClosedControl = false;
+            switch (control)
+            {
+                case System.Windows.Controls.TreeView tree when tree.ToString() == control.ToString():
+                    break;
+
+                case System.Windows.Controls.TreeViewItem treeViewItem when treeViewItem.ToString() == control.ToString():
+                    treeViewItem = control as System.Windows.Controls.TreeViewItem;
+                    treeViewItem.IsExpanded = false;
+                    treeViewItem.IsSelected = false;
+                    break;
+
+                case System.Windows.Controls.CheckBox checkBox when checkBox.ToString() == control.ToString():
+                    checkBox = control as System.Windows.Controls.CheckBox;
+                    checkBox.IsChecked = !checkBox.IsChecked;
+                    break;
+
+                case System.Windows.Controls.TextBox textBox when textBox.ToString() == control.ToString():
+                    textBox = control as System.Windows.Controls.TextBox;
+                    if (textBox == null) return;
+
+                    var parent = textBox.Parent as UIElement;
+                    if (parent != null && parent.Focusable)
+                    {
+                        parent.Focus();
+                    }
+                    else
+                    {
+                        var page = FindParent<Window>(textBox);
+                        if (page != null)
+                        {
+                            page.Focus();
+                        }
+                    }
+                    Keyboard.ClearFocus();
+                    break;
+
+                default:
+                    if (control == null) return;
+
+                    // Сброс фокуса для всех областей фокуса
+                    var focusScope = FocusManager.GetFocusScope(control);
+                    FocusManager.SetFocusedElement(focusScope, null);
+
+                    // Дополнительно: поиск и сброс фокуса во всех дочерних элементах
+                    var children = FindVisualChildren<UIElement>(control);
+                    foreach (var child in children)
+                    {
+                        if (child.IsKeyboardFocused)
+                        {
+                            Keyboard.ClearFocus();
+                            break;
+                        }
+                    }
+                    break;
+            }
+            _isSelectClosedControl = true;
+        }
+
+        // Поиск родительского элемента определенного типа
+        private static T FindParent<T>(DependencyObject child) where T : DependencyObject
+        {
+            DependencyObject parent = VisualTreeHelper.GetParent(child);
+            while (parent != null && !(parent is T))
+            {
+                parent = VisualTreeHelper.GetParent(parent);
+            }
+            return parent as T;
+        }
+
+        // Поиск дочерниго элемента определенного типа
+        private static IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
+        {
+            if (depObj != null)
+            {
+                for (int i = 0; i < System.Windows.Media.VisualTreeHelper.GetChildrenCount(depObj); i++)
+                {
+                    DependencyObject child = System.Windows.Media.VisualTreeHelper.GetChild(depObj, i);
+                    if (child != null && child is T)
+                    {
+                        yield return (T)child;
+                    }
+
+                    foreach (T childOfChild in FindVisualChildren<T>(child))
+                    {
+                        yield return childOfChild;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Сохранение настроек
+        /// </summary>
+        /// <param name="settings"></param>
+        private static void SaveSettings(Settings settings)
+        {
+            settings.Save();
+            if (MessageBox.Show("Чтобы изменения вступили в силу, необходимо перезапустить приложение.\n\nПерезапустить интерфейс?", "Сохранение настроек", 
+                MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly) == MessageBoxResult.Yes)
+            {
+                string sAppPath = Directory.GetCurrentDirectory();
+                System.Diagnostics.Process process = new System.Diagnostics.Process()
+                {
+                    StartInfo = new System.Diagnostics.ProcessStartInfo()
+                    {
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        WorkingDirectory = sAppPath,
+                        CreateNoWindow = true,
+                        FileName = "cmd.exe",
+                        Arguments = $"/K taskkill /im {Application.ResourceAssembly.GetName().Name}.exe /f& " +
+                                    $"START \"\" /HIGH \"{sAppPath + "\\" + Application.ResourceAssembly.GetName().Name + ".exe"}\"",
+                        WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden
+                    }
+                };
+                new System.Threading.Thread(() => process.Start()).Start();
+            }
+            //App.Current.WindowsAppService.ClosePropertiesWindow();
+        }
+
+        /// <summary>
+        /// Изменение пин-кода
+        /// </summary>
+        public static void EditPinCode()
+        {
+            //if (ForRobot.Libr.Cryptography.Hashing.Sha256(new Libr.Services.WindowsAppService().InputWindowShow("Введите старый пин-код")) != Properties.Settings.Default.PinCode)
+            //    return;
+
+            using (ForRobot.Views.Windows.InputWindow inputWindow = new ForRobot.Views.Windows.InputWindow("Введите новый пин-код"))
+            {
+                if (inputWindow.ShowDialog() == true)
+                {
+                    Properties.Settings.Default.PinCode = ForRobot.Libr.Cryptography.Hashing.Sha256(inputWindow.Answer);
+                    Properties.Settings.Default.Save();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Удаление AvalonDock.config и перезапуск приложения
+        /// </summary>
+        private static void DeleteLayoutAnchorable()
+        {
+            if (MessageBox.Show("Для удаления изменений необходим перезапуск интиерфейса!\n\nПерезапустить интерфейс?",
+                               "Предупреждение",
+                               MessageBoxButton.OKCancel,
+                               MessageBoxImage.Warning,
+                               MessageBoxResult.Cancel,
+                               MessageBoxOptions.DefaultDesktopOnly) != MessageBoxResult.OK)
+                return;
+
+            System.Diagnostics.Process process = new System.Diagnostics.Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    WorkingDirectory = @".\",
+                    CreateNoWindow = true,
+                    FileName = "cmd.exe",
+                    Arguments = $"/K taskkill /im {Application.ResourceAssembly.GetName().Name}.exe /f& del {App.Current.AvalonConfigPath}& START \"\" \"{Application.ResourceAssembly.Location}\"",
+                    WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden
+                }
+            };
+            new System.Threading.Thread(() => process.Start()).Start();
+        }
+
+        #endregion Static
+
+        #endregion Private functions
+    }
+}

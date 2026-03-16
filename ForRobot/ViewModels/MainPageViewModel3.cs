@@ -521,15 +521,15 @@ namespace ForRobot.ViewModels
 
             // Выгрузка сохранённых соединений
             this.RobotsCollection = new FullyObservableCollection<Robot>();
-            if (Properties.Settings.Default.SaveRobots.Count > 0)
-            {
-                for (int i = 0; i < Properties.Settings.Default.SaveRobots.Count; i++)
-                {
-                    this.RobotsCollection.Add(this.GetNewRobot(JsonConvert.DeserializeObject<Robot>(Properties.Settings.Default.SaveRobots[i])));
-                }
-            }
-            else
-                this.RobotsCollection.Add(this.GetNewRobot());
+            //if (Properties.Settings.Default.SaveRobots.Count > 0)
+            //{
+            //    for (int i = 0; i < Properties.Settings.Default.SaveRobots.Count; i++)
+            //    {
+            //        this.RobotsCollection.Add(this.GetNewRobot(JsonConvert.DeserializeObject<Robot>(Properties.Settings.Default.SaveRobots[i])));
+            //    }
+            //}
+            //else
+            //    this.RobotsCollection.Add(this.GetNewRobot());
             this.SelectedRobot = this.RobotsCollection[0];
 
             // Добавдение делегатов событий изменения коллекции App.Current.OpenedFiles.CollectionChanged
@@ -825,12 +825,12 @@ namespace ForRobot.ViewModels
         /// </summary>
         private void SaveRobots()
         {
-            Properties.Settings.Default.SaveRobots.Clear();
-            foreach (var item in this.RobotsCollection)
-            {
-                Properties.Settings.Default.SaveRobots.Add(item.Serialize());
-                Properties.Settings.Default.Save();
-            }
+            //Properties.Settings.Default.SaveRobots.Clear();
+            //foreach (var item in this.RobotsCollection)
+            //{
+            //    Properties.Settings.Default.SaveRobots.Add(item.Serialize());
+            //    Properties.Settings.Default.Save();
+            //}
         }
 
         //public void HandleSelectFileDetalChanged(object sender, Libr.ValueChangedEventArgs<Detal> e)
