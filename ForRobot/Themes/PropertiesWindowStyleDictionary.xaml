@@ -2,7 +2,6 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:ForRobot.Themes"
                     xmlns:properties="clr-namespace:ForRobot.Properties"
-                    xmlns:settings="clr-namespace:ForRobot.Libr.Settings"
                     xmlns:h="http://helix-toolkit.org/wpf"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib"
                     xmlns:conv="clr-namespace:ForRobot.Libr.Converters"
@@ -82,7 +81,13 @@
             <Style x:Key="textBase" TargetType="{x:Type FrameworkElement}">
                 <Setter Property="TextElement.FontSize" Value="{StaticResource FontSizeNP1}"/>
                 <Setter Property="TextElement.FontFamily" Value="{StaticResource DefaultFont}"/>
-                <EventSetter Event="attached:SelectAttachedProperties.AttemptSelected" Handler="{Binding Path=SelectClosedControlCommand}"/>
+
+                <!--<i:Interaction.Triggers>
+                    <i:EventTrigger EventName="att">
+                        <i:InvokeCommandAction Command="{Binding MyCallback}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>-->
+                <!--<Setter Property="attached:SelectAttachedProperties.AttemptSelected" Value="{Binding Path=SelectClosedControlCommand}"/>-->
             </Style>
 
             <Style TargetType="{x:Type Label}" BasedOn="{StaticResource textBase}">
@@ -177,15 +182,19 @@
             <CheckBox Grid.Row="1" Content="Вход в интерфейс по пин-коду" IsChecked="{Binding Path=Settings.LoginByPINCode, Mode=TwoWay}"
                       attached:SelectAttachedProperties.PreventSelect="True"
                       attached:SelectAttachedProperties.AttemptSelected="{Binding Path=SelectClosedControlCommand}">
-                <!--<i:Interaction.Triggers>
-                    <i:EventTrigger EventName="Checked">
+                <i:Interaction.Triggers>
+                    <!--<i:EventTrigger EventName="attached:SelectAttachedProperties.AttemptSelected">
+                        <i:InvokeCommandAction Command="{Binding Path=DataContext.SelectClosedControlCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}" CommandParameter="{Binding Path=., RelativeSource={RelativeSource AncestorType={x:Type CheckBox}, Mode=FindAncestor}}"/>
+                    </i:EventTrigger>-->
+
+                    <!--<i:EventTrigger EventName="Checked">
                         <i:InvokeCommandAction Command="{Binding Path=SelectClosedControlCommand}" CommandParameter="{Binding Path=., RelativeSource={RelativeSource AncestorType={x:Type CheckBox}, Mode=FindAncestor}}"/>
                     </i:EventTrigger>
 
                     <i:EventTrigger EventName="Unchecked">
                         <i:InvokeCommandAction Command="{Binding Path=SelectClosedControlCommand}" CommandParameter="{Binding Path=., RelativeSource={RelativeSource AncestorType={x:Type CheckBox}, Mode=FindAncestor}}"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>-->
+                    </i:EventTrigger>-->
+                </i:Interaction.Triggers>
             </CheckBox>
 
             <GroupBox Grid.Row="2" Header="Начальный файл для генерации">

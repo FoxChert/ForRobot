@@ -32,8 +32,6 @@ namespace ForRobot.Models.Settings
             ObjectCreationHandling = ObjectCreationHandling.Replace
         };
 
-        private Tuple<string, Theme> _selectedTheme;
-
         private Dictionary<string, System.Windows.Media.Color> _colors = new Dictionary<string, System.Windows.Media.Color>();
         
         #region Properties
@@ -122,18 +120,8 @@ namespace ForRobot.Models.Settings
             new Tuple<string, Theme>(nameof(Vs2013DarkTheme),new Vs2013DarkTheme()),
             new Tuple<string, Theme>(nameof(Vs2013LightTheme),new Vs2013LightTheme())
         };
-
-        [JsonIgnore]
-        public Tuple<string, Theme> SelectedTheme
-        {
-            get => this._selectedTheme;
-            set
-            {
-                this._selectedTheme = value;
-                //Properties.Settings.Default.SelectedTheme = this._selectedTheme.Item1;
-                //Properties.Settings.Default.Save();
-            }
-        }
+        
+        public Tuple<string, Theme> SelectedTheme { get; set; }
 
         #region 3DView
 
@@ -372,10 +360,7 @@ namespace ForRobot.Models.Settings
         {            
             if (this.Colors.Count == 0) this.Colors = GetColors();
 
-            if (string.IsNullOrEmpty(Properties.Settings.Default.SelectedTheme))
-                this.SelectedTheme = Settings.Themes.First();
-            else
-                this.SelectedTheme = Settings.Themes.Where(t => t.Item1 == Properties.Settings.Default.SelectedTheme).First();
+            this.SelectedTheme = Settings.Themes.First();
         }
 
         #endregion Constructors

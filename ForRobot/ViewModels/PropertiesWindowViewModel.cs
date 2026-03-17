@@ -19,6 +19,7 @@ namespace ForRobot.ViewModels
 
         private ICommand _editPathForUpdateCommand;
         private ICommand _standartSettingsCommand;
+        private ICommand _selectClosedControlCommand;
 
         #region Public variables
 
@@ -63,11 +64,6 @@ namespace ForRobot.ViewModels
             }));
         }
 
-        ///// <summary>
-        ///// Выбор закрытого элемента управления
-        ///// </summary>
-        //public ICommand SelectClosedControlCommand { get; } = new RelayCommand(obj => SelectClosedControl(obj as System.Windows.Controls.Control), _ => _isSelectClosedControl);
-
         /// <summary>
         /// Команда возвращения к стандартным настройкам
         /// </summary>
@@ -84,6 +80,48 @@ namespace ForRobot.ViewModels
         /// Команда сохранения настроек
         /// </summary>
         public ICommand SaveSettingsCommand { get; }
+
+        /// <summary>
+        /// Выбор закрытого элемента управления
+        /// </summary>
+        public ICommand SelectClosedControlCommand
+        {
+            get => this._selectClosedControlCommand ?? (this._selectClosedControlCommand = new RelayCommand(obj =>
+            {
+                if (ForRobot.Libr.AppWindowManager.PinCode(ForRobot.Properties.Settings.Default.PinCode))
+                    return;
+                
+                switch (obj)
+                {
+                    case AvalonDock.Layout.LayoutAnchorable layoutContent:
+                        layoutContent.IsSelected = false;
+                        layoutContent.IsActive = false;
+                        layoutContent.Hide();
+                        break;
+
+                    default:
+                        if (obj == null) return;
+
+                        var control = obj as System.Windows.Controls.Control;
+
+                        // Сброс фокуса для всех областей фокуса
+                        var focusScope = FocusManager.GetFocusScope(control);
+                        FocusManager.SetFocusedElement(focusScope, null);
+
+                        // Дополнительно: поиск и сброс фокуса во всех дочерних элементах
+                        var children = ForRobot.Libr.DependencyObjectExtensions.FindVisualChildren<UIElement>(control);
+                        foreach (var child in children)
+                        {
+                            if (child.IsKeyboardFocused)
+                            {
+                                Keyboard.ClearFocus();
+                                break;
+                            }
+                        }
+                        break;
+                }
+            }));
+        }
 
         #endregion Commands
 

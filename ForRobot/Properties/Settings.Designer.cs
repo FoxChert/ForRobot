@@ -70,17 +70,5 @@ namespace ForRobot.Properties {
                 this["sSavedRobots"] = value;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string SelectedTheme {
-            get {
-                return ((string)(this["SelectedTheme"]));
-            }
-            set {
-                this["SelectedTheme"] = value;
-            }
-        }
     }
 }

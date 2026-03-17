@@ -9,6 +9,7 @@ namespace ForRobot.Libr.Behavior
     public class TreeViewSelectedItemBehavior : Behavior<TreeView>
     {
         private bool _modelHandled;
+        private TreeView _treeView;
 
         private readonly EventSetter _treeViewItemEventSetter;
 
@@ -60,26 +61,13 @@ namespace ForRobot.Libr.Behavior
             var behavior = (TreeViewSelectedItemBehavior)sender;
             if (behavior._modelHandled) return;
 
-            if (behavior.AssociatedObject == null)
+            if (behavior._treeView == null)
                 return;
 
             behavior._modelHandled = true;
             behavior.UpdateAllTreeViewItems();
             behavior._modelHandled = false;
         }
-
-        //private static void OnSelectedItemChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
-        //{
-        //    var behavior = (TreeViewSelectedItemBehavior)sender;
-        //    if (behavior._modelHandled) return;
-
-        //    if (behavior.AssociatedObject == null)
-        //        return;
-
-        //    behavior._modelHandled = true;
-        //    behavior.UpdateAllTreeViewItems();
-        //    behavior._modelHandled = false;
-        //}
 
         #endregion
 
@@ -121,10 +109,9 @@ namespace ForRobot.Libr.Behavior
         
         private void UpdateAllTreeViewItems()
         {
-            var treeView = AssociatedObject;
-            foreach (var item in treeView.Items)
+            foreach (var item in _treeView.Items)
             {
-                var tvi = treeView.ItemContainerGenerator.ContainerFromItem(item) as TreeViewItem;
+                var tvi = _treeView.ItemContainerGenerator.ContainerFromItem(item) as TreeViewItem;
                 if (tvi != null)
                     UpdateTreeViewItem(tvi, true);
             }
@@ -132,25 +119,35 @@ namespace ForRobot.Libr.Behavior
 
         private void UpdateTreeViewItemStyle()
         {
-            //if (AssociatedObject.ItemContainerStyle == null)
+            //if (_treeView.ItemContainerStyle == null)
             //{
             //    var style = new Style(typeof(TreeViewItem),
             //        Application.Current.TryFindResource(typeof(TreeViewItem)) as Style);
 
-            //    AssociatedObject.ItemContainerStyle = style;
+            //    _treeView.ItemContainerStyle = style;
             //}
 
-            //if (!AssociatedObject.ItemContainerStyle.Setters.Contains(_treeViewItemEventSetter))
-            //    AssociatedObject.ItemContainerStyle.Setters.Add(_treeViewItemEventSetter);
+            //if (!_treeView.ItemContainerStyle.Setters.Contains(_treeViewItemEventSetter))
+            //    _treeView.ItemContainerStyle.Setters.Add(_treeViewItemEventSetter);
         }
 
+        /// <summary>
+        /// Обработчик изменения элементов <see cref="TreeView"/>
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void OnTreeViewItemsChanged(object sender, NotifyCollectionChangedEventArgs args) => UpdateAllTreeViewItems();
-          
+        
+        /// <summary>
+        /// Обработчик изменения выбранного лемемента <see cref="TreeView"/>
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnTreeViewSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             if (this._modelHandled) return;
 
-            if (AssociatedObject.Items.SourceCollection == null) return;
+            if (_treeView.Items.SourceCollection == null) return;
 
             this.SelectedItem = e.NewValue;
         }
@@ -161,8 +158,10 @@ namespace ForRobot.Libr.Behavior
         {
             base.OnAttached();
 
-            this.AssociatedObject.SelectedItemChanged += OnTreeViewSelectedItemChanged;
-            ((INotifyCollectionChanged)AssociatedObject.Items).CollectionChanged += OnTreeViewItemsChanged;
+            _treeView = base.AssociatedObject;
+
+            _treeView.SelectedItemChanged += OnTreeViewSelectedItemChanged;
+            ((INotifyCollectionChanged)_treeView.Items).CollectionChanged += OnTreeViewItemsChanged;
 
             UpdateTreeViewItemStyle();
             _modelHandled = true;
@@ -174,11 +173,11 @@ namespace ForRobot.Libr.Behavior
         {
             base.OnDetaching();
 
-            if (this.AssociatedObject != null)
+            if (_treeView != null)
             {
-                AssociatedObject.ItemContainerStyle?.Setters?.Remove(_treeViewItemEventSetter);
-                AssociatedObject.SelectedItemChanged -= OnTreeViewSelectedItemChanged;
-                ((INotifyCollectionChanged)AssociatedObject.Items).CollectionChanged -= OnTreeViewItemsChanged;
+                _treeView.ItemContainerStyle?.Setters?.Remove(_treeViewItemEventSetter);
+                _treeView.SelectedItemChanged -= OnTreeViewSelectedItemChanged;
+                ((INotifyCollectionChanged)_treeView.Items).CollectionChanged -= OnTreeViewItemsChanged;
             }
         }
     }

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Input;
-
-using AvalonDock.Layout;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 
 namespace ForRobot.Libr.AttachedProperties
 {
@@ -13,13 +13,13 @@ namespace ForRobot.Libr.AttachedProperties
     {
         private static readonly object _lock = new object();
 
-        /// <summary>
-        /// Прикреплённое свойство "IsSelected" для управления состоянием выбора элементом
-        /// </summary>
-        public static readonly DependencyProperty IsSelectedProperty = DependencyProperty.RegisterAttached("IsSelected",
-                                                                                                           typeof(bool),
-                                                                                                           typeof(SelectAttachedProperties),
-                                                                                                           new UIPropertyMetadata(false, OnIsSelectedChanged));
+        ///// <summary>
+        ///// Прикреплённое свойство "IsSelected" для управления состоянием выбора элементом
+        ///// </summary>
+        //public static readonly DependencyProperty IsSelectedProperty = DependencyProperty.RegisterAttached("IsSelected",
+        //                                                                                                   typeof(bool),
+        //                                                                                                   typeof(SelectAttachedProperties),
+        //                                                                                                   new UIPropertyMetadata(false, OnIsSelectedChanged));
 
         /// <summary>
         /// Прикреплённое свойство "PreventSelect" для запрета выбора элемента управления
@@ -37,30 +37,30 @@ namespace ForRobot.Libr.AttachedProperties
                                                                                                    typeof(RoutedEventHandler),
                                                                                                    typeof(SelectAttachedProperties));
 
-        #region IsSelcted Property
+        //#region IsSelcted Property
 
-        public static bool GetIsSelected(DependencyObject obj)
-        {
-            if (obj == null)
-                throw new ArgumentNullException(nameof(obj));
+        //public static bool GetIsSelected(DependencyObject obj)
+        //{
+        //    if (obj == null)
+        //        throw new ArgumentNullException(nameof(obj));
 
-            return (bool)obj.GetValue(IsSelectedProperty);
-        }
+        //    return (bool)obj.GetValue(IsSelectedProperty);
+        //}
 
-        public static void SetIsSelected(DependencyObject obj, bool value)
-        {
-            if (obj == null)
-                throw new ArgumentNullException(nameof(obj));
+        //public static void SetIsSelected(DependencyObject obj, bool value)
+        //{
+        //    if (obj == null)
+        //        throw new ArgumentNullException(nameof(obj));
 
-            obj.SetValue(IsSelectedProperty, value);
-        }
+        //    obj.SetValue(IsSelectedProperty, value);
+        //}
 
-        private static void OnIsSelectedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        //private static void OnIsSelectedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        //{
 
-        }
+        //}
 
-        #endregion IsSelcted Property
+        //#endregion IsSelcted Property
 
         #region PreventSelect Property
 
@@ -87,18 +87,69 @@ namespace ForRobot.Libr.AttachedProperties
         /// <param name="e"></param>
         private static void OnPreventSelectChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (e.NewValue == null)
+            if (d == null || e.NewValue == null)
                 return;
 
-            switch (d)
+            if ((bool)e.NewValue)
             {
-                case LayoutContent layoutContent:
-                    //layoutContent.IsSelected = false;
-                    //layoutContent.IsActive = false;
-                    if ((bool)e.NewValue)
-                        layoutContent.IsSelectedChanged += LayoutContent_IsSelectedChanged;
-                    else
-                        layoutContent.IsSelectedChanged -= LayoutContent_IsSelectedChanged;
+                SubscribeToSelectionEvents(d);
+            }
+            else
+            {
+                UnsubscribeFromSelectionEvents(d);
+            }
+        }
+
+        /// <summary>
+        /// Подписка на события выбора в зависимости от типа элемента
+        /// </summary>
+        private static void SubscribeToSelectionEvents(DependencyObject element)
+        {
+            switch (element)
+            {
+                case Selector selector:
+                    selector.SelectionChanged += Selector_SelectionChanged;
+                    break;
+
+                case ContentControl contentControl:
+                    if (contentControl is UIElement uiElement)
+                    {
+                        uiElement.PreviewMouseLeftButtonDown += ContentControl_PreviewMouseLeftButtonDown;
+                    }
+                    break;
+                    
+                default:
+                    if (element is UIElement genericElement)
+                    {
+                        genericElement.PreviewMouseLeftButtonDown += GenericElement_PreviewMouseLeftButtonDown;
+                    }
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Отписка от событий выбора
+        /// </summary>
+        private static void UnsubscribeFromSelectionEvents(DependencyObject element)
+        {
+            switch (element)
+            {
+                case Selector selector:
+                    selector.SelectionChanged -= Selector_SelectionChanged;
+                    break;
+
+                case ContentControl contentControl:
+                    if (contentControl is UIElement uiElement)
+                    {
+                        uiElement.PreviewMouseLeftButtonDown -= ContentControl_PreviewMouseLeftButtonDown;
+                    }
+                    break;
+
+                default:
+                    if (element is UIElement genericElement)
+                    {
+                        genericElement.PreviewMouseLeftButtonDown -= GenericElement_PreviewMouseLeftButtonDown;
+                    }
                     break;
             }
         }
@@ -107,31 +158,67 @@ namespace ForRobot.Libr.AttachedProperties
 
         #region AttemptSelected Event
 
-        public static void AddAttemptSelectedHandler(UIElement element, RoutedEventHandler handler)
-        {
-            element.AddHandler(AttemptSelectedEvent, handler);
-        }
+        public static void AddAttemptSelectedHandler(UIElement element, RoutedEventHandler handler) => element.AddHandler(AttemptSelectedEvent, handler);
 
-        public static void RemoveAttemptSelectedHandler(UIElement element, RoutedEventHandler handler)
-        {
-            element.RemoveHandler(AttemptSelectedEvent, handler);
-        }
+        public static void RemoveAttemptSelectedHandler(UIElement element, RoutedEventHandler handler) => element.RemoveHandler(AttemptSelectedEvent, handler);
 
-        public static void RaiseAttemptSelectedEvent(UIElement source) => source.RaiseEvent(new RoutedEventArgs(AttemptSelectedEvent));
+        /// <summary>
+        /// Вызов события AttemptSelected
+        /// </summary>
+        /// <param name="source"></param>
+        public static void RaiseAttemptSelectedEvent(DependencyObject source)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            if (source is UIElement uiElement)
+            {
+                uiElement.RaiseEvent(new RoutedEventArgs(AttemptSelectedEvent, uiElement));
+            }
+        }
 
         #endregion AttemptSelected Event
 
-        #region Handlers IsSelectedChanged
+        #region Event Handlers
 
-        private static void LayoutContent_IsSelectedChanged(object sender, EventArgs e)
+        private static void Selector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //SelectedEvent?.Invoke(this, null);
-            //LayoutContent layoutContent = sender as LayoutContent;
-            //layoutContent.IsSelected = false;
-            //layoutContent.IsActive = false;
+            if (sender is Selector selector && selector.SelectedItem != null)
+            {
+                DependencyObject container = selector.ItemContainerGenerator.ContainerFromItem(selector.SelectedItem) as DependencyObject;
+
+                if (container != null && GetPreventSelect(container))
+                {
+                    if (e.AddedItems.Count > 0)
+                    {
+                        e.RemovedItems.Add(e.AddedItems[0]);
+                        e.AddedItems.Clear();
+                    }
+
+                    RaiseAttemptSelectedEvent(container);
+                }
+            }
         }
 
-        #endregion
+        private static void ContentControl_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is DependencyObject element && GetPreventSelect(element))
+            {
+                e.Handled = true;
+                RaiseAttemptSelectedEvent(element);
+            }
+        }
+
+        private static void GenericElement_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is DependencyObject element && GetPreventSelect(element))
+            {
+                e.Handled = true;
+                RaiseAttemptSelectedEvent(element);
+            }
+        }
+
+        #endregion Event Handlers
     }
 
     //public static class LayoutAnchorableCommands
