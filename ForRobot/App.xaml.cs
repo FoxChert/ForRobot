@@ -85,6 +85,9 @@ namespace ForRobot
             get => this._settings ?? (this._settings = GetSettings());
             set
             {
+                if (value == null || value == this._settings)
+                    return;
+
                 this._settings = value;
                 this._settings.Save();
             }

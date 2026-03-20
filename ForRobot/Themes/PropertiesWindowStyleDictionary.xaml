@@ -81,7 +81,7 @@
             <Style x:Key="textBase" TargetType="{x:Type FrameworkElement}">
                 <Setter Property="TextElement.FontSize" Value="{StaticResource FontSizeNP1}"/>
                 <Setter Property="TextElement.FontFamily" Value="{StaticResource DefaultFont}"/>
-
+                <Setter Property="attached:SelectAttachedProperties.AttemptSelectedCommand" Value="{Binding Path=SelectClosedControlCommand}"/>
                 <!--<i:Interaction.Triggers>
                     <i:EventTrigger EventName="att">
                         <i:InvokeCommandAction Command="{Binding MyCallback}"/>
@@ -180,13 +180,8 @@
             </GroupBox>
 
             <CheckBox Grid.Row="1" Content="Вход в интерфейс по пин-коду" IsChecked="{Binding Path=Settings.LoginByPINCode, Mode=TwoWay}"
-                      attached:SelectAttachedProperties.PreventSelect="True"
-                      attached:SelectAttachedProperties.AttemptSelected="{Binding Path=SelectClosedControlCommand}">
+                      attached:SelectAttachedProperties.PreventSelect="True">
                 <i:Interaction.Triggers>
-                    <!--<i:EventTrigger EventName="attached:SelectAttachedProperties.AttemptSelected">
-                        <i:InvokeCommandAction Command="{Binding Path=DataContext.SelectClosedControlCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}" CommandParameter="{Binding Path=., RelativeSource={RelativeSource AncestorType={x:Type CheckBox}, Mode=FindAncestor}}"/>
-                    </i:EventTrigger>-->
-
                     <!--<i:EventTrigger EventName="Checked">
                         <i:InvokeCommandAction Command="{Binding Path=SelectClosedControlCommand}" CommandParameter="{Binding Path=., RelativeSource={RelativeSource AncestorType={x:Type CheckBox}, Mode=FindAncestor}}"/>
                     </i:EventTrigger>

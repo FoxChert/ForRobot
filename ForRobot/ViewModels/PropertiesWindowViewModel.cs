@@ -88,38 +88,42 @@ namespace ForRobot.ViewModels
         {
             get => this._selectClosedControlCommand ?? (this._selectClosedControlCommand = new RelayCommand(obj =>
             {
-                if (ForRobot.Libr.AppWindowManager.PinCode(ForRobot.Properties.Settings.Default.PinCode))
+                if (!ForRobot.Libr.AppWindowManager.PinCode(ForRobot.Properties.Settings.Default.PinCode))
                     return;
-                
-                switch (obj)
-                {
-                    case AvalonDock.Layout.LayoutAnchorable layoutContent:
-                        layoutContent.IsSelected = false;
-                        layoutContent.IsActive = false;
-                        layoutContent.Hide();
-                        break;
 
-                    default:
-                        if (obj == null) return;
+                ForRobot.Libr.ControlExtensions.FocusCancel(((System.Windows.RoutedEventArgs)obj).Source as System.Windows.Controls.Control);
 
-                        var control = obj as System.Windows.Controls.Control;
+                //switch (obj)
+                //{
+                //    case AvalonDock.Layout.LayoutAnchorable layoutContent:
+                //        layoutContent.IsSelected = false;
+                //        layoutContent.IsActive = false;
+                //        layoutContent.Hide();
+                //        break;
 
-                        // Сброс фокуса для всех областей фокуса
-                        var focusScope = FocusManager.GetFocusScope(control);
-                        FocusManager.SetFocusedElement(focusScope, null);
 
-                        // Дополнительно: поиск и сброс фокуса во всех дочерних элементах
-                        var children = ForRobot.Libr.DependencyObjectExtensions.FindVisualChildren<UIElement>(control);
-                        foreach (var child in children)
-                        {
-                            if (child.IsKeyboardFocused)
-                            {
-                                Keyboard.ClearFocus();
-                                break;
-                            }
-                        }
-                        break;
-                }
+
+                //    default:
+                //        if (obj == null) return;
+
+                //        var control = obj as System.Windows.Controls.Control;
+
+                //        // Сброс фокуса для всех областей фокуса
+                //        var focusScope = FocusManager.GetFocusScope(control);
+                //        FocusManager.SetFocusedElement(focusScope, null);
+
+                //        // Дополнительно: поиск и сброс фокуса во всех дочерних элементах
+                //        var children = ForRobot.Libr.DependencyObjectExtensions.FindVisualChildren<UIElement>(control);
+                //        foreach (var child in children)
+                //        {
+                //            if (child.IsKeyboardFocused)
+                //            {
+                //                Keyboard.ClearFocus();
+                //                break;
+                //            }
+                //        }
+                //        break;
+                //}
             }));
         }
 

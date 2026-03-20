@@ -9,9 +9,9 @@ namespace ForRobot.Libr.AttachedProperties
     /// <summary>
     /// Прикрепленные свойства для управления выбором элемента управления
     /// </summary>
-    public class SelectAttachedProperties
+    public static class SelectAttachedProperties
     {
-        private static readonly object _lock = new object();
+        //private static readonly object _lock = new object();
 
         ///// <summary>
         ///// Прикреплённое свойство "IsSelected" для управления состоянием выбора элементом
@@ -36,6 +36,14 @@ namespace ForRobot.Libr.AttachedProperties
                                                                                                    RoutingStrategy.Bubble,
                                                                                                    typeof(RoutedEventHandler),
                                                                                                    typeof(SelectAttachedProperties));
+
+        /// <summary>
+        /// Прикреплённое свойство для установки обработчика AttemptSelected
+        /// </summary>
+        public static readonly DependencyProperty AttemptSelectedCommandProperty = DependencyProperty.RegisterAttached("AttemptSelectedCommand",
+                                                                                                                       typeof(ICommand),
+                                                                                                                       typeof(SelectAttachedProperties),
+                                                                                                                       new PropertyMetadata(null, OnAttemptSelectedCommandChanged));
 
         //#region IsSelcted Property
 
@@ -165,7 +173,7 @@ namespace ForRobot.Libr.AttachedProperties
         /// <summary>
         /// Вызов события AttemptSelected
         /// </summary>
-        /// <param name="source"></param>
+        /// <param name = "source" ></ param >
         public static void RaiseAttemptSelectedEvent(DependencyObject source)
         {
             if (source == null)
@@ -178,6 +186,39 @@ namespace ForRobot.Libr.AttachedProperties
         }
 
         #endregion AttemptSelected Event
+
+        #region AttemptSelectedCommand Property
+
+        public static ICommand GetAttemptSelectedCommand(DependencyObject obj) => (ICommand)obj.GetValue(AttemptSelectedCommandProperty);
+
+        public static void SetAttemptSelectedCommand(DependencyObject obj, ICommand value) => obj.SetValue(AttemptSelectedCommandProperty, value);
+
+        private static void OnAttemptSelectedCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (!(d is UIElement element))
+                return;
+
+            if (e.OldValue is ICommand)
+            {
+                element.RemoveHandler(AttemptSelectedEvent, (RoutedEventHandler)OnAttemptSelectedExecuted);
+            }
+
+            if (e.NewValue is ICommand)
+            {
+                element.AddHandler(AttemptSelectedEvent, (RoutedEventHandler)OnAttemptSelectedExecuted);
+            }
+        }
+
+        private static void OnAttemptSelectedExecuted(object sender, RoutedEventArgs e)
+        {
+            var element = sender as DependencyObject;
+            var command = GetAttemptSelectedCommand(element);
+
+            if (command?.CanExecute(e) == true)
+                command.Execute(e);
+        }
+
+        #endregion AttemptSelectedCommand Property
 
         #region Event Handlers
 
@@ -220,78 +261,4 @@ namespace ForRobot.Libr.AttachedProperties
 
         #endregion Event Handlers
     }
-
-    //public static class LayoutAnchorableCommands
-    //{
-    //    public static readonly DependencyProperty IsClosedProperty = DependencyProperty.RegisterAttached("IsClosed",
-    //                                                                                                     typeof(bool),
-    //                                                                                                     typeof(LayoutAnchorableCommands),
-    //                                                                                                     new PropertyMetadata(false, OnIsClosedChanged));
-
-    //    public static bool GetIsClosed(DependencyObject obj)
-    //    {
-    //        return (bool)obj.GetValue(IsClosedProperty);
-    //    }
-
-    //    public static void SetIsClosed(DependencyObject obj, bool value)
-    //    {
-    //        obj.SetValue(IsClosedProperty, value);
-    //    }
-
-    //    //public static readonly DependencyProperty OpenedCommandProperty = DependencyProperty.RegisterAttached("OpenedCommand",
-    //    //                                                                                                      typeof(ICommand),
-    //    //                                                                                                      typeof(LayoutAnchorableCommands),
-    //    //                                                                                                      new PropertyMetadata(null, OnOpenedCommandChanged));
-
-    //    private static void OnIsClosedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    //    {
-    //        if (d is LayoutAnchorable layoutAnchorable)
-    //        {
-    //            if (e.NewValue == null)
-    //                return;                
-
-    //            if((bool)e.NewValue)
-    //                layoutAnchorable.IsSelectedChanged += LayoutAnchorable_IsSelectedChanged;
-    //            else
-    //                layoutAnchorable.IsSelectedChanged -= LayoutAnchorable_IsSelectedChanged;
-    //        }
-    //    }
-
-    //    //public static ICommand GetOpenedCommand(DependencyObject obj)
-    //    //{
-    //    //    return (ICommand)obj.GetValue(OpenedCommandProperty);
-    //    //}
-
-    //    public static void SetOpenedCommand(DependencyObject obj, ICommand value)
-    //    {
-    //        //obj.SetValue(OpenedCommandProperty, value);
-    //    }
-
-    //    private static void OnOpenedCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    //    {
-    //        if (d is LayoutAnchorable layoutAnchorable)
-    //        {
-    //            if (e.OldValue is ICommand oldCommand)
-    //            {
-    //                layoutAnchorable.IsVisibleChanged -= LayoutAnchorable_IsSelectedChanged;
-    //            }
-    //            if (e.NewValue is ICommand newCommand)
-    //            {
-    //                layoutAnchorable.IsVisibleChanged += LayoutAnchorable_IsSelectedChanged;
-    //            }
-    //        }
-    //    }
-
-    //    private static void LayoutAnchorable_IsSelectedChanged(object sender, EventArgs e)
-    //    {
-    //        if (sender is LayoutAnchorable layoutAnchorable)
-    //        {
-    //            //var command = GetOpenedCommand(layoutAnchorable);
-    //            //if (command != null && command.CanExecute(layoutAnchorable.Content))
-    //            //{
-    //            //    command.Execute(layoutAnchorable.Content);
-    //            //}
-    //        }
-    //    }
-    //}
 }

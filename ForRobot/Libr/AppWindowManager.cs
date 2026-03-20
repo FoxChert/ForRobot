@@ -75,8 +75,8 @@ namespace ForRobot.Libr
                     {
                         window.Closed += (s, e) =>
                         {
-                            RemoveWindow(nameof(s), out var w);
-                            if (w != null)
+                            RemoveWindow(s.GetType().Name, out var w);
+                            if (w != null && w.Owner != null)
                                 FocusedWindow(w.Owner);
                         };
                         this._activeWindows[key] = window;
