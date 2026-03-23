@@ -82,12 +82,6 @@
                 <Setter Property="TextElement.FontSize" Value="{StaticResource FontSizeNP1}"/>
                 <Setter Property="TextElement.FontFamily" Value="{StaticResource DefaultFont}"/>
                 <Setter Property="attached:SelectAttachedProperties.AttemptSelectedCommand" Value="{Binding Path=SelectClosedControlCommand}"/>
-                <!--<i:Interaction.Triggers>
-                    <i:EventTrigger EventName="att">
-                        <i:InvokeCommandAction Command="{Binding MyCallback}"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>-->
-                <!--<Setter Property="attached:SelectAttachedProperties.AttemptSelected" Value="{Binding Path=SelectClosedControlCommand}"/>-->
             </Style>
 
             <Style TargetType="{x:Type Label}" BasedOn="{StaticResource textBase}">
@@ -180,17 +174,7 @@
             </GroupBox>
 
             <CheckBox Grid.Row="1" Content="Вход в интерфейс по пин-коду" IsChecked="{Binding Path=Settings.LoginByPINCode, Mode=TwoWay}"
-                      attached:SelectAttachedProperties.PreventSelect="True">
-                <i:Interaction.Triggers>
-                    <!--<i:EventTrigger EventName="Checked">
-                        <i:InvokeCommandAction Command="{Binding Path=SelectClosedControlCommand}" CommandParameter="{Binding Path=., RelativeSource={RelativeSource AncestorType={x:Type CheckBox}, Mode=FindAncestor}}"/>
-                    </i:EventTrigger>
-
-                    <i:EventTrigger EventName="Unchecked">
-                        <i:InvokeCommandAction Command="{Binding Path=SelectClosedControlCommand}" CommandParameter="{Binding Path=., RelativeSource={RelativeSource AncestorType={x:Type CheckBox}, Mode=FindAncestor}}"/>
-                    </i:EventTrigger>-->
-                </i:Interaction.Triggers>
-            </CheckBox>
+                      attached:SelectAttachedProperties.PreventSelect="True"/>
 
             <GroupBox Grid.Row="2" Header="Начальный файл для генерации">
                 <Grid>
@@ -796,6 +780,7 @@
                 <Setter Property="TextElement.FontSize" Value="{StaticResource FontSizeNP1}"/>
                 <Setter Property="TextElement.FontFamily" Value="{StaticResource DefaultFont}"/>
                 <Setter Property="TextElement.FontWeight" Value="Normal"/>
+                <Setter Property="attached:SelectAttachedProperties.AttemptSelectedCommand" Value="{Binding Path=SelectClosedControlCommand}"/>
             </Style>
 
             <Style x:Key="GroupBoxBase" TargetType="{x:Type GroupBox}" BasedOn="{StaticResource textBase}">
@@ -868,12 +853,13 @@
                               SelectedItem="{Binding Path=SelectedTumpleProgramName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               SelectedIndex="0"/>
 
-                    <TextBox Grid.Column="1" Text="{Binding Path=SelectedTumpleProgramName.Item3, Mode=OneWay}">
-                        <i:Interaction.Triggers>
+                    <TextBox Grid.Column="1" Text="{Binding Path=SelectedTumpleProgramName.Item3, Mode=OneWay}"
+                             attached:SelectAttachedProperties.PreventSelect="True">
+                        <!--<i:Interaction.Triggers>
                             <i:EventTrigger EventName="GotFocus">
                                 <i:InvokeCommandAction Command="{Binding Path=SelectClosedControlCommand}" CommandParameter="{Binding Path=., RelativeSource={RelativeSource AncestorType={x:Type TextBox}, Mode=FindAncestor}}"/>
                             </i:EventTrigger>
-                        </i:Interaction.Triggers>
+                        </i:Interaction.Triggers>-->
                     </TextBox>
                 </Grid>
             </GroupBox>
@@ -890,12 +876,13 @@
                               SelectedItem="{Binding Path=SelectedTumpleScriptsName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               SelectedIndex="0"/>
 
-                    <TextBox Grid.Column="1" Text="{Binding Path=SelectedTumpleScriptsName.Item3, Mode=OneWay}">
-                        <i:Interaction.Triggers>
+                    <TextBox Grid.Column="1" Text="{Binding Path=SelectedTumpleScriptsName.Item3, Mode=OneWay}"
+                             attached:SelectAttachedProperties.PreventSelect="True">
+                        <!--<i:Interaction.Triggers>
                             <i:EventTrigger EventName="GotFocus">
                                 <i:InvokeCommandAction Command="{Binding Path=SelectClosedControlCommand}" CommandParameter="{Binding Path=., RelativeSource={RelativeSource AncestorType={x:Type TextBox}, Mode=FindAncestor}}"/>
                             </i:EventTrigger>
-                        </i:Interaction.Triggers>
+                        </i:Interaction.Triggers>-->
                     </TextBox>
                 </Grid>
             </GroupBox>

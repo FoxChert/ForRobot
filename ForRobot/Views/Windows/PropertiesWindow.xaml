@@ -7,6 +7,7 @@
         xmlns:local="clr-namespace:ForRobot.Views.Windows"
         xmlns:behavior="clr-namespace:ForRobot.Libr.Behavior"
         xmlns:vm="clr-namespace:ForRobot.ViewModels"
+        xmlns:attached="clr-namespace:ForRobot.Libr.AttachedProperties"
         mc:Ignorable="d"
         Title="Настройки программы"
         Height="450" Width="700"
@@ -55,36 +56,20 @@
 
             <TreeViewItem Header="Навигация" Tag="NavigationTree"/>
 
-            <TreeViewItem Header="Вид" Tag="View" IsExpanded="False">
+            <TreeViewItem Header="Вид" Tag="View" IsExpanded="False"
+                          attached:SelectAttachedProperties.PreventSelect="True">
+                
                 <TreeViewItem Header="Интерфейс" Tag="Interface"/>
                 <TreeViewItem Header="3D сцена" Tag="3DView"/>
-
-                <!--<i:Interaction.Triggers>
-                    <i:EventTrigger EventName="Selected">
-                        <i:InvokeCommandAction Command="{Binding Path=SelectClosedTabCommand}" CommandParameter="{Binding Path=., RelativeSource={RelativeSource AncestorType={x:Type TreeView}, Mode=FindAncestor}}"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>-->
             </TreeViewItem>
 
             <TreeViewItem Header="Генерация" Tag="Generation"/>
 
             <TreeViewItem Header="Соединение" Tag="Connection"/>
-            
-            <!--<TreeViewItem Header="Генерация"/>-->
 
-            <!--<TreeView.Style>
-                <Style TargetType="{x:Type TreeView}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Path=SelectedItem, RelativeSource={RelativeSource Self}}" Value="{x:Null}">
-                            <Setter Property="SelectedValuePath" Value="General"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </TreeView.Style>-->
-
-            <i:Interaction.Behaviors>
+            <!--<i:Interaction.Behaviors>
                 <behavior:TreeViewSelectedItemBehavior SelectedItem="{Binding Path=SelectedItem, Mode=TwoWay}"/>
-            </i:Interaction.Behaviors>
+            </i:Interaction.Behaviors>-->
         </TreeView>
 
         <Grid Grid.Row="0" Grid.Column="2">

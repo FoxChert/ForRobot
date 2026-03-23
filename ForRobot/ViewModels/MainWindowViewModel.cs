@@ -63,7 +63,10 @@ namespace ForRobot.ViewModels
         /// <summary>
         /// Сброс фокуса
         /// </summary>
-        public ICommand LostFocusCommand { get; } = new RelayCommand(obj => LostFocus(obj as FrameworkElement));
+        public ICommand LostFocusCommand { get; } = new RelayCommand(obj => ForRobot.Libr.DependencyObjectExtensions.LostFocus(obj as FrameworkElement));
+
+
+
         /// <summary>
         /// Команда создания файла
         /// </summary>
@@ -180,16 +183,6 @@ namespace ForRobot.ViewModels
         }
 
         #region Private functions
-
-        /// <summary>
-        /// Сброс фокуса на заданный элемент
-        /// </summary>
-        /// <param name="frameworkElement"></param>
-        private static void LostFocus(FrameworkElement frameworkElement)
-        {
-            System.Windows.Input.Keyboard.ClearFocus();
-            System.Windows.Input.FocusManager.SetFocusedElement(System.Windows.Input.FocusManager.GetFocusScope(frameworkElement), null);
-        }
 
         /// <summary>
         /// Присвоение выбранного LayoutDocumentPane.

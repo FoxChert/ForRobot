@@ -51,5 +51,15 @@ namespace ForRobot.Libr
                 }
             }
         }
+
+        /// <summary>
+        /// Сброс фокуса на заданный элемент
+        /// </summary>
+        /// <param name="dependencyObject"></param>
+        public static void LostFocus(this DependencyObject dependencyObject)
+        {
+            System.Windows.Input.Keyboard.ClearFocus();
+            System.Windows.Input.FocusManager.SetFocusedElement(System.Windows.Input.FocusManager.GetFocusScope(dependencyObject), null);
+        }
     }
 }

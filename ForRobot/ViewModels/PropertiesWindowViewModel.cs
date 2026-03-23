@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Controls;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -81,51 +82,153 @@ namespace ForRobot.ViewModels
         /// </summary>
         public ICommand SaveSettingsCommand { get; }
 
+        public class AttemptSelectedCommand : RelayCommand
+        {
+            private readonly Func<object, bool> _shouldBlock;
+
+            public AttemptSelectedCommand(Action<object> execute,
+                                         Func<object, bool> canExecute = null,
+                                         Func<object, bool> shouldBlock = null) : base(execute, canExecute ?? (_ => true))
+            {
+                _shouldBlock = shouldBlock ?? (_ => false);
+            }
+
+            public override void Execute(object parameter)
+            {
+                if (this.ShouldBlock(parameter))
+                    return;
+
+                base.Execute(parameter);
+            }
+
+            public bool ShouldBlock(object parameter) => _shouldBlock(parameter);
+        }
+
         /// <summary>
         /// Выбор закрытого элемента управления
         /// </summary>
         public ICommand SelectClosedControlCommand
         {
-            get => this._selectClosedControlCommand ?? (this._selectClosedControlCommand = new RelayCommand(obj =>
+            get => this._selectClosedControlCommand ?? (this._selectClosedControlCommand = new AttemptSelectedCommand(
+            execute: obj =>
             {
-                if (!ForRobot.Libr.AppWindowManager.PinCode(ForRobot.Properties.Settings.Default.PinCode))
-                    return;
+                if (obj == null)
+                    throw new ArgumentNullException(nameof(obj));
 
-                ForRobot.Libr.ControlExtensions.FocusCancel(((System.Windows.RoutedEventArgs)obj).Source as System.Windows.Controls.Control);
+                if (obj is ForRobot.Libr.AttachedProperties.AttemptSelectedEventArgs args)
+                {
+                    args.Cancel = false;
 
-                //switch (obj)
-                //{
-                //    case AvalonDock.Layout.LayoutAnchorable layoutContent:
-                //        layoutContent.IsSelected = false;
-                //        layoutContent.IsActive = false;
-                //        layoutContent.Hide();
-                //        break;
+                    var control = args.Source as System.Windows.Controls.Control;
+                    switch (control)
+                    {
+                        case TreeView tree:
+                            break;
 
+                        case TreeViewItem treeViewItem:
+                            //treeViewItem.IsExpanded = false;
+                            //treeViewItem.IsSelected = false;
 
+                            //var children = ForRobot.Libr.DependencyObjectExtensions.FindVisualChildren<TreeViewItem>(control);
+                            //children?.First().Focus();
+                            break;
 
-                //    default:
-                //        if (obj == null) return;
+                        case CheckBox checkBox:
+                            checkBox.IsChecked = !checkBox.IsChecked;
+                            break;
 
-                //        var control = obj as System.Windows.Controls.Control;
+                        case TextBox textBox:
+                            textBox.Focus();
+                            //textBox = control as TextBox;
+                            //if (textBox == null) return;
 
-                //        // Сброс фокуса для всех областей фокуса
-                //        var focusScope = FocusManager.GetFocusScope(control);
-                //        FocusManager.SetFocusedElement(focusScope, null);
+                            //var parent = textBox.Parent as UIElement;
+                            //if (parent != null && parent.Focusable)
+                            //{
+                            //    parent.Focus();
+                            //}
+                            //else
+                            //{
+                            //    var page = ForRobot.Libr.DependencyObjectExtensions.FindParent<Window>(textBox);
+                            //    if (page != null)
+                            //    {
+                            //        page.Focus();
+                            //    }
+                            //}
+                            //Keyboard.ClearFocus();
+                            break;
 
-                //        // Дополнительно: поиск и сброс фокуса во всех дочерних элементах
-                //        var children = ForRobot.Libr.DependencyObjectExtensions.FindVisualChildren<UIElement>(control);
-                //        foreach (var child in children)
-                //        {
-                //            if (child.IsKeyboardFocused)
-                //            {
-                //                Keyboard.ClearFocus();
-                //                break;
-                //            }
-                //        }
-                //        break;
-                //}
-            }));
+                        default:
+                            if (control == null) return;
+
+                            // Сброс фокуса для всех областей фокуса
+                            var focusScope = FocusManager.GetFocusScope(control);
+                            FocusManager.SetFocusedElement(focusScope, null);
+
+                            // Дополнительно: поиск и сброс фокуса во всех дочерних элементах
+                            var children = ForRobot.Libr.DependencyObjectExtensions.FindVisualChildren<UIElement>(control);
+                            foreach (var child in children)
+                            {
+                                if (child.IsKeyboardFocused)
+                                {
+                                    Keyboard.ClearFocus();
+                                    break;
+                                }
+                            }
+                            break;
+                    }
+                }
+            },
+            shouldBlock: obj => !ForRobot.Libr.AppWindowManager.PinCode(ForRobot.Properties.Settings.Default.PinCode)));
         }
+        //{
+        //    get => this._selectClosedControlCommand ?? (this._selectClosedControlCommand = new RelayCommand(obj =>
+        //    {
+        //        if (obj is ForRobot.Libr.AttachedProperties.AttemptSelectedEventArgs args)
+        //        {
+        //            if (!ForRobot.Libr.AppWindowManager.PinCode(ForRobot.Properties.Settings.Default.PinCode))
+        //            {
+        //                args.Cancel = true;
+        //            }
+        //        }
+
+        //        //if (!ForRobot.Libr.AppWindowManager.PinCode(ForRobot.Properties.Settings.Default.PinCode))
+        //        //    return;
+
+        //        //ForRobot.Libr.ControlExtensions.FocusCancel(((System.Windows.RoutedEventArgs)obj).Source as System.Windows.Controls.Control);
+
+        //        //switch (obj)
+        //        //{
+        //        //    case AvalonDock.Layout.LayoutAnchorable layoutContent:
+        //        //        layoutContent.IsSelected = false;
+        //        //        layoutContent.IsActive = false;
+        //        //        layoutContent.Hide();
+        //        //        break;
+
+
+        //        //    default:
+        //        //        if (obj == null) return;
+
+        //        //        var control = obj as System.Windows.Controls.Control;
+
+        //        //        // Сброс фокуса для всех областей фокуса
+        //        //        var focusScope = FocusManager.GetFocusScope(control);
+        //        //        FocusManager.SetFocusedElement(focusScope, null);
+
+        //        //        // Дополнительно: поиск и сброс фокуса во всех дочерних элементах
+        //        //        var children = ForRobot.Libr.DependencyObjectExtensions.FindVisualChildren<UIElement>(control);
+        //        //        foreach (var child in children)
+        //        //        {
+        //        //            if (child.IsKeyboardFocused)
+        //        //            {
+        //        //                Keyboard.ClearFocus();
+        //        //                break;
+        //        //            }
+        //        //        }
+        //        //        break;
+        //        //}
+        //    }));
+        //}
 
         #endregion Commands
 

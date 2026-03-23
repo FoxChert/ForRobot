@@ -319,7 +319,6 @@
     <Compile Include="Libr\Behavior\DockingManagerBehavior.cs" />
     <Compile Include="Libr\Collections\RobotCollection.cs" />
     <Compile Include="Libr\Collections\RobotPropertyChangedEventArgs.cs" />
-    <Compile Include="Libr\ControlExtensions.cs" />
     <Compile Include="Libr\Converters\AssimpConverter.cs" />
     <Compile Include="Libr\DependencyObjectExtensions.cs" />
     <Compile Include="Libr\Messages\LayoutAnchorableMessage.cs" />

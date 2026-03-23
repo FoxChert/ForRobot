@@ -3,16 +3,26 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Collections.Generic;
 
 namespace ForRobot.Libr.AttachedProperties
 {
+    public delegate void AttemptSelectedEventHandler(object sender, AttemptSelectedEventArgs e);
+
+    public class AttemptSelectedEventArgs : RoutedEventArgs
+    {
+        public bool Cancel { get; set; } = false;
+
+        public AttemptSelectedEventArgs() : base() { }
+
+        public AttemptSelectedEventArgs(RoutedEvent routedEvent, object source) : base(routedEvent, source) { }
+    }
+
     /// <summary>
     /// Прикрепленные свойства для управления выбором элемента управления
     /// </summary>
     public static class SelectAttachedProperties
     {
-        //private static readonly object _lock = new object();
-
         ///// <summary>
         ///// Прикреплённое свойство "IsSelected" для управления состоянием выбора элементом
         ///// </summary>
@@ -34,7 +44,7 @@ namespace ForRobot.Libr.AttachedProperties
         /// </summary>
         public static readonly RoutedEvent AttemptSelectedEvent = EventManager.RegisterRoutedEvent("AttemptSelected",
                                                                                                    RoutingStrategy.Bubble,
-                                                                                                   typeof(RoutedEventHandler),
+                                                                                                   typeof(AttemptSelectedEventHandler),
                                                                                                    typeof(SelectAttachedProperties));
 
         /// <summary>
@@ -70,7 +80,7 @@ namespace ForRobot.Libr.AttachedProperties
 
         //#endregion IsSelcted Property
 
-        #region PreventSelect Property
+        #region PreventSelect Property 
 
         public static bool GetPreventSelect(DependencyObject obj)
         {
@@ -127,7 +137,7 @@ namespace ForRobot.Libr.AttachedProperties
                     break;
                     
                 default:
-                    if (element is UIElement genericElement)
+                    if (element is UIElement genericElement && !(element is ContentControl))
                     {
                         genericElement.PreviewMouseLeftButtonDown += GenericElement_PreviewMouseLeftButtonDown;
                     }
@@ -154,7 +164,7 @@ namespace ForRobot.Libr.AttachedProperties
                     break;
 
                 default:
-                    if (element is UIElement genericElement)
+                    if (element is UIElement genericElement && !(element is ContentControl))
                     {
                         genericElement.PreviewMouseLeftButtonDown -= GenericElement_PreviewMouseLeftButtonDown;
                     }
@@ -166,23 +176,27 @@ namespace ForRobot.Libr.AttachedProperties
 
         #region AttemptSelected Event
 
-        public static void AddAttemptSelectedHandler(UIElement element, RoutedEventHandler handler) => element.AddHandler(AttemptSelectedEvent, handler);
+        public static void AddAttemptSelectedHandler(UIElement element, AttemptSelectedEventHandler handler) => element.AddHandler(AttemptSelectedEvent, handler);
 
-        public static void RemoveAttemptSelectedHandler(UIElement element, RoutedEventHandler handler) => element.RemoveHandler(AttemptSelectedEvent, handler);
+        public static void RemoveAttemptSelectedHandler(UIElement element, AttemptSelectedEventHandler handler) => element.RemoveHandler(AttemptSelectedEvent, handler);
 
         /// <summary>
         /// Вызов события AttemptSelected
         /// </summary>
-        /// <param name = "source" ></ param >
-        public static void RaiseAttemptSelectedEvent(DependencyObject source)
+        /// <param name="source"></param>
+        /// <returns>Возвращаем true, если действие отменяется</returns>
+        public static bool RaiseAttemptSelectedEvent(DependencyObject source)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
 
             if (source is UIElement uiElement)
             {
-                uiElement.RaiseEvent(new RoutedEventArgs(AttemptSelectedEvent, uiElement));
+                var args = new AttemptSelectedEventArgs(AttemptSelectedEvent, uiElement);
+                uiElement.RaiseEvent(args);
+                return args.Cancel;
             }
+            return true;
         }
 
         #endregion AttemptSelected Event
@@ -200,22 +214,30 @@ namespace ForRobot.Libr.AttachedProperties
 
             if (e.OldValue is ICommand)
             {
-                element.RemoveHandler(AttemptSelectedEvent, (RoutedEventHandler)OnAttemptSelectedExecuted);
+                element.RemoveHandler(AttemptSelectedEvent, (AttemptSelectedEventHandler)OnAttemptSelectedExecuted);
             }
 
             if (e.NewValue is ICommand)
             {
-                element.AddHandler(AttemptSelectedEvent, (RoutedEventHandler)OnAttemptSelectedExecuted);
+                element.AddHandler(AttemptSelectedEvent, (AttemptSelectedEventHandler)OnAttemptSelectedExecuted);
             }
         }
 
-        private static void OnAttemptSelectedExecuted(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <returns>true - блокировать действие; false - не блокировать</returns>
+        private static void OnAttemptSelectedExecuted(object sender, AttemptSelectedEventArgs e)
         {
             var element = sender as DependencyObject;
             var command = GetAttemptSelectedCommand(element);
 
             if (command?.CanExecute(e) == true)
+            {
                 command.Execute(e);
+            }
         }
 
         #endregion AttemptSelectedCommand Property
@@ -245,8 +267,8 @@ namespace ForRobot.Libr.AttachedProperties
         {
             if (sender is DependencyObject element && GetPreventSelect(element))
             {
-                e.Handled = true;
-                RaiseAttemptSelectedEvent(element);
+                bool cancel = RaiseAttemptSelectedEvent(element);
+                e.Handled = cancel;
             }
         }
 
@@ -254,8 +276,8 @@ namespace ForRobot.Libr.AttachedProperties
         {
             if (sender is DependencyObject element && GetPreventSelect(element))
             {
-                e.Handled = true;
-                RaiseAttemptSelectedEvent(element);
+                bool cancel = RaiseAttemptSelectedEvent(element);
+                e.Handled = cancel;
             }
         }
 
