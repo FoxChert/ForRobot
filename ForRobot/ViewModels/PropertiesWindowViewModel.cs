@@ -38,6 +38,11 @@ namespace ForRobot.ViewModels
             }
         }
 
+        /// <summary>
+        /// Коллекция видов деталей
+        /// </summary>
+        public ObservableCollection<string> DetalTypesCollection { get; } = new ObservableCollection<string>(ForRobot.Libr.EnumExtensions.GetDescriptions(typeof(ForRobot.Models.Detals.DetalType)));
+
         public ObservableCollection<HorizontalAlignment> HorizontalAlignments { get; } = new ObservableCollection<HorizontalAlignment>(Enum.GetValues(typeof(HorizontalAlignment)).Cast<HorizontalAlignment>().ToList<HorizontalAlignment>());
         public ObservableCollection<VerticalAlignment> VerticalAlignments { get; } = new ObservableCollection<VerticalAlignment>(Enum.GetValues(typeof(VerticalAlignment)).Cast<VerticalAlignment>().ToList<VerticalAlignment>());
 
@@ -118,7 +123,6 @@ namespace ForRobot.ViewModels
                 if (obj is ForRobot.Libr.AttachedProperties.AttemptSelectedEventArgs args)
                 {
                     args.Cancel = false;
-
                     var control = args.Source as System.Windows.Controls.Control;
                     switch (control)
                     {
@@ -129,8 +133,8 @@ namespace ForRobot.ViewModels
                             //treeViewItem.IsExpanded = false;
                             //treeViewItem.IsSelected = false;
 
-                            //var children = ForRobot.Libr.DependencyObjectExtensions.FindVisualChildren<TreeViewItem>(control);
-                            //children?.First().Focus();
+                            var childrenItems = ForRobot.Libr.DependencyObjectExtensions.FindVisualChildren<TreeViewItem>(control);
+                            childrenItems?.First().Focus();
                             break;
 
                         case CheckBox checkBox:
@@ -179,8 +183,9 @@ namespace ForRobot.ViewModels
                     }
                 }
             },
-            shouldBlock: obj => !ForRobot.Libr.AppWindowManager.PinCode(ForRobot.Properties.Settings.Default.PinCode)));
+            shouldBlock: _ => !ForRobot.Libr.AppWindowManager.PinCode(ForRobot.Properties.Settings.Default.PinCode)));
         }
+
         //{
         //    get => this._selectClosedControlCommand ?? (this._selectClosedControlCommand = new RelayCommand(obj =>
         //    {

@@ -472,6 +472,7 @@
                       ItemsSource="{Binding Source={x:Static detals:ScoseTypes.Descriptions}, Mode=OneTime}"
                       SelectedItem="{Binding Path=ScoseType, Converter={StaticResource DescriptionsStaticClassConvert}, Mode=TwoWay}"
                       SelectedIndex="0">
+                
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <Grid>

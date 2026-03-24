@@ -380,7 +380,7 @@
     <Compile Include="Libr\Converters\CollectionsStringToBoolConverter.cs" />
     <Compile Include="Libr\Converters\ColorSaveConverter.cs" />
     <Compile Include="Libr\Converters\ColorToBrushConverter.cs" />
-    <Compile Include="Libr\Converters\DescriptionsStaticClassConverter.cs" />
+    <Compile Include="Libr\Converters\EnumDescriptionClassConverter.cs" />
     <Compile Include="Libr\Converters\EmptyCollectionToColorConverter.cs" />
     <Compile Include="Libr\Converters\GetColorConverter.cs" />
     <Compile Include="Libr\Converters\NumbersForWeldingSchemaConverter.cs" />

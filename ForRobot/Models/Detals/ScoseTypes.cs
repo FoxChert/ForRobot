@@ -39,13 +39,12 @@ namespace ForRobot.Models.Detals
         /// </summary>
         public const string TrapezoidBottom = "d_trapezoid_bottom";
 
-        public static string[] Descriptions
+        public static string[] Descriptions { get; }
+
+        static ScoseTypes()
         {
-            get
-            {
-                var Descriptions = typeof(ForRobot.Models.Detals.ScoseTypes).GetFields().Select(field => field.GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), false).SingleOrDefault() as System.ComponentModel.DescriptionAttribute);
-                return Descriptions.Where(item => item != null).Select(item => item.Description).ToArray<string>();
-            }
+            var descriptions = typeof(ForRobot.Models.Detals.ScoseTypes).GetFields().Select(field => field.GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), false).SingleOrDefault() as System.ComponentModel.DescriptionAttribute);
+            Descriptions = descriptions.Where(item => item != null).Select(item => item.Description).ToArray<string>();
         }
 
         public static object FieldByDescription(string sDiscription)

@@ -129,18 +129,12 @@ namespace ForRobot.Libr.AttachedProperties
                     selector.SelectionChanged += Selector_SelectionChanged;
                     break;
 
-                case ContentControl contentControl:
-                    if (contentControl is UIElement uiElement)
-                    {
-                        uiElement.PreviewMouseLeftButtonDown += ContentControl_PreviewMouseLeftButtonDown;
-                    }
+                case ContentControl contentControl when contentControl is UIElement uiElement:
+                    uiElement.PreviewMouseLeftButtonDown += ContentControl_PreviewMouseLeftButtonDown;
                     break;
-                    
-                default:
-                    if (element is UIElement genericElement && !(element is ContentControl))
-                    {
-                        genericElement.PreviewMouseLeftButtonDown += GenericElement_PreviewMouseLeftButtonDown;
-                    }
+
+                case UIElement uiElement:
+                    uiElement.PreviewMouseLeftButtonDown += GenericElement_PreviewMouseLeftButtonDown;
                     break;
             }
         }
@@ -156,18 +150,12 @@ namespace ForRobot.Libr.AttachedProperties
                     selector.SelectionChanged -= Selector_SelectionChanged;
                     break;
 
-                case ContentControl contentControl:
-                    if (contentControl is UIElement uiElement)
-                    {
-                        uiElement.PreviewMouseLeftButtonDown -= ContentControl_PreviewMouseLeftButtonDown;
-                    }
+                case ContentControl contentControl when contentControl is UIElement uiElement:
+                    uiElement.PreviewMouseLeftButtonDown -= ContentControl_PreviewMouseLeftButtonDown;
                     break;
 
-                default:
-                    if (element is UIElement genericElement && !(element is ContentControl))
-                    {
-                        genericElement.PreviewMouseLeftButtonDown -= GenericElement_PreviewMouseLeftButtonDown;
-                    }
+                case UIElement uiElement:
+                    uiElement.PreviewMouseLeftButtonDown -= GenericElement_PreviewMouseLeftButtonDown;
                     break;
             }
         }
@@ -265,7 +253,7 @@ namespace ForRobot.Libr.AttachedProperties
 
         private static void ContentControl_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (sender is DependencyObject element && GetPreventSelect(element))
+            if (sender is DependencyObject element && GetPreventSelect(element) && e.Source == element)
             {
                 bool cancel = RaiseAttemptSelectedEvent(element);
                 e.Handled = cancel;
@@ -274,7 +262,7 @@ namespace ForRobot.Libr.AttachedProperties
 
         private static void GenericElement_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (sender is DependencyObject element && GetPreventSelect(element))
+            if (sender is DependencyObject element && GetPreventSelect(element) && e.Source == element)
             {
                 bool cancel = RaiseAttemptSelectedEvent(element);
                 e.Handled = cancel;
