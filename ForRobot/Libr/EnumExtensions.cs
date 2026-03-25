@@ -20,7 +20,18 @@ namespace ForRobot.Libr
         /// <returns></returns>
         public static T GetByDescription<T>(this T enumValue, string description) where T : Enum 
         {
-            return Enum.GetValues(typeof(T)).Cast<T>().Where(item => item.GetDescription() == description).FirstOrDefault();
+            if (string.IsNullOrEmpty(description))
+                return default(T);
+
+            foreach (T value in Enum.GetValues(typeof(T)))
+            {
+                if (string.Equals(value.GetDescription(), description, StringComparison.Ordinal))
+                {
+                    return value;
+                }
+            }
+            return default(T);
+            //return Enum.GetValues(typeof(T)).Cast<T>().Where(item => item.GetDescription() == description).FirstOrDefault();
         }
 
         /// <summary>
@@ -28,9 +39,25 @@ namespace ForRobot.Libr
         /// </summary>
         /// <param name="type">Тип перечисления</param>
         /// <returns></returns>
+        public static IEnumerable<string> GetDescriptions<T>(this T enumValue) where T : Enum
+        {
+            return enumValue.GetType().GetDescriptions();
+        }
+
+        /// <summary>
+        /// Вывод <see cref="DescriptionAttribute.Description"/> элементов перечисления
+        /// </summary>
+        /// <param name="type">Тип перечисления</param>
+        /// <returns></returns>
         public static IEnumerable<string> GetDescriptions(this Type type)
         {
-            return type.GetFields().Select(item => ((DescriptionAttribute[])item.GetCustomAttributes(typeof(DescriptionAttribute), false)).FirstOrDefault().Description);
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+
+            if (!type.IsEnum)
+                throw new ArgumentException("Тип должен представлять перечисление.", nameof(type));
+
+            return Enum.GetValues(type).Cast<Enum>().Select(value => value.GetDescription()).Where(desc => !string.IsNullOrEmpty(desc));
         }
 
         /// <summary>
@@ -38,11 +65,18 @@ namespace ForRobot.Libr
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static string GetDescription(this Enum value)
+        public static string GetDescription<T>(this T value) where T : Enum
         {
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
+
             FieldInfo fieldInfo = value.GetType().GetField(value.ToString());
-            DescriptionAttribute[] attributes = (DescriptionAttribute[])fieldInfo.GetCustomAttributes(typeof(DescriptionAttribute), false);
-            return attributes.Length > 0 ? attributes[0].Description : value.ToString();
+
+            if (fieldInfo == null)
+                return value.ToString();
+
+            var attribute = fieldInfo.GetCustomAttribute<DescriptionAttribute>();
+            return attribute?.Description ?? value.ToString();
         }
     }
 }

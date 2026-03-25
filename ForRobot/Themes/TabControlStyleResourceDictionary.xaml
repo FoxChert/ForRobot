@@ -470,7 +470,7 @@
                       VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
                       FontSize="{DynamicResource FontSizeNP2}" TextElement.FontWeight="Bold"
                       ItemsSource="{Binding Source={x:Static detals:ScoseTypes.Descriptions}, Mode=OneTime}"
-                      SelectedItem="{Binding Path=ScoseType, Converter={StaticResource DescriptionsStaticClassConvert}, Mode=TwoWay}"
+                      SelectedItem="{Binding Path=ScoseType, Converter={StaticResource EnumDescriptionConverter}, Mode=TwoWay}"
                       SelectedIndex="0">
                 
                 <ComboBox.ItemTemplate>

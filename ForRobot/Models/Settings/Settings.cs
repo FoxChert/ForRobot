@@ -423,10 +423,8 @@ namespace ForRobot.Models.Settings
                 var attribute = f.GetCustomAttributes(typeof(ForRobot.Libr.Attributes.PropertyNameAttribute), false).FirstOrDefault() as ForRobot.Libr.Attributes.PropertyNameAttribute;
                 if (attribute != null)
                 {
-                    // Извлекаем название из атрибута
                     string name = attribute.PropertyName;
 
-                    // Получаем значение цвета из свойства экземпляра
                     System.Windows.Media.Color colorValue = (System.Windows.Media.Color)f.GetValue(null);
 
                     colors.Add(name, colorValue);

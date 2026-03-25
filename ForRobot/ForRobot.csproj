@@ -320,6 +320,7 @@
     <Compile Include="Libr\Collections\RobotCollection.cs" />
     <Compile Include="Libr\Collections\RobotPropertyChangedEventArgs.cs" />
     <Compile Include="Libr\Converters\AssimpConverter.cs" />
+    <Compile Include="Libr\Converters\InvertBooleanConverter.cs" />
     <Compile Include="Libr\DependencyObjectExtensions.cs" />
     <Compile Include="Libr\Messages\LayoutAnchorableMessage.cs" />
     <Compile Include="Libr\Behavior\DataGridAutoSizeColumns.cs" />
@@ -380,7 +381,7 @@
     <Compile Include="Libr\Converters\CollectionsStringToBoolConverter.cs" />
     <Compile Include="Libr\Converters\ColorSaveConverter.cs" />
     <Compile Include="Libr\Converters\ColorToBrushConverter.cs" />
-    <Compile Include="Libr\Converters\EnumDescriptionClassConverter.cs" />
+    <Compile Include="Libr\Converters\EnumDescriptionConverter.cs" />
     <Compile Include="Libr\Converters\EmptyCollectionToColorConverter.cs" />
     <Compile Include="Libr\Converters\GetColorConverter.cs" />
     <Compile Include="Libr\Converters\NumbersForWeldingSchemaConverter.cs" />

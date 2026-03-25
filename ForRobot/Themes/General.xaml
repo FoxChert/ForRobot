@@ -11,6 +11,7 @@
     <sys:Boolean x:Key="False">False</sys:Boolean>
 
     <!--Converters-->
+    <conv:InvertBooleanConverter x:Key="InvertBooleanConverter"/>
     <conv:BoundsConverter x:Key="BoundsConvert"/>
     <conv:RowNumberConverter x:Key="RowNumberConvert"/>
     <conv:RadioButtonConverter x:Key="RadioButtonConvert"/>
@@ -23,7 +24,7 @@
     <conv:NullBooleanConverter x:Key="NullBooleanConvert"/>
     <conv:NumbersForWeldingSchemaConverter x:Key="NumbersForWeldingSchemaConvert"/>
     <conv:CollectionsStringToBoolConverter x:Key="CollectionsStringToBoolConvert"/>
-    <conv:DescriptionsStaticClassConverter x:Key="DescriptionsStaticClassConvert"/>
+    <conv:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
     <conv:BindingToTagConverter x:Key="BindingToTagConvert"/>
     <conv:EmptyCollectionToColorConverter x:Key="EmptyCollectionToColorConvert"/>
     <conv:ScaleFactorConverter x:Key="ScaleFactorConvert"/>

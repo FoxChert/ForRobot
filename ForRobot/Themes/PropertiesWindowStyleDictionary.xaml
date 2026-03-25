@@ -9,7 +9,7 @@
                     xmlns:pt="clr-namespace:PropertyTools.Wpf;assembly=PropertyTools.Wpf"
                     xmlns:attached="clr-namespace:ForRobot.Libr.AttachedProperties">
 
-    <Style x:Key="textBase" TargetType="{x:Type FrameworkElement}">
+    <Style x:Key="FrameworkElementBase" TargetType="{x:Type FrameworkElement}">
         <Setter Property="TextElement.FontSize" Value="{StaticResource FontSizeNP1}"/>
         <Setter Property="TextElement.FontFamily" Value="{StaticResource DefaultFont}"/>
         <Setter Property="TextElement.Foreground" Value="{StaticResource ThemeFgP2Brush}"/>
@@ -17,41 +17,55 @@
         <Setter Property="attached:SelectAttachedProperties.AttemptSelectedCommand" Value="{Binding Path=SelectClosedControlCommand}"/>
     </Style>
 
-    <Style TargetType="{x:Type Label}" BasedOn="{StaticResource textBase}">
+    <Style TargetType="{x:Type Label}" BasedOn="{StaticResource FrameworkElementBase}">
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
     </Style>
 
-    <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource textBase}">
+    <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource FrameworkElementBase}">
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="Padding" Value="5"/>
     </Style>
 
-    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource textBase}">
+    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource FrameworkElementBase}">
         <Setter Property="Padding" Value="0, 5"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
     </Style>
 
-    <Style x:Key="CheckBoxBase" TargetType="{x:Type CheckBox}" BasedOn="{StaticResource textBase}">
+    <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource FrameworkElementBase}">
         <Setter Property="Margin" Value="0,5"/>
         <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>
     </Style>
 
-    <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource CheckBoxBase}"></Style>
+    <Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource FrameworkElementBase}"></Style>
 
-    <Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource textBase}"></Style>
-
-    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource textBase}"></Style>
-
-    <Style x:Key="GroupBoxBase" TargetType="{x:Type GroupBox}" BasedOn="{StaticResource textBase}">
-        <Setter Property="Padding" Value="5"/>
+    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource FrameworkElementBase}">
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <!--<Setter Property="Padding" Value="5"/>-->
     </Style>
 
-    <Style TargetType="{x:Type GroupBox}" BasedOn="{StaticResource GroupBoxBase}"/>
-    
-    <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource textBase}"></Style>
+    <Style TargetType="{x:Type GroupBox}" BasedOn="{StaticResource FrameworkElementBase}">
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="Margin" Value="5"/>
+    </Style>
+
+    <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource FrameworkElementBase}">
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="ItemTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" Padding="5"/>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Margin" Value="5"/>
+    </Style>
 
     <Style TargetType="{x:Type Slider}">
         <Setter Property="Margin" Value="5,0"/>
@@ -61,13 +75,13 @@
     <ResourceDictionary x:Key="SelectAppsWindowResource"
                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource textBase}">
+        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource FrameworkElementBase}">
             <Setter Property="Margin" Value="20, 5"/>
             <Setter Property="MinWidth" Value="60"/>
             <Setter Property="Padding" Value="5, 3"/>
         </Style>
 
-        <Style TargetType="{x:Type ContentControl}" BasedOn="{StaticResource textBase}">
+        <Style TargetType="{x:Type ContentControl}" BasedOn="{StaticResource FrameworkElementBase}">
             <Setter Property="ContentTemplate">
                 <Setter.Value>
                     <DataTemplate>
@@ -119,13 +133,6 @@
 
     <!--Вкладка "Общии"-->
     <DataTemplate x:Key="GeneralProperiesTemplate" DataType="{x:Type ContentControl}">
-        <DataTemplate.Resources>
-            <Style x:Key="ComboBoxBase" TargetType="{x:Type ComboBox}" BasedOn="{StaticResource textBase}">
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            </Style>
-        </DataTemplate.Resources>
-
         <Grid Background="Transparent" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -149,17 +156,8 @@
                         </Grid.ColumnDefinitions>
 
                         <CheckBox Grid.Column="0" Content="Автообновление" IsChecked="{Binding Path=Settings.AutoUpdate, Mode=TwoWay}"/>
-                        <CheckBox Grid.Column="2" Content="Уведомлять пользователя перед обновлением" IsChecked="{Binding Path=Settings.InformUser, Mode=TwoWay}">
-                            <CheckBox.Style>
-                                <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource CheckBoxBase}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Path=Settings.AutoUpdate}" Value="{StaticResource False}">
-                                            <Setter Property="IsEnabled" Value="False"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </CheckBox.Style>
-                        </CheckBox>
+                        <CheckBox Grid.Column="2" Content="Уведомлять пользователя перед обновлением" IsChecked="{Binding Path=Settings.InformUser, Mode=TwoWay}"
+                                  IsEnabled="{Binding Path=Settings.AutoUpdate}"/>
                     </Grid>
 
                     <Grid Grid.Row="1">
@@ -192,39 +190,14 @@
                               IsChecked="{Binding Path=Settings.CreatedDetalFile, Mode=TwoWay}"/>
 
                     <CheckBox Grid.Row="1" Content="Сохранять параметры детали перед закрытием"
-                              IsChecked="{Binding Path=Settings.SaveDetalProperties, Mode=TwoWay}">
-                        <CheckBox.Style>
-                            <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource CheckBoxBase}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Path=Settings.CreatedDetalFile}" Value="{StaticResource False}">
-                                        <Setter Property="IsEnabled" Value="False"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </CheckBox.Style>
-                    </CheckBox>
+                              IsChecked="{Binding Path=Settings.SaveDetalProperties, Mode=TwoWay}"
+                              IsEnabled="{Binding Path=Settings.CreatedDetalFile}"/>
 
                     <ComboBox Grid.Row="2"
+                              IsEnabled="{Binding Path=Settings.CreatedDetalFile}"
                               ItemsSource="{Binding Path=DetalTypesCollection, Mode=OneWay}"
                               SelectedItem="{Binding Path=Settings.StartedDetalType, Mode=TwoWay}"
-                              SelectedIndex="0">
-
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding}" Padding="5"/>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-
-                        <ComboBox.Style>
-                            <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource ComboBoxBase}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Path=Settings.CreatedDetalFile}" Value="False">
-                                        <Setter Property="IsEnabled" Value="False"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ComboBox.Style>
-                    </ComboBox>
+                              SelectedIndex="0"/>
                 </Grid>
             </GroupBox>
 
@@ -412,30 +385,6 @@
 
     <!--Вкладка "3D сцена"-->
     <DataTemplate x:Key="3DViewProperiesTemplate" DataType="{x:Type ContentControl}">
-        <DataTemplate.Resources>
-            <Style x:Key="TextBlockBase" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource textBase}">
-                <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="Padding" Value="5"/>
-            </Style>
-
-            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockBase}"></Style>
-
-            <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource textBase}">
-                <Setter Property="ItemTemplate">
-                    <Setter.Value>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding}"/>
-                        </DataTemplate>
-                    </Setter.Value>
-                </Setter>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                <Setter Property="Margin" Value="10, 0"/>
-            </Style>
-        </DataTemplate.Resources>
-
         <Grid Background="Transparent" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -626,12 +575,6 @@
 
             <GroupBox Grid.Row="8" Header="Цветовое обозначение">
                 <Grid TextElement.FontWeight="Normal">
-                    <Grid.Resources>
-                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockBase}">                            
-                            <Setter Property="HorizontalAlignment" Value="Center"/>
-                        </Style>
-                    </Grid.Resources>
-                    
                     <ListBox SelectionMode="Single"
                              Background="{x:Null}" BorderBrush="{x:Null}" BorderThickness="0" HorizontalContentAlignment="Stretch"
                              ItemsSource="{Binding Path=Settings.Colors, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DictionaryToBindableCollectionConvert}}">
@@ -665,25 +608,6 @@
 
     <!--Вкладка "Генерация"-->
     <DataTemplate x:Key="GenerationProperiesTemplate" DataType="{x:Type ContentControl}">
-        <DataTemplate.Resources>
-            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource textBase}">
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="Background" Value="Transparent"/>
-            </Style>
-
-            <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource textBase}">
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                <Setter Property="ItemTemplate">
-                    <Setter.Value>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Path=Item2}" Padding="5"/>
-                        </DataTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-        </DataTemplate.Resources>
-
         <Grid Background="Transparent" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -695,17 +619,9 @@
 
             <CheckBox Grid.Row="0" Content="Запрашивать имя файла при каждой генерации" IsChecked="{Binding Path=Settings.AskNameFile, Mode=TwoWay}"/>
 
-            <GroupBox Grid.Row="1" Header="Стандартное наименование итогового файла от типа детали:">
-                <GroupBox.Style>
-                    <Style TargetType="{x:Type GroupBox}" BasedOn="{StaticResource GroupBoxBase}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Path=Settings.AskNameFile, Mode=TwoWay}" Value="True">
-                                <Setter Property="IsEnabled" Value="False"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </GroupBox.Style>
-                
+            <GroupBox Grid.Row="1" Header="Стандартное наименование итогового файла от типа детали:"
+                      IsEnabled="{Binding Path=Settings.AskNameFile, Converter={StaticResource InvertBooleanConverter}}">
+
                 <Grid TextElement.FontWeight="Normal" Margin="4">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -715,7 +631,14 @@
                     <ComboBox Grid.Column="0"
                               ItemsSource="{Binding Path=Settings.DetalsProgramNames, Source={x:Static Application.Current}, Mode=OneWay}"
                               SelectedItem="{Binding Path=SelectedTumpleProgramName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                              SelectedIndex="0"/>
+                              SelectedIndex="0">
+                        
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Item2}" Padding="5"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
 
                     <TextBox x:Name="NameFile" Grid.Column="1" Text="{Binding Path=SelectedTumpleProgramName.Item3, Mode=OneWay}"
                              attached:SelectAttachedProperties.PreventSelect="True"/>
@@ -732,7 +655,14 @@
                     <ComboBox Grid.Column="0"
                               ItemsSource="{Binding Path=Settings.DetalsScriptNames, Source={x:Static Application.Current}, Mode=OneWay}"
                               SelectedItem="{Binding Path=SelectedTumpleScriptsName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                              SelectedIndex="0"/>
+                              SelectedIndex="0">
+                        
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Item2}" Padding="5"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
 
                     <TextBox x:Name="NameScript" Grid.Column="1" Text="{Binding Path=SelectedTumpleScriptsName.Item3, Mode=OneWay}"
                              attached:SelectAttachedProperties.PreventSelect="True"/>
