@@ -24,7 +24,9 @@ namespace ForRobot.Models.Settings
     public class Settings : ICloneable
     {
         #region Private variables
-        
+
+        private List<(string, bool)> _availableFolders;
+
         private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings()
         {
             Formatting = Formatting.Indented,
@@ -93,21 +95,24 @@ namespace ForRobot.Models.Settings
         /// </summary>
         public bool AccessDataFile { get; set; } = false;
 
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
         /// <summary>
         /// Доступность системных папок в дереве файлов
         /// </summary>
-        public SortedDictionary<string, bool> AvailableFolders { get; set; } = new SortedDictionary<string, bool>()
-                                                                                    {
-                                                                                        { "System", false },
-                                                                                        { "Mada", false },
-                                                                                        { "TP", false },
-                                                                                        { "STEU", false }
-                                                                                    };
+        public List<Tuple<string, bool>> AvailableFolders { get; set; }
+
+        //public SortedDictionary<string, bool> AvailableFolders { get; set; } = new SortedDictionary<string, bool>()
+        //                                                                            {
+        //                                                                                { "System", false },
+        //                                                                                { "Mada", false },
+        //                                                                                { "TP", false },
+        //                                                                                { "STEU", false }
+        //                                                                            };
 
         #endregion
 
         #region View
-        
+
         public static List<Tuple<string, Theme>> Themes { get; } = new List<Tuple<string, Theme>>()
         {
             new Tuple<string, Theme>(nameof(GenericTheme), new GenericTheme()),
@@ -329,9 +334,8 @@ namespace ForRobot.Models.Settings
                 if (this._scriptsCollection == null)
                 {
                     this._scriptsCollection = GetScripts();
-                    this._scriptsCollection.CollectionChanged += HandleCollectionChanged;
+                    //this._scriptsCollection.CollectionChanged += HandleCollectionChanged;
                 }
-
                 return this._scriptsCollection;
             }
         }

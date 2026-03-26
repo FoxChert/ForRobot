@@ -25,11 +25,11 @@
     <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource FrameworkElementBase}">
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        <Setter Property="Padding" Value="5"/>
+        <Setter Property="Padding" Value="5, 0"/>
     </Style>
 
     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource FrameworkElementBase}">
-        <Setter Property="Padding" Value="0, 5"/>
+        <Setter Property="Padding" Value="5"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
     </Style>
@@ -196,7 +196,7 @@
                     <ComboBox Grid.Row="2"
                               IsEnabled="{Binding Path=Settings.CreatedDetalFile}"
                               ItemsSource="{Binding Path=DetalTypesCollection, Mode=OneWay}"
-                              SelectedItem="{Binding Path=Settings.StartedDetalType, Mode=TwoWay}"
+                              SelectedItem="{Binding Path=Settings.StartedDetalType, Converter={StaticResource EnumDescriptionConverter}, Mode=TwoWay}"
                               SelectedIndex="0"/>
                 </Grid>
             </GroupBox>
@@ -204,32 +204,6 @@
             <Button Grid.Row="3" Content="Изменить пин-код" Margin="15" Command="{Binding Path=EditPinCodeCommand}" 
                     VerticalAlignment="Bottom"/>
         </Grid>        
-    </DataTemplate>
-
-    <!--Вкладка "Соединение"-->
-    <DataTemplate x:Key="ConnectionProperiesTemplate" DataType="{x:Type ContentControl}">
-        <Grid Background="Transparent" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-
-            <CheckBox Grid.Row="0" Content="Ограничивать время ожидания ответа от сервера"
-                      IsChecked="{Binding Path=Settings.LimitedConnectionTimeOut, Mode=TwoWay}"/>
-
-            <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                
-                <TextBlock Grid.Column="0" Text="Время ожидания, сек."/>
-                <Slider Grid.Column="1" Value="{Binding Path=Settings.ConnectionTimeOut, Mode=TwoWay}" Minimum="3" Maximum="20" TickPlacement="BottomRight" TickFrequency="0.5" IsSnapToTickEnabled="True"
-                        Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ColumnDefinition}, Mode=FindAncestor}}"/>
-                <TextBlock Grid.Column="2" Text="{Binding Path=Settings.ConnectionTimeOut, Mode=OneWay, StringFormat='{}{0:0.0}'}"/>
-            </Grid>
-        </Grid>
     </DataTemplate>
 
     <!--Вкладка "Навигация"-->
@@ -268,6 +242,32 @@
             </GroupBox>
 
             <CheckBox Grid.Row="1" Margin="0, 5" Content="Доступны файлы с расширением .dat" IsChecked="{Binding Path=Settings.AccessDataFile, Mode=TwoWay}"/>
+        </Grid>
+    </DataTemplate>
+
+    <!--Вкладка "Соединение"-->
+    <DataTemplate x:Key="ConnectionProperiesTemplate" DataType="{x:Type ContentControl}">
+        <Grid Background="Transparent" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <CheckBox Grid.Row="0" Content="Ограничивать время ожидания ответа от сервера"
+                      IsChecked="{Binding Path=Settings.LimitedConnectionTimeOut, Mode=TwoWay}"/>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="Время ожидания, сек."/>
+                <Slider Grid.Column="1" Value="{Binding Path=Settings.ConnectionTimeOut, Mode=TwoWay}" Minimum="3" Maximum="20" TickPlacement="BottomRight" TickFrequency="0.5" IsSnapToTickEnabled="True"
+                        Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ColumnDefinition}, Mode=FindAncestor}}"/>
+                <TextBlock Grid.Column="2" Text="{Binding Path=Settings.ConnectionTimeOut, Mode=OneWay, StringFormat='{}{0:0.0}'}"/>
+            </Grid>
         </Grid>
     </DataTemplate>
 

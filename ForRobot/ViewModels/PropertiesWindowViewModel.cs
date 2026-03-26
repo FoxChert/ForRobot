@@ -11,6 +11,7 @@ using AvalonDock.Themes;
 using AvalonDock.Layout;
 
 using ForRobot.Models.Settings;
+using ForRobot.Models.Detals;
 
 namespace ForRobot.ViewModels
 {
@@ -18,11 +19,25 @@ namespace ForRobot.ViewModels
     {
         private Settings _settings;
 
+        private ObservableCollection<string> _detalTypesCollection;
+        private ObservableCollection<HorizontalAlignment> _horizontalAlignments;
+        private ObservableCollection<VerticalAlignment> _verticalAlignments;
+
         private ICommand _editPathForUpdateCommand;
+        private ICommand _checkedAvailableFolderCommand;
         private ICommand _standartSettingsCommand;
         private ICommand _selectClosedControlCommand;
 
         #region Public variables
+
+        /// <summary>
+        /// Временный пин-код для последующего сохранений
+        /// </summary>
+        public static string TempPinCode { get; private set; }
+        /// <summary>
+        /// Временный пусть до папки с обновлениями
+        /// </summary>
+        public static string TempUpdatePath { get; private set; }
 
         public Settings Settings { get => this._settings; set => Set(ref this._settings, value); }
 
@@ -41,10 +56,24 @@ namespace ForRobot.ViewModels
         /// <summary>
         /// Коллекция видов деталей
         /// </summary>
-        public ObservableCollection<string> DetalTypesCollection { get; } = new ObservableCollection<string>(ForRobot.Libr.EnumExtensions.GetDescriptions(typeof(ForRobot.Models.Detals.DetalType)));
+        //public ObservableCollection<ForRobot.Models.Detals.DetalType> DetalTypesCollection { get; } = new ObservableCollection<ForRobot.Models.Detals.DetalType>(ForRobot.Models.Detals.DetalType.All);
+        public ObservableCollection<string> DetalTypesCollection 
+        {
+            get
+            {
+                if(_detalTypesCollection == null)
+                {
+                    _detalTypesCollection = new ObservableCollection<string>(ForRobot.Libr.EnumExtensions.GetDescriptions(typeof(DetalType)));
+                    _detalTypesCollection.Remove(ForRobot.Libr.EnumExtensions.GetDescription(ForRobot.Models.Detals.DetalType.All));
+                }
+                return _detalTypesCollection;
+            }
+        }
 
-        public ObservableCollection<HorizontalAlignment> HorizontalAlignments { get; } = new ObservableCollection<HorizontalAlignment>(Enum.GetValues(typeof(HorizontalAlignment)).Cast<HorizontalAlignment>().ToList<HorizontalAlignment>());
-        public ObservableCollection<VerticalAlignment> VerticalAlignments { get; } = new ObservableCollection<VerticalAlignment>(Enum.GetValues(typeof(VerticalAlignment)).Cast<VerticalAlignment>().ToList<VerticalAlignment>());
+        public ObservableCollection<HorizontalAlignment> HorizontalAlignments { get => _horizontalAlignments 
+                ?? (_horizontalAlignments = new ObservableCollection<HorizontalAlignment>(Enum.GetValues(typeof(HorizontalAlignment)).Cast<HorizontalAlignment>())); }
+        public ObservableCollection<VerticalAlignment> VerticalAlignments { get => _verticalAlignments 
+                ?? (_verticalAlignments = new ObservableCollection<VerticalAlignment>(Enum.GetValues(typeof(VerticalAlignment)).Cast<VerticalAlignment>())); }
 
         #region Commands
 
@@ -63,12 +92,29 @@ namespace ForRobot.ViewModels
                     System.Windows.Forms.DialogResult result = fbd.ShowDialog();
                     if (result == System.Windows.Forms.DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
                     {
-                        Properties.Settings.Default.UpdatePath = fbd.SelectedPath;
-                        Properties.Settings.Default.Save();
+                        TempUpdatePath = fbd.SelectedPath;
                     }
                 }
             }));
         }
+
+        public ICommand EditPinCodeCommand { get; } = new RelayCommand(_ => 
+        {
+            if (!ForRobot.Libr.AppWindowManager.PinCode(TempPinCode))
+                return;
+
+            string answer = ForRobot.Libr.AppWindowManager.Input("Введите новый пин-код");
+
+            if (string.IsNullOrEmpty(answer))
+                return;
+
+            TempPinCode = ForRobot.Libr.Cryptography.Hashing.Sha256(answer);
+        });
+
+        ///// <summary>
+        ///// Комманда изменения checkBox отображающихся папок
+        ///// </summary>
+        //public ICommand CheckBoxAvailableFolderCommand
 
         /// <summary>
         /// Команда возвращения к стандартным настройкам
@@ -85,7 +131,12 @@ namespace ForRobot.ViewModels
         /// <summary>
         /// Команда сохранения настроек
         /// </summary>
-        public ICommand SaveSettingsCommand { get; }
+        public ICommand SaveSettingsCommand { get; } = new RelayCommand(_ => 
+        {
+            ForRobot.Properties.Settings.Default.PinCode = TempPinCode;
+            ForRobot.Properties.Settings.Default.UpdatePath = TempUpdatePath;
+            ForRobot.Properties.Settings.Default.Save();
+        });
 
         public class AttemptSelectedCommand : RelayCommand
         {
@@ -183,7 +234,7 @@ namespace ForRobot.ViewModels
                     }
                 }
             },
-            shouldBlock: _ => !ForRobot.Libr.AppWindowManager.PinCode(ForRobot.Properties.Settings.Default.PinCode)));
+            shouldBlock: _ => !ForRobot.Libr.AppWindowManager.PinCode(TempPinCode)));
         }
 
         //{
@@ -244,6 +295,8 @@ namespace ForRobot.ViewModels
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
                 return;
 
+            TempPinCode = ForRobot.Properties.Settings.Default.PinCode;
+            TempUpdatePath = ForRobot.Properties.Settings.Default.UpdatePath;
             this.Settings = App.Current.Settings.Clone() as Settings;
         }
     }

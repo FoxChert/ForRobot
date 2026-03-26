@@ -605,6 +605,11 @@ namespace ForRobot
                 settings.PathFolderOfGeneration = robotConfig.PathFolderGeneration;
                 settings.ControlerFolder = robotConfig.ControlFolderPath;
 
+                var folders = robotConfig.SystemFolders.Split(',');
+                List<Tuple<string, bool>> availableFolders = new List<Tuple<string, bool>>();
+                foreach (var folder in folders)
+                    availableFolders.Add(new Tuple<string, bool>(folder.Trim(), false));
+
                 settings.Save();
             }
 

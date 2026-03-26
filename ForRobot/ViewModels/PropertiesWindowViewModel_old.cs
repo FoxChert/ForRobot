@@ -257,8 +257,8 @@ namespace ForRobot.ViewModels
         /// <param name="folder"></param>
         public void CheckBoxAvailableFolder(System.Collections.Generic.KeyValuePair<string, bool> folder)
         {
-            this.Settings.AvailableFolders.Remove(this.Settings.AvailableFolders.Where(x => x.Key == folder.Key).First().Key);
-            this.Settings.AvailableFolders.Add(folder.Key, !folder.Value);
+            //this.Settings.AvailableFolders.Remove(this.Settings.AvailableFolders.Where(x => x.Key == folder.Key).First().Key);
+            //this.Settings.AvailableFolders.Add(folder.Key, !folder.Value);
         }
 
         #region Static

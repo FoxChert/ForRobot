@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ForRobot.Libr.Configuration.ConfigurationProperties
 {
@@ -9,5 +10,6 @@ namespace ForRobot.Libr.Configuration.ConfigurationProperties
     {
         public string ControlFolderPath => GetValue<string>("control_folder_path");
         public string PathFolderGeneration => GetValue<string>("path_folder_gen");
+        public string SystemFolders => GetValue<string>("system_folders");
     }
 }
