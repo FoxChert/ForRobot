@@ -1,20 +1,18 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Windows;
-using System.Reflection;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Runtime.Serialization;
-
-using AvalonDock.Themes;
-
-using Newtonsoft.Json;
-
-using HelixToolkit.Wpf;
-
+﻿using AvalonDock.Themes;
 using ForRobot.Libr;
 using ForRobot.Models.Detals;
+using HelixToolkit.Wpf;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
+using System.Windows;
 
 namespace ForRobot.Models.Settings
 {
@@ -25,7 +23,7 @@ namespace ForRobot.Models.Settings
     {
         #region Private variables
 
-        private List<(string, bool)> _availableFolders;
+        //private List<(string, bool)> _availableFolders;
 
         private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings()
         {
@@ -33,6 +31,9 @@ namespace ForRobot.Models.Settings
             NullValueHandling = NullValueHandling.Ignore,
             ObjectCreationHandling = ObjectCreationHandling.Replace
         };
+
+        private List<MutableKeyValuePair<DetalType, string>> _detalsProgramNames;
+        private List<MutableKeyValuePair<DetalType, string>> _detalsScriptNames;
 
         private Dictionary<string, System.Windows.Media.Color> _colors = new Dictionary<string, System.Windows.Media.Color>();
         
@@ -99,15 +100,7 @@ namespace ForRobot.Models.Settings
         /// <summary>
         /// Доступность системных папок в дереве файлов
         /// </summary>
-        public List<Tuple<string, bool>> AvailableFolders { get; set; }
-
-        //public SortedDictionary<string, bool> AvailableFolders { get; set; } = new SortedDictionary<string, bool>()
-        //                                                                            {
-        //                                                                                { "System", false },
-        //                                                                                { "Mada", false },
-        //                                                                                { "TP", false },
-        //                                                                                { "STEU", false }
-        //                                                                            };
+        public ObservableCollection<MutableKeyValuePair<string, bool>> AvailableFolders { get; set; }
 
         #endregion
 
@@ -317,27 +310,20 @@ namespace ForRobot.Models.Settings
         /// <summary>
         /// Наименования для сгенерированных программ (в зависимости от типа детали)
         /// </summary>
-        public List<Tuple<DetalType, string, string>> DetalsProgramNames { get; private set; } = new List<Tuple<DetalType, string, string>>(DetalTypeExtensions.DetalTypeCollection().Select(t => new Tuple<DetalType, string, string>(t, t.GetDescription(), string.Empty)).ToList());
+        public List<MutableKeyValuePair<DetalType, string>> DetalsProgramNames 
+        {
+            get => _detalsProgramNames ?? (_detalsProgramNames = new List<MutableKeyValuePair<DetalType, string>>(DetalTypeExtensions.DetalTypeCollection().Select(t => new MutableKeyValuePair<DetalType, string>(t, string.Empty))));
+            private set => _detalsProgramNames = value;
+        }
 
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
         /// <summary>
         /// Наименования скриптов-генератов (зависят от типа детали)
         /// </summary>
-        public List<Tuple<DetalType, string, string>> DetalsScriptNames { get; private set; } = new List<Tuple<DetalType, string, string>>(DetalTypeExtensions.DetalTypeCollection().Select(t => new Tuple<DetalType, string, string>(t, t.GetDescription(), string.Empty)).ToList());
-
-        private ObservableCollection<string> _scriptsCollection;
-        [JsonIgnore]
-        public ObservableCollection<string> ScriptsCollection
+        public List<MutableKeyValuePair<DetalType, string>> DetalsScriptNames 
         {
-            get
-            {
-                if (this._scriptsCollection == null)
-                {
-                    this._scriptsCollection = GetScripts();
-                    //this._scriptsCollection.CollectionChanged += HandleCollectionChanged;
-                }
-                return this._scriptsCollection;
-            }
+            get => _detalsScriptNames ?? (_detalsScriptNames = new List<MutableKeyValuePair<DetalType, string>>(DetalTypeExtensions.DetalTypeCollection().Select(t => new MutableKeyValuePair<DetalType, string>(t, string.Empty))));
+            private set => _detalsScriptNames = value;
         }
 
         /// <summary>
@@ -372,25 +358,6 @@ namespace ForRobot.Models.Settings
         #region Public functions
 
         /// <summary>
-        /// Возврат содержимого папки Scripts
-        /// </summary>
-        /// <returns></returns>
-        public static ObservableCollection<string> GetScripts()
-        {
-            string path = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Scripts");
-
-            if (!Directory.Exists(path))
-                throw new DirectoryNotFoundException("Не найдена папка Scripts!");
-
-            List<string> fileList = new List<string>();
-            foreach(var file in Directory.GetFiles(path))
-            {
-                fileList.Add(file);
-            }
-            return new ObservableCollection<string>(fileList);
-        }
-
-        /// <summary>
         /// Установка цвета объекта 3д сцена
         /// </summary>
         /// <param name="propertyName">Имя свойства</param>
@@ -412,7 +379,7 @@ namespace ForRobot.Models.Settings
         /// </summary>
         /// <param name="startedDetalType"></param>
         /// <returns></returns>
-        public string GetStandartProgramName(DetalType type) => this.DetalsProgramNames.Where(x => x.Item1 == type).FirstOrDefault().Item3;
+        public string GetStandartProgramName(DetalType type) => this.DetalsProgramNames.Where(x => x.Key == type).FirstOrDefault().Value;
 
         /// <summary>
         /// Выгрузка установленных цветов для 3д сцены
@@ -454,44 +421,44 @@ namespace ForRobot.Models.Settings
         //    this.OnPropertyChanged(nameof(this.ScriptsCollection));
         //}
 
-        /// <summary>
-        /// Добавляет скрипт в коллекцию
-        /// </summary>
-        /// <param name="sourcePath">Путь к исходному файлу</param>
-        public void AddScript(string sourcePath)
-        {
-            if (!File.Exists(sourcePath))
-                throw new FileNotFoundException($"Исходный файл не найден!", sourcePath);
+        ///// <summary>
+        ///// Добавляет скрипт в коллекцию
+        ///// </summary>
+        ///// <param name="sourcePath">Путь к исходному файлу</param>
+        //public void AddScript(string sourcePath)
+        //{
+        //    if (!File.Exists(sourcePath))
+        //        throw new FileNotFoundException($"Исходный файл не найден!", sourcePath);
 
-            string directory = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Scripts");
+        //    string directory = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Scripts");
 
-            if (!Directory.Exists(directory))
-                Directory.CreateDirectory(directory);
+        //    if (!Directory.Exists(directory))
+        //        Directory.CreateDirectory(directory);
 
-            string fileName = Path.GetFileName(sourcePath);
-            string finalPath = Path.Combine(directory, fileName);
+        //    string fileName = Path.GetFileName(sourcePath);
+        //    string finalPath = Path.Combine(directory, fileName);
 
-            File.Copy(sourcePath, finalPath, true);
+        //    File.Copy(sourcePath, finalPath, true);
 
-            this.ScriptsCollection.Add(finalPath);
-        }
+        //    this.ScriptsCollection.Add(finalPath);
+        //}
 
-        /// <summary>
-        /// Удаляет скрипт из коллекции
-        /// </summary>
-        /// <param name="scriptPath">Путь к файлу скрипта</param>
-        public void RemoveScript(string scriptPath)
-        {
-            if (this.ScriptsCollection.Contains(scriptPath))
-            {
-                if (!File.Exists(scriptPath))
-                    throw new FileNotFoundException($"Файл для удалния не найден!", scriptPath);
+        ///// <summary>
+        ///// Удаляет скрипт из коллекции
+        ///// </summary>
+        ///// <param name="scriptPath">Путь к файлу скрипта</param>
+        //public void RemoveScript(string scriptPath)
+        //{
+        //    if (this.ScriptsCollection.Contains(scriptPath))
+        //    {
+        //        if (!File.Exists(scriptPath))
+        //            throw new FileNotFoundException($"Файл для удалния не найден!", scriptPath);
 
-                File.Delete(scriptPath);
+        //        File.Delete(scriptPath);
 
-                this.ScriptsCollection.Remove(scriptPath);
-            }
-        }
+        //        this.ScriptsCollection.Remove(scriptPath);
+        //    }
+        //}
 
         /// <summary>
         /// Сохранение json-файла настроек во временных файлах

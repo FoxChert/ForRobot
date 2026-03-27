@@ -25,7 +25,7 @@
     <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource FrameworkElementBase}">
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        <Setter Property="Padding" Value="5, 0"/>
+        <Setter Property="Padding" Value="5"/>
     </Style>
 
     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource FrameworkElementBase}">
@@ -40,7 +40,7 @@
         <Setter Property="HorizontalAlignment" Value="Left"/>
     </Style>
 
-    <Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource FrameworkElementBase}"></Style>
+    <Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource FrameworkElementBase}"></Style> 
 
     <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource FrameworkElementBase}">
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -223,18 +223,7 @@
 
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <CheckBox IsChecked="{Binding Value, Mode=OneWay}" Content="{Binding Key}">
-
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="Checked">
-                                            <i:InvokeCommandAction Command="{Binding Path=DataContext.CheckBoxAvailableFolderCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}" CommandParameter="{Binding}"/>
-                                        </i:EventTrigger>
-
-                                        <i:EventTrigger EventName="Unchecked">
-                                            <i:InvokeCommandAction Command="{Binding Path=DataContext.CheckBoxAvailableFolderCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}" CommandParameter="{Binding}"/>
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                </CheckBox>
+                                <CheckBox IsChecked="{Binding Path=Value, Mode=TwoWay}" Content="{Binding Path=Key}"/>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
@@ -306,7 +295,7 @@
                 <Grid>
                     <ListBox SelectionMode="Single"
                              Background="{x:Null}" BorderBrush="{x:Null}" BorderThickness="0"
-                             ItemsSource="{Binding Path=Anchorables, Mode=OneWay}">
+                             ItemsSource="{Binding Path=AnchorablesCollection, Mode=OneWay}">
 
                         <ListBox.ItemTemplate>
                             <DataTemplate>
@@ -339,47 +328,7 @@
                 </Grid>
             </GroupBox>
 
-            <Button Grid.Row="2" Content="Удалить изменения интерфейса" Margin="10" Command="{Binding Path=DeleteLayoutAnchorableConfigCommand}"/>
-
-            <!--<GroupBox Grid.Row="1" Header="Видимость вкладок">
-                <Grid>
-                    <ListBox SelectionMode="Single"
-                             Background="{x:Null}" BorderBrush="{x:Null}" BorderThickness="0"
-                             ItemsSource="{Binding Path=Settings.AvailableTab, Mode=OneWay}">
-
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <CheckBox IsChecked="{Binding Value, Mode=OneWay}" Content="{Binding Key}">
-
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="Checked">
-                                            <i:InvokeCommandAction Command="{Binding Path=CheckBoxAvailableTabCommand}" CommandParameter="{Binding}"/>
-                                        </i:EventTrigger>
-
-                                        <i:EventTrigger EventName="Unchecked">
-                                            <i:InvokeCommandAction Command="{Binding Path=CheckBoxAvailableTabCommand}" CommandParameter="{Binding}"/>
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                </CheckBox>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </Grid>
-            </GroupBox>-->
-
-            <!--<CheckBox Grid.Row="2" Content="Видимость изображений детали" IsChecked="{Binding Path=Settings.VisibilityPictures, Mode=TwoWay}">
-                -->
-            <!--<CheckBox.Style>
-                        <Style TargetType="{x:Type CheckBox}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Path=Settings.AvailableTab, Source={x:Static Application.Current}, 
-                                             Converter={StaticResource CollectionsStringToBoolConvert}, ConverterParameter='Программа'}" Value="False">
-                                    <Setter Property="IsEnabled" Value="False"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </CheckBox.Style>--><!--
-            </CheckBox>-->
+            <Button Grid.Row="2" Content="Удалить изменения интерфейса" Margin="10" Command="{Binding Path=DeleteAvalonConfigFileCommand}"/>
         </Grid>
     </DataTemplate>
 
@@ -425,10 +374,6 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <!--<Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>-->
 
                     <CheckBox Grid.Row="0" Content="Видимость" IsChecked="{Binding Path=Settings.ParamsIsVisibale, Mode=TwoWay}"/>
 
@@ -621,8 +566,7 @@
 
             <GroupBox Grid.Row="1" Header="Стандартное наименование итогового файла от типа детали:"
                       IsEnabled="{Binding Path=Settings.AskNameFile, Converter={StaticResource InvertBooleanConverter}}">
-
-                <Grid TextElement.FontWeight="Normal" Margin="4">
+                <Grid TextElement.FontWeight="Normal">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="200"/>
@@ -630,23 +574,22 @@
 
                     <ComboBox Grid.Column="0"
                               ItemsSource="{Binding Path=Settings.DetalsProgramNames, Source={x:Static Application.Current}, Mode=OneWay}"
-                              SelectedItem="{Binding Path=SelectedTumpleProgramName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                              SelectedIndex="0">
+                              SelectedItem="{Binding Path=SelectedTumpleProgramName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                         
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=Item2}" Padding="5"/>
+                                <TextBlock Text="{Binding Path=Key, Converter={StaticResource EnumDescriptionConverter}}" Padding="5"/>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBox x:Name="NameFile" Grid.Column="1" Text="{Binding Path=SelectedTumpleProgramName.Item3, Mode=OneWay}"
+                    <TextBox x:Name="NameFile" Grid.Column="1" Text="{Binding Path=SelectedTumpleProgramName.Value, Mode=TwoWay}"
                              attached:SelectAttachedProperties.PreventSelect="True"/>
                 </Grid>
             </GroupBox>
             
             <GroupBox Grid.Row="2" Header="Стандартный скрипт-генератор деталей:">
-                <Grid TextElement.FontWeight="Normal" Margin="4">
+                <Grid TextElement.FontWeight="Normal">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="200"/>
@@ -654,17 +597,16 @@
 
                     <ComboBox Grid.Column="0"
                               ItemsSource="{Binding Path=Settings.DetalsScriptNames, Source={x:Static Application.Current}, Mode=OneWay}"
-                              SelectedItem="{Binding Path=SelectedTumpleScriptsName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                              SelectedIndex="0">
+                              SelectedItem="{Binding Path=SelectedTumpleScriptsName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                         
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=Item2}" Padding="5"/>
+                                <TextBlock Text="{Binding Path=Key, Converter={StaticResource EnumDescriptionConverter}}" Padding="5"/>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBox x:Name="NameScript" Grid.Column="1" Text="{Binding Path=SelectedTumpleScriptsName.Item3, Mode=OneWay}"
+                    <TextBox x:Name="NameScript" Grid.Column="1" Text="{Binding Path=SelectedTumpleScriptsName.Value, Mode=TwoWay}"
                              attached:SelectAttachedProperties.PreventSelect="True"/>
                 </Grid>
             </GroupBox>
@@ -677,7 +619,9 @@
 
                 <CheckBox Grid.Column="0" Content="Выбор скрипта перед запуском" IsChecked="{Binding Path=Settings.AskScriptFile, Source={x:Static Application.Current}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                <Button Grid.Column="1" Content="Изменение перечня скриптов" Command="{Binding OpenScriptsSelectorCommand}"/>
+                <Button Grid.Column="1" Content="Изменить"
+                        ToolTip="Изменение перечня скриптов"
+                        Command="{Binding OpenScriptsSelectorCommand}"/>
             </Grid>
 
             <CheckBox Grid.Row="4" Content="Копирование сгенерированной программы на контроллер" IsChecked="{Binding Path=Settings.SendingGeneratedFiles, Source={x:Static Application.Current}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>

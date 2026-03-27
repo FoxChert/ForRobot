@@ -168,6 +168,7 @@ namespace ForRobot.ViewModels
 
         //    }
         //})); }
+
         /// <summary>
         /// Изменение ПИН-кода
         /// </summary>
@@ -186,34 +187,34 @@ namespace ForRobot.ViewModels
         /// </summary>
         public ICommand OpenScriptsSelectorCommand { get => new RelayCommand(_ =>
         {
-            using (ForRobot.Views.Windows.SelectorWindow selectorWindow = new ForRobot.Views.Windows.SelectorWindow(this.Settings.ScriptsCollection))
-            {
-                selectorWindow.CanAddItems = true;
-                selectorWindow.CanDeleteItems = true;
-                selectorWindow.AddRecordEvent += (s, e) => 
-                {
-                    System.Windows.Forms.OpenFileDialog openFileDialog = new System.Windows.Forms.OpenFileDialog()
-                    {
-                        Multiselect = false,
-                        Filter = "Python Files (*.py)|*.py|All files (*.*)|*.*",
-                        Title = "Добавление файла скрипта"
-                    };
+            //using (ForRobot.Views.Windows.SelectorWindow selectorWindow = new ForRobot.Views.Windows.SelectorWindow(this.Settings.ScriptsCollection))
+            //{
+            //    selectorWindow.CanAddItems = true;
+            //    selectorWindow.CanDeleteItems = true;
+            //    selectorWindow.AddRecordEvent += (s, e) => 
+            //    {
+            //        System.Windows.Forms.OpenFileDialog openFileDialog = new System.Windows.Forms.OpenFileDialog()
+            //        {
+            //            Multiselect = false,
+            //            Filter = "Python Files (*.py)|*.py|All files (*.*)|*.*",
+            //            Title = "Добавление файла скрипта"
+            //        };
 
-                    if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.Cancel && string.IsNullOrEmpty(openFileDialog.FileName))
-                        return;
+            //        if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.Cancel && string.IsNullOrEmpty(openFileDialog.FileName))
+            //            return;
 
-                    this.Settings.ScriptsCollection.Add(openFileDialog.FileName);
-                    //this.Settings.AddScripts(openFileDialog.FileName);
-                };
-                //var executablePathBinding = new System.Windows.Data.Binding()
-                //{
-                //    Source = this,
-                //    Path = new PropertyPath(nameof(this.Settings.ScriptsCollection))
-                //};
-                //System.Windows.Data.BindingOperations.SetBinding(selectorWindow, ForRobot.Views.Windows.SelectorWindow.ItemsSourceProperty, executablePathBinding);
-                selectorWindow.ShowDialog();
-                RaisePropertyChanged(nameof(this.Settings));
-            }
+            //        //this.Settings.ScriptsCollection.Add(openFileDialog.FileName);
+            //        //this.Settings.AddScripts(openFileDialog.FileName);
+            //    };
+            //    //var executablePathBinding = new System.Windows.Data.Binding()
+            //    //{
+            //    //    Source = this,
+            //    //    Path = new PropertyPath(nameof(this.Settings.ScriptsCollection))
+            //    //};
+            //    //System.Windows.Data.BindingOperations.SetBinding(selectorWindow, ForRobot.Views.Windows.SelectorWindow.ItemsSourceProperty, executablePathBinding);
+            //    selectorWindow.ShowDialog();
+            //    RaisePropertyChanged(nameof(this.Settings));
+            //}
         }); }
 
         #endregion
@@ -333,7 +334,12 @@ namespace ForRobot.ViewModels
             _isSelectClosedControl = true;
         }
 
-        // Поиск родительского элемента определенного типа
+        /// <summary>
+        /// Поиск родительского элемента определенного типа
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="child"></param>
+        /// <returns></returns>
         private static T FindParent<T>(DependencyObject child) where T : DependencyObject
         {
             DependencyObject parent = VisualTreeHelper.GetParent(child);
@@ -344,7 +350,12 @@ namespace ForRobot.ViewModels
             return parent as T;
         }
 
-        // Поиск дочерниго элемента определенного типа
+        /// <summary>
+        /// Поиск дочерниго элемента определенного типа
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="depObj"></param>
+        /// <returns></returns>
         private static IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
         {
             if (depObj != null)

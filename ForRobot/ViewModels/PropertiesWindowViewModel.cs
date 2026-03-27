@@ -1,17 +1,17 @@
-﻿using System;
-using System.Linq;
-using System.Windows;
-using System.Windows.Input;
-using System.Windows.Controls;
+﻿using AvalonDock.Layout;
+using ForRobot.Libr;
+using ForRobot.Models.Detals;
+using ForRobot.Models.Settings;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-
-using AvalonDock.Themes;
-using AvalonDock.Layout;
-
-using ForRobot.Models.Settings;
-using ForRobot.Models.Detals;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace ForRobot.ViewModels
 {
@@ -19,7 +19,12 @@ namespace ForRobot.ViewModels
     {
         private Settings _settings;
 
+        private MutableKeyValuePair<DetalType, string> _selectedTumpleProgramName;
+        private MutableKeyValuePair<DetalType, string> _selectedTumpleScriptsName;
+
+        private List<LayoutAnchorable> _anchorablesCollection;
         private ObservableCollection<string> _detalTypesCollection;
+        private ObservableCollection<string> _scriptsCollection;
         private ObservableCollection<HorizontalAlignment> _horizontalAlignments;
         private ObservableCollection<VerticalAlignment> _verticalAlignments;
 
@@ -27,6 +32,8 @@ namespace ForRobot.ViewModels
         private ICommand _checkedAvailableFolderCommand;
         private ICommand _standartSettingsCommand;
         private ICommand _selectClosedControlCommand;
+        private ICommand _deleteAvalonConfigFileCommand;
+        private ICommand _saveSettingsCommand;
 
         #region Public variables
 
@@ -42,21 +49,42 @@ namespace ForRobot.ViewModels
         public Settings Settings { get => this._settings; set => Set(ref this._settings, value); }
 
         /// <summary>
+        /// Выбранный кортеж представляющий тип детали и имя итоговой программы
+        /// </summary>
+        public MutableKeyValuePair<DetalType, string> SelectedTumpleProgramName
+        {
+            get => _selectedTumpleProgramName ?? (_selectedTumpleProgramName = this.Settings.DetalsProgramNames.First()); 
+            set => Set(ref _selectedTumpleProgramName, value);
+        }
+
+        /// <summary>
+        /// Выбранный кортеж представляющий тип детали и имя скрипта-генератора
+        /// </summary>
+        public MutableKeyValuePair<DetalType, string> SelectedTumpleScriptsName
+        {
+            get => _selectedTumpleScriptsName ?? (_selectedTumpleScriptsName = this.Settings.DetalsScriptNames.First());
+            set => Set(ref _selectedTumpleScriptsName, value);
+        }
+
+        /// <summary>
         /// Коллекция панелей макета интерфейса
         /// </summary>
-        public List<LayoutAnchorable> Anchorables
+        public List<LayoutAnchorable> AnchorablesCollection
         {
             get
             {
-                var dockingManager = (App.Current.MainWindow as ForRobot.Views.Windows.MainWindow).DockingManeger;
-                return dockingManager.Layout.Descendents().OfType<LayoutAnchorable>().ToList();
+                if(_anchorablesCollection == null)
+                {
+                    var dockingManager = (App.Current.MainWindow as ForRobot.Views.Windows.MainWindow).DockingManeger;
+                    _anchorablesCollection = dockingManager.Layout.Descendents().OfType<LayoutAnchorable>().ToList();
+                }
+                return _anchorablesCollection;
             }
         }
 
         /// <summary>
         /// Коллекция видов деталей
         /// </summary>
-        //public ObservableCollection<ForRobot.Models.Detals.DetalType> DetalTypesCollection { get; } = new ObservableCollection<ForRobot.Models.Detals.DetalType>(ForRobot.Models.Detals.DetalType.All);
         public ObservableCollection<string> DetalTypesCollection 
         {
             get
@@ -67,6 +95,22 @@ namespace ForRobot.ViewModels
                     _detalTypesCollection.Remove(ForRobot.Libr.EnumExtensions.GetDescription(ForRobot.Models.Detals.DetalType.All));
                 }
                 return _detalTypesCollection;
+            }
+        }
+
+        /// <summary>
+        /// Коллекция файлов в папке 'Scripts'
+        /// </summary>
+        public ObservableCollection<string> ScriptsCollection
+        {
+            get
+            {
+                if (this._scriptsCollection == null)
+                {
+                    this._scriptsCollection = new ObservableCollection<string>(GetScripts());
+                    //this._scriptsCollection.CollectionChanged += HandleCollectionChanged;
+                }
+                return this._scriptsCollection;
             }
         }
 
@@ -111,10 +155,38 @@ namespace ForRobot.ViewModels
             TempPinCode = ForRobot.Libr.Cryptography.Hashing.Sha256(answer);
         });
 
-        ///// <summary>
-        ///// Комманда изменения checkBox отображающихся папок
-        ///// </summary>
-        //public ICommand CheckBoxAvailableFolderCommand
+        /// <summary>
+        /// Удаление изменений интерфейса, удалеием AvalonDock.config файла
+        /// </summary>
+        public ICommand DeleteAvalonConfigFileCommand { get => _deleteAvalonConfigFileCommand ?? (_deleteAvalonConfigFileCommand = new RelayCommand(_ =>
+        {
+            if (MessageBox.Show("Для удаления изменений необходим перезапуск!\n\nПерезапустить приложение?",
+                               "Предупреждение",
+                               MessageBoxButton.OKCancel,
+                               MessageBoxImage.Warning,
+                               MessageBoxResult.Cancel,
+                               MessageBoxOptions.DefaultDesktopOnly) != MessageBoxResult.OK)
+                return;
+
+            if (MessageBox.Show("Не сохраненные настроки будут сброшены.\n\nСохранить текущие настройки?") == MessageBoxResult.OK)
+                SaveSettings();
+
+            System.Diagnostics.Process process = new System.Diagnostics.Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    WorkingDirectory = @".\",
+                    CreateNoWindow = true,
+                    FileName = "cmd.exe",
+                    Arguments = $"/K taskkill /im {Application.ResourceAssembly.GetName().Name}.exe /f& del {App.Current.AvalonConfigPath}& START \"\" \"{Application.ResourceAssembly.Location}\"",
+                    WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden
+                }
+            };
+            new System.Threading.Thread(() => process.Start()).Start();
+        })); } 
 
         /// <summary>
         /// Команда возвращения к стандартным настройкам
@@ -131,33 +203,9 @@ namespace ForRobot.ViewModels
         /// <summary>
         /// Команда сохранения настроек
         /// </summary>
-        public ICommand SaveSettingsCommand { get; } = new RelayCommand(_ => 
-        {
-            ForRobot.Properties.Settings.Default.PinCode = TempPinCode;
-            ForRobot.Properties.Settings.Default.UpdatePath = TempUpdatePath;
-            ForRobot.Properties.Settings.Default.Save();
-        });
-
-        public class AttemptSelectedCommand : RelayCommand
-        {
-            private readonly Func<object, bool> _shouldBlock;
-
-            public AttemptSelectedCommand(Action<object> execute,
-                                         Func<object, bool> canExecute = null,
-                                         Func<object, bool> shouldBlock = null) : base(execute, canExecute ?? (_ => true))
-            {
-                _shouldBlock = shouldBlock ?? (_ => false);
-            }
-
-            public override void Execute(object parameter)
-            {
-                if (this.ShouldBlock(parameter))
-                    return;
-
-                base.Execute(parameter);
-            }
-
-            public bool ShouldBlock(object parameter) => _shouldBlock(parameter);
+        public ICommand SaveSettingsCommand 
+        { 
+            get => _saveSettingsCommand ?? (_saveSettingsCommand = new RelayCommand(_ => SaveSettings())); 
         }
 
         /// <summary>
@@ -165,7 +213,7 @@ namespace ForRobot.ViewModels
         /// </summary>
         public ICommand SelectClosedControlCommand
         {
-            get => this._selectClosedControlCommand ?? (this._selectClosedControlCommand = new AttemptSelectedCommand(
+            get => this._selectClosedControlCommand ?? (this._selectClosedControlCommand = new ForRobot.Libr.AttachedProperties.AttemptSelectedCommand(
             execute: obj =>
             {
                 if (obj == null)
@@ -298,6 +346,31 @@ namespace ForRobot.ViewModels
             TempPinCode = ForRobot.Properties.Settings.Default.PinCode;
             TempUpdatePath = ForRobot.Properties.Settings.Default.UpdatePath;
             this.Settings = App.Current.Settings.Clone() as Settings;
+        }
+
+        /// <summary>
+        /// Возврат содержимого папки Scripts
+        /// </summary>
+        /// <returns></returns>
+        private List<string> GetScripts()
+        {
+            string path = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Scripts");
+
+            if (!Directory.Exists(path))
+                throw new DirectoryNotFoundException("Не найдена папка Scripts!");
+
+            List<string> fileList = new List<string>();
+            foreach (var file in Directory.GetFiles(path))
+                fileList.Add(file);
+
+            return new List<string>(fileList);
+        }
+
+        private void SaveSettings()
+        {
+            ForRobot.Properties.Settings.Default.PinCode = TempPinCode;
+            ForRobot.Properties.Settings.Default.UpdatePath = TempUpdatePath;
+            ForRobot.Properties.Settings.Default.Save();
         }
     }
 }

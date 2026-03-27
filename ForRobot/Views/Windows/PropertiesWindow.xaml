@@ -52,7 +52,7 @@
 
         <TreeView Grid.Row="0" Grid.Column="0" x:Name="TreeViewProperties">
 
-            <TreeViewItem Header="Общие" Tag="General" IsSelected="True"/>
+            <TreeViewItem Header="Общие" Tag="General"/>
 
             <TreeViewItem Header="Навигация" Tag="NavigationTree"/>
 
@@ -63,7 +63,7 @@
                 <TreeViewItem Header="3D сцена" Tag="3DView"/>
             </TreeViewItem>
 
-            <TreeViewItem Header="Генерация" Tag="Generation"/>
+            <TreeViewItem Header="Генерация" Tag="Generation" IsSelected="True"/>
 
             <TreeViewItem Header="Соединение" Tag="Connection"/>
 
@@ -172,7 +172,9 @@
             </Grid.ColumnDefinitions>
 
             <Button Grid.Column="0" Content="_Настройки по-умолчанию" IsDefault="True" Command="{Binding Path=StandartSettingsCommand}"/>
-            <Button Grid.Column="2" Content="_OK" Width="100" IsDefault="True" Click="BtnDialogOk_Click"/>
+            <Button Grid.Column="2" Content="_OK" Width="100" IsDefault="True"
+                    Command="{Binding Path=SaveSettingsCommand}"
+                    Click="BtnDialogOk_Click"/>
             <Button Grid.Column="4" Content="_Отмена" Width="100" IsCancel="True"/>
         </Grid>
     </Grid>

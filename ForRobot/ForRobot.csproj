@@ -309,6 +309,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Libr\AttachedProperties\AttemptSelectedCommand.cs" />
     <Compile Include="Libr\AttachedProperties\SelectAttachedProperties.cs" />
     <Compile Include="Libr\Attributes\PropertyCameraAttribute.cs" />
     <Compile Include="Libr\Attributes\PropertyNameAttribute.cs" />
@@ -394,6 +395,7 @@
     <Compile Include="Libr\Messages\UpdateCurrentDetalMessage.cs" />
     <Compile Include="Libr\Clipboard\UndoRedo\IUndoRedo.cs" />
     <Compile Include="Libr\Modeling\PlateModelingService.cs" />
+    <Compile Include="Libr\MutableKeyValuePair.cs" />
     <Compile Include="Libr\ObjectReferenceEqualityComparer.cs" />
     <Compile Include="Libr\PropertyPathHelper.cs" />
     <Compile Include="Libr\Registry\FileFormatRegistry.cs" />

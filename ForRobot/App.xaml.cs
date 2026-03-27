@@ -17,6 +17,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 
 using NLog;
+using ForRobot.Libr;
 
 namespace ForRobot
 {
@@ -594,21 +595,22 @@ namespace ForRobot
                 var robotConfig = ConfigProvider.GetRobotConfig();
                 var plateConfig = ConfigProvider.GetPlateConfig();
 
-                foreach (var names in settings.DetalsProgramNames.Where(x => x.Item1 == Models.Detals.DetalType.Plate).ToList())
+                foreach (var names in settings.DetalsProgramNames.Where(x => x.Key == Models.Detals.DetalType.Plate).ToList())
                     settings.DetalsProgramNames.Remove(names);
-                settings.DetalsProgramNames.Add(Tuple.Create(Models.Detals.DetalType.Plate, Libr.EnumExtensions.GetDescription(Models.Detals.DetalType.Plate), plateConfig.PlateProgramName));
+                settings.DetalsProgramNames.Add(new MutableKeyValuePair<Models.Detals.DetalType, string>(Models.Detals.DetalType.Plate, plateConfig.PlateProgramName));
 
-                foreach (var names in settings.DetalsScriptNames.Where(x => x.Item1 == Models.Detals.DetalType.Plate).ToList())
+                foreach (var names in settings.DetalsScriptNames.Where(x => x.Key == Models.Detals.DetalType.Plate).ToList())
                     settings.DetalsScriptNames.Remove(names);
-                settings.DetalsScriptNames.Add(Tuple.Create(Models.Detals.DetalType.Plate, Libr.EnumExtensions.GetDescription(Models.Detals.DetalType.Plate), plateConfig.PlateScriptName));
+                settings.DetalsScriptNames.Add(new MutableKeyValuePair<Models.Detals.DetalType, string>(Models.Detals.DetalType.Plate, plateConfig.PlateScriptName));
 
                 settings.PathFolderOfGeneration = robotConfig.PathFolderGeneration;
                 settings.ControlerFolder = robotConfig.ControlFolderPath;
 
                 var folders = robotConfig.SystemFolders.Split(',');
-                List<Tuple<string, bool>> availableFolders = new List<Tuple<string, bool>>();
+                Dictionary<string, bool> availableFolders = new Dictionary<string, bool>();
                 foreach (var folder in folders)
-                    availableFolders.Add(new Tuple<string, bool>(folder.Trim(), false));
+                    availableFolders.Add(folder.Trim(), false);
+                settings.AvailableFolders = new ObservableCollection<MutableKeyValuePair<string, bool>>(availableFolders.Select(item => new MutableKeyValuePair<string, bool>(item.Key, item.Value)));
 
                 settings.Save();
             }
