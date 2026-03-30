@@ -218,6 +218,7 @@ namespace ForRobot.Models.File3D
 
         #endregion
 
+        /// <inheritdoc cref="File3D.GetFilter()"/>
         protected override string GetFilter()
         {
             string filter = string.Empty;
@@ -230,11 +231,7 @@ namespace ForRobot.Models.File3D
             return string.Join("|", filter, $"All Supported Files {allFormat}|{allFormat}");
         }
 
-        /// <summary>
-        /// Делегат изменения значения отслеживаемого свойства
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <inheritdoc cref="File3D.HandleValueChangedEvent(object, Libr.ValueChangedEventArgs)"/>
         protected override void HandleValueChangedEvent(object sender, ForRobot.Libr.ValueChangedEventArgs e)
         {
             if (e.OldValue != null && !object.Equals(e.OldValue, e.NewValue))
@@ -249,11 +246,7 @@ namespace ForRobot.Models.File3D
             this.OnPropertyChanged(e.PropertyName);
         }
 
-        /// <summary>
-        /// Делегат события фиксации изменения отслеживаемого свойства
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <inheritdoc cref="File3D.HandleUndoRedoStateChangedEvent(object, EventArgs)"/>
         protected override void HandleUndoRedoStateChangedEvent(object sender, EventArgs e)
         {
             this._oldDetal = this.CurrentDetal.Clone() as Detal;

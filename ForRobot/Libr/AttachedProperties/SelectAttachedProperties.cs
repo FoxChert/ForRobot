@@ -1,23 +1,12 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Collections.Generic;
+using System.Windows.Input;
 
 namespace ForRobot.Libr.AttachedProperties
 {
-    public delegate void AttemptSelectedEventHandler(object sender, AttemptSelectedEventArgs e);
-
-    public class AttemptSelectedEventArgs : RoutedEventArgs
-    {
-        public bool Cancel { get; set; } = false;
-
-        public AttemptSelectedEventArgs() : base() { }
-
-        public AttemptSelectedEventArgs(RoutedEvent routedEvent, object source) : base(routedEvent, source) { }
-    }
-
     /// <summary>
     /// Прикрепленные свойства для управления выбором элемента управления
     /// </summary>
@@ -38,6 +27,14 @@ namespace ForRobot.Libr.AttachedProperties
                                                                                                               typeof(bool),
                                                                                                               typeof(SelectAttachedProperties),
                                                                                                               new UIPropertyMetadata(false, OnPreventSelectChanged));
+
+        /// <summary>
+        /// Прикреплённое свойство "UseDefaultCommand" для запрета использования стандартной логики AttemptSelectedCommand
+        /// </summary>
+        public static readonly DependencyProperty UseDefaultCommandProperty = DependencyProperty.RegisterAttached("UseDefaultCommand",
+                                                                                                                  typeof(bool),
+                                                                                                                  typeof(SelectAttachedProperties),
+                                                                                                                  new UIPropertyMetadata(false));
 
         /// <summary>
         /// Прикреплённое свойство "AttemptSelected" события попотки получения выбора элементом
@@ -162,6 +159,26 @@ namespace ForRobot.Libr.AttachedProperties
 
         #endregion PreventSelect Property
 
+        #region UseDefaultCommand Property
+
+        public static bool GetUseDefaultCommand(DependencyObject obj)
+        {
+            if (obj == null)
+                throw new ArgumentNullException(nameof(obj));
+
+            return (bool)obj.GetValue(UseDefaultCommandProperty);
+        }
+
+        public static void SetUseDefaultCommand(DependencyObject obj, bool value)
+        {
+            if (obj == null)
+                throw new ArgumentNullException(nameof(obj));
+
+            obj.SetValue(UseDefaultCommandProperty, value);
+        }
+
+        #endregion UseDefaultCommand Property
+
         #region AttemptSelected Event
 
         public static void AddAttemptSelectedHandler(UIElement element, AttemptSelectedEventHandler handler) => element.AddHandler(AttemptSelectedEvent, handler);
@@ -225,6 +242,82 @@ namespace ForRobot.Libr.AttachedProperties
             if (command?.CanExecute(e) == true)
             {
                 command.Execute(e);
+
+                if (command is AttemptSelectedCommand attemptCommand)
+                    if (GetUseDefaultCommand(element) && !attemptCommand.CommandWasBlock)
+                    {
+                        PerformDefaultLogic(element, e);
+                    }
+            }
+        }
+
+        /// <summary>
+        /// Стандартная логика AttemptSelectedCommand
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="e"></param>
+        private static void PerformDefaultLogic(DependencyObject element, AttemptSelectedEventArgs e)
+        {
+            if (e == null) return;
+
+            e.Cancel = false;
+            var control = e.Source as System.Windows.Controls.Control;
+            switch (control)
+            {
+                case TreeView tree:
+                    break;
+
+                case TreeViewItem treeViewItem:
+                    //treeViewItem.IsExpanded = false;
+                    //treeViewItem.IsSelected = false;
+
+                    var childrenItems = ForRobot.Libr.DependencyObjectExtensions.FindVisualChildren<TreeViewItem>(control);
+                    childrenItems?.First().Focus();
+                    break;
+
+                case CheckBox checkBox:
+                    checkBox.IsChecked = !checkBox.IsChecked;
+                    break;
+
+                case TextBox textBox:
+                    textBox.Focus();
+                    //textBox = control as TextBox;
+                    //if (textBox == null) return;
+
+                    //var parent = textBox.Parent as UIElement;
+                    //if (parent != null && parent.Focusable)
+                    //{
+                    //    parent.Focus();
+                    //}
+                    //else
+                    //{
+                    //    var page = ForRobot.Libr.DependencyObjectExtensions.FindParent<Window>(textBox);
+                    //    if (page != null)
+                    //    {
+                    //        page.Focus();
+                    //    }
+                    //}
+                    //Keyboard.ClearFocus();
+                    break;
+
+                default:
+                    if (control == null) return;
+
+                    // Сброс фокуса для всех областей фокуса
+                    var focusScope = FocusManager.GetFocusScope(control);
+                    FocusManager.SetFocusedElement(focusScope, null);
+
+                    // Дополнительно: поиск и сброс фокуса во всех дочерних элементах
+                    var children = ForRobot.Libr.DependencyObjectExtensions.FindVisualChildren<UIElement>(control);
+                    foreach (var child in children)
+                    {
+                        if (child.IsKeyboardFocused)
+                        {
+                            Keyboard.ClearFocus();
+                            break;
+                        }
+                    }
+                    break;
             }
         }
 

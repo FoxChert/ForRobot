@@ -13,6 +13,102 @@
     <BitmapImage x:Key="ImageTrapezoidTop" UriSource="/InterfaceOfRobots;component/Themes/Images/TrapezoidTop.png"/>
     <BitmapImage x:Key="ImageTrapezoidBottom" UriSource="/InterfaceOfRobots;component/Themes/Images/TrapezoidBottom.png"/>
 
+    <Style x:Key="FrameworkElementBase" TargetType="{x:Type FrameworkElement}">
+        <Setter Property="TextElement.FontSize" Value="{StaticResource FontSizeNP2}"/>
+        <Setter Property="TextElement.FontFamily" Value="{StaticResource DefaultFont}"/>
+        <Setter Property="TextElement.Foreground" Value="{StaticResource ThemeFgP2Brush}"/>
+        <Setter Property="TextElement.FontWeight" Value="Normal"/>
+        <!--<Setter Property="attached:SelectAttachedProperties.UseDefaultCommand" Value="True"/>
+        <Setter Property="attached:SelectAttachedProperties.AttemptSelectedCommand" Value="{Binding Path=SelectClosedControlCommand}"/>-->
+    </Style>
+
+    <Style x:Key="TextBlockBase" TargetType="{x:Type TextBlock}">
+        <Setter Property="MaxWidth" Value="160"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockBase}"/>
+
+    <Style x:Key="TextBoxBase" TargetType="{x:Type TextBox}">
+        <Setter Property="Width" Value="{Binding Path=Width, RelativeSource={RelativeSource AncestorType={x:Type ColumnDefinition}, Mode=FindAncestor}}"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="Padding" Value="20,8"/>
+        <Setter Property="Margin" Value="10,5,0,5"/>
+        <Setter Property="Tag" Value="{Binding Path=., RelativeSource={RelativeSource Self}, Converter={StaticResource BindingToTagConvert}}"/>
+        <EventSetter Event="PreviewMouseDown" Handler="IgnoreMouseButton"/>
+        <EventSetter Event="GotFocus" Handler="TextBox_GotFocus"/>
+        <EventSetter Event="LostFocus" Handler="TextBox_LostFocus"/>
+    </Style>
+
+    <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxBase}"/>
+
+    <Style TargetType="{x:Type RadioButton}">
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="Margin" Value="0,5"/>
+
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}" Value="True">
+                <Setter Property="FontWeight" Value="Bold"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="{x:Type DataGridColumnHeader}">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" TextWrapping="Wrap" TextAlignment="Center"/>
+                    <!--<TextBlock Text="{Binding}" TextWrapping="Wrap" TextAlignment="Center" Padding="5, 3"/>-->
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type DataGridCell}">
+        <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
+        <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type DataGridCell}">
+                    <Grid Background="{TemplateBinding Background}">
+                        <ContentPresenter VerticalAlignment="Center" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type DataGridRow}">
+        <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
+    <Style TargetType="{x:Type DataGrid}">
+        <Setter Property="AutoGenerateColumns" Value="False"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+        <Setter Property="CanUserAddRows" Value="False"/>
+        <Setter Property="CanUserDeleteRows" Value="False"/>
+        <Setter Property="CanUserResizeRows" Value="False"/>
+        <Setter Property="CanUserReorderColumns" Value="False"/>
+        <Setter Property="CanUserSortColumns" Value="False"/>
+        <Setter Property="CanUserResizeColumns" Value="False"/>
+        <Setter Property="EnableRowVirtualization" Value="False"/>
+        <Setter Property="SelectionMode" Value="Single"/>
+        <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+        <!--<EventSetter Event="SizeChanged" Handler="DataGrid_SizeChanged"/>-->
+    </Style>
+
     <!--В разработке-->
     <DataTemplate x:Key="OtherTemplateStyle" DataType="{x:Type ContentControl}">
         <Grid Height="Auto">
@@ -23,311 +119,14 @@
             </Grid.RowDefinitions>
 
             <StackPanel Grid.Row="1">
-                <Label Content="В разработке" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="18"/>
+                <TextBlock Text="В разработке" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontSize="18"/>
             </StackPanel>
-        </Grid>
-    </DataTemplate>
-
-    <!--Параметры сварки (настила с ребром)-->
-    <DataTemplate x:Key="PlitaSvarkaTemplateStyle">
-        <DataTemplate.Resources>
-            <Style TargetType="{x:Type FrameworkElement}">
-                <Setter Property="TextElement.FontSize" Value="{StaticResource FontSizeNP2}"/>
-                <Setter Property="TextElement.FontFamily" Value="{StaticResource DefaultFont}"/>
-                <Setter Property="TextElement.Foreground" Value="{StaticResource ThemeFgP2Brush}"/>
-            </Style>
-
-            <Style TargetType="{x:Type Label}">
-                <Setter Property="HorizontalContentAlignment" Value="Left"/>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-            </Style>
-
-            <Style TargetType="{x:Type TextBlock}">
-                <Setter Property="MaxWidth" Value="160"/>
-                <Setter Property="TextWrapping" Value="Wrap"/>
-                <Setter Property="HorizontalAlignment" Value="Left"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-            </Style>
-
-            <Style TargetType="{x:Type TextBox}">
-                <Setter Property="FontSize" Value="{StaticResource FontSizeNP2}"/>
-                <Setter Property="Width" Value="{Binding Path=Width, RelativeSource={RelativeSource AncestorType={x:Type ColumnDefinition}, Mode=FindAncestor}}"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                <Setter Property="Padding" Value="20,8"/>
-                <Setter Property="Margin" Value="10,5,0,5"/>
-                <EventSetter Event="PreviewMouseDown" Handler="IgnoreMouseButton"/>
-                <EventSetter Event="GotFocus" Handler="TextBox_GotFocus"/>
-                <EventSetter Event="LostFocus" Handler="TextBox_LostFocus"/>
-                <Setter Property="Tag" Value="{Binding Path=., RelativeSource={RelativeSource Self}, Converter={StaticResource BindingToTagConvert}}"/>
-            </Style>
-
-            <Style TargetType="{x:Type DataGrid}">
-                <Setter Property="TextElement.FontWeight" Value="Normal"/>
-                <Setter Property="AutoGenerateColumns" Value="False"/>
-                <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                <Setter Property="VerticalAlignment" Value="Stretch"/>
-                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                <Setter Property="VerticalContentAlignment" Value="Stretch"/>
-                <Setter Property="CanUserAddRows" Value="False"/>
-                <Setter Property="CanUserDeleteRows" Value="False"/>
-                <Setter Property="CanUserResizeRows" Value="False"/>
-                <Setter Property="CanUserReorderColumns" Value="False"/>
-                <Setter Property="CanUserSortColumns" Value="False"/>
-                <Setter Property="CanUserResizeColumns" Value="False"/>
-                <Setter Property="EnableRowVirtualization" Value="False"/>
-                <Setter Property="SelectionMode" Value="Single"/>
-                <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
-                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
-                <!--<EventSetter Event="SizeChanged" Handler="DataGrid_SizeChanged"/>-->
-            </Style>
-
-            <Style TargetType="DataGridColumnHeader">
-                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                <Setter Property="ContentTemplate">
-                    <Setter.Value>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding}" TextWrapping="Wrap" TextAlignment="Center" Padding="5, 3"/>
-                        </DataTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <!--<Style TargetType="DataGridRow">
-                <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-            </Style>-->
-
-            <Style TargetType="{x:Type DataGridCell}">
-                <Setter Property="TextBlock.TextAlignment" Value="Center"/>
-
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type DataGridCell}">
-                            <Grid Background="{TemplateBinding Background}">
-                                <ContentPresenter VerticalAlignment="Center"/>
-                            </Grid>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-        </DataTemplate.Resources>
-
-        <Grid x:Name="MainGrid" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}, Mode=FindAncestor}}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" MaxWidth="180"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="Скорость сварки, см/м"/>
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Номер сварочной программы"/>
-
-            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=WeldingProperties.WeldingSpead, Mode=TwoWay, ConverterCulture='en-us', StringFormat=F0, UpdateSourceTrigger=LostFocus}"/>
-            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=WeldingProperties.ProgramNom, Mode=TwoWay, ConverterCulture='en-us', StringFormat=F0, UpdateSourceTrigger=LostFocus}"/>
-
-            <GroupBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Header="Схема сварки" FontWeight="Bold" Padding="4" Margin="0,4,0,0">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-
-                    <ComboBox Grid.Row="0" Margin="0, 10"
-                              ItemsSource="{x:Static welding:WeldingSchema.WeldingSchemasCollection}"
-                              SelectedItem="{Binding Path=WeldingProperties.SelectedWeldingSchema, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource WeldingSchemaConverter}}">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding}" TextWrapping="Wrap" Padding="0, 6"/>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-
-                        <ComboBox.ItemContainerStyle>
-                            <Style TargetType="{x:Type ComboBoxItem}">
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                <Setter Property="TextBlock.Padding" Value="10,6"/>
-                                <Setter Property="TextBlock.TextAlignment" Value="Center"/>
-                                <Setter Property="TextBlock.VerticalAlignment" Value="Center"/>
-                            </Style>
-                        </ComboBox.ItemContainerStyle>
-                    </ComboBox>
-
-                    <DataGrid Grid.Row="1"
-                              ItemsSource="{Binding Path=DataContext.WeldingProperties.WeldingSchema, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged}"
-                              HorizontalAlignment="Stretch">
-                        <DataGrid.Resources>
-                            <Style TargetType="{x:Type ComboBox}">
-                                <Setter Property="MaxDropDownHeight" Value="150"/>
-                                <Setter Property="ItemsSource" Value="{Binding Path=., RelativeSource={RelativeSource AncestorType=DataGrid, Mode=FindAncestor}, Converter={StaticResource NumbersForWeldingSchemaConvert}}"/>
-                                <Setter Property="VerticalAlignment" Value="Stretch"/>
-                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
-
-                                <Setter Property="ItemTemplate">
-                                    <Setter.Value>
-                                        <DataTemplate>
-                                            <TextBlock TextAlignment="Center" Padding="0, 6"
-                                                       Text="{Binding Path=., Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='({0})'}"
-                                                       Foreground="{TemplateBinding Property=TextElement.Foreground}"/>
-
-                                            <!--<Label FontWeight="Bold"
-                                                   VerticalAlignment="Stretch" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
-                                                   Content="{Binding Path=., Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='({0})'}"
-                                                   Foreground="{TemplateBinding Property=TextElement.Foreground}"/>-->
-                                        </DataTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </DataGrid.Resources>
-
-                        <DataGrid.Columns>
-                            <DataGridTemplateColumn Header="Слева" Width="*">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <ComboBox SelectedItem="{Binding Path=LeftSide, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                  Foreground="{Binding Source={x:Static local:Colors.LeftSideWeldColor}, Converter={StaticResource ColorToBrushConverter}}"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-
-                            <DataGridTextColumn Header="№ ребра"
-                                                Binding="{Binding Path=., Mode=OneWay, RelativeSource={RelativeSource AncestorType=DataGridRow}, Converter={StaticResource RowNumberConvert}}"/>
-
-                            <DataGridTemplateColumn Header="Справа" Width="*">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <ComboBox SelectedItem="{Binding Path=RightSide, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                  Foreground="{Binding Source={x:Static local:Colors.RightSideWeldColor}, Converter={StaticResource ColorToBrushConverter}}"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
-            </GroupBox>
-        </Grid>
-    </DataTemplate>
-
-    <!--Доп. параметры (настила с ребром)-->
-    <DataTemplate x:Key="PlitaDopTemplateStyle" DataType="{x:Type ContentControl}">
-        <DataTemplate.Resources>
-            <Style TargetType="{x:Type FrameworkElement}">
-                <Setter Property="TextElement.FontSize" Value="{StaticResource FontSizeNP2}"/>
-                <Setter Property="TextElement.Foreground" Value="{StaticResource ThemeFgP2Brush}"/>
-            </Style>
-
-            <Style TargetType="{x:Type TextBlock}">
-                <Setter Property="FontSize" Value="{StaticResource FontSizeNP2}"/>
-                <Setter Property="MaxWidth" Value="160"/>
-                <Setter Property="TextWrapping" Value="Wrap"/>
-                <Setter Property="HorizontalAlignment" Value="Left"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-            </Style>
-
-            <Style TargetType="{x:Type TextBox}">
-                <Setter Property="Tag" Value="{Binding Path=., RelativeSource={RelativeSource Self}, Converter={StaticResource BindingToTagConvert}}"/>
-                <Setter Property="Width" Value="{Binding Path=Width, RelativeSource={RelativeSource AncestorType={x:Type ColumnDefinition}, Mode=FindAncestor}}"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                <Setter Property="Padding" Value="20,8"/>
-                <Setter Property="Margin" Value="10,5,0,5"/>
-                <EventSetter Event="PreviewMouseDown" Handler="IgnoreMouseButton"/>
-                <EventSetter Event="GotFocus" Handler="TextBox_GotFocus"/>
-                <EventSetter Event="LostFocus" Handler="TextBox_LostFocus"/>
-            </Style>
-        </DataTemplate.Resources>
-
-        <Grid Width="{Binding Path=Parent.ActualWidth, RelativeSource={RelativeSource Self}}" 
-              DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}, Mode=FindAncestor}}">
-
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" MaxWidth="180"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="Толщина настила, мм."/>
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Толщина ребра, мм."/>
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="Высота ребра, мм."/>
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="Отступ поиска в начале, мм."/>
-            <TextBlock Grid.Row="4" Grid.Column="0" Text="Отступ поиска в конце, мм."/>
-            <TextBlock Grid.Row="5" Grid.Column="0" Text="Перекрытие швов, мм."/>
-            <TextBlock Grid.Row="6" Grid.Column="0" Text="Технологический отступ начала шва, мм."/>
-            <TextBlock Grid.Row="7" Grid.Column="0" Text="Технологический отступ конца шва, мм."/>
-            <TextBlock Grid.Row="8" Grid.Column="0" Text="Дистанция до позиционера для сварки, мм."/>
-            <TextBlock Grid.Row="9" Grid.Column="0" Text="Дистанция до позиционера для поиска, мм."/>
-            <TextBlock Grid.Row="10" Grid.Column="0" Text="Смещение детали от 0 точки по оси X, мм."/>
-            <TextBlock Grid.Row="11" Grid.Column="0" Text="Смещение детали от 0 точки по оси Y, мм."/>
-            <TextBlock Grid.Row="12" Grid.Column="0" Text="Обратный прогиб, мм."/>
-
-            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=PlateThickness, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
-            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=RibsThickness, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
-
-            <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Vertical">
-                <TextBox Name="textBoxHieght" Text="{Binding Path=RibsHeight, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
-
-                <Popup PlacementTarget="{Binding ElementName=textBoxHieght}"
-                       IsOpen="{Binding IsKeyboardFocused, ElementName=textBoxHieght, Mode=OneWay}"
-                       AllowsTransparency="True" AllowDrop="True"
-                       Placement="Right" >
-                    <Border Background="{StaticResource ThemePopupBrush}" CornerRadius="3" Opacity="0.90" Padding="15,5">
-                        <TextBlock Text="Отклонение до 40 мм. можно игнорировать" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                </Popup>
-            </StackPanel>
-
-            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Path=WeldingProperties.SearchOffsetStart, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
-            <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Path=WeldingProperties.SearchOffsetEnd, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
-            <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding Path=WeldingProperties.SeamsOverlap, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
-            <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding Path=WeldingProperties.TechOffsetSeamStart, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
-            <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding Path=WeldingProperties.TechOffsetSeamEnd, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
-            <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding Path=WeldingProperties.DistanceForWelding, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
-            <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding Path=WeldingProperties.DistanceForSearch, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
-            <TextBox Grid.Row="10" Grid.Column="1" Text="{Binding Path=LocalPositionX, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
-            <TextBox Grid.Row="11" Grid.Column="1" Text="{Binding Path=LocalPositionY, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
-            <TextBox Grid.Row="12" Grid.Column="1" Text="{Binding Path=ReverseDeflection, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
         </Grid>
     </DataTemplate>
 
     <!--Общие параметры (настила с ребром)-->
     <DataTemplate x:Key="PlitaTemplateStyle" DataType="{x:Type ContentControl}">
         <DataTemplate.Resources>
-            <Style TargetType="{x:Type FrameworkElement}">
-                <Setter Property="TextElement.FontFamily" Value="{StaticResource DefaultFont}"/>
-                <Setter Property="TextElement.Foreground" Value="{StaticResource ThemeFgP2Brush}"/>
-            </Style>
-
-            <Style x:Key="TextBlockBase" TargetType="{x:Type TextBlock}">
-                <Setter Property="FontSize" Value="{StaticResource FontSizeNP2}"/>
-                <Setter Property="MaxWidth" Value="160"/>
-                <Setter Property="TextWrapping" Value="Wrap"/>
-                <Setter Property="HorizontalAlignment" Value="Left"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-            </Style>
-
-            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockBase}"></Style>
-
             <Style x:Key="TextBlockDiferentDistance" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockBase}">
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding Path=DiferentDistance}" Value="{StaticResource True}">
@@ -336,24 +135,7 @@
                 </Style.Triggers>
             </Style>
 
-            <Style x:Key="textBoxBase" TargetType="{x:Type TextBox}">
-                <Setter Property="FontSize" Value="{StaticResource FontSizeNP2}"/>
-                <Setter Property="Width" Value="{Binding Path=Width, RelativeSource={RelativeSource AncestorType={x:Type ColumnDefinition}, Mode=FindAncestor}}"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                <Setter Property="Padding" Value="20,8"/>
-                <Setter Property="Margin" Value="10,5,0,5"/>
-                <EventSetter Event="PreviewMouseDown" Handler="IgnoreMouseButton"/>
-                <EventSetter Event="GotFocus" Handler="TextBox_GotFocus"/>
-                <EventSetter Event="LostFocus" Handler="TextBox_LostFocus"/>
-                <Setter Property="Tag" Value="{Binding Path=., RelativeSource={RelativeSource Self}, Converter={StaticResource BindingToTagConvert}}"/>
-            </Style>
-
-            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource textBoxBase}"></Style>
-
-            <Style x:Key="TextBoxkDiferentDistance" TargetType="{x:Type TextBox}" BasedOn="{StaticResource textBoxBase}">
+            <Style x:Key="TextBoxkDiferentDistance" TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxBase}">
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding Path=DiferentDistance}" Value="{StaticResource True}">
                         <Setter Property="Height" Value="0"/>
@@ -371,78 +153,6 @@
             </Style>
 
             <Style TargetType="{x:Type GroupBox}" BasedOn="{StaticResource groupBoxBase}"></Style>
-
-            <Style TargetType="{x:Type RadioButton}">
-                <Setter Property="FontSize" Value="{StaticResource FontSizeNP2}"/>
-                <Setter Property="FontWeight" Value="Normal"/>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="HorizontalContentAlignment" Value="Left"/>
-                <Setter Property="Margin" Value="0,5"/>
-
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}" Value="True">
-                        <Setter Property="FontWeight" Value="Bold"/>
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-
-            <Style TargetType="{x:Type DataGrid}">
-                <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}, Mode=FindAncestor}}"/>
-                <!--<Setter Property="ItemsSource" Value="{Binding Path=RibsCollection, Mode=OneWay}"/>-->
-                <Setter Property="FontSize" Value="{StaticResource FontSizeNP2}"/>
-                <Setter Property="AutoGenerateColumns" Value="False"/>
-                <Setter Property="HorizontalAlignment"  Value="Stretch"/>
-                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="CanUserAddRows" Value="False"/>
-                <Setter Property="CanUserDeleteRows" Value="False"/>
-                <Setter Property="CanUserResizeRows" Value="False"/>
-                <Setter Property="CanUserReorderColumns" Value="False"/>
-                <Setter Property="CanUserSortColumns" Value="False"/>
-                <Setter Property="CanUserResizeColumns" Value="False"/>
-                <Setter Property="EnableRowVirtualization" Value="False"/>
-                <Setter Property="SelectionMode" Value="Single"/>
-                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
-                <!--<Setter Property="behavior:DataGridAutoSizeColumns.IsDynamicWith" Value="True"/>-->
-
-                <Setter Property="RowHeaderTemplate">
-                    <Setter.Value>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Path=., RelativeSource={RelativeSource AncestorType=DataGridRow}, Converter={StaticResource RowNumberConvert}}"/>
-                        </DataTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <Style TargetType="{x:Type DataGridColumnHeader}">
-                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                <Setter Property="ContentTemplate">
-                    <Setter.Value>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding}" TextWrapping="Wrap" TextAlignment="Center"/>
-                        </DataTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <Style TargetType="{x:Type DataGridRow}">
-                <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-            </Style>
-
-            <Style TargetType="{x:Type DataGridCell}">
-                <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
-                <Setter Property="TextBlock.TextAlignment" Value="Center"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type DataGridCell}">
-                            <Grid Background="{TemplateBinding Background}">
-                                <ContentPresenter VerticalAlignment="Center" />
-                            </Grid>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
         </DataTemplate.Resources>
 
         <Grid Width="{Binding Path=Parent.ActualWidth, RelativeSource={RelativeSource Self}}"
@@ -466,13 +176,13 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <ComboBox Grid.Row="0" Grid.Column="1" Margin="10,5,0,5"
+            <!--<ComboBox Grid.Row="0" Grid.Column="1" Margin="10,5,0,5"
                       VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
                       FontSize="{DynamicResource FontSizeNP2}" TextElement.FontWeight="Bold"
                       ItemsSource="{Binding Source={x:Static detals:ScoseTypes.Descriptions}, Mode=OneTime}"
                       SelectedItem="{Binding Path=ScoseType, Converter={StaticResource EnumDescriptionConverter}, Mode=TwoWay}"
                       SelectedIndex="0">
-                
+
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <Grid>
@@ -538,7 +248,7 @@
                         <Setter Property="TextBlock.VerticalAlignment" Value="Center"/>
                     </Style>
                 </ComboBox.ItemContainerStyle>
-            </ComboBox>
+            </ComboBox>-->
 
             <TextBlock Grid.Row="0" Grid.Column="0" Text="Форма настила"/>
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Длина настила, мм."/>
@@ -554,7 +264,7 @@
 
             <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Path=PlateWidth, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}">
                 <TextBox.Style>
-                    <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource textBoxBase}">
+                    <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxBase}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Path=ScoseType}" Value="{x:Static detals:ScoseTypes.Rect}">
                                 <Setter Property="IsEnabled" Value="False"/>
@@ -575,7 +285,7 @@
 
             <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding Path=PlateBevelToLeft, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}">
                 <TextBox.Style>
-                    <Style TargetType="TextBox" BasedOn="{StaticResource textBoxBase}">
+                    <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBase}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Path=ScoseType}" Value="d_rect">
                                 <Setter Property="IsEnabled" Value="False"/>
@@ -587,7 +297,7 @@
 
             <TextBox Grid.Row="10" Grid.Column="1" Text="{Binding Path=PlateBevelToRight, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}">
                 <TextBox.Style>
-                    <Style TargetType="TextBox" BasedOn="{StaticResource textBoxBase}">
+                    <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBase}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Path=ScoseType}" Value="d_rect">
                                 <Setter Property="IsEnabled" Value="False"/>
@@ -646,9 +356,19 @@
                                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
 
                         <ContentControl.Resources>
-                            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource textBoxBase}">
+                            <!--<Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxBase}">
                                 <Setter Property="TextElement.FontWeight" Value="Normal"/>
                                 <Setter Property="Margin" Value="0"/>
+                            </Style>-->
+
+                            <Style TargetType="{x:Type DataGridRowHeader}">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type DataGridRowHeader}">
+                                            <TextBlock Text="{Binding Path=., RelativeSource={RelativeSource AncestorType=DataGridRow}, Converter={StaticResource RowNumberConvert}}"/>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
                             </Style>
                         </ContentControl.Resources>
 
@@ -779,7 +499,7 @@
 
                     <ContentControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
                         <ContentControl.Resources>
-                            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource textBoxBase}">
+                            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxBase}">
                                 <Setter Property="TextElement.FontWeight" Value="Normal"/>
                                 <Setter Property="Margin" Value="0"/>
                             </Style>
@@ -846,7 +566,7 @@
 
                     <ContentControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
                         <ContentControl.Resources>
-                            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource textBoxBase}">
+                            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxBase}">
                                 <Setter Property="TextElement.FontWeight" Value="Normal"/>
                                 <Setter Property="Margin" Value="0"/>
                             </Style>
@@ -894,6 +614,168 @@
                     </ContentControl>
                 </Grid>
             </GroupBox>
+        </Grid>
+    </DataTemplate>
+
+    <!--Параметры сварки (настила с ребром)-->
+    <DataTemplate x:Key="PlitaSvarkaTemplateStyle">
+        <Grid x:Name="MainGrid" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}, Mode=FindAncestor}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" MaxWidth="180"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Скорость сварки, см/м"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Номер сварочной программы"/>
+
+            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=WeldingProperties.WeldingSpead, Mode=TwoWay, ConverterCulture='en-us', StringFormat=F0, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=WeldingProperties.ProgramNom, Mode=TwoWay, ConverterCulture='en-us', StringFormat=F0, UpdateSourceTrigger=LostFocus}"/>
+
+            <GroupBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Header="Схема сварки" FontWeight="Bold" Padding="4" Margin="0,4,0,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <ComboBox Grid.Row="0" Margin="0, 10"
+                              ItemsSource="{x:Static welding:WeldingSchema.WeldingSchemasCollection}"
+                              SelectedItem="{Binding Path=WeldingProperties.SelectedWeldingSchema, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource WeldingSchemaConverter}}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" TextWrapping="Wrap" Padding="0, 6"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+
+                        <ComboBox.ItemContainerStyle>
+                            <Style TargetType="{x:Type ComboBoxItem}">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                <Setter Property="TextBlock.Padding" Value="10,6"/>
+                                <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                                <Setter Property="TextBlock.VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </ComboBox.ItemContainerStyle>
+                    </ComboBox>
+
+                    <DataGrid Grid.Row="1"
+                              ItemsSource="{Binding Path=DataContext.WeldingProperties.WeldingSchema, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged}"
+                              HorizontalAlignment="Stretch">
+                        <DataGrid.Resources>
+                            <Style TargetType="{x:Type ComboBox}">
+                                <Setter Property="MaxDropDownHeight" Value="150"/>
+                                <Setter Property="ItemsSource" Value="{Binding Path=., RelativeSource={RelativeSource AncestorType=DataGrid, Mode=FindAncestor}, Converter={StaticResource NumbersForWeldingSchemaConvert}}"/>
+                                <Setter Property="VerticalAlignment" Value="Stretch"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+
+                                <Setter Property="ItemTemplate">
+                                    <Setter.Value>
+                                        <DataTemplate>
+                                            <TextBlock TextAlignment="Center" Padding="0, 6"
+                                                       Text="{Binding Path=., Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='({0})'}"
+                                                       Foreground="{TemplateBinding Property=TextElement.Foreground}"/>
+                                        </DataTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </DataGrid.Resources>
+
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="Слева" Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox SelectedItem="{Binding Path=LeftSide, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                  Foreground="{Binding Source={x:Static local:Colors.LeftSideWeldColor}, Converter={StaticResource ColorToBrushConverter}}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTextColumn Header="№ ребра"
+                                                Binding="{Binding Path=., Mode=OneWay, RelativeSource={RelativeSource AncestorType=DataGridRow}, Converter={StaticResource RowNumberConvert}}"/>
+
+                            <DataGridTemplateColumn Header="Справа" Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox SelectedItem="{Binding Path=RightSide, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                  Foreground="{Binding Source={x:Static local:Colors.RightSideWeldColor}, Converter={StaticResource ColorToBrushConverter}}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </GroupBox>
+        </Grid>
+    </DataTemplate>
+
+    <!--Доп. параметры (настила с ребром)-->
+    <DataTemplate x:Key="PlitaDopTemplateStyle" DataType="{x:Type ContentControl}">
+        <Grid Width="{Binding Path=Parent.ActualWidth, RelativeSource={RelativeSource Self}}" 
+              DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}, Mode=FindAncestor}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" MaxWidth="180"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Толщина настила, мм."/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Толщина ребра, мм."/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Высота ребра, мм."/>
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Отступ поиска в начале, мм."/>
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Отступ поиска в конце, мм."/>
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="Перекрытие швов, мм."/>
+            <TextBlock Grid.Row="6" Grid.Column="0" Text="Технологический отступ начала шва, мм."/>
+            <TextBlock Grid.Row="7" Grid.Column="0" Text="Технологический отступ конца шва, мм."/>
+            <TextBlock Grid.Row="8" Grid.Column="0" Text="Дистанция до позиционера для сварки, мм."/>
+            <TextBlock Grid.Row="9" Grid.Column="0" Text="Дистанция до позиционера для поиска, мм."/>
+            <TextBlock Grid.Row="10" Grid.Column="0" Text="Смещение детали от 0 точки по оси X, мм."/>
+            <TextBlock Grid.Row="11" Grid.Column="0" Text="Смещение детали от 0 точки по оси Y, мм."/>
+            <TextBlock Grid.Row="12" Grid.Column="0" Text="Обратный прогиб, мм."/>
+
+            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=PlateThickness, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=RibsThickness, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+
+            <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Vertical">
+                <TextBox Name="textBoxHieght" Text="{Binding Path=RibsHeight, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+
+                <Popup PlacementTarget="{Binding ElementName=textBoxHieght}"
+                       IsOpen="{Binding IsKeyboardFocused, ElementName=textBoxHieght, Mode=OneWay}"
+                       AllowsTransparency="True" AllowDrop="True"
+                       Placement="Right" >
+                    <Border Background="{StaticResource ThemePopupBrush}" CornerRadius="3" Opacity="0.90" Padding="15,5">
+                        <TextBlock Text="Отклонение до 40 мм. можно игнорировать" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                </Popup>
+            </StackPanel>
+
+            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Path=WeldingProperties.SearchOffsetStart, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Path=WeldingProperties.SearchOffsetEnd, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding Path=WeldingProperties.SeamsOverlap, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding Path=WeldingProperties.TechOffsetSeamStart, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding Path=WeldingProperties.TechOffsetSeamEnd, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding Path=WeldingProperties.DistanceForWelding, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding Path=WeldingProperties.DistanceForSearch, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="10" Grid.Column="1" Text="{Binding Path=LocalPositionX, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="11" Grid.Column="1" Text="{Binding Path=LocalPositionY, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="12" Grid.Column="1" Text="{Binding Path=ReverseDeflection, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
         </Grid>
     </DataTemplate>
 </ResourceDictionary>

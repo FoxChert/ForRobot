@@ -14,6 +14,7 @@
         <Setter Property="TextElement.FontFamily" Value="{StaticResource DefaultFont}"/>
         <Setter Property="TextElement.Foreground" Value="{StaticResource ThemeFgP2Brush}"/>
         <Setter Property="TextElement.FontWeight" Value="Normal"/>
+        <Setter Property="attached:SelectAttachedProperties.UseDefaultCommand" Value="True"/>
         <Setter Property="attached:SelectAttachedProperties.AttemptSelectedCommand" Value="{Binding Path=SelectClosedControlCommand}"/>
     </Style>
 
@@ -606,8 +607,8 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBox x:Name="NameScript" Grid.Column="1" Text="{Binding Path=SelectedTumpleScriptsName.Value, Mode=TwoWay}"
-                             attached:SelectAttachedProperties.PreventSelect="True"/>
+                    <!--<TextBox x:Name="NameScript" Grid.Column="1" Text="{Binding Path=SelectedTumpleScriptsName.Value, Mode=TwoWay}"
+                             attached:SelectAttachedProperties.PreventSelect="True"/>-->
                 </Grid>
             </GroupBox>
 

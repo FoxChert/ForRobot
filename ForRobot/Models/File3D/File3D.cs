@@ -135,7 +135,7 @@ namespace ForRobot.Models.File3D
         /// Событие фиксации изменения отслеживаемого свойства
         /// </summary>
         /// <param name="command"></param>
-        protected virtual void AddUndoCommand(ForRobot.Libr.Clipboard.UndoRedo.PropertyChangeCommand command) => this._undoRedoManager.AddUndoCommand(command);
+        protected virtual void AddUndoCommand(ForRobot.Libr.Clipboard.UndoRedo.PropertyChangeCommand command) => this._undoRedoManager?.AddUndoCommand(command);
         /// <summary>
         /// Вызов события изменения свойства класса <see cref="File3D"/>
         /// </summary>

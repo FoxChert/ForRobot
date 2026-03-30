@@ -103,7 +103,6 @@ namespace ForRobot.Views.Windows
         #endregion
 
         #region Protected function
-
         protected override void OnSourceInitialized(EventArgs e)
         {
             base.OnSourceInitialized(e);
@@ -114,7 +113,6 @@ namespace ForRobot.Views.Windows
         #endregion
 
         #region Public functions
-
         public new void Show()
         {
             base.Show();

@@ -214,72 +214,23 @@ namespace ForRobot.ViewModels
         public ICommand SelectClosedControlCommand
         {
             get => this._selectClosedControlCommand ?? (this._selectClosedControlCommand = new ForRobot.Libr.AttachedProperties.AttemptSelectedCommand(
-            execute: obj =>
+            execute: obj => 
             {
                 if (obj == null)
                     throw new ArgumentNullException(nameof(obj));
 
-                if (obj is ForRobot.Libr.AttachedProperties.AttemptSelectedEventArgs args)
+                if (!(obj is ForRobot.Libr.AttachedProperties.AttemptSelectedEventArgs args))
+                    return;
+
+                args.Cancel = false;
+
+                switch (args.Source)
                 {
-                    args.Cancel = false;
-                    var control = args.Source as System.Windows.Controls.Control;
-                    switch (control)
-                    {
-                        case TreeView tree:
-                            break;
-
-                        case TreeViewItem treeViewItem:
-                            //treeViewItem.IsExpanded = false;
-                            //treeViewItem.IsSelected = false;
-
-                            var childrenItems = ForRobot.Libr.DependencyObjectExtensions.FindVisualChildren<TreeViewItem>(control);
-                            childrenItems?.First().Focus();
-                            break;
-
-                        case CheckBox checkBox:
-                            checkBox.IsChecked = !checkBox.IsChecked;
-                            break;
-
-                        case TextBox textBox:
-                            textBox.Focus();
-                            //textBox = control as TextBox;
-                            //if (textBox == null) return;
-
-                            //var parent = textBox.Parent as UIElement;
-                            //if (parent != null && parent.Focusable)
-                            //{
-                            //    parent.Focus();
-                            //}
-                            //else
-                            //{
-                            //    var page = ForRobot.Libr.DependencyObjectExtensions.FindParent<Window>(textBox);
-                            //    if (page != null)
-                            //    {
-                            //        page.Focus();
-                            //    }
-                            //}
-                            //Keyboard.ClearFocus();
-                            break;
-
-                        default:
-                            if (control == null) return;
-
-                            // Сброс фокуса для всех областей фокуса
-                            var focusScope = FocusManager.GetFocusScope(control);
-                            FocusManager.SetFocusedElement(focusScope, null);
-
-                            // Дополнительно: поиск и сброс фокуса во всех дочерних элементах
-                            var children = ForRobot.Libr.DependencyObjectExtensions.FindVisualChildren<UIElement>(control);
-                            foreach (var child in children)
-                            {
-                                if (child.IsKeyboardFocused)
-                                {
-                                    Keyboard.ClearFocus();
-                                    break;
-                                }
-                            }
-                            break;
-                    }
+                    case AvalonDock.Layout.LayoutAnchorable layoutContent:
+                        layoutContent.IsSelected = false;
+                        layoutContent.IsActive = false;
+                        layoutContent.Hide();
+                        break;
                 }
             },
             shouldBlock: _ => !ForRobot.Libr.AppWindowManager.PinCode(TempPinCode)));

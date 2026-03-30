@@ -310,6 +310,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Libr\AttachedProperties\AttemptSelectedCommand.cs" />
+    <Compile Include="Libr\AttachedProperties\AttemptSelectedEventArgs.cs" />
+    <Compile Include="Libr\AttachedProperties\AttemptSelectedEventHandler.cs" />
     <Compile Include="Libr\AttachedProperties\SelectAttachedProperties.cs" />
     <Compile Include="Libr\Attributes\PropertyCameraAttribute.cs" />
     <Compile Include="Libr\Attributes\PropertyNameAttribute.cs" />
