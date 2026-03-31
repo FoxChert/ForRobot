@@ -25,27 +25,26 @@ namespace ForRobot.Libr.Converters
                 return ForRobot.Libr.EnumExtensions.GetDescription(enumValue);
             }
             
-            if(value is Type staticClassType)
+            if(parameter is Type staticClassType)
             {
-				var fieldInfos = staticClassType.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy).Where(f => f.IsLiteral && f.FieldType == value.GetType());
+				var fieldInfos = staticClassType.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy).Where(f => f.IsLiteral);
 										  
 				foreach (var fieldInfo in fieldInfos)
 				{
-					try
-					{
-						var constantValue = fieldInfo.GetRawConstantValue();
-						if (constantValue?.Equals(value) == true)
-						{
-							var descriptionAttr = fieldInfo.GetCustomAttribute<DescriptionAttribute>();
-							return descriptionAttr?.Description ?? fieldInfo.Name;
-						}
-					}
-					catch
-					{
-						continue;
-					}
-				}
-
+                    try
+                    {
+                        var constantValue = fieldInfo.GetRawConstantValue();
+                        if (constantValue?.Equals(fieldInfo) == true)
+                        {
+                            var descriptionAttr = fieldInfo.GetCustomAttribute<DescriptionAttribute>();
+                            return descriptionAttr?.Description ?? fieldInfo.Name;
+                        }
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                }
                 return value.ToString() ?? string.Empty;
             }
             throw new InvalidOperationException("Unsupported value type for conversion.");
@@ -88,10 +87,9 @@ namespace ForRobot.Libr.Converters
                 }
             }
 
-            if (value is Type staticClassType)
+            if (parameter is Type staticClassType)
             {
-                var fieldInfos = staticClassType.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
-                              .Where(f => f.IsLiteral && f.FieldType == targetType);
+                var fieldInfos = staticClassType.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy).Where(f => f.IsLiteral);
 
                 foreach (var fieldInfo in fieldInfos)
                 {
@@ -103,10 +101,12 @@ namespace ForRobot.Libr.Converters
                 }
 
                 var fieldByName = staticClassType.GetField(description, BindingFlags.Public | BindingFlags.Static);
-                if (fieldByName != null && fieldByName.FieldType == targetType)
+                if (fieldByName != null)
                 {
                     return fieldByName.GetRawConstantValue();
                 }
+
+                return targetType.FieldByDescription(description) ?? null;
             }
             throw new InvalidOperationException($"Cannot convert back to {targetType.Name}");
         }

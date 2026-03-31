@@ -11,6 +11,7 @@ namespace ForRobot.Libr
     /// </summary>
     public static class EnumExtensions
     {
+
         /// <summary>
         /// Вывод элемента перечисления по его
         /// </summary>
@@ -57,7 +58,16 @@ namespace ForRobot.Libr
             if (!type.IsEnum)
                 throw new ArgumentException("Тип должен представлять перечисление.", nameof(type));
 
-            return Enum.GetValues(type).Cast<Enum>().Select(value => value.GetDescription()).Where(desc => !string.IsNullOrEmpty(desc));
+            List<string> descriptions = new List<string>();
+
+            foreach (Enum value in Enum.GetValues(type))
+            {
+                string description = value.GetDescription();
+                if (!string.IsNullOrEmpty(description))
+                    descriptions.Add(description);
+            }
+            return descriptions;
+            //return Enum.GetValues(type).Cast<Enum>().Select(value => value.GetDescription()).Where(desc => !string.IsNullOrEmpty(desc));
         }
 
         /// <summary>
@@ -77,6 +87,24 @@ namespace ForRobot.Libr
 
             var attribute = fieldInfo.GetCustomAttribute<DescriptionAttribute>();
             return attribute?.Description ?? value.ToString();
+        }
+
+        /// <summary>
+        /// Возврат поля статического класса-перечисления
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="description"></param>
+        /// <returns></returns>
+        public static object FieldByDescription(this Type type, string description)
+        {
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+
+            if (string.IsNullOrEmpty(description))
+                return default(type);
+
+            var fields = type.GetFields().Where(field => (field.GetCustomAttributes(typeof(DescriptionAttribute), false).SingleOrDefault() as DescriptionAttribute).Description == description);
+            return fields.First().GetValue(null);
         }
     }
 }

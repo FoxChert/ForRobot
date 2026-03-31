@@ -650,7 +650,11 @@
                                    AutoWindowSizeWhenOpened="True"
                                    AllowMixedOrientation="True"
                                    IsVirtualizingAnchorable="True"
-                                   IsVirtualizingDocument="True">
+                                   IsVirtualizingDocument="True"
+                                   Loaded="DockingManeger_Loaded">
+            <i:Interaction.Behaviors>
+                <behavior:DockingManagerBehavior/>
+            </i:Interaction.Behaviors>
 
             <!--LayoutDocumentPane в меню выбора-->
             <avalonDock:DockingManager.DocumentPaneMenuItemHeaderTemplate>
@@ -1774,16 +1778,12 @@
                     </avalonDock:LayoutAnchorSide>
                 </avalonDock:LayoutRoot.RightSide>
             </avalonDock:LayoutRoot>
-
-            <i:Interaction.Behaviors>
-                <behavior:DockingManagerBehavior/>
-            </i:Interaction.Behaviors>
-
-            <i:Interaction.Triggers>
+           
+            <!--<i:Interaction.Triggers>
                 <i:EventTrigger EventName="Loaded">
                     <i:InvokeCommandAction Command="{Binding Path=LoadedCommand}"/>
                 </i:EventTrigger>
-            </i:Interaction.Triggers>
+            </i:Interaction.Triggers>-->
         </avalonDock:DockingManager>
 
         <DockPanel Grid.Row="3" Background="{StaticResource ThemeBottomMenuBarBrush}">

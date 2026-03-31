@@ -37,7 +37,7 @@
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        <Setter Property="Padding" Value="20,8"/>
+        <Setter Property="Padding" Value="20,15"/>
         <Setter Property="Margin" Value="10,5,0,5"/>
         <Setter Property="Tag" Value="{Binding Path=., RelativeSource={RelativeSource Self}, Converter={StaticResource BindingToTagConvert}}"/>
         <EventSetter Event="PreviewMouseDown" Handler="IgnoreMouseButton"/>
@@ -57,6 +57,21 @@
                 <Setter Property="FontWeight" Value="Bold"/>
             </DataTrigger>
         </Style.Triggers>
+    </Style>
+
+    <Style TargetType="{x:Type ComboBox}">
+        <Setter Property="MaxDropDownHeight" Value="150"/>
+
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="{x:Type ComboBoxItem}">
+                    <!--<Setter Property="HorizontalContentAlignment" Value="Stretch"/>-->
+                    <Setter Property="TextBlock.Padding" Value="0,10"/>
+                    <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                    <!--<Setter Property="TextBlock.VerticalAlignment" Value="Center"/>-->
+                </Style>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style TargetType="{x:Type DataGridColumnHeader}">
@@ -88,6 +103,29 @@
     <Style TargetType="{x:Type DataGridRow}">
         <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <!--<Setter Property="HeaderStyle">
+            <Setter.Value>
+                <Style TargetType="{x:Type DataGridRowHeader}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type DataGridRowHeader}">
+                                <TextBlock Text="{Binding Path=., RelativeSource={RelativeSource AncestorType=DataGridRow}, Converter={StaticResource RowNumberConvert}}" Margin="10,5"/>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Setter.Value>
+        </Setter>-->
+    </Style>
+
+    <Style TargetType="{x:Type DataGridRowHeader}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type DataGridRowHeader}">
+                    <TextBlock Text="{Binding Path=., RelativeSource={RelativeSource AncestorType=DataGridRow}, Converter={StaticResource RowNumberConvert}}" Margin="5"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style TargetType="{x:Type DataGrid}">
@@ -176,11 +214,10 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!--<ComboBox Grid.Row="0" Grid.Column="1" Margin="10,5,0,5"
-                      VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
-                      FontSize="{DynamicResource FontSizeNP2}" TextElement.FontWeight="Bold"
+            <ComboBox Grid.Row="0" Grid.Column="1" Margin="10,5,0,5"
+                      VerticalContentAlignment="Center" HorizontalContentAlignment="Center" TextElement.FontWeight="Bold"
                       ItemsSource="{Binding Source={x:Static detals:ScoseTypes.Descriptions}, Mode=OneTime}"
-                      SelectedItem="{Binding Path=ScoseType, Converter={StaticResource EnumDescriptionConverter}, Mode=TwoWay}"
+                      SelectedItem="{Binding Path=ScoseType, Converter={StaticResource EnumDescriptionConverter}, ConverterParameter={x:Type detals:ScoseTypes}, Mode=TwoWay}"
                       SelectedIndex="0">
 
                 <ComboBox.ItemTemplate>
@@ -239,16 +276,7 @@
                         </Grid>
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
-
-                <ComboBox.ItemContainerStyle>
-                    <Style TargetType="{x:Type ComboBoxItem}">
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                        <Setter Property="TextBlock.Padding" Value="0,10"/>
-                        <Setter Property="TextBlock.TextAlignment" Value="Center"/>
-                        <Setter Property="TextBlock.VerticalAlignment" Value="Center"/>
-                    </Style>
-                </ComboBox.ItemContainerStyle>
-            </ComboBox>-->
+            </ComboBox>
 
             <TextBlock Grid.Row="0" Grid.Column="0" Text="Форма настила"/>
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Длина настила, мм."/>
@@ -322,10 +350,10 @@
                     </Grid.ColumnDefinitions>
 
                     <RadioButton Grid.Row="0" Grid.Column="0" Content="Одинаковое"
-                                 IsChecked="{Binding Path=DiferentDistance, Converter={StaticResource ResourceKey=RadioButtonConvert}, ConverterParameter={StaticResource False}, Mode=TwoWay, TargetNullValue={StaticResource False}}"/>
+                                 IsChecked="{Binding Path=DiferentDistance, Converter={StaticResource ResourceKey=RadioButtonConvert}, ConverterParameter={StaticResource False}, Mode=TwoWay, TargetNullValue={StaticResource False}, UpdateSourceTrigger=PropertyChanged}"/>
 
                     <RadioButton Grid.Row="0" Grid.Column="1" Content="Разное"
-                                 IsChecked="{Binding Path=DiferentDistance, Converter={StaticResource ResourceKey=RadioButtonConvert}, ConverterParameter={StaticResource True}, Mode=TwoWay, TargetNullValue={StaticResource False}}"/>
+                                 IsChecked="{Binding Path=DiferentDistance, Converter={StaticResource ResourceKey=RadioButtonConvert}, ConverterParameter={StaticResource True}, Mode=TwoWay, TargetNullValue={StaticResource False}, UpdateSourceTrigger=PropertyChanged}"/>
 
                     <GroupBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Header="Рёбра">
                         <GroupBox.Style>
@@ -354,24 +382,6 @@
 
                     <ContentControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
                                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
-
-                        <ContentControl.Resources>
-                            <!--<Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxBase}">
-                                <Setter Property="TextElement.FontWeight" Value="Normal"/>
-                                <Setter Property="Margin" Value="0"/>
-                            </Style>-->
-
-                            <Style TargetType="{x:Type DataGridRowHeader}">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="{x:Type DataGridRowHeader}">
-                                            <TextBlock Text="{Binding Path=., RelativeSource={RelativeSource AncestorType=DataGridRow}, Converter={StaticResource RowNumberConvert}}"/>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </ContentControl.Resources>
-
                         <ContentControl.Style>
                             <Style TargetType="ContentControl">
                                 <Style.Triggers>
@@ -652,14 +662,14 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
 
-                        <ComboBox.ItemContainerStyle>
+                        <!--<ComboBox.ItemContainerStyle>
                             <Style TargetType="{x:Type ComboBoxItem}">
                                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                                 <Setter Property="TextBlock.Padding" Value="10,6"/>
                                 <Setter Property="TextBlock.TextAlignment" Value="Center"/>
                                 <Setter Property="TextBlock.VerticalAlignment" Value="Center"/>
                             </Style>
-                        </ComboBox.ItemContainerStyle>
+                        </ComboBox.ItemContainerStyle>-->
                     </ComboBox>
 
                     <DataGrid Grid.Row="1"
@@ -667,7 +677,6 @@
                               HorizontalAlignment="Stretch">
                         <DataGrid.Resources>
                             <Style TargetType="{x:Type ComboBox}">
-                                <Setter Property="MaxDropDownHeight" Value="150"/>
                                 <Setter Property="ItemsSource" Value="{Binding Path=., RelativeSource={RelativeSource AncestorType=DataGrid, Mode=FindAncestor}, Converter={StaticResource NumbersForWeldingSchemaConvert}}"/>
                                 <Setter Property="VerticalAlignment" Value="Stretch"/>
                                 <Setter Property="HorizontalContentAlignment" Value="Center"/>

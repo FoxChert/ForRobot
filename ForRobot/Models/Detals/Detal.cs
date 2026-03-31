@@ -12,7 +12,7 @@ using ForRobot.Models.Welding;
 
 namespace ForRobot.Models.Detals
 {
-    public abstract class Detal : SceneItem, IDisposable, IChangeNotificationControl
+    public abstract class Detal : SceneItem, IDisposable
     {
         #region Private variables
 
@@ -248,7 +248,7 @@ namespace ForRobot.Models.Detals
         /// <param name="e"></param>,
         private void HandleChangeProperty(object sender, PropertyChangedEventArgs e)
         {
-            if (_suppressNotifications)
+            if (this.IsNotificationsSuppressed)
                 return;
 
             if (e.PropertyName == nameof(this.ScoseType))
@@ -324,48 +324,8 @@ namespace ForRobot.Models.Detals
             return detals.Contains(detal);
         }
 
-        /// <summary>
-        /// Вызов события изменения свойства
-        /// </summary>
-        /// <param name="propertyName">Наименование свойства</param>
-        protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            if (this._suppressNotifications)
-                return;
-
-            base.OnPropertyChanged(propertyName);
-        }
-
         #endregion
 
-        #region Implementations of IChangeNotificationControl
-
-        private bool _suppressNotifications = false;
-
-        public bool IsNotificationsSuppressed => this._suppressNotifications;
-
-        public IDisposable SuppressNotifications() => new NotificationSuppressionScope(this);
-
-        private class NotificationSuppressionScope : IDisposable
-        {
-            private readonly Detal _owner;
-            private readonly bool _wasSuppressed;
-
-            public NotificationSuppressionScope(Detal owner)
-            {
-                _owner = owner;
-                _wasSuppressed = _owner._suppressNotifications;
-                _owner._suppressNotifications = true;
-            }
-
-            public void Dispose()
-            {
-                if (_owner != null)
-                    _owner._suppressNotifications = _wasSuppressed;
-            }
-        }
-
-        #endregion
 
         #region Implementations of IDisposable
 

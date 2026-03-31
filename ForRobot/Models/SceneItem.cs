@@ -1,13 +1,14 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Media.Media3D;
-using System.Runtime.CompilerServices;
+﻿using ForRobot.Libr.Clipboard;
+using ForRobot.Libr.Collections;
+using ForRobot.Models.Detals;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Collections;
-
-using ForRobot.Libr.Collections;
+using System.Runtime.CompilerServices;
+using System.Windows;
+using System.Windows.Media.Media3D;
 
 namespace ForRobot.Models
 {
@@ -64,7 +65,7 @@ namespace ForRobot.Models
     /// <summary>
     /// Абстрактный класс элемента 3д сцены
     /// </summary>
-    public abstract class SceneItem : DependencyObject, ISceneItem
+    public abstract class SceneItem : DependencyObject, ISceneItem, INotifyPropertyChanged, IChangeNotificationControl
     {
         #region Private variables
 
@@ -322,11 +323,18 @@ namespace ForRobot.Models
         #endregion Private functions
 
         #region Public functions
-        
+
         /// <summary>
         /// Вызов события изменения свойства
         /// </summary>
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        /// <param name="propertyName">Наименование свойства</param>
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            if (this._suppressNotifications)
+                return;
+
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
         protected virtual void OnTransformChanged(HomogeneousMatrix oldTransform, HomogeneousMatrix newTransform)
         {
@@ -439,5 +447,40 @@ namespace ForRobot.Models
         }
 
         #endregion Public functions
+
+        #region Implementations of INotifyPropertyChanged
+
+
+
+        #endregion
+
+        #region Implementations of IChangeNotificationControl
+
+        private bool _suppressNotifications = false;
+
+        public bool IsNotificationsSuppressed => this._suppressNotifications;
+
+        public IDisposable SuppressNotifications() => new NotificationSuppressionScope(this);
+
+        private class NotificationSuppressionScope : IDisposable
+        {
+            private readonly SceneItem _owner;
+            private readonly bool _wasSuppressed;
+
+            public NotificationSuppressionScope(SceneItem owner)
+            {
+                _owner = owner;
+                _wasSuppressed = _owner._suppressNotifications;
+                _owner._suppressNotifications = true;
+            }
+
+            public void Dispose()
+            {
+                if (_owner != null)
+                    _owner._suppressNotifications = _wasSuppressed;
+            }
+        }
+
+        #endregion
     }
 }

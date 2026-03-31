@@ -375,7 +375,6 @@
     <Compile Include="Libr\Messages\ProperteisNameMessage.cs" />
     <Compile Include="Libr\Behavior\HelixAnnotationsBehavior.cs" />
     <Compile Include="Libr\Behavior\HelixSceneTrackerBehavior.cs" />
-    <Compile Include="Libr\Messages\LayoutMessage.cs" />
     <Compile Include="Libr\Behavior\HelixWeldsBehavior.cs" />
     <Compile Include="Libr\Collections\ItemPropertyChangedEventArgs.cs" />
     <Compile Include="Libr\Converters\ArrayMultiValueConverter.cs" />

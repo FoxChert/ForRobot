@@ -5,7 +5,7 @@ using System.ComponentModel;
 namespace ForRobot.Models.Detals
 {
     /// <summary>
-    /// Перечень типов скосов настила
+    /// Класс-перечисление типов скосов настила
     /// </summary>
     public static class ScoseTypes
     {
@@ -45,12 +45,6 @@ namespace ForRobot.Models.Detals
         {
             var descriptions = typeof(ForRobot.Models.Detals.ScoseTypes).GetFields().Select(field => field.GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), false).SingleOrDefault() as System.ComponentModel.DescriptionAttribute);
             Descriptions = descriptions.Where(item => item != null).Select(item => item.Description).ToArray<string>();
-        }
-
-        public static object FieldByDescription(string sDiscription)
-        {
-            var v = typeof(ForRobot.Models.Detals.ScoseTypes).GetFields().Where(field => (field.GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), false).SingleOrDefault() as System.ComponentModel.DescriptionAttribute).Description == sDiscription);
-            return v.First().GetValue(null);
         }
     }
 }

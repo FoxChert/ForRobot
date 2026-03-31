@@ -206,7 +206,7 @@ namespace ForRobot.Libr.Factories.DetalFactory
                 if (detalTypeToken == null)
                     throw new ArgumentException("JSON должен содержать поле DetalType", nameof(jsonString));
 
-                var detalType = DetalTypeExtensions.StringToEnum(detalTypeToken.ToString());
+                var detalType = (DetalType)Convert.ToInt32(detalTypeToken);
 
                 switch (detalType)
                 {

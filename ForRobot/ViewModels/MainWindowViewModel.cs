@@ -57,15 +57,9 @@ namespace ForRobot.ViewModels
         #region Commands
 
         /// <summary>
-        /// Выгрузка макета
-        /// </summary>
-        public ICommand LoadedCommand { get; } = new RelayCommand(_ => Messenger.Default.Send(new Libr.Messages.LoadLayoutMessage()));
-        /// <summary>
         /// Сброс фокуса
         /// </summary>
         public ICommand LostFocusCommand { get; } = new RelayCommand(obj => ForRobot.Libr.DependencyObjectExtensions.LostFocus(obj as FrameworkElement));
-
-
 
         /// <summary>
         /// Команда создания файла

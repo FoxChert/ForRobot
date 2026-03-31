@@ -1,13 +1,13 @@
-﻿using System;
+﻿using AvalonDock.Layout.Serialization;
+using HelixToolkit.Wpf;
+using System;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Interop;
-
-using HelixToolkit.Wpf;
+using System.Windows.Media;
 
 namespace ForRobot.Views.Windows
 {
@@ -43,12 +43,49 @@ namespace ForRobot.Views.Windows
             }
             return IntPtr.Zero;
         }
-        
+
+        /// <summary>
+        /// Выгрузка макета AvalonDock
+        /// </summary>
+        private void LoadLayout()
+        {
+            try
+            {
+                if (File.Exists(App.Current.AvalonConfigPath))
+                {
+                    var serializer = new XmlLayoutSerializer(this.DockingManeger);
+                    serializer.Deserialize(App.Current.AvalonConfigPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                App.Current.Logger.Error(ex, ex.Message);
+                MessageBox.Show($"Ошибка при сохранении макета: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Сохранение макета AvalonDock
+        /// </summary>
+        private void SaveLayout()
+        {
+            try
+            {
+                var serializer = new XmlLayoutSerializer(this.DockingManeger);
+                serializer.Serialize(App.Current.AvalonConfigPath);
+            }
+            catch (Exception ex)
+            {
+                App.Current.Logger.Error(ex, ex.Message);
+                MessageBox.Show($"Ошибка при загрузке макета: {ex.Message}");
+            }
+        }
+        private void DockingManeger_Loaded(object sender, RoutedEventArgs e)=>LoadLayout();
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             lock (App.Current)
             {
-                GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new Libr.Messages.SaveLayoutMessage());
+                SaveLayout();
 
                 if (App.Current.RobotsCollection.Where(robot => robot.IsConnection).Count() > 0)
                 {
@@ -67,7 +104,6 @@ namespace ForRobot.Views.Windows
                 }
             }
         }
-
         private void Expander_Expanded(object sender, RoutedEventArgs e)
         {
             for (var vis = sender as Visual; vis != null; vis = VisualTreeHelper.GetParent(vis) as Visual)
@@ -78,7 +114,6 @@ namespace ForRobot.Views.Windows
                     break;
                 }
         }
-
         private void Expander_Collapsed(object sender, RoutedEventArgs e)
         {
             for (var vis = sender as Visual; vis != null; vis = VisualTreeHelper.GetParent(vis) as Visual)
@@ -89,7 +124,6 @@ namespace ForRobot.Views.Windows
                     break;
                 }
         }
-
         private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             var viewport = sender as HelixViewport3D;

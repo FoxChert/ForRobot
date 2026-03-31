@@ -297,11 +297,6 @@ namespace ForRobot.ViewModels
         #endregion
 
         #region Commands
-
-        /// <summary>
-        /// Выгрузка макета
-        /// </summary>
-        public ICommand LoadedCommand { get; } = new RelayCommand(_ => Messenger.Default.Send(new Libr.Messages.LoadLayoutMessage()));
         
         /// <summary>
         /// Сброс фокуса
