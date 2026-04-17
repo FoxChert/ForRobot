@@ -257,8 +257,6 @@ namespace ForRobot
                 ForRobot.Properties.Settings.Default.Save();
             }
 
-            Application.Current.MainWindow = Libr.AppWindowManager.Main();
-
             // Вход в приложение по пин-коду
             if (this.Settings.LoginByPINCode)
             {
@@ -287,6 +285,7 @@ namespace ForRobot
             if (OpenedFiles.Count == 0 && Settings.CreatedDetalFile)
                 CreatDetalFile();
 
+            Application.Current.MainWindow = Libr.AppWindowManager.Main();
             Application.Current.MainWindow.Show();
             SelectAppMainWindow();
         }

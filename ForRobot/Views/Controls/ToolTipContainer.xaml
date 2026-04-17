@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="ForRobot.Views.Controls.ToolTipContainer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ForRobot.Views.Controls"
+             mc:Ignorable="d"
+             x:Name="ToolTipContainerControl">
+
+    <UserControl.Template>
+        <ControlTemplate TargetType="{x:Type local:ToolTipContainer}">
+            <Border Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Border BorderBrush="{TemplateBinding BorderBrush}">
+                        <Border.BorderThickness>
+                            <Thickness Left="0" Top="{TemplateBinding BorderThickness.Top}" Right="0" Bottom="0"/>
+                        </Border.BorderThickness>
+
+                        <TextBlock x:Name="StringContainer"/>
+                    </Border>
+                </Grid>
+            </Border>
+        </ControlTemplate>
+    </UserControl.Template>
+</UserControl>

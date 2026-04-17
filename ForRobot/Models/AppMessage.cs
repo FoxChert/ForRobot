@@ -19,7 +19,7 @@ namespace ForRobot.Models
 
         public string Content { get; set; }
 
-        public string Ditails { get; set; } = string.Empty;
+        public string Details { get; set; } = string.Empty;
 
         #endregion
 
@@ -35,7 +35,7 @@ namespace ForRobot.Models
             this.Time = Convert.ToDateTime(values[0]);
             this.LogLevel = NLog.LogLevel.AllLoggingLevels.Where(item => string.Equals(item.Name, values[1], StringComparison.InvariantCultureIgnoreCase)).First();
             this.Content = values[2];
-            this.Ditails = values[3];
+            this.Details = values[3];
         }
 
         #endregion

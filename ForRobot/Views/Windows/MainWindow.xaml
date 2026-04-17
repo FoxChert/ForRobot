@@ -46,7 +46,7 @@
         <KeyBinding Gesture="Ctrl+I" Command="{Binding Path=ImportCommand}"/>
 
         <KeyBinding Gesture="Ctrl+Z" Command="{Binding Path=UndoCommand}"/>
-        <KeyBinding Gesture="Ctrl+V" Command="{Binding Path=RedoCommand}"/>
+        <KeyBinding Gesture="Ctrl+Y" Command="{Binding Path=RedoCommand}"/>
 
         <KeyBinding Gesture="Ctrl+F5" 
                     Command="{Binding Path=GenerateProgramCommandAsync}"
@@ -70,12 +70,7 @@
     </Window.InputBindings>
 
     <Window.Resources>
-        <Style x:Key="TextBase" TargetType="{x:Type FrameworkElement}">
-            <Setter Property="TextElement.FontFamily" Value="DefaultFont"/>
-            <Setter Property="TextElement.Foreground" Value="{StaticResource ThemeFgP2Brush}"/>
-        </Style>
-
-        <Style x:Key="cbBase" TargetType="{x:Type ComboBox}" BasedOn="{StaticResource TextBase}">
+        <!--<Style x:Key="cbBase" TargetType="{x:Type ComboBox}" BasedOn="{StaticResource TextBase}">
             <Setter Property="FontSize" Value="{StaticResource FontSizeNP2}"/>
             <Setter Property="ItemContainerStyle">
                 <Setter.Value>
@@ -86,15 +81,15 @@
                     </Style>
                 </Setter.Value>
             </Setter>
-        </Style>
+        </Style>-->
 
-        <Style x:Key="MenuItemDetalNull" TargetType="{x:Type MenuItem}">
+        <!--<Style x:Key="MenuItemDetalNull" TargetType="{x:Type MenuItem}">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Path=SelectedFile.CurrentDetal}" Value="{x:Null}">
                     <Setter Property="IsEnabled" Value="False"/>
                 </DataTrigger>
             </Style.Triggers>
-        </Style>
+        </Style>-->
     </Window.Resources>
 
     <Grid>
@@ -107,11 +102,9 @@
 
         <Menu Grid.Row="0">
             <Menu.Resources>
-                <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource TextBase}">
+                <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MenuItemBase}">
                     <Setter Property="FontSize" Value="{StaticResource FontSizeN}"/>
-                    <Setter Property="VerticalContentAlignment" Value="Center"/>
-                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                    <Setter Property="Padding" Value="10, 3"/>
+                    <Setter Property="Padding" Value="10, 2, 10, 3"/>
                     <Style.Resources>
                         <Style TargetType="{x:Type Path}">
                             <Setter Property="Stretch" Value="Uniform"/>
@@ -123,9 +116,9 @@
                             </Setter>
                         </Style>
 
-                        <Style TargetType="{x:Type CheckBox}">
+                        <!--<Style TargetType="{x:Type CheckBox}">
                             <Setter Property="HorizontalAlignment" Value="Center"/>
-                        </Style>
+                        </Style>-->
                     </Style.Resources>
                 </Style>
             </Menu.Resources>
@@ -136,7 +129,7 @@
                           InputGestureText="Ctrl+Shift+N">
                     <MenuItem.Icon>
                         <Path Fill="{StaticResource IconNewFileBrush}" StrokeThickness="0"
-                              Data="{StaticResource NewFilePathGeomerty}"/>
+                              Data="{StaticResource NewFilePathGeometry}"/>
                     </MenuItem.Icon>
                 </MenuItem>
 
@@ -145,7 +138,7 @@
                           InputGestureText="Ctrl+O">
                     <MenuItem.Icon>
                         <Path Fill="{StaticResource IconOpenFileBrush}"
-                              Data="{StaticResource OpenPathGeomerty}"/>
+                              Data="{StaticResource OpenPathGeometry}"/>
                     </MenuItem.Icon>
                 </MenuItem>
 
@@ -159,7 +152,7 @@
 
                     <MenuItem.Icon>
                         <Path Fill="{StaticResource IconSaveBrush}"
-                              Data="{StaticResource SavePathGeomerty}"/>
+                              Data="{StaticResource SavePathGeometry}"/>
                     </MenuItem.Icon>
                 </MenuItem>
 
@@ -177,7 +170,7 @@
                           InputGestureText="Ctrl+K, S">
                     <MenuItem.Icon>
                         <Path Fill="{StaticResource IconSaveAsBrush}"
-                              Data="{StaticResource SaveAsPathGeomerty}"/>
+                              Data="{StaticResource SaveAsPathGeometry}"/>
                     </MenuItem.Icon>
                 </MenuItem>
 
@@ -187,7 +180,7 @@
                           Command="{Binding Path=ExportCommand}">
                     <MenuItem.Icon>
                         <Path Fill="{StaticResource IconExportBrush}"
-                              Data="{StaticResource ExportPathGeomerty}"/>
+                              Data="{StaticResource ExportPathGeometry}"/>
                     </MenuItem.Icon>
                 </MenuItem>
 
@@ -195,7 +188,7 @@
                           Command="{Binding Path=ImportCommand}">
                     <MenuItem.Icon>
                         <Path Fill="{StaticResource IconImportBrush}"
-                              Data="{StaticResource ImportPathGeomerty}" Stretch="Fill">
+                              Data="{StaticResource ImportPathGeometry}" Stretch="Fill">
 
                             <!--<Path.LayoutTransform>
                                 <ScaleTransform ScaleX="2" ScaleY="2"/>
@@ -229,10 +222,11 @@
                           IsChecked="{Binding Path=Settings.SendingGeneratedFiles, Source={x:Static Application.Current}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 <MenuItem Header="_Запрашивать имя генерируемой программы" IsCheckable="True"
                           IsChecked="{Binding Path=Settings.AskNameFile, Source={x:Static Application.Current}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                <MenuItem Header="_Начать генерацию" InputGestureText="Ctrl+F5" Style="{StaticResource MenuItemDetalNull}">
+                <MenuItem Header="_Начать генерацию" InputGestureText="Ctrl+F5" 
+                          IsEnabled="{Binding Path=SelectedFile.CurrentDetal, Converter={StaticResource NotEqualsConverter}, ConverterParameter={x:Null}}">
                     <MenuItem.Icon>
                         <Path Fill="{StaticResource IconRunProgramBrush}" StrokeThickness="0"
-                              Data="{StaticResource RunTrianglePathGeomerty}" Margin="2"/>
+                              Data="{StaticResource RunTrianglePathGeometry}" Margin="2"/>
                     </MenuItem.Icon>
                 </MenuItem>
                 <!--<Separator/>
@@ -325,322 +319,278 @@
             <MenuItem Header="_Справка" Command="{Binding Path=HelpCommand}" InputGestureText="Ctrl+F1"/>
         </Menu>
 
-        <Menu Grid.Row="1">
-            <Menu.Resources>
-                <ControlTemplate x:Key="MenuItemTemplate1" TargetType="{x:Type MenuItem}">
-                    <Button Content="{Binding Icon, RelativeSource={RelativeSource TemplatedParent}}"
-                            ToolTip="{Binding Header, RelativeSource={RelativeSource TemplatedParent}}"
-                            Command="{Binding Command, RelativeSource={RelativeSource TemplatedParent}}"
-                            CommandParameter="{Binding CommandParameter, RelativeSource={RelativeSource TemplatedParent}}"
-                            CommandTarget="{Binding CommandTarget, RelativeSource={RelativeSource TemplatedParent}}"
-                            Width="Auto" Margin="3,2" Padding="5"/>
-                </ControlTemplate>
+        <ToolBarTray Grid.Row="1">
+            <ToolBarTray.Resources>
+                <Style TargetType="{x:Type ToolBar}">
+                    <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                    <Setter Property="VerticalAlignment" Value="Stretch"/>
+                </Style>
 
-                <ControlTemplate x:Key="MenuItemTemplate2" TargetType="{x:Type MenuItem}">
-                    <Border Name="Panel" BorderThickness="0" CornerRadius="5">
-                        <StackPanel Orientation="Horizontal" Margin="5">
-                            <ContentPresenter x:Name="Icon" ContentSource="Icon" Height="30" Margin="5,0"/>
-                            <ContentPresenter ContentSource="Header" RecognizesAccessKey="True"
-                                      TextElement.FontSize="{StaticResource FontSizeNP3}"
-                                      TextElement.Foreground="{StaticResource ThemeFgP2Brush}"
-                                      VerticalAlignment="Center" Margin="5,0"
-                                      Style="{StaticResource TextBase}"/>
-                        </StackPanel>
-                    </Border>
+                <Style x:Key="ToolBarButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonBase}">
+                    <Setter Property="Height" Value="40"/>
+                    <Setter Property="Width" Value="{Binding Path=ActualHeight, RelativeSource={RelativeSource Self}}"/>
+                    <Setter Property="Padding" Value="10"/>
+                    <Style.Resources>
+                        <Style TargetType="{x:Type Path}">
+                            <Setter Property="Stretch" Value="Uniform"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                        </Style>
+                    </Style.Resources>
+                </Style>
 
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Panel" Property="Background" Value="{StaticResource ThemeIsMouseOverMenuItemBgBrush}"/>
-                        </Trigger>
+                <Style x:Key="ToolBarToggleButtonStyle" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource ToggleButtonBase}">
+                    <Setter Property="Height" Value="40"/>
+                    <Setter Property="Width" Value="{Binding Path=ActualHeight, RelativeSource={RelativeSource Self}}"/>
+                    <Setter Property="Padding" Value="10"/>
+                    <Style.Resources>
+                        <Style TargetType="{x:Type Path}">
+                            <Setter Property="Stretch" Value="Uniform"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                        </Style>
+                    </Style.Resources>
+                </Style>
 
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="Panel" Property="Background" Value="{StaticResource ThemeIsPressedMenuItemBgBrush}"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
+                <Style TargetType="{x:Type Image}">
+                    <Setter Property="Stretch" Value="Uniform"/>
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                </Style>
 
-                <ControlTemplate x:Key="SeparatorTemplate" TargetType="{x:Type MenuItem}">
+                <DataTemplate x:Key="SeparatorTemplate" DataType="{x:Type ContentControl}">
                     <Separator HorizontalAlignment="Right" Margin="10,2">
                         <Separator.LayoutTransform>
                             <RotateTransform Angle="90" />
                         </Separator.LayoutTransform>
                     </Separator>
-                </ControlTemplate>
+                </DataTemplate>
+            </ToolBarTray.Resources>
 
-                <Style TargetType="{x:Type Path}">
-                    <Setter Property="Stretch" Value="Uniform"/>
-                </Style>
+            <ToolBar>                
+                <Button ToolTip="Создать новый файл (Ctrl+Shift+N)" Style="{StaticResource ToolBarButtonStyle}"
+                        Command="{Binding Path=CreateNewFileCommand}">
 
-                <Style TargetType="{x:Type ToggleButton}">
-                    <Setter Property="Width" Value="Auto"/>
-                    <Setter Property="Padding" Value="5"/>
-                    <Setter Property="Margin" Value="3, 2"/>
-                </Style>
-            </Menu.Resources>
-
-            <Menu.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel HorizontalAlignment="Left" Margin="10,3"/>
-                </ItemsPanelTemplate>
-            </Menu.ItemsPanel>
-
-            <MenuItem Header="Создать новый файл (Ctrl+Shift+N)" IsEnabled="False"
-                      Template="{StaticResource MenuItemTemplate1}"
-                      Command="{Binding Path=CreateNewFileCommand}">
-
-                <MenuItem.Icon>
                     <Path Fill="{StaticResource IconNewFileBrush}" StrokeThickness="0"
-                          Data="{StaticResource NewFilePathGeomerty}"/>
-                </MenuItem.Icon>
-            </MenuItem>
+                          Data="{StaticResource NewFilePathGeometry}"/>
+                </Button>
 
-            <MenuItem Header="Открыть файл (Ctrl+O)" IsEnabled="False"
-                      Template="{StaticResource MenuItemTemplate1}"
-                      Command="{Binding Path=OpenedFileCommand}">
+                <Button ToolTip="Открыть файл (Ctrl+O)" Style="{StaticResource ToolBarButtonStyle}"
+                        Command="{Binding Path=OpenedFileCommand}">
 
-                <MenuItem.Icon>
                     <Path Fill="{StaticResource IconOpenFileBrush}"
-                          Data="{StaticResource OpenPathGeomerty}"/>
-                </MenuItem.Icon>
-            </MenuItem>
+                          Data="{StaticResource OpenPathGeometry}"/>
+                </Button>
 
-            <MenuItem Template="{StaticResource MenuItemTemplate1}" IsEnabled="False"
-                      Command="{Binding Path=SaveFileCommand}"
-                      CommandParameter="{Binding Path=SelectedFile}">
+                <Button Style="{StaticResource ToolBarButtonStyle}"
+                        Command="{Binding Path=SaveFileCommand}"
+                        CommandParameter="{Binding Path=SelectedFile}">
 
-                <MenuItem.Header>
-                    <MultiBinding Converter="{StaticResource StringFormatMultiConvert}" ConverterParameter="Сохранить {0} (Ctrl+S)">
-                        <Binding Path="SelectedFile.Name" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
-                    </MultiBinding>
-                </MenuItem.Header>
+                    <Button.ToolTip>
+                        <MultiBinding Converter="{StaticResource StringFormatMultiConvert}" ConverterParameter="Сохранить {0} (Ctrl+S)">
+                            <Binding Path="SelectedFile.Name" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
+                        </MultiBinding>
+                    </Button.ToolTip>
 
-                <MenuItem.Icon>
                     <Path Fill="{StaticResource IconSaveBrush}"
-                          Data="{StaticResource SavePathGeomerty}"/>
-                </MenuItem.Icon>
-            </MenuItem>
+                          Data="{StaticResource SavePathGeometry}"/>
+                </Button>
 
-            <MenuItem Header="Сохранить все" IsEnabled="False"
-                      Template="{StaticResource MenuItemTemplate1}"
-                      Command="{Binding Path=SaveAllFilesCommand}"
-                      CommandParameter="{Binding Path=OpenedFiles, Source={x:Static Application.Current}}">
-                <MenuItem.Icon>
+                <Button ToolTip="Сохранить все" Style="{StaticResource ToolBarButtonStyle}"
+                        Command="{Binding Path=SaveAllFilesCommand}">
+
                     <Path Fill="{StaticResource IconSaveAsBrush}"
-                          Data="{StaticResource SaveAsPathGeomerty}"/>
-                </MenuItem.Icon>
-            </MenuItem>
+                          Data="{StaticResource SaveAsPathGeometry}"/>
+                </Button>
 
-            <MenuItem Template="{StaticResource SeparatorTemplate}"/>
+                <ContentControl ContentTemplate="{StaticResource SeparatorTemplate}"/>
 
-            <MenuItem Header="Отменить (Ctrl+Z)"
-                      Template="{StaticResource MenuItemTemplate1}" 
-                      Command="{Binding Path=UndoCommand}">
+                <Button ToolTip="Отменить (Ctrl+Z)" Style="{StaticResource ToolBarButtonStyle}"
+                        Command="{Binding Path=UndoCommand}">
 
-                <MenuItem.Icon>
                     <Path Fill="{StaticResource IconBackBrush}"
-                          Data="{StaticResource BackPathGeomerty}"/>
-                </MenuItem.Icon>
-            </MenuItem>
+                          Data="{StaticResource BackPathGeometry}"/>
+                </Button>
 
-            <MenuItem Header="Вернуть (Ctrl+V)"
-                      Template="{StaticResource MenuItemTemplate1}"
-                      Command="{Binding Path=RedoCommand}">
+                <Button ToolTip="Вернуть (Ctrl+Y)" Style="{StaticResource ToolBarButtonStyle}"
+                        Command="{Binding Path=RedoCommand}">
 
-                <MenuItem.Icon>
                     <Path Fill="{StaticResource IconReturnBrush}"
-                          Data="{StaticResource ReturnPathGeomerty}"/>
-                </MenuItem.Icon>
-            </MenuItem>
+                          Data="{StaticResource ReturnPathGeometry}"/>
+                </Button>
 
-            <MenuItem Template="{StaticResource SeparatorTemplate}"/>
+                <ContentControl ContentTemplate="{StaticResource SeparatorTemplate}"/>
 
-            <MenuItem Style="{StaticResource MenuItemDetalNull}">
-                <MenuItem.Template>
-                    <ControlTemplate TargetType="{x:Type MenuItem}">
-                        <ComboBox VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
-                                  FontSize="{StaticResource FontSizeNP4}" Width="Auto" MinWidth="200" Margin="4"
-                                  ItemsSource="{Binding Path=RobotsNamesCollection, Mode=OneWay}"
-                                  SelectedItem="{Binding Path=SelectedRobotName, Mode=TwoWay}"
-                                  SelectedIndex="0">
+                <ComboBox FontSize="{StaticResource FontSizeNP4}" Width="Auto" MinWidth="200" Margin="4"
+                          ItemsSource="{Binding RobotsNamesCollection}"
+                          SelectedItem="{Binding SelectedRobotName}"
+                          SelectedIndex="0">
 
-                            <ComboBox.Style>
-                                <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource cbBase}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Path=RobotsCollection.Count}" Value="0">
-                                            <Setter Property="IsEnabled" Value="False"/>
-                                            <Setter Property="IsEditable" Value="True"/>
-                                            <Setter Property="Text" Value="Нет введёных роботов"/>
-                                        </DataTrigger>
+                    <ComboBox.Style>
+                        <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource ComboBoxBase}">
+                            <Style.Triggers>
+                                <!--<DataTrigger>
+                                    <DataTrigger.Binding>
+                                        <Binding Path="RobotsCollection.Count" Source="{x:Static Application.Current}"
+                                                 Converter="{StaticResource NotEqualsConverter}">
+                                            <Binding.ConverterParameter>
+                                                <sys:Int32>0</sys:Int32>
+                                            </Binding.ConverterParameter>
+                                        </Binding>
+                                    </DataTrigger.Binding>
 
-                                        <DataTrigger Binding="{Binding Path=SelectedNameRobot}" Value="{x:Null}">
-                                            <Setter Property="SelectedIndex" Value="0"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ComboBox.Style>
-                        </ComboBox>
-                    </ControlTemplate>
-                </MenuItem.Template>
-            </MenuItem>
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                    <Setter Property="IsEditable" Value="True"/>
+                                    <Setter Property="Text" Value="Нет введёных роботов"/>
+                                </DataTrigger>-->
 
-            <MenuItem Template="{StaticResource MenuItemTemplate2}" Header="Генерировать" Margin="10,2">
+                                <DataTrigger Binding="{Binding Path=SelectedNameRobot}" Value="{x:Null}">
+                                    <Setter Property="SelectedIndex" Value="0"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
 
-                <MenuItem.Icon>
-                    <Path Fill="{StaticResource IconGenerateBrush}"
-                          Data="{StaticResource GeneratePathGeomerty}"/>
-                </MenuItem.Icon>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:InvokeCommandAction Command="{Binding Path=LostFocusCommand}"
+                                                   CommandParameter="{Binding Path=., RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ComboBox>
 
-                <MenuItem.Style>
-                    <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MenuItemDetalNull}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Path=RobotsCollection.Count}" Value="0">
-                                <Setter Property="IsEnabled" Value="False"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </MenuItem.Style>
+                <Button ToolTip="Генерировать" 
+                        Width="Auto" Padding="5" Margin="5, 0" 
+                        Style="{StaticResource ToolBarButtonStyle}">
+                    <Button.IsEnabled>
+                        <Binding Path="RobotsCollection.Count" Source="{x:Static Application.Current}"
+                                 Converter="{StaticResource NotEqualsConverter}">
+                            <Binding.ConverterParameter>
+                                <sys:Int32>0</sys:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </Button.IsEnabled>
+                    <!--IsEnabled="{Binding Path=RobotsCollection.Count, Source={x:Static Application.Current},
+                                            Converter={StaticResource NotEqualsConverter}, ConverterParameter={sys:Int}, TargetNullValue=True}">-->
 
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="Click">
-                        <i:InvokeCommandAction Command="{Binding Path=LostFocusCommand}"
+                    <StackPanel Orientation="Horizontal" Height="30">
+                        <Path Fill="{StaticResource IconGenerateBrush}" Stretch="Uniform"
+                              Data="{StaticResource GeneratePathGeometry}"/>
+
+                        <TextBlock Text="Генерировать" FontSize="{StaticResource FontSizeNP2}" Margin="8, 0"/>
+                    </StackPanel>
+
+                    <!--<Button.Style>
+                        <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MenuItemDetalNull}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=RobotsCollection.Count}" Value="0">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>-->
+
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Click">
+                            <i:InvokeCommandAction Command="{Binding Path=LostFocusCommand}"
                                                CommandParameter="{Binding Path=., RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"/>
-                        <i:InvokeCommandAction Command="{Binding Path=GenerateProgramCommandAsync}"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-            </MenuItem>
+                            <i:InvokeCommandAction Command="{Binding Path=GenerateProgramCommandAsync}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
 
-            <MenuItem Header="Параметры по-умолчанию (Ctrl+Shift+S)"
-                      Command="{Binding Path=StandartParametrsCommand}"
-                      CommandParameter="{Binding Path=SelectedFile}"
-                      Template="{StaticResource MenuItemTemplate1}"
-                      Style="{StaticResource MenuItemDetalNull}">
+                <Button ToolTip="Параметры по-умолчанию (Ctrl+Shift+S)" Style="{StaticResource ToolBarButtonStyle}"
+                        Command="{Binding Path=StandartParametrsCommand}"
+                        CommandParameter="{Binding Path=SelectedFile}">
 
-                <MenuItem.Icon>
                     <Path Fill="{StaticResource IconCleanBrush}"
                           RenderTransformOrigin="0.5,0.5"
-                          Data="{StaticResource CleanPathGeomerty}">
+                          Data="{StaticResource CleanPathGeometry}">
 
                         <Path.LayoutTransform>
                             <ScaleTransform ScaleX="1.75" ScaleY="1.75"/>
                         </Path.LayoutTransform>
                     </Path>
-                </MenuItem.Icon>
-            </MenuItem>
+                </Button>
+            </ToolBar>
 
-            <MenuItem Template="{StaticResource SeparatorTemplate}"/>
+            <ToolBar>
+                <Button ToolTip="Отдалить камеру (-)" Style="{StaticResource ToolBarButtonStyle}"
+                        Command="{x:Static behavior:CameraControllerBehavior.ZoomViewCommand}">
 
-            <MenuItem Header="Отдалить камеру (-)"
-                      Template="{StaticResource MenuItemTemplate1}"
-                      Command="{x:Static behavior:CameraControllerBehavior.ZoomViewCommand}">
+                    <Button.CommandParameter>
+                        <sys:Double>1</sys:Double>
+                    </Button.CommandParameter>
 
-                <MenuItem.CommandParameter>
-                    <sys:Double>1</sys:Double>
-                </MenuItem.CommandParameter>
-
-                <MenuItem.Icon>
                     <Path Fill="{StaticResource IconDecreaseBrush}"
-                          Data="{StaticResource DecreasePathGeomerty}"/>
-                </MenuItem.Icon>
-            </MenuItem>
+                          Data="{StaticResource DecreasePathGeometry}"/>
+                </Button>
 
-            <MenuItem Header="Приблизить камеру (+)"
-                      Template="{StaticResource MenuItemTemplate1}" 
-                      Command="{x:Static behavior:CameraControllerBehavior.ZoomViewCommand}">
+                <Button ToolTip="Приблизить камеру (+)" Style="{StaticResource ToolBarButtonStyle}"
+                        Command="{x:Static behavior:CameraControllerBehavior.ZoomViewCommand}">
 
-                <MenuItem.CommandParameter>
-                    <sys:Double>-50</sys:Double>
-                </MenuItem.CommandParameter>
+                    <Button.CommandParameter>
+                        <sys:Double>-50</sys:Double>
+                    </Button.CommandParameter>
 
-                <MenuItem.Icon>
                     <Path Fill="{StaticResource IconIncreaseBrush}"
-                          Data="{StaticResource IncreasePathGeomerty}"/>
-                </MenuItem.Icon>
-            </MenuItem>
+                          Data="{StaticResource IncreasePathGeometry}"/>
+                </Button>
+            </ToolBar>
 
-            <MenuItem Template="{StaticResource SeparatorTemplate}"/>
+            <ToolBar>
+                <ToggleButton ToolTip="Вкл/выкл. оси координат"
+                              IsChecked="{Binding Path=Settings.ShowCoordinateSystem, Source={x:Static Application.Current}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                              Style="{StaticResource ToolBarToggleButtonStyle}">
 
-            <MenuItem ToolTip="Вкл/выкл. оси координат">
-                <MenuItem.Template>
-                    <ControlTemplate TargetType="{x:Type MenuItem}">
-                        <ToggleButton IsChecked="{Binding Path=Settings.ShowCoordinateSystem, Source={x:Static Application.Current}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                            <Path Fill="{StaticResource IconAxistBrush}" Stretch="Uniform"
-                                  Data="{StaticResource AxistPathGeomerty}"/>
-                        </ToggleButton>
-                    </ControlTemplate>
-                </MenuItem.Template>
-            </MenuItem>
+                    <Path Fill="{StaticResource IconAxistBrush}"
+                          Data="{StaticResource AxistPathGeometry}"/>
+                </ToggleButton>
 
-            <MenuItem ToolTip="Вкл/выкл. сетку">
-                <MenuItem.Template>
-                    <ControlTemplate TargetType="{x:Type MenuItem}">
-                        <ToggleButton IsChecked="{Binding Path=IsVisibleGridLinesVisual3D, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                            <Path Stroke="{StaticResource IconAxistBrush}" 
-                                  Data="{StaticResource PerspectiveGridGeomerty}"
-                                  Stretch="Uniform"/>
-                        </ToggleButton>
-                    </ControlTemplate>
-                </MenuItem.Template>
-            </MenuItem>
+                <ToggleButton ToolTip="Вкл/выкл. сетку"
+                              IsChecked="{Binding Path=IsVisibleGridLinesVisual3D, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                              Style="{StaticResource ToolBarToggleButtonStyle}">
 
-            <MenuItem Template="{StaticResource MenuItemTemplate1}" Header="Вкл/выкл. отображение плоскостей">
-                <MenuItem.Icon>
-                    <Image Source="/InterfaceOfRobots;component/Themes/Images/isometric_view.png" Height="24" Width="24" Stretch="Uniform"/>
-                </MenuItem.Icon>
-            </MenuItem>
+                    <Path Stroke="{StaticResource IconAxistBrush}" 
+                          Data="{StaticResource PerspectiveGridGeometry}"/>
+                </ToggleButton>
 
-            <MenuItem Header="Вид сверху (Ctrl+U)"
-                      Template="{StaticResource MenuItemTemplate1}"
-                      Command="{x:Static behavior:CameraControllerBehavior.TopViewCommand}">
-                <MenuItem.Icon>
-                    <Image Source="/InterfaceOfRobots;component/Themes/Images/top_view.png" Height="24" Width="24" Stretch="Uniform"/>
-                </MenuItem.Icon>
-            </MenuItem>
+                <Button ToolTip="Вкл/выкл. отображение плоскостей" Style="{StaticResource ToolBarButtonStyle}">
+                    <Image Source="/InterfaceOfRobots;component/Themes/Images/isometric_view.png"/>
+                </Button>
 
-            <MenuItem Header="Вид снизу (Ctrl+D)"
-                      Template="{StaticResource MenuItemTemplate1}"
-                      Command="{x:Static behavior:CameraControllerBehavior.BottomViewCommand}">
-                <MenuItem.Icon>
-                    <Image Source="/InterfaceOfRobots;component/Themes/Images/bottom_view.png" Height="24" Width="24" Stretch="Uniform"/>
-                </MenuItem.Icon>
-            </MenuItem>
+                <Button ToolTip="Вид сверху (Ctrl+U)" Style="{StaticResource ToolBarButtonStyle}"
+                        Command="{x:Static behavior:CameraControllerBehavior.TopViewCommand}">
+                    <Image Source="/InterfaceOfRobots;component/Themes/Images/top_view.png"/>
+                </Button>
 
-            <MenuItem Header="Вид спереди (Ctrl+F)"
-                      Template="{StaticResource MenuItemTemplate1}"
-                      Command="{x:Static behavior:CameraControllerBehavior.FrontViewCommand}">
+                <Button ToolTip="Вид снизу (Ctrl+D)" Style="{StaticResource ToolBarButtonStyle}"
+                        Command="{x:Static behavior:CameraControllerBehavior.BottomViewCommand}">
+                    <Image Source="/InterfaceOfRobots;component/Themes/Images/bottom_view.png"/>
+                </Button>
 
-                <MenuItem.Icon>
-                    <Image Source="/InterfaceOfRobots;component/Themes/Images/front_view.png" Height="24" Width="24" Stretch="Uniform"/>
-                </MenuItem.Icon>
-            </MenuItem>
+                <Button ToolTip="Вид спереди (Ctrl+F)" Style="{StaticResource ToolBarButtonStyle}"
+                        Command="{x:Static behavior:CameraControllerBehavior.FrontViewCommand}">
+                    <Image Source="/InterfaceOfRobots;component/Themes/Images/front_view.png"/>
+                </Button>
 
-            <MenuItem Header="Вид сзади (Ctrl+B)" InputGestureText="Ctrl+B"
-                      Template="{StaticResource MenuItemTemplate1}"
-                      Command="{x:Static behavior:CameraControllerBehavior.BackViewCommand}">
+                <Button ToolTip="Вид сзади (Ctrl+B)" Style="{StaticResource ToolBarButtonStyle}"
+                        Command="{x:Static behavior:CameraControllerBehavior.BackViewCommand}">
+                    <Image Source="/InterfaceOfRobots;component/Themes/Images/back_view.png"/>
+                </Button>
 
-                <MenuItem.Icon>
-                    <Image Source="/InterfaceOfRobots;component/Themes/Images/back_view.png" Height="24" Width="24" Stretch="Uniform"/>
-                </MenuItem.Icon>
-            </MenuItem>
+                <Button ToolTip="Вид с левого бока (Ctrl+L)" Style="{StaticResource ToolBarButtonStyle}"
+                        Command="{x:Static behavior:CameraControllerBehavior.LeftViewCommand}">
+                    <Image Source="/InterfaceOfRobots;component/Themes/Images/left_side_view.png"/>
+                </Button>
 
-            <MenuItem Header="Вид с левого бока (Ctrl+L)"
-                      Template="{StaticResource MenuItemTemplate1}"
-                      Command="{x:Static behavior:CameraControllerBehavior.LeftViewCommand}">
-
-                <MenuItem.Icon>
-                    <Image Source="/InterfaceOfRobots;component/Themes/Images/left_side_view.png" Height="24" Width="24" Stretch="Uniform"/>
-                </MenuItem.Icon>
-            </MenuItem>
-
-            <MenuItem Header="Вид с правого бока (Ctrl+R)"
-                      Template="{StaticResource MenuItemTemplate1}"
-                      Command="{x:Static behavior:CameraControllerBehavior.RightViewCommand}">
-
-                <MenuItem.Icon>
-                    <Image Source="/InterfaceOfRobots;component/Themes/Images/right_side_view.png" Height="24" Width="24" Stretch="Uniform"/>
-                </MenuItem.Icon>
-            </MenuItem>
-        </Menu>
-
+                <Button ToolTip="Вид с правого бока (Ctrl+R)" Style="{StaticResource ToolBarButtonStyle}"
+                        Command="{x:Static behavior:CameraControllerBehavior.RightViewCommand}">
+                    <Image Source="/InterfaceOfRobots;component/Themes/Images/right_side_view.png"/>
+                </Button>
+            </ToolBar>
+        </ToolBarTray>
+        
         <avalonDock:DockingManager Grid.Row="2" x:Name="DockingManeger" Padding="0,10,0,0"
                                    FontSize="{StaticResource FontSizeNP2}"
                                    Theme="{Binding Path=Settings.SelectedTheme.Item2, Source={x:Static Application.Current}, Mode=OneWay}"
@@ -660,8 +610,7 @@
             <avalonDock:DockingManager.DocumentPaneMenuItemHeaderTemplate>
                 <DataTemplate>
                     <TextBlock FontSize="{StaticResource FontSizeNP2}" Text="{Binding Path=Content.Name}" 
-                               ToolTip="{Binding Path=Content.Path}"
-                               TextTrimming="CharacterEllipsis"/>
+                               ToolTip="{Binding Path=Content.Path}"/>
                 </DataTemplate>
             </avalonDock:DockingManager.DocumentPaneMenuItemHeaderTemplate>
 
@@ -872,13 +821,20 @@
                                     <hx:Element3DPresenter Content="{Binding CurrentModel}"/>
 
                                     -->
-                                <!--<hx:LineGeometryModel3D Visibility="{Binding Path=DataContext.IsVisibleGridLinesVisual3D, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"/>--><!--
+                                <!--<hx:LineGeometryModel3D Visibility="{Binding Path=DataContext.IsVisibleGridLinesVisual3D, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"/>-->
+                                <!--
                                 </hx:Viewport3DX>-->
                             </Grid>
                         </DataTemplate>
                     </control:PanesTemplateSelector.FileViewTemplate>
                 </control:PanesTemplateSelector>
             </DockingManager.LayoutItemTemplateSelector>
+
+            <DockingManager.Resources>
+                <Style TargetType="{x:Type ContentControl}" BasedOn="{StaticResource ContentControlBase}">
+                    <Setter Property="Padding" Value="10"/>
+                </Style>
+            </DockingManager.Resources>
 
             <avalonDock:LayoutRoot>
                 <avalonDock:LayoutPanel Orientation="Horizontal">
@@ -891,109 +847,14 @@
                             <avalonDock:LayoutAnchorablePane>
                                 <avalonDock:LayoutAnchorable Title="Сообщения" ContentId="Messages">
                                     <avalonDock:LayoutAnchorable.IconSource>
-                                        <!--<Image>
-                                            <Image.Source>
-                                                <DrawingImage>
-                                                    <DrawingImage.Drawing>
-                                                        <GeometryDrawing Brush="Black" Geometry="{StaticResource JournalGeomertyPath}"/>
-                                                    </DrawingImage.Drawing>
-                                                </DrawingImage>
-                                            </Image.Source>
-                                        </Image>-->
-
                                         <DrawingImage>
                                             <DrawingImage.Drawing>
-                                                <GeometryDrawing Brush="Black" Geometry="{DynamicResource JournalGeomertyPath}"/>
+                                                <GeometryDrawing Brush="Black" Geometry="{DynamicResource JournalGeometryPath}"/>
                                             </DrawingImage.Drawing>
                                         </DrawingImage>
                                     </avalonDock:LayoutAnchorable.IconSource>
 
-                                    <DataGrid ItemsSource="{Binding Path=MessagesCollection, Mode=OneWay}"                                              
-                                              SelectionMode="Single"
-                                              SelectionUnit="Cell" IsReadOnly="True"
-                                              AutoGenerateColumns="False"
-                                              EnableRowVirtualization="False"
-                                              CanUserAddRows="False"
-                                              CanUserSortColumns="False"
-                                              ScrollViewer.CanContentScroll="True"
-                                              ScrollViewer.HorizontalScrollBarVisibility="Hidden"
-                                              ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                              attached:ScrollViewerAttachedPropertiesDataGrid.ScrollOnLoadingRow="True">
-
-                                        <DataGrid.Resources>
-                                            <Style TargetType="{x:Type DataGridCell}">
-                                                <Setter Property="IsEnabled" Value="False"/>
-                                                <Setter Property="Focusable" Value="False"/>
-                                                <Setter Property="Foreground" Value="Black"/>
-                                                <Setter Property="TextBlock.TextAlignment" Value="Center"/>
-                                                <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
-                                                <Setter Property="Template">
-                                                    <Setter.Value>
-                                                        <ControlTemplate TargetType="{x:Type DataGridCell}">
-                                                            <Grid Background="{TemplateBinding Background}">
-                                                                <ContentPresenter VerticalAlignment="Center" Margin="5"/>
-                                                            </Grid>
-                                                        </ControlTemplate>
-                                                    </Setter.Value>
-                                                </Setter>
-
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding LogLevel}" Value="Error">
-                                                        <Setter Property="Foreground" Value="Red"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-
-                                            <Style TargetType="{x:Type DataGridColumnHeader}">
-                                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                                            </Style>
-
-                                            <Style TargetType="{x:Type DataGridRowHeader}">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Path=Item.Ditails, RelativeSource={RelativeSource AncestorType={x:Type DataGridRow}}}" Value="">
-                                                        <Setter Property="IsEnabled" Value="False"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </DataGrid.Resources>
-
-                                        <DataGrid.RowHeaderTemplate>
-                                            <DataTemplate>
-                                                <Expander Expanded="Expander_Expanded"  Collapsed="Expander_Collapsed">
-                                                    <Expander.Style>
-                                                        <Style TargetType="{x:Type Expander}">
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding Path=Item.Ditails, RelativeSource={RelativeSource AncestorType={x:Type DataGridRow}}}" Value="">
-                                                                    <Setter Property="Visibility" Value="Hidden"/>
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </Expander.Style>
-                                                </Expander>
-                                            </DataTemplate>
-                                        </DataGrid.RowHeaderTemplate>
-
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Время" Binding="{Binding Time, StringFormat=\{0:HH:mm:ss\}}" Width="Auto"/>
-                                            <DataGridTemplateColumn Header="Сообщение" Width="*">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <TextBlock Text="{Binding Content}"
-                                                                   Style="{StaticResource {x:Type TextBlock}}"
-                                                                   TextWrapping="Wrap" VerticalAlignment="Center" TextAlignment="Left"/>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
-                                        </DataGrid.Columns>
-
-                                        <DataGrid.RowDetailsTemplate>
-                                            <DataTemplate>
-                                                <Border Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}, Mode=FindAncestor}}">
-                                                    <TextBlock Text="{Binding Ditails}" Focusable="False" IsEnabled="False" Margin="5,10" TextWrapping="Wrap"/>
-                                                </Border>
-                                            </DataTemplate>
-                                        </DataGrid.RowDetailsTemplate>
-                                    </DataGrid>
+                                    <ContentControl ContentTemplate="{StaticResource MessagesLayoutAnchorableTemplate}"/>
                                 </avalonDock:LayoutAnchorable>
                             </avalonDock:LayoutAnchorablePane>
                         </avalonDock:LayoutAnchorablePaneGroup>
@@ -1004,22 +865,68 @@
                     <avalonDock:LayoutAnchorSide>
                         <avalonDock:LayoutAnchorGroup>
                             <avalonDock:LayoutAnchorable Title="Параметры детали" ContentId="ParametrsOfDetal">
-                                <!--<control:ParamsTreeView>
+                                <Grid>
+                                    <Grid.Resources>
+                                        <Style TargetType="{x:Type ToolTip}" BasedOn="{StaticResource FrameworkElementBase}">
+                                            <Setter Property="Background" Value="{StaticResource ToolTip.Background}"/>
+                                            <Setter Property="Padding" Value="15.5"/>
+                                            <Setter Property="Opacity" Value="0.90"/>
+                                            <!--<Setter Property="IsOpen" Value="{Binding Path=Parent.IsKeyboardFocused, Mode=OneWay}"/>-->
+
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type ToolTip}">
+                                                        <Popup PlacementTarget="{TemplateBinding Property=PlacementTarget}"
+                                                               IsOpen="{Binding Path=IsOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                                                               AllowsTransparency="True" AllowDrop="True"
+                                                               Placement="Right">
+
+                                                            <Border Background="{TemplateBinding Background}"
+                                                                    BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="3"
+                                                                    Opacity="{TemplateBinding Opacity}" Padding="{TemplateBinding Padding}">
+
+                                                                <TextBlock Text="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" FontSize="{TemplateBinding FontSize}"/>
+                                                            </Border>
+                                                        </Popup>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+
+                                        <Style TargetType="{x:Type TreeViewItem}">
+                                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                        </Style>
+
+                                        <Style x:Key="TextBlockBase" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockBase}">
+                                            <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ColumnDefinition}, Mode=FindAncestor}}"/>
+                                            <Setter Property="MaxWidth"  Value="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ColumnDefinition}, Mode=FindAncestor}}"/>
+                                            <Setter Property="TextAlignment" Value="Left"/>
+                                        </Style>
+
+                                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockBase}"/>
+                                        
+                                        <!--<Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockBase}">
+                                            -->
+                                        <!--<Setter Property="Width"  Value="{Binding Path=Width, RelativeSource={RelativeSource AncestorType={x:Type ColumnDefinition}, Mode=FindAncestor}}"/>--><!--
+                                            <Setter Property="MaxWidth"  Value="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ColumnDefinition}, Mode=FindAncestor}}"/>
+                                            <Setter Property="TextAlignment" Value="Left"/>
+                                        </Style>-->
+                                    </Grid.Resources>
+
+                                    <control:ParamsTreeView>
                                         <TreeViewItem Header="Общие">
-                                            <ContentControl ContentTemplate="{StaticResource PlitaTemplate3Style}"/>
+                                            <ContentControl ContentTemplate="{StaticResource PlateParametrsTemplate}"/>
                                         </TreeViewItem>
 
                                         <TreeViewItem Header="Доп.">
-                                            <ContentControl ContentTemplate="{StaticResource PlitaDopTemplate3Style}"/>
+                                            <ContentControl ContentTemplate="{StaticResource PlateAddParametrsTemplate}"/>
                                         </TreeViewItem>
 
-                                        <TreeViewItem Header="Сварка" HorizontalContentAlignment="Stretch">
-                                            <ContentControl ContentTemplate="{StaticResource PlitaSvarkaTemplate3Style}"/>
+                                        <TreeViewItem Header="Сварка">
+                                            <ContentControl ContentTemplate="{StaticResource PlateWeldingParametrsTemplate}"/>
                                         </TreeViewItem>
-
                                         
-                                    -->
-                                <!--<control:ParamsTreeView.Style>
+                                        <!--<control:ParamsTreeView.Style>
                                             <Style TargetType="{x:Type control:ParamsTreeView}">
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding Path=SelectedFile.CurrentDetal, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="{x:Null}">
@@ -1028,156 +935,8 @@
                                                 </Style.Triggers>
                                             </Style>
                                         </control:ParamsTreeView.Style>-->
-                                <!--</control:ParamsTreeView>-->
-
-                                <TreeView FontSize="{StaticResource FontSizeNP2}" BorderBrush="Transparent"
-                                              VerticalContentAlignment="Top" HorizontalContentAlignment="Stretch"
-                                              VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-
-                                    <TreeView.Style>
-                                        <Style TargetType="{x:Type TreeView}">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Path=SelectedFile.CurrentDetal, UpdateSourceTrigger=PropertyChanged}" Value="{x:Null}">
-                                                    <Setter Property="IsEnabled" Value="False"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TreeView.Style>
-
-                                    <TreeView.Resources>
-                                        <SolidColorBrush x:Key="TreeViewItem.TreeArrow.Static.Checked.Fill" Color="#304cff"/>
-                                        <SolidColorBrush x:Key="TreeViewItem.TreeArrow.Static.Checked.Stroke" Color="#001ccf"/>
-                                        <SolidColorBrush x:Key="TreeViewItem.TreeArrow.MouseOver.Stroke" Color="#42fcff"/>
-                                        <SolidColorBrush x:Key="TreeViewItem.TreeArrow.MouseOver.Fill" Color="#FFCCEEFB"/>
-                                        <SolidColorBrush x:Key="TreeViewItem.TreeArrow.MouseOver.Checked.Stroke" Color="#FF1CC4F7"/>
-                                        <SolidColorBrush x:Key="TreeViewItem.TreeArrow.MouseOver.Checked.Fill" Color="#FF82DFFB"/>
-                                        <PathGeometry x:Key="TreeArrow" Figures="M0,0 L0,6 L6,0 z"/>
-                                        <SolidColorBrush x:Key="TreeViewItem.TreeArrow.Static.Fill" Color="#FFFFFFFF"/>
-                                        <SolidColorBrush x:Key="TreeViewItem.TreeArrow.Static.Stroke" Color="#FF818181"/>
-
-                                        <Style TargetType="{x:Type TreeViewItem}">
-                                            <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                            <Setter Property="Focusable" Value="False"/>
-                                            <Setter Property="Margin" Value="5"/>
-
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="{x:Type TreeViewItem}">
-                                                        <Grid>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition MinWidth="19" Width="Auto"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                            </Grid.ColumnDefinitions>
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition/>
-                                                            </Grid.RowDefinitions>
-
-                                                            <ToggleButton x:Name="Expander" ClickMode="Press" IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
-                                                                              Style="{DynamicResource ExpandCollapseToggleStyle}"/>
-
-                                                            <Border x:Name="Bd" Grid.Column="1" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
-                                                                <ContentPresenter x:Name="PART_Header" ContentSource="Header" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                                                            </Border>
-
-                                                            <ItemsPresenter x:Name="ItemsHost" Grid.Row="1" Grid.Column="1" />
-                                                        </Grid>
-
-                                                        <ControlTemplate.Triggers>
-                                                            <Trigger Property="IsExpanded" Value="false">
-                                                                <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
-                                                            </Trigger>
-                                                            <Trigger Property="HasItems" Value="false">
-                                                                <Setter Property="Visibility" TargetName="Expander" Value="Hidden"/>
-                                                            </Trigger>
-                                                            <Trigger Property="IsSelected" Value="true">
-                                                                <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
-                                                                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
-                                                            </Trigger>
-
-                                                            <MultiTrigger>
-                                                                <MultiTrigger.Conditions>
-                                                                    <Condition Property="IsSelected" Value="true"/>
-                                                                    <Condition Property="IsSelectionActive" Value="false"/>
-                                                                </MultiTrigger.Conditions>
-                                                                <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightBrushKey}}"/>
-                                                                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}}"/>
-                                                            </MultiTrigger>
-                                                            <Trigger Property="IsEnabled" Value="false">
-                                                                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
-                                                            </Trigger>
-                                                        </ControlTemplate.Triggers>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Style>
-
-                                        <Style x:Key="ExpandCollapseToggleStyle" TargetType="{x:Type ToggleButton}">
-                                            <Setter Property="Focusable" Value="False"/>
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="{x:Type ToggleButton}">
-                                                        <Border Background="Transparent" Height="25" Width="25" Padding="5">
-                                                            <Path x:Name="ExpandPath" Data="{StaticResource TreeArrow}" Fill="{StaticResource TreeViewItem.TreeArrow.Static.Fill}" Stroke="{StaticResource TreeViewItem.TreeArrow.Static.Stroke}">
-                                                                <Path.RenderTransform>
-                                                                    <RotateTransform Angle="135" CenterY="3" CenterX="3"/>
-                                                                </Path.RenderTransform>
-                                                            </Path>
-                                                        </Border>
-
-                                                        <ControlTemplate.Triggers>
-                                                            <Trigger Property="IsChecked" Value="True">
-                                                                <Setter Property="RenderTransform" TargetName="ExpandPath">
-                                                                    <Setter.Value>
-                                                                        <RotateTransform Angle="180" CenterY="3" CenterX="3"/>
-                                                                    </Setter.Value>
-                                                                </Setter>
-                                                                <Setter Property="Fill" TargetName="ExpandPath" Value="{StaticResource TreeViewItem.TreeArrow.Static.Checked.Fill}"/>
-                                                                <Setter Property="Stroke" TargetName="ExpandPath" Value="{StaticResource TreeViewItem.TreeArrow.Static.Checked.Stroke}"/>
-                                                            </Trigger>
-                                                            <Trigger Property="IsMouseOver" Value="True">
-                                                                <Setter Property="Stroke" TargetName="ExpandPath" Value="{StaticResource TreeViewItem.TreeArrow.MouseOver.Stroke}"/>
-                                                                <Setter Property="Fill" TargetName="ExpandPath" Value="{StaticResource TreeViewItem.TreeArrow.MouseOver.Fill}"/>
-                                                            </Trigger>
-                                                            <MultiTrigger>
-                                                                <MultiTrigger.Conditions>
-                                                                    <Condition Property="IsMouseOver" Value="True"/>
-                                                                    <Condition Property="IsChecked" Value="True"/>
-                                                                </MultiTrigger.Conditions>
-                                                                <Setter Property="Stroke" TargetName="ExpandPath" Value="{StaticResource TreeViewItem.TreeArrow.MouseOver.Checked.Stroke}"/>
-                                                                <Setter Property="Fill" TargetName="ExpandPath" Value="{StaticResource TreeViewItem.TreeArrow.MouseOver.Checked.Fill}"/>
-                                                            </MultiTrigger>
-                                                        </ControlTemplate.Triggers>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Style>
-
-                                        <Style TargetType="{x:Type ContentControl}">
-                                            <Setter Property="Margin" Value="-25,0,5,5"/>
-                                            <Setter Property="DataContext" Value="{Binding Path=SelectedFile.CurrentDetal, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                        </Style>
-                                    </TreeView.Resources>
-
-                                    <TreeViewItem Header="Общие">
-                                        <ContentControl ContentTemplate="{StaticResource PlitaTemplateStyle}"/>
-                                    </TreeViewItem>
-
-                                    <TreeViewItem Header="Доп.">
-                                        <ContentControl ContentTemplate="{StaticResource PlitaDopTemplateStyle}"/>
-                                    </TreeViewItem>
-
-                                    <TreeViewItem Header="Сварка" HorizontalContentAlignment="Stretch">
-                                        <ContentControl ContentTemplate="{StaticResource PlitaSvarkaTemplateStyle}"/>
-                                    </TreeViewItem>
-
-                                    <i:Interaction.Behaviors>
-                                        <behavior:TreeViewSelectedItemBehavior ExpandSelected="True"
-                                                                              HierarchyPredicate="{Binding HierarchyPredicate}"
-                                                                              SelectedItem="{Binding Path=SelectedItem, Mode=TwoWay}"/>
-                                    </i:Interaction.Behaviors>
-                                </TreeView>
+                                    </control:ParamsTreeView>
+                                </Grid>
                             </avalonDock:LayoutAnchorable>
 
                             <avalonDock:LayoutAnchorable Title="Свойства" ContentId="Properties">
@@ -1187,15 +946,14 @@
                                                      TabVisibility="Collapsed"
                                                     
                                                      Margin="4"/>-->
-                                <ContentControl ContentTemplate="{StaticResource OtherTemplateStyle}"/>
+                                <ContentControl ContentTemplate="{StaticResource OtherTemplate}"/>
                             </avalonDock:LayoutAnchorable>
 
                             <avalonDock:LayoutAnchorable Title="Состав" ContentId="Components">
                                 <control:SceneItemsTreeView FontSize="{StaticResource FontSizeNP2}"
-                                                                Style="{StaticResource TextBase}"
-                                                                ItemsSource="{Binding Path=SceneItemsCollection, Mode=OneWay}"/>
+                                                            ItemsSource="{Binding Path=SceneItemsCollection, Mode=OneWay}"/>
 
-                                <!--<ContentControl ContentTemplate="{StaticResource OtherTemplateStyle}"/>-->
+                                <!--<ContentControl ContentTemplate="{StaticResource OtherTemplate}"/>-->
                             </avalonDock:LayoutAnchorable>
                         </avalonDock:LayoutAnchorGroup>
                     </avalonDock:LayoutAnchorSide>
@@ -1206,587 +964,20 @@
                         <avalonDock:LayoutAnchorGroup>
                             <avalonDock:LayoutAnchorable Title="Соединения" ContentId="Connections" AutoHideMinWidth="400" IsVisible="False"
                                                          attached:SelectAttachedProperties.PreventSelect="True">
-                                <!--<i:Interaction.Behaviors>
-                                    <behavior:ClosedLayoutAnchorableBehavior/>
-                                </i:Interaction.Behaviors>-->
 
-                                <Grid Margin="10"
-                                      DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}">
-
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="*"/>
-                                    </Grid.RowDefinitions>
-
-                                    <Grid.Resources>
-                                        <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource cbBase}"></Style>
-
-                                        <Style x:Key="buttonBaseStyle" TargetType="{x:Type Button}">
-                                            <Setter Property="Height" Value="40"/>
-                                            <Setter Property="Width" Value="{Binding Path=ActualHeight, RelativeSource={RelativeSource Self}}"/>
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="{x:Type Button}">
-                                                        <Border Name="Panel" BorderThickness="1" BorderBrush="{DynamicResource NotActiveBorderBrush}" Background="Transparent">
-                                                            <ContentPresenter x:Name="Content" VerticalAlignment="Center" HorizontalAlignment="Center" ContentSource="Content" Margin="3"/>
-                                                        </Border>
-
-                                                        <ControlTemplate.Triggers>
-                                                            <Trigger Property="IsMouseOver" Value="True">
-                                                                <Setter TargetName="Panel" Property="Background" Value="{DynamicResource ActiveBackround}"/>
-                                                                <Setter TargetName="Panel" Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
-                                                            </Trigger>
-
-                                                            <Trigger Property="IsPressed" Value="True">
-                                                                <Setter TargetName="Panel" Property="Background" Value="{DynamicResource ActiveBackround}"/>
-                                                                <Setter TargetName="Panel" Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
-                                                            </Trigger>
-                                                        </ControlTemplate.Triggers>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Style>
-
-                                        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource buttonBaseStyle}"></Style>
-
-                                        <Style TargetType="{x:Type Grid}">
-                                            <Setter Property="Margin" Value="0,0,0,10"/>
-                                        </Style>
-
-                                        <Style TargetType="{x:Type Path}">
-                                            <Setter Property="Stretch" Value="Uniform"/>
-                                        </Style>
-
-                                        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBase}">
-                                            <Setter Property="TextElement.FontSize" Value="{StaticResource FontSizeNP2}"/>
-                                            <Setter Property="MinHeight" Value="35"/>
-                                            <Setter Property="Padding" Value="5"/>
-                                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                                            <Setter Property="VerticalContentAlignment" Value="Center"/>
-                                        </Style>
-                                    </Grid.Resources>
-
-                                    <Grid Grid.Row="0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-
-                                        <Button Grid.Column="0" ToolTip="Удалить робота"
-                                                Command="{Binding Path=DeleteRobotCommand}"
-                                                CommandParameter="{Binding Path=SelectedRobot}">
-
-                                            <Path Fill="{StaticResource IconDeleteBrush}"
-                                                  Data="{StaticResource DeletePathGeomerty}"/>
-                                        </Button>
-
-                                        <ComboBox FontWeight="Bold" Grid.Column="1" Margin="5,0"
-                                                  HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                                  ItemsSource="{Binding Path=RobotsCollection, Mode=OneWay}"
-                                                  SelectedItem="{Binding Path=SelectedRobot, Mode=TwoWay}"      
-                                                  SelectedIndex="0">
-
-                                            <ComboBox.ItemTemplate>
-                                                <DataTemplate>
-                                                    <TextBlock Text="{Binding Path=Name, Mode=OneWay}"/>
-                                                </DataTemplate>
-                                            </ComboBox.ItemTemplate>
-                                        </ComboBox>
-
-                                        <Button Grid.Column="2" ToolTip="Повторное соединение"
-                                                Command="{Binding Path=ConnectedRobotCommand}"
-                                                CommandParameter="{Binding Path=SelectedRobot}">
-
-                                            <Button.Style>
-                                                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource buttonBaseStyle}">
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Path=SelectedRobot.IsConnection}" Value="True">
-                                                            <Setter Property="Height" Value="0"/>
-                                                            <Setter Property="Visibility" Value="Hidden"/>
-                                                            <Setter Property="Margin" Value="0"/>
-                                                        </DataTrigger>
-
-                                                        <DataTrigger Binding="{Binding Path=Visibility, RelativeSource={RelativeSource Self}}" Value="Visible">
-                                                            <DataTrigger.EnterActions>
-                                                                <BeginStoryboard Name="StartBlinking">
-                                                                    <Storyboard>
-                                                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" RepeatBehavior="Forever" AutoReverse="True" Duration="0:0:1"/>
-                                                                    </Storyboard>
-                                                                </BeginStoryboard>
-                                                            </DataTrigger.EnterActions>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Button.Style>
-
-                                            <Path Fill="{StaticResource IconUpDateBrush}"
-                                                  Data="{StaticResource UpDatePathGeomerty}"/>
-                                        </Button>
-
-                                        <Button Grid.Column="3" ToolTip="Закрыть соединение"
-                                                Command="{Binding Path=DisconnectedRobotCommand}"
-                                                CommandParameter="{Binding Path=SelectedRobot}">
-
-                                            <Button.Style>
-                                                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource buttonBaseStyle}">
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Path=SelectedRobot.IsConnection}" Value="False">
-                                                            <Setter Property="Height" Value="0"/>
-                                                            <Setter Property="Margin" Value="0"/>
-                                                            <Setter Property="Visibility" Value="Hidden"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Button.Style>
-
-                                            <Path Stroke="{StaticResource IconAddBrush}"
-                                                  Data="{StaticResource DisconnectPathGeomerty}"
-                                                  StrokeThickness="2.5"/>
-                                        </Button>
-
-                                        <Button Grid.Column="4" ToolTip="Добавить робота"
-                                                Command="{Binding Path=AddRobotCommand}">
-
-                                            <Path Data="{StaticResource AddRobotPathGeomerty}"
-                                                  Stroke="{StaticResource IconAddBrush}" StrokeThickness="2"/>
-                                        </Button>
-                                    </Grid>
-
-                                    <Grid Grid.Row="1">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="1.75*"/>
-                                            <ColumnDefinition Width="5"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-
-                                        <TextBox Grid.Column="0" Height="40" Text="{Binding Path=SelectedRobot.Host, Mode=TwoWay, FallbackValue='0.0.0.0', TargetNullValue='0.0.0.0', UpdateSourceTrigger=LostFocus}"/>
-                                        <TextBox Grid.Column="2" Height="40" Text="{Binding Path=SelectedRobot.Port, Mode=TwoWay, FallbackValue=0000, TargetNullValue=0000, UpdateSourceTrigger=LostFocus}"/>
-                                    </Grid>
-
-                                    <control:NavigationTreeView Grid.Row="2"
-                                                                Background="White"
-                                                                FontSize="{StaticResource FontSizeNP2}"
-                                                                RobotSource="{Binding Path=DataContext.SelectedRobot, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged}"
-                                                                AccessDataFile="{Binding Path=Settings.AccessDataFile, Source={x:Static Application.Current}}"
-                                                                BlockedFolder="{Binding Path=Settings.AvailableFolders, Source={x:Static Application.Current}}"
-                                                                BorderBrush="{StaticResource ThemeNotActiveToggleButBordBrush}"/>
-                                </Grid>
+                                <ContentControl ContentTemplate="{StaticResource ConnectionsLayoutAnchorableTemplate}"/>
                             </avalonDock:LayoutAnchorable>
 
                             <avalonDock:LayoutAnchorable Title="Управление" ContentId="Control" AutoHideMinWidth="900">
-                                <Grid DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}">
-                                    <ListView SelectionMode="Single" Margin="0"
-                                              FontSize="{StaticResource FontSizeNP4}" FontFamily="{StaticResource DefaultFont}" Foreground="{StaticResource ThemeFgP2Brush}"
-                                              ScrollViewer.CanContentScroll="True"
-                                              ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                              ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                                              ItemsSource="{Binding Path=RobotsCollection, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
-
-                                        <ListView.Resources>
-                                            <Style x:Key="LvTextBase" TargetType="{x:Type FrameworkElement}" BasedOn="{StaticResource TextBase}">
-                                                <Setter Property="TextElement.FontSize" Value="{StaticResource FontSizeNP4}"/>
-                                                <Setter Property="TextElement.Foreground" Value="{StaticResource ThemeFgP2Brush}"/>
-                                            </Style>
-
-                                            <Style x:Key="UprControlButtonBase" TargetType="{x:Type Button}">
-                                                <Setter Property="Height" Value="40"/>
-                                                <Setter Property="Margin" Value="5"/>
-                                                <Setter Property="Template" Value="{DynamicResource ButtonTemplate}"/>
-                                                <!--<Setter Property="BorderThickness" Value="0"/>-->
-                                            </Style>
-
-                                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource UprControlButtonBase}"></Style>
-
-                                            <ControlTemplate x:Key="ButtonTemplate" TargetType="{x:Type Button}">
-                                                <Border Name="Panel" BorderThickness="{TemplateBinding BorderThickness}"
-                                                        BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}">
-
-                                                    <ContentPresenter x:Name="Content"
-                                                                      VerticalAlignment="Center" HorizontalAlignment="Center"
-                                                                      ContentSource="Content" Margin="5"/>
-                                                </Border>
-
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter TargetName="Panel" Property="Background" Value="{DynamicResource ActiveBackround}"/>
-                                                        <Setter TargetName="Panel" Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
-                                                    </Trigger>
-
-                                                    <Trigger Property="IsPressed" Value="True">
-                                                        <Setter TargetName="Panel" Property="Background" Value="{DynamicResource IsSelectedBackround}"/>
-                                                        <Setter TargetName="Panel" Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-
-                                            <DataTemplate x:Key="PanelLvDelete">
-                                                <Button ToolTip="Удалить робота"
-                                                        Width="{Binding Path=ActualHeight, RelativeSource={RelativeSource Self}}"
-                                                        Command="{Binding Path=DataContext.DeleteRobotCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"
-                                                        CommandParameter="{Binding}">
-
-                                                    <Path Fill="{StaticResource IconDeleteBrush}" Stretch="Uniform"
-                                                          Data="{StaticResource DeletePathGeomerty}"/>
-                                                </Button>
-                                            </DataTemplate>
-
-                                            <DataTemplate x:Key="PanelLvRobot">
-                                                <DataTemplate.Resources>
-                                                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource UprControlButtonBase}">
-                                                        <Setter Property="Width" Value="{Binding Path=ActualHeight, RelativeSource={RelativeSource Self}}"/>
-                                                    </Style>
-
-                                                    <Style TargetType="{x:Type Path}">
-                                                        <Setter Property="Stretch" Value="Uniform"/>
-                                                    </Style>
-                                                </DataTemplate.Resources>
-
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="5"/>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                    </Grid.ColumnDefinitions>
-
-                                                    <TextBlock Grid.Column="0" Text="{Binding Path=Name}" TextWrapping="Wrap"
-                                                               TextAlignment="Center" VerticalAlignment="Center">
-
-                                                        <TextBlock.ToolTip>
-                                                            <MultiBinding Converter="{StaticResource StringFormatMultiConvert}" ConverterParameter="{}{0} : {1}">
-                                                                <Binding Path="Host"/>
-                                                                <Binding Path="Port"/>
-                                                            </MultiBinding>
-                                                        </TextBlock.ToolTip>
-                                                    </TextBlock>
-
-                                                    <Button Grid.Column="2" ToolTip="Переименовать робота"
-                                                            Command="{Binding Path=DataContext.RenameRobotCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"
-                                                            CommandParameter="{Binding}">
-
-                                                        <Path Fill="{StaticResource IconEditBrush}"
-                                                              Data="{StaticResource EditPathGeomerty}">
-
-                                                            <Path.LayoutTransform>
-                                                                <RotateTransform Angle="90"/>
-                                                            </Path.LayoutTransform>
-                                                        </Path>
-                                                    </Button>
-
-                                                    <Button Grid.Column="3" ToolTip="Повторное соединение"
-                                                            Command="{Binding Path=DataContext.ConnectedRobotCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"
-                                                            CommandParameter="{Binding}">
-
-                                                        <Button.Style>
-                                                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource UprControlButtonBase}">
-                                                                <Setter Property="Width" Value="{Binding Path=ActualHeight, RelativeSource={RelativeSource Self}}"/>
-
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding Path=IsConnection}" Value="True">
-                                                                        <Setter Property="Height" Value="0"/>
-                                                                        <Setter Property="Margin" Value="0"/>
-                                                                    </DataTrigger>
-
-                                                                    <DataTrigger Binding="{Binding Path=Visibility, RelativeSource={RelativeSource Self}}" Value="Visible">
-                                                                        <DataTrigger.EnterActions>
-                                                                            <BeginStoryboard Name="StartBlinking">
-                                                                                <Storyboard>
-                                                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" RepeatBehavior="Forever" AutoReverse="True" Duration="0:0:1"/>
-                                                                                </Storyboard>
-                                                                            </BeginStoryboard>
-                                                                        </DataTrigger.EnterActions>
-                                                                    </DataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </Button.Style>
-
-                                                        <Path Fill="{StaticResource IconUpDateBrush}" Data="{StaticResource UpDatePathGeomerty}"/>
-                                                    </Button>
-
-                                                    <Button Grid.Column="4" ToolTip="Закрыть соединение"
-                                                            Command="{Binding Path=DataContext.DisconnectedRobotCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"
-                                                            CommandParameter="{Binding}">
-
-                                                        <Button.Style>
-                                                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource UprControlButtonBase}">
-                                                                <Setter Property="Width" Value="{Binding Path=ActualHeight, RelativeSource={RelativeSource Self}}"/>
-
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding Path=IsConnection}" Value="False">
-                                                                        <Setter Property="Height" Value="0"/>
-                                                                        <Setter Property="Margin" Value="0"/>
-                                                                    </DataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </Button.Style>
-
-                                                        <Path Data="{StaticResource DisconnectPathGeomerty}"
-                                                              Stroke="{StaticResource IconAddBrush}" StrokeThickness="2.5"/>
-                                                    </Button>
-                                                </Grid>
-                                            </DataTemplate>
-
-                                            <DataTemplate x:Key="PanelLvControl">
-                                                <Menu Background="Transparent">
-                                                    <Menu.Resources>
-                                                        <Style x:Key="MenuItemBase" TargetType="{x:Type MenuItem}" BasedOn="{StaticResource LvTextBase}">
-                                                            <Setter Property="HorizontalAlignment" Value="Left"/>
-                                                            <Setter Property="Margin" Value="5"/>
-                                                        </Style>
-
-                                                        <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MenuItemBase}"></Style>
-
-                                                        <Style x:Key="PathBase" TargetType="{x:Type Path}">
-                                                            <Setter Property="Stretch" Value="Fill"/>
-                                                            <Setter Property="StrokeThickness" Value="0"/>
-                                                            <Setter Property="Height" Value="30"/>
-                                                            <Setter Property="Width" Value="30"/>
-                                                        </Style>
-
-                                                        <Style TargetType="{x:Type Path}" BasedOn="{StaticResource PathBase}"></Style>
-
-                                                        <ControlTemplate x:Key="SeparatorTemplate" TargetType="{x:Type MenuItem}">
-                                                            <Separator Height="0" Margin="0,2"/>
-                                                        </ControlTemplate>
-
-                                                        <ControlTemplate x:Key="MenuItemTemplate" TargetType="{x:Type MenuItem}">
-                                                            <Border Name="Panel" BorderThickness="0" Background="{StaticResource ThemeBgM1Brush}" CornerRadius="4">
-                                                                <StackPanel Orientation="Horizontal" Margin="5">
-                                                                    <ContentPresenter x:Name="Icon" ContentSource="Icon"/>
-                                                                    <ContentPresenter ContentSource="Header" RecognizesAccessKey="True"
-                                                                  TextElement.FontSize="{StaticResource FontSizeNP4}"
-                                                                  VerticalAlignment="Center" Margin="10,0"
-                                                                  Style="{StaticResource TextBase}"/>
-                                                                </StackPanel>
-                                                            </Border>
-
-                                                            <ControlTemplate.Triggers>
-                                                                <Trigger Property="IsMouseOver" Value="True">
-                                                                    <Setter TargetName="Panel" Property="Background" Value="{StaticResource ThemeIsMouseOverMenuItemBgBrush}"/>
-                                                                </Trigger>
-
-                                                                <Trigger Property="IsPressed" Value="True">
-                                                                    <Setter TargetName="Panel" Property="Background" Value="{StaticResource ThemeIsPressedMenuItemBgBrush}"/>
-                                                                </Trigger>
-                                                            </ControlTemplate.Triggers>
-                                                        </ControlTemplate>
-                                                    </Menu.Resources>
-
-                                                    <Menu.ItemsPanel>
-                                                        <ItemsPanelTemplate>
-                                                            <WrapPanel Orientation="Horizontal" Margin="0, 5"/>
-                                                        </ItemsPanelTemplate>
-                                                    </Menu.ItemsPanel>
-
-                                                    <MenuItem Template="{StaticResource MenuItemTemplate}">
-                                                        <MenuItem.Icon>
-                                                            <Path Stretch="Fill" StrokeThickness="0" Height="30" Width="30">
-                                                                <Path.Style>
-                                                                    <Style TargetType="{x:Type Path}" BasedOn="{StaticResource PathBase}">
-                                                                        <Setter Property="Fill" Value="{StaticResource IconRunProgramBrush}"/>
-                                                                        <Setter Property="Data" Value="{StaticResource RunProgramPathGeomerty}"/>
-
-                                                                        <Style.Triggers>
-                                                                            <DataTrigger Binding="{Binding Path=Pro_State}" Value="{x:Static model:ProcessStatuses.End}">
-                                                                                <Setter Property="Fill" Value="{StaticResource IconRestartProgramBrush}"/>
-                                                                                <Setter Property="Data" Value="{StaticResource RestartProgramPathGeomerty}"/>
-                                                                            </DataTrigger>
-                                                                        </Style.Triggers>
-                                                                    </Style>
-                                                                </Path.Style>
-                                                            </Path>
-                                                        </MenuItem.Icon>
-
-                                                        <MenuItem.Style>
-                                                            <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MenuItemBase}">
-                                                                <Setter Property="Header" Value="Пуск"/>
-
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding Path=Pro_State}" Value="{x:Static model:ProcessStatuses.Stop}">
-                                                                        <Setter Property="Header" Value="Продолжить"/>
-                                                                    </DataTrigger>
-
-                                                                    <DataTrigger Binding="{Binding Path=Pro_State}" Value="{x:Static model:ProcessStatuses.End}">
-                                                                        <Setter Property="Header" Value="Перезапустить"/>
-                                                                    </DataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </MenuItem.Style>
-
-                                                        <i:Interaction.Triggers>
-                                                            <i:EventTrigger EventName="PreviewMouseDown">
-                                                                <i:InvokeCommandAction Command="{Binding Path=DataContext.RunProgramCommandAsync, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"
-                                                                   CommandParameter="{Binding}"/>
-                                                            </i:EventTrigger>
-
-                                                            <i:EventTrigger EventName="PreviewMouseUp">
-                                                                <i:InvokeCommandAction Command="{Binding Path=DataContext.RetentionRunButtonCommandAsync, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"
-                                                                   CommandParameter="{Binding}"/>
-                                                            </i:EventTrigger>
-                                                        </i:Interaction.Triggers>
-                                                    </MenuItem>
-
-                                                    <MenuItem Template="{StaticResource MenuItemTemplate}" Header="Остановить" ToolTip="Аннулировать программу"
-                                                              Command="{Binding Path=DataContext.PauseProgramCommandAsync, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"
-                                                              CommandParameter="{Binding}">
-                                                        <MenuItem.Icon>
-                                                            <Path Data="{StaticResource StopProgramPathGeomerty}"
-                                                                  Stretch="Fill" Fill="{StaticResource IconStopProgramBrush}" Height="30" Width="30"/>
-                                                        </MenuItem.Icon>
-                                                    </MenuItem>
-
-                                                    <MenuItem Template="{StaticResource MenuItemTemplate}" Header="Анулировать" ToolTip="Аннулировать программу"
-                                                              Command="{Binding Path=DataContext.CancelProgramCommandAsync, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"
-                                                              CommandParameter="{Binding}">
-                                                        <MenuItem.Icon>
-                                                            <Path Data="{StaticResource CancelProgramPathGeomerty}"
-                                                                  Fill="{StaticResource IconCancelProgramBrush}" StrokeThickness="0"/>
-                                                        </MenuItem.Icon>
-                                                    </MenuItem>
-                                                </Menu>
-                                            </DataTemplate>
-
-                                            <DataTemplate x:Key="PanelLvStatus">
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="20"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                    </Grid.ColumnDefinitions>
-
-                                                    <Ellipse Grid.Column="0"
-                                                             Height="{Binding Path=ActualWidth, RelativeSource={RelativeSource Self}}"
-                                                             Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ColumnDefinition}, Mode=FindAncestor}}">
-
-                                                        <Ellipse.Style>
-                                                            <Style TargetType="{x:Type Ellipse}">
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding Path=Pro_State}" Value="{x:Static model:ProcessStatuses.Active}">
-                                                                        <DataTrigger.EnterActions>
-                                                                            <BeginStoryboard x:Name="blinkAnimation">
-                                                                                <Storyboard>
-                                                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" RepeatBehavior="Forever" AutoReverse="True" Duration="0:0:1.25"/>
-                                                                                </Storyboard>
-                                                                            </BeginStoryboard>
-                                                                        </DataTrigger.EnterActions>
-
-                                                                        <DataTrigger.ExitActions>
-                                                                            <StopStoryboard BeginStoryboardName="blinkAnimation"/>
-                                                                        </DataTrigger.ExitActions>
-                                                                    </DataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </Ellipse.Style>
-
-                                                        <Ellipse.Fill>
-                                                            <RadialGradientBrush>
-                                                                <GradientStop Color="White" Offset="0"/>
-                                                                <GradientStop Color="{Binding Path=Foreground.Color, ElementName=statusString}" Offset="1"/>
-                                                            </RadialGradientBrush>
-                                                        </Ellipse.Fill>
-                                                    </Ellipse>
-
-                                                    <TextBlock Grid.Column="1" x:Name="statusString" FontWeight="Bold" FontSize="{StaticResource FontSizeNP4}" 
-                                                               HorizontalAlignment="Left" TextAlignment="Left" TextWrapping="Wrap" Margin="5,0"
-                                                               Foreground="{Binding Path=Text, RelativeSource={RelativeSource Self}, Converter={StaticResource StatusColorConvert}}">
-
-                                                        <TextBlock.Style>
-                                                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource LvTextBase}">
-                                                                <Setter Property="Text" Value="Нет соединения"/>
-
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding Path=Pro_State}" Value="{x:Static model:ProcessStatuses.Free}">
-                                                                        <Setter Property="Text" Value="Программа не выбрана"/>
-                                                                    </DataTrigger>
-
-                                                                    <DataTrigger Binding="{Binding Path=Pro_State}" Value="{x:Static model:ProcessStatuses.Reset}">
-                                                                        <Setter Property="Text">
-                                                                            <Setter.Value>
-                                                                                <MultiBinding Converter="{StaticResource StringFormatMultiConvert}" ConverterParameter="Выбрана программа {0}">
-                                                                                    <Binding Path="RobotProgramName" Mode="OneWay"/>
-                                                                                </MultiBinding>
-                                                                            </Setter.Value>
-                                                                        </Setter>
-                                                                    </DataTrigger>
-
-                                                                    <DataTrigger Binding="{Binding Path=Pro_State}" Value="{x:Static model:ProcessStatuses.Active}">
-                                                                        <Setter Property="Text">
-                                                                            <Setter.Value>
-                                                                                <MultiBinding Converter="{StaticResource StringFormatMultiConvert}" ConverterParameter="Запущена программа {0}">
-                                                                                    <Binding Path="RobotProgramName" Mode="OneWay"/>
-                                                                                </MultiBinding>
-                                                                            </Setter.Value>
-                                                                        </Setter>
-                                                                    </DataTrigger>
-
-                                                                    <DataTrigger Binding="{Binding Path=Pro_State}" Value="{x:Static model:ProcessStatuses.Stop}">
-                                                                        <Setter Property="Text">
-                                                                            <Setter.Value>
-                                                                                <MultiBinding Converter="{StaticResource StringFormatMultiConvert}" ConverterParameter="Программа {0} остановлена">
-                                                                                    <Binding Path="RobotProgramName" Mode="OneWay"/>
-                                                                                </MultiBinding>
-                                                                            </Setter.Value>
-                                                                        </Setter>
-                                                                    </DataTrigger>
-
-                                                                    <DataTrigger Binding="{Binding Path=Pro_State}" Value="{x:Static model:ProcessStatuses.End}">
-                                                                        <Setter Property="Text">
-                                                                            <Setter.Value>
-                                                                                <MultiBinding Converter="{StaticResource StringFormatMultiConvert}" ConverterParameter="Программа {0} завершена">
-                                                                                    <Binding Path="RobotProgramName" Mode="OneWay"/>
-                                                                                </MultiBinding>
-                                                                            </Setter.Value>
-                                                                        </Setter>
-                                                                    </DataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </TextBlock.Style>
-                                                    </TextBlock>
-                                                </Grid>
-                                            </DataTemplate>
-                                        </ListView.Resources>
-
-                                        <ListView.ItemContainerStyle>
-                                            <Style TargetType="{x:Type ListViewItem}">
-                                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                            </Style>
-                                        </ListView.ItemContainerStyle>
-
-                                        <ListView.View>
-                                            <GridView behavior:DataGridAutoSizeColumns.IsDynamicWith="True">
-                                                <GridViewColumn CellTemplate="{StaticResource PanelLvDelete}" Width="Auto"></GridViewColumn>
-                                                <GridViewColumn CellTemplate="{StaticResource PanelLvRobot}" Width="Auto"></GridViewColumn>
-                                                <GridViewColumn CellTemplate="{StaticResource PanelLvControl}" Width="Auto"></GridViewColumn>
-                                                <GridViewColumn CellTemplate="{StaticResource PanelLvStatus}">Статус</GridViewColumn>
-                                            </GridView>
-                                        </ListView.View>
-
-                                        <i:Interaction.Triggers>
-                                            <i:EventTrigger EventName="MouseDoubleClick">
-                                                <i:InvokeCommandAction Command="{Binding Path=SelectRobotCommand}"
-                                                                       CommandParameter="{Binding Path=., RelativeSource={RelativeSource AncestorType={x:Type ListView}, Mode=FindAncestor}}"/>
-                                            </i:EventTrigger>
-                                        </i:Interaction.Triggers>
-                                    </ListView>
-                                </Grid>
+                                <ContentControl ContentTemplate="{StaticResource ControlLayoutAnchorableTemplate}"/>
                             </avalonDock:LayoutAnchorable>
                         </avalonDock:LayoutAnchorGroup>
                     </avalonDock:LayoutAnchorSide>
                 </avalonDock:LayoutRoot.RightSide>
             </avalonDock:LayoutRoot>
-           
-            <!--<i:Interaction.Triggers>
-                <i:EventTrigger EventName="Loaded">
-                    <i:InvokeCommandAction Command="{Binding Path=LoadedCommand}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>-->
         </avalonDock:DockingManager>
 
-        <DockPanel Grid.Row="3" Background="{StaticResource ThemeBottomMenuBarBrush}">
+        <DockPanel Grid.Row="3" Background="{StaticResource BottomMenu.DockPanel.Background}">
 
         </DockPanel>
     </Grid>

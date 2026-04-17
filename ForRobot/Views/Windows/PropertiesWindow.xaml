@@ -13,26 +13,21 @@
         Height="450" Width="700"
         ShowInTaskbar="True"  WindowStartupLocation="CenterScreen"
         Background="#cfcfcf"
-        Icon="/InterfaceOfRobots;component/Themes/Images/settings.png">
+        Icon="/InterfaceOfRobots;component/Themes/Images/settings.png"
+        Style="{StaticResource FrameworkElementBase}">
 
     <Window.DataContext>
         <vm:PropertiesWindowViewModel/>
     </Window.DataContext>
 
     <Window.Resources>
-        <Style x:Key="TextBase" TargetType="{x:Type FrameworkElement}">
-            <Setter Property="TextElement.FontSize" Value="{StaticResource FontSizeNP1}"/>
-            <Setter Property="TextElement.FontFamily" Value="DefaultFont"/>
-            <Setter Property="TextElement.Foreground" Value="{StaticResource ThemeFgP2Brush}"/>
-        </Style>
-
-        <Style TargetType="{x:Type TreeView}" BasedOn="{StaticResource TextBase}"></Style>
-
+        <Style TargetType="{x:Type TreeView}" BasedOn="{StaticResource TreeViewBase}"/>
+        
         <Style TargetType="{x:Type TreeViewItem}">
-            <Setter Property="Padding" Value="0, 3"/>
+            <Setter Property="Padding" Value="3"/>
         </Style>
      
-        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource TextBase}">
+        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonBase}">
             <!--<Setter Property="Width" Value="100"/>-->
             <Setter Property="Padding" Value="20, 5"/>
         </Style>
@@ -83,7 +78,7 @@
             </Grid.ColumnDefinitions>
 
             <Label Grid.Row="0" Grid.Column="0" Content="{Binding Path=SelectedItem.Header, ElementName=TreeViewProperties}"
-                   VerticalContentAlignment="Top" Style="{StaticResource TextBase}"/>
+                   VerticalContentAlignment="Top"/>
             
             <Separator Grid.Row="0" Grid.Column="1"/>
 

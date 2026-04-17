@@ -78,13 +78,13 @@
                             </Trigger>
                             
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Panel" Property="Background" Value="{StaticResource ThemeIsMouseOverMenuItemBgBrush}"/>
-                                <Setter TargetName="Panel" Property="BorderBrush" Value="{StaticResource ThemeIsMouseOverToggleButBordBrush}"/>
+                                <Setter TargetName="Panel" Property="Background" Value="{StaticResource ResourceKey=ToggleButton.IsMouseOver.Background}"/>
+                                <Setter TargetName="Panel" Property="BorderBrush" Value="{StaticResource ResourceKey=ToggleButton.IsMouseOver.BorderBrush}"/>
                             </Trigger>
 
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="Panel" Property="Background" Value="{StaticResource ThemeIsPressedToggleButBgBrush}"/>
-                                <Setter TargetName="Panel" Property="BorderBrush" Value="{StaticResource ThemeIsPressedToggleButBordBrush}"/>
+                                <Setter TargetName="Panel" Property="Background" Value="{StaticResource ResourceKey=ToggleButton.IsPressed.Background}"/>
+                                <Setter TargetName="Panel" Property="BorderBrush" Value="{StaticResource ResourceKey=ToggleButton.IsPressed.BorderBrush}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -191,7 +191,7 @@
                                     <Setter Property="Template">
                                         <Setter.Value>
                                             <ControlTemplate TargetType="ContentControl">
-                                                <ContentControl ContentTemplate="{StaticResource OtherTemplateStyle}"/>
+                                                <ContentControl ContentTemplate="{StaticResource OtherTemplate}"/>
                                             </ControlTemplate>
                                         </Setter.Value>
                                     </Setter>
@@ -220,7 +220,7 @@
                                     <Setter Property="Template">
                                         <Setter.Value>
                                             <ControlTemplate TargetType="ContentControl">
-                                                <ContentControl ContentTemplate="{StaticResource OtherTemplateStyle}"/>
+                                                <ContentControl ContentTemplate="{StaticResource OtherTemplate}"/>
                                             </ControlTemplate>
                                         </Setter.Value>
                                     </Setter>
@@ -249,7 +249,7 @@
                                     <Setter Property="Template">
                                         <Setter.Value>
                                             <ControlTemplate TargetType="ContentControl">
-                                                <ContentControl ContentTemplate="{StaticResource OtherTemplateStyle}"/>
+                                                <ContentControl ContentTemplate="{StaticResource OtherTemplate}"/>
                                             </ControlTemplate>
                                         </Setter.Value>
                                     </Setter>

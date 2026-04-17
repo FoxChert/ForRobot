@@ -34,7 +34,7 @@ namespace ForRobot.Libr.Converters
                     try
                     {
                         var constantValue = fieldInfo.GetRawConstantValue();
-                        if (constantValue?.Equals(fieldInfo) == true)
+                        if (constantValue?.Equals(fieldInfo.GetValue(staticClassType)) == true)
                         {
                             var descriptionAttr = fieldInfo.GetCustomAttribute<DescriptionAttribute>();
                             return descriptionAttr?.Description ?? fieldInfo.Name;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ForRobot.Libr.Behavior;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,11 +9,11 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interactivity;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Windows.Interactivity;
 
 namespace ForRobot.Views.Controls
 {
@@ -32,29 +33,6 @@ namespace ForRobot.Views.Controls
             AssociatedObject.ToolTipOpening -= OnToolTipOpening;
             base.OnDetaching();
         }
-
-        private void OnToolTipOpening(object sender, ToolTipEventArgs e)
-        {
-            var treeView = FindVisualParent<ParamsTreeView>(AssociatedObject);
-            if (treeView == null) return;
-                        
-            // Обрабатываем разные типы ToolTip
-            switch (AssociatedObject.ToolTip)
-            {
-                case string text:
-                    treeView.LastToolTip = text;
-                    break;
-
-                case ToolTip toolTip:
-                    treeView.LastToolTip = toolTip.Content?.ToString() ?? string.Empty;
-                    break;
-
-                default:
-                    treeView.LastToolTip = AssociatedObject.ToolTip?.ToString() ?? string.Empty;
-                    break;
-            }
-        }
-
         private static T FindVisualParent<T>(DependencyObject child) where T : DependencyObject
         {
             var parentObject = VisualTreeHelper.GetParent(child);
@@ -74,6 +52,27 @@ namespace ForRobot.Views.Controls
         }
 
         private string ExtractTextFromElement(FrameworkElement element) => element.ToString();
+
+        private void OnToolTipOpening(object sender, ToolTipEventArgs e)
+        {
+            var treeView = FindVisualParent<ParamsTreeView>(AssociatedObject);
+            if (treeView == null) return;
+
+            switch (AssociatedObject.ToolTip)
+            {
+                case string text:
+                    treeView.LastToolTip = text;
+                    break;
+
+                case ToolTip toolTip:
+                    treeView.LastToolTip = toolTip.Content?.ToString() ?? string.Empty;
+                    break;
+
+                default:
+                    treeView.LastToolTip = AssociatedObject.ToolTip?.ToString() ?? string.Empty;
+                    break;
+            }
+        }
     }
 
     /// <summary>
@@ -81,6 +80,17 @@ namespace ForRobot.Views.Controls
     /// </summary>
     public partial class ParamsTreeView : TreeView
     {
+        public static new readonly DependencyProperty SelectedItemProperty = DependencyProperty.Register(nameof(SelectedItem),
+                                                                                             typeof(object),
+                                                                                             typeof(ParamsTreeView),
+                                                                                             new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSelectedItemChanged));
+
+        public new object SelectedItem
+        {
+            get { return (object)GetValue(SelectedItemProperty); }
+            set { SetValue(SelectedItemProperty, value); }
+        }
+
         /// <summary>
         /// Свойство для хранения последнего ToolTip
         /// </summary>
@@ -103,6 +113,19 @@ namespace ForRobot.Views.Controls
         public ParamsTreeView()
         {
             InitializeComponent();
+        }
+
+        private static void OnSelectedItemChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            var treeView = (ParamsTreeView)sender;
+            //if (treeView._modelHandled) return;
+
+            //if (treeView._treeView == null)
+            //    return;
+
+            //treeView._modelHandled = true;
+            //treeView.UpdateAllTreeViewItems();
+            //treeView._modelHandled = false;
         }
     }
 }

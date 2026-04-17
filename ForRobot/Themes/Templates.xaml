@@ -1,0 +1,1889 @@
+﻿<ResourceDictionary x:Class="ForRobot.Themes.MetroStyleResourceDictionary"
+                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+                    xmlns:h="http://helix-toolkit.org/wpf"
+                    xmlns:pt="clr-namespace:PropertyTools.Wpf;assembly=PropertyTools.Wpf"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                    xmlns:conv="clr-namespace:ForRobot.Libr.Converters"
+                    xmlns:local="clr-namespace:ForRobot.Themes"
+                    xmlns:model="clr-namespace:ForRobot.Models"
+                    xmlns:detals="clr-namespace:ForRobot.Models.Detals"
+                    xmlns:welding="clr-namespace:ForRobot.Models.Welding"
+                    xmlns:control="clr-namespace:ForRobot.Views.Controls"
+                    xmlns:behavior="clr-namespace:ForRobot.Libr.Behavior"
+                    xmlns:attached="clr-namespace:ForRobot.Libr.AttachedProperties"
+                    xmlns:properties="clr-namespace:ForRobot.Properties">
+
+    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockBase}">
+        <Setter Property="MaxWidth" Value="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ColumnDefinition}}"/>
+    </Style>
+
+    <Style x:Key="TextBoxBase" TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxBase}">
+        <!--<Setter Property="Width" Value="{Binding Path=Width, RelativeSource={RelativeSource AncestorType={x:Type ColumnDefinition}, Mode=FindAncestor}}"/>-->
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="Margin" Value="5"/>
+        <Setter Property="ToolTipService.InitialShowDelay" Value="0"/>
+        <Setter Property="ToolTipService.ShowDuration" Value="5000"/>
+        <Setter Property="Tag" Value="{Binding Path=., RelativeSource={RelativeSource Self}, Converter={StaticResource BindingToStringConvert}}"/>
+        <EventSetter Event="PreviewMouseDown" Handler="IgnoreMouseButton"/>
+        <EventSetter Event="GotFocus" Handler="TextBox_GotFocus"/>
+        <EventSetter Event="LostFocus" Handler="TextBox_LostFocus"/>
+
+        <Style.Triggers>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+                <Setter Property="ToolTipService.IsEnabled" Value="True"/>
+            </Trigger>
+
+            <Trigger Property="IsKeyboardFocused" Value="False">
+                <Setter Property="ToolTipService.IsEnabled" Value="False"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxBase}"/>
+
+    <Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource RadioButtonBase}">
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="Margin" Value="0,5"/>
+    </Style>
+
+    <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource ComboBoxBase}">
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="{x:Type ComboBoxItem}">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="VerticalContentAlignment"  Value="Stretch"/>
+                    <!--<Setter Property="TextBlock.Padding" Value="0,10"/>
+                    <Setter Property="TextBlock.TextAlignment" Value="Center"/>-->
+                    <!--<Setter Property="TextBlock.VerticalAlignment" Value="Center"/>-->
+                </Style>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonBase}"/>
+
+    <Style TargetType="{x:Type GroupBox}" BasedOn="{StaticResource GroupBoxBase}">
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="Margin" Value="5"/>
+    </Style>
+
+    <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource CheckBoxBase}">
+        <!--<Setter Property="Margin" Value="0,5"/>-->
+        <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+    </Style>
+
+    <Style TargetType="{x:Type DataGridColumnHeader}">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" TextWrapping="Wrap" TextAlignment="Center"/>
+                    <!--<TextBlock Text="{Binding}" TextWrapping="Wrap" TextAlignment="Center" Padding="5, 3"/>-->
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource DataGridCellBase}"/>
+
+    <Style TargetType="{x:Type DataGridRow}">
+        <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridRow">
+                    <SelectiveScrollingGrid>
+                        <DataGridCellsPresenter/>
+                        <DataGridDetailsPresenter/>
+                    </SelectiveScrollingGrid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        
+        <!--<Setter Property="HeaderStyle">
+         <Setter.Value>
+             <Style TargetType="{x:Type DataGridRowHeader}">
+                 <Setter Property="Template">
+                     <Setter.Value>
+                         <ControlTemplate TargetType="{x:Type DataGridRowHeader}">
+                             <TextBlock Text="{Binding Path=., RelativeSource={RelativeSource AncestorType=DataGridRow}, Converter={StaticResource RowNumberConvert}}" Margin="10,5"/>
+                         </ControlTemplate>
+                     </Setter.Value>
+                 </Setter>
+             </Style>
+         </Setter.Value>
+     </Setter>-->
+    </Style>
+
+    <Style TargetType="{x:Type DataGridRowHeader}" BasedOn="{StaticResource FrameworkElementBase}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type DataGridRowHeader}">
+                    <TextBlock Text="{Binding Path=., RelativeSource={RelativeSource AncestorType=DataGridRow}, Converter={StaticResource RowNumberConvert}}" Margin="5"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type DataGrid}">
+        <Setter Property="AutoGenerateColumns" Value="False"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+        <Setter Property="CanUserAddRows" Value="False"/>
+        <Setter Property="CanUserDeleteRows" Value="False"/>
+        <Setter Property="CanUserResizeRows" Value="False"/>
+        <Setter Property="CanUserReorderColumns" Value="False"/>
+        <Setter Property="CanUserSortColumns" Value="False"/>
+        <Setter Property="CanUserResizeColumns" Value="False"/>
+        <Setter Property="EnableRowVirtualization" Value="False"/>
+        <Setter Property="SelectionMode" Value="Single"/>
+        <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+        <!--<EventSetter Event="SizeChanged" Handler="DataGrid_SizeChanged"/>-->
+    </Style>
+
+    <ResourceDictionary x:Key="SelectAppsWindowResource"
+                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource FrameworkElementBase}">
+            <Setter Property="Margin" Value="20, 5"/>
+            <Setter Property="MinWidth" Value="60"/>
+            <Setter Property="Padding" Value="5, 3"/>
+        </Style>
+
+        <Style TargetType="{x:Type ContentControl}" BasedOn="{StaticResource FrameworkElementBase}">
+            <Setter Property="ContentTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <Grid DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Image Grid.Column="0" Source="{Binding Icon}" Width="20" Height="20" Margin="5"/>
+                            <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                        </Grid>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </ResourceDictionary>
+
+    <!--******************************Шаблоны LayoutAnchorable******************************-->
+    <!--Messages LayoutAnchorable-->
+    <DataTemplate x:Key="MessagesLayoutAnchorableTemplate" DataType="{x:Type ContentControl}">
+        <DataGrid ItemsSource="{Binding Path=MessagesCollection, Mode=OneWay}" IsReadOnly="True"
+                  ScrollViewer.CanContentScroll="True"
+                  ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                  attached:ScrollViewerAttachedPropertiesDataGrid.ScrollOnLoadingRow="True">
+            
+            <DataGrid.Resources>
+                <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource DataGridCellBase}">
+                    <!--<Setter Property="IsEnabled" Value="False"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+            <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type DataGridCell}">
+                        <Grid Background="{TemplateBinding Background}">
+                            <ContentPresenter VerticalAlignment="Center" Margin="5"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>-->
+
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding LogLevel}" Value="Error">
+                            <Setter Property="Foreground" Value="Red"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+
+                <Style TargetType="{x:Type DataGridRowHeader}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=Item.Details, RelativeSource={RelativeSource AncestorType={x:Type DataGridRow}}}" Value="{x:Static sys:String.Empty}">
+                            <Setter Property="IsEnabled" Value="False"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.Resources>
+
+            <DataGrid.RowHeaderTemplate>
+                <DataTemplate>
+                    <Expander Expanded="Expander_ExpandedOrCollapsed"  Collapsed="Expander_ExpandedOrCollapsed">
+                        <Expander.Style>
+                            <Style TargetType="{x:Type Expander}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=Item.Details, RelativeSource={RelativeSource AncestorType={x:Type DataGridRow}}}" Value="{x:Static sys:String.Empty}">
+                                        <Setter Property="Visibility" Value="Hidden"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Expander.Style>
+                    </Expander>
+                </DataTemplate>
+            </DataGrid.RowHeaderTemplate>
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Время" Binding="{Binding Time, StringFormat=\{0:HH:mm:ss\}}" Width="Auto"/>
+                <DataGridTemplateColumn Header="Сообщение" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Content}"
+                               Style="{StaticResource {x:Type TextBlock}}"
+                               TextWrapping="Wrap" VerticalAlignment="Center" TextAlignment="Left"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+
+            <DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                    <Border Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}, Mode=FindAncestor}}">
+                        <TextBlock Text="{Binding Details}" Focusable="False" IsEnabled="False" Margin="5,10" TextWrapping="Wrap"/>
+                    </Border>
+                </DataTemplate>
+            </DataGrid.RowDetailsTemplate>
+        </DataGrid>
+    </DataTemplate>
+
+    <!--Connections LayoutAnchorable-->
+    <DataTemplate x:Key="ConnectionsLayoutAnchorableTemplate" DataType="{x:Type ContentControl}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid.Resources>
+                <Style TargetType="{x:Type Path}">
+                    <Setter Property="Stretch" Value="Uniform"/>
+                </Style>
+            </Grid.Resources>
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" ToolTip="Удалить робота"
+                        Command="{Binding Path=DeleteRobotCommand}"
+                        CommandParameter="{Binding Path=SelectedRobot}">
+
+                    <Path Fill="{StaticResource IconDeleteBrush}"
+                          Data="{StaticResource DeletePathGeometry}"/>
+                </Button>
+
+                <ComboBox FontWeight="Bold" Grid.Column="1" Margin="5,0"
+                          HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                          ItemsSource="{Binding Path=RobotsCollection, Source={x:Static Application.Current}, Mode=OneWay}"
+                          SelectedItem="{Binding Path=SelectedRobot, Mode=TwoWay}"      
+                          SelectedIndex="0">
+
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=Name, Mode=OneWay}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <Button Grid.Column="2" ToolTip="Повторное соединение"
+                        Command="{Binding Path=ConnectedRobotCommand}"
+                        CommandParameter="{Binding Path=SelectedRobot}">
+
+                    <Button.Style>
+                        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonBase}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=SelectedRobot.IsConnection}" Value="True">
+                                    <Setter Property="Height" Value="0"/>
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                    <Setter Property="Margin" Value="0"/>
+                                </DataTrigger>
+
+                                <DataTrigger Binding="{Binding Path=Visibility, RelativeSource={RelativeSource Self}}" Value="Visible">
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard Name="StartBlinking">
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" RepeatBehavior="Forever" AutoReverse="True" Duration="0:0:1"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+
+                    <Path Fill="{StaticResource IconUpDateBrush}"
+                          Data="{StaticResource UpDatePathGeometry}"/>
+                </Button>
+
+                <Button Grid.Column="3" ToolTip="Закрыть соединение"
+                        Command="{Binding Path=DisconnectedRobotCommand}"
+                        CommandParameter="{Binding Path=SelectedRobot}">
+
+                    <Button.Style>
+                        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonBase}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=SelectedRobot.IsConnection}" Value="False">
+                                    <Setter Property="Height" Value="0"/>
+                                    <Setter Property="Margin" Value="0"/>
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+
+                    <Path Stroke="{StaticResource IconAddBrush}"
+                          Data="{StaticResource DisconnectPathGeometry}"
+                          StrokeThickness="2.5"/>
+                </Button>
+
+                <Button Grid.Column="4" ToolTip="Добавить соединение"
+                        Command="{Binding Path=AddRobotCommand}">
+
+                    <Path Data="{StaticResource AddRobotPathGeometry}"
+                          Stroke="{StaticResource IconAddBrush}" StrokeThickness="2"/>
+                </Button>
+            </Grid>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.75*"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBox Grid.Column="0" Margin="0, 5"
+                         Text="{Binding Path=SelectedRobot.Host, Mode=TwoWay, FallbackValue='0.0.0.0', TargetNullValue='0.0.0.0', UpdateSourceTrigger=LostFocus}"/>
+                <TextBox Grid.Column="2" Margin="0, 5"
+                         Text="{Binding Path=SelectedRobot.Port, Mode=TwoWay, FallbackValue=0000, TargetNullValue=0000, UpdateSourceTrigger=LostFocus}"/>
+            </Grid>
+
+            <control:NavigationTreeView Grid.Row="2"
+                                        Background="White"
+                                        FontSize="{StaticResource FontSizeNP2}"
+                                        RobotSource="{Binding Path=DataContext.SelectedRobot, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged}"
+                                        AccessDataFile="{Binding Path=Settings.AccessDataFile, Source={x:Static Application.Current}}"
+                                        BlockedFolder="{Binding Path=Settings.AvailableFolders, Source={x:Static Application.Current}}"
+                                        BorderBrush="{StaticResource NavigationTreeView.BorderBrush}"/>
+        </Grid>
+    </DataTemplate>
+
+    <!--Control LayoutAnchorable-->
+    <DataTemplate x:Key="ControlLayoutAnchorableTemplate" DataType="{x:Type ContentControl}">
+        <ListView SelectionMode="Single"
+                                              FontSize="{StaticResource FontSizeNP4}"
+                                              ScrollViewer.CanContentScroll="True"
+                                              ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                              ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                              ItemsSource="{Binding Path=RobotsCollection, Source={x:Static Application.Current}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+
+            <ListView.Resources>
+                <!--<Style x:Key="UprControlButtonBase" TargetType="{x:Type Button}">
+                                                <Setter Property="Height" Value="40"/>
+                                                <Setter Property="Margin" Value="5"/>
+                                                <Setter Property="Template" Value="{DynamicResource ButtonTemplate}"/>
+                                                -->
+                <!--<Setter Property="BorderThickness" Value="0"/>-->
+                <!--
+                                            </Style>-->
+
+                <!--<Style TargetType="{x:Type Button}" BasedOn="{StaticResource UprControlButtonBase}"></Style>-->
+
+                <!--<ControlTemplate x:Key="ButtonTemplate" TargetType="{x:Type Button}">
+                                                <Border Name="Panel" BorderThickness="{TemplateBinding BorderThickness}"
+                                                        BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}">
+
+                                                    <ContentPresenter x:Name="Content"
+                                                                      VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                                      ContentSource="Content" Margin="5"/>
+                                                </Border>
+
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="Panel" Property="Background" Value="{DynamicResource ActiveBackround}"/>
+                                                        <Setter TargetName="Panel" Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                                                    </Trigger>
+
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter TargetName="Panel" Property="Background" Value="{DynamicResource IsSelectedBackround}"/>
+                                                        <Setter TargetName="Panel" Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>-->
+
+                <DataTemplate x:Key="PanelLvDelete">
+                    <Button ToolTip="Удалить робота"
+                            Command="{Binding Path=DataContext.DeleteRobotCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"
+                            CommandParameter="{Binding}">
+
+                        <Path Fill="{StaticResource IconDeleteBrush}" Stretch="Uniform"
+                              Data="{StaticResource DeletePathGeometry}"/>
+                    </Button>
+                </DataTemplate>
+
+                <DataTemplate x:Key="PanelLvRobot">
+                    <DataTemplate.Resources>
+                        <Style TargetType="{x:Type Path}">
+                            <Setter Property="Stretch" Value="Uniform"/>
+                        </Style>
+                    </DataTemplate.Resources>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="5"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="{Binding Path=Name}" TextWrapping="Wrap"
+                                                               TextAlignment="Center" VerticalAlignment="Center">
+
+                            <TextBlock.ToolTip>
+                                <MultiBinding Converter="{StaticResource StringFormatMultiConvert}" ConverterParameter="{}{0} : {1}">
+                                    <Binding Path="Host"/>
+                                    <Binding Path="Port"/>
+                                </MultiBinding>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
+
+                        <Button Grid.Column="2" ToolTip="Переименовать робота"
+                                Command="{Binding Path=DataContext.RenameRobotCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"
+                                CommandParameter="{Binding}">
+
+                            <Path Fill="{StaticResource IconEditBrush}"
+                                                              Data="{StaticResource EditPathGeometry}">
+
+                                <Path.LayoutTransform>
+                                    <RotateTransform Angle="90"/>
+                                </Path.LayoutTransform>
+                            </Path>
+                        </Button>
+
+                        <Button Grid.Column="3" ToolTip="Повторное соединение"
+                                Command="{Binding Path=DataContext.ConnectedRobotCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"
+                                CommandParameter="{Binding}">
+
+                            <Button.Style>
+                                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonBase}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Path=IsConnection}" Value="True">
+                                            <Setter Property="Height" Value="0"/>
+                                            <Setter Property="Margin" Value="0"/>
+                                        </DataTrigger>
+
+                                        <DataTrigger Binding="{Binding Path=Visibility, RelativeSource={RelativeSource Self}}" Value="Visible">
+                                            <DataTrigger.EnterActions>
+                                                <BeginStoryboard Name="StartBlinking">
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" RepeatBehavior="Forever" AutoReverse="True" Duration="0:0:1"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.EnterActions>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+
+                            <Path Fill="{StaticResource IconUpDateBrush}" Data="{StaticResource UpDatePathGeometry}"/>
+                        </Button>
+
+                        <Button Grid.Column="4" ToolTip="Закрыть соединение"
+                                Command="{Binding Path=DataContext.DisconnectedRobotCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"
+                                CommandParameter="{Binding}">
+
+                            <Button.Style>
+                                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonBase}">
+                                    <!--<Setter Property="Width" Value="{Binding Path=ActualHeight, RelativeSource={RelativeSource Self}}"/>-->
+
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Path=IsConnection}" Value="False">
+                                            <Setter Property="Height" Value="0"/>
+                                            <Setter Property="Margin" Value="0"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+
+                            <Path Data="{StaticResource DisconnectPathGeometry}"
+                                  Stroke="{StaticResource IconAddBrush}" StrokeThickness="2.5"/>
+                        </Button>
+                    </Grid>
+                </DataTemplate>
+
+                <DataTemplate x:Key="PanelLvControl">
+                    <!--<Menu Background="Transparent">
+                        <Menu.Resources>
+                            <Style x:Key="MenuItemBase" TargetType="{x:Type MenuItem}" BasedOn="{StaticResource LvTextBase}">
+                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                                <Setter Property="Margin" Value="5"/>
+                            </Style>
+
+                            <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MenuItemBase}"></Style>
+
+                            <Style x:Key="PathBase" TargetType="{x:Type Path}">
+                                <Setter Property="Stretch" Value="Fill"/>
+                                <Setter Property="StrokeThickness" Value="0"/>
+                                <Setter Property="Height" Value="30"/>
+                                <Setter Property="Width" Value="30"/>
+                            </Style>
+
+                            <Style TargetType="{x:Type Path}" BasedOn="{StaticResource PathBase}"></Style>
+
+                            <ControlTemplate x:Key="SeparatorTemplate" TargetType="{x:Type MenuItem}">
+                                <Separator Height="0" Margin="0,2"/>
+                            </ControlTemplate>
+
+                            <ControlTemplate x:Key="MenuItemTemplate" TargetType="{x:Type MenuItem}">
+                                <Border Name="Panel" BorderThickness="0" Background="{StaticResource ThemeBgM1Brush}" CornerRadius="4">
+                                    <StackPanel Orientation="Horizontal" Margin="5">
+                                        <ContentPresenter x:Name="Icon" ContentSource="Icon"/>
+                                        <ContentPresenter ContentSource="Header" RecognizesAccessKey="True"
+                                                                  TextElement.FontSize="{StaticResource FontSizeNP4}"
+                                                                  VerticalAlignment="Center" Margin="10,0"
+                                                                  Style="{StaticResource TextBase}"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Panel" Property="Background" Value="{StaticResource Menu.IsMouseOver.Background}"/>
+                                    </Trigger>
+
+                                    <Trigger Property="IsPressed" Value="True">
+                                        <Setter TargetName="Panel" Property="Background" Value="{StaticResource Menu.IsPressed.Background}"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Menu.Resources>
+
+                        <Menu.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" Margin="0, 5"/>
+                            </ItemsPanelTemplate>
+                        </Menu.ItemsPanel>
+
+                        <MenuItem Template="{StaticResource MenuItemTemplate}">
+                            <MenuItem.Icon>
+                                <Path Stretch="Fill" StrokeThickness="0" Height="30" Width="30">
+                                    <Path.Style>
+                                        <Style TargetType="{x:Type Path}" BasedOn="{StaticResource PathBase}">
+                                            <Setter Property="Fill" Value="{StaticResource IconRunProgramBrush}"/>
+                                            <Setter Property="Data" Value="{StaticResource RunProgramPathGeometry}"/>
+
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Path=Pro_State}" Value="{x:Static model:ProcessStatuses.End}">
+                                                    <Setter Property="Fill" Value="{StaticResource IconRestartProgramBrush}"/>
+                                                    <Setter Property="Data" Value="{StaticResource RestartProgramPathGeometry}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Path.Style>
+                                </Path>
+                            </MenuItem.Icon>
+
+                            <MenuItem.Style>
+                                <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MenuItemBase}">
+                                    <Setter Property="Header" Value="Пуск"/>
+
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Path=Pro_State}" Value="{x:Static model:ProcessStatuses.Stop}">
+                                            <Setter Property="Header" Value="Продолжить"/>
+                                        </DataTrigger>
+
+                                        <DataTrigger Binding="{Binding Path=Pro_State}" Value="{x:Static model:ProcessStatuses.End}">
+                                            <Setter Property="Header" Value="Перезапустить"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </MenuItem.Style>
+
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="PreviewMouseDown">
+                                    <i:InvokeCommandAction Command="{Binding Path=DataContext.RunProgramCommandAsync, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"
+                                                                   CommandParameter="{Binding}"/>
+                                </i:EventTrigger>
+
+                                <i:EventTrigger EventName="PreviewMouseUp">
+                                    <i:InvokeCommandAction Command="{Binding Path=DataContext.RetentionRunButtonCommandAsync, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"
+                                                                   CommandParameter="{Binding}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </MenuItem>
+
+                        <MenuItem Template="{StaticResource MenuItemTemplate}" Header="Остановить" ToolTip="Аннулировать программу"
+                                                              Command="{Binding Path=DataContext.PauseProgramCommandAsync, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"
+                                                              CommandParameter="{Binding}">
+                            <MenuItem.Icon>
+                                <Path Data="{StaticResource StopProgramPathGeometry}"
+                                                                  Stretch="Fill" Fill="{StaticResource IconStopProgramBrush}" Height="30" Width="30"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+
+                        <MenuItem Template="{StaticResource MenuItemTemplate}" Header="Анулировать" ToolTip="Аннулировать программу"
+                                                              Command="{Binding Path=DataContext.CancelProgramCommandAsync, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"
+                                                              CommandParameter="{Binding}">
+                            <MenuItem.Icon>
+                                <Path Data="{StaticResource CancelProgramPathGeometry}"
+                                                                  Fill="{StaticResource IconCancelProgramBrush}" StrokeThickness="0"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </Menu>-->
+                </DataTemplate>
+
+                <DataTemplate x:Key="PanelLvStatus">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Ellipse Grid.Column="0"
+                                 Height="{Binding Path=ActualWidth, RelativeSource={RelativeSource Self}}"
+                                 Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ColumnDefinition}, Mode=FindAncestor}}">
+
+                            <Ellipse.Style>
+                                <Style TargetType="{x:Type Ellipse}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Path=Pro_State}" Value="{x:Static model:ProcessStatuses.Active}">
+                                            <DataTrigger.EnterActions>
+                                                <BeginStoryboard x:Name="blinkAnimation">
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" RepeatBehavior="Forever" AutoReverse="True" Duration="0:0:1.25"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.EnterActions>
+
+                                            <DataTrigger.ExitActions>
+                                                <StopStoryboard BeginStoryboardName="blinkAnimation"/>
+                                            </DataTrigger.ExitActions>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Ellipse.Style>
+
+                            <Ellipse.Fill>
+                                <RadialGradientBrush>
+                                    <GradientStop Color="White" Offset="0"/>
+                                    <GradientStop Color="{Binding Path=Foreground.Color, ElementName=statusString}" Offset="1"/>
+                                </RadialGradientBrush>
+                            </Ellipse.Fill>
+                        </Ellipse>
+
+                        <TextBlock Grid.Column="1" x:Name="statusString" FontWeight="Bold" FontSize="{StaticResource FontSizeNP4}"
+                                   HorizontalAlignment="Left" TextAlignment="Left" TextWrapping="Wrap" Margin="5,0"
+                                   Foreground="{Binding Path=Text, RelativeSource={RelativeSource Self}, Converter={StaticResource StatusColorConvert}}">
+
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource FrameworkElementBase}">
+                                    <Setter Property="Text" Value="Нет соединения"/>
+
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Path=Pro_State}" Value="{x:Static model:ProcessStatuses.Free}">
+                                            <Setter Property="Text" Value="Программа не выбрана"/>
+                                        </DataTrigger>
+
+                                        <DataTrigger Binding="{Binding Path=Pro_State}" Value="{x:Static model:ProcessStatuses.Reset}">
+                                            <Setter Property="Text">
+                                                <Setter.Value>
+                                                    <MultiBinding Converter="{StaticResource StringFormatMultiConvert}" ConverterParameter="Выбрана программа {0}">
+                                                        <Binding Path="RobotProgramName" Mode="OneWay"/>
+                                                    </MultiBinding>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </DataTrigger>
+
+                                        <DataTrigger Binding="{Binding Path=Pro_State}" Value="{x:Static model:ProcessStatuses.Active}">
+                                            <Setter Property="Text">
+                                                <Setter.Value>
+                                                    <MultiBinding Converter="{StaticResource StringFormatMultiConvert}" ConverterParameter="Запущена программа {0}">
+                                                        <Binding Path="RobotProgramName" Mode="OneWay"/>
+                                                    </MultiBinding>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </DataTrigger>
+
+                                        <DataTrigger Binding="{Binding Path=Pro_State}" Value="{x:Static model:ProcessStatuses.Stop}">
+                                            <Setter Property="Text">
+                                                <Setter.Value>
+                                                    <MultiBinding Converter="{StaticResource StringFormatMultiConvert}" ConverterParameter="Программа {0} остановлена">
+                                                        <Binding Path="RobotProgramName" Mode="OneWay"/>
+                                                    </MultiBinding>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </DataTrigger>
+
+                                        <DataTrigger Binding="{Binding Path=Pro_State}" Value="{x:Static model:ProcessStatuses.End}">
+                                            <Setter Property="Text">
+                                                <Setter.Value>
+                                                    <MultiBinding Converter="{StaticResource StringFormatMultiConvert}" ConverterParameter="Программа {0} завершена">
+                                                        <Binding Path="RobotProgramName" Mode="OneWay"/>
+                                                    </MultiBinding>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+                </DataTemplate>
+            </ListView.Resources>
+
+            <ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+
+            <ListView.View>
+                <GridView behavior:DataGridAutoSizeColumns.IsDynamicWith="True">
+                    <GridViewColumn CellTemplate="{StaticResource PanelLvDelete}" Width="Auto"></GridViewColumn>
+                    <GridViewColumn CellTemplate="{StaticResource PanelLvRobot}" Width="Auto"></GridViewColumn>
+                    <GridViewColumn CellTemplate="{StaticResource PanelLvControl}" Width="Auto"></GridViewColumn>
+                    <GridViewColumn CellTemplate="{StaticResource PanelLvStatus}">Статус</GridViewColumn>
+                </GridView>
+            </ListView.View>
+
+            <!--<i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <i:InvokeCommandAction Command="{Binding Path=SelectRobotCommand}"
+                                           CommandParameter="{Binding Path=., RelativeSource={RelativeSource AncestorType={x:Type ListView}, Mode=FindAncestor}}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>-->
+        </ListView>
+    </DataTemplate>
+    
+    <!--******************************Вкладки параметров******************************-->
+    
+    <!--В разработке-->
+    <DataTemplate x:Key="OtherTemplate" DataType="{x:Type ContentControl}">
+        <Grid Height="Auto">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="1">
+                <TextBlock Text="В разработке" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontSize="18"/>
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+
+    <!--Общие параметры (настила с ребром)-->
+    <DataTemplate x:Key="PlateParametrsTemplate" DataType="{x:Type ContentControl}">
+        <DataTemplate.Resources>
+            <!--<Style x:Key="TextBlockBase" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockBase}">
+                <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ColumnDefinition}, Mode=FindAncestor}}"/>
+                <Setter Property="MaxWidth"  Value="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ColumnDefinition}, Mode=FindAncestor}}"/>
+                <Setter Property="TextAlignment" Value="Left"/>
+            </Style>-->
+
+            <!--<Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockBase}"/>-->
+
+            <Style x:Key="TextBlockDiferentDistance" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockBase}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Path=DiferentDistance}" Value="{StaticResource True}">
+                        <Setter Property="Height" Value="0"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="TextBoxDiferentDistance" TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxBase}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Path=DiferentDistance}" Value="{StaticResource True}">
+                        <Setter Property="Height" Value="0"/>
+                        <Setter Property="Margin" Value="0"/>
+                        <Setter Property="Visibility" Value="Hidden"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </DataTemplate.Resources>
+
+        <Grid ShowGridLines="True"
+              DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition MaxWidth="200"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <ComboBox Grid.Row="0" Grid.Column="1"
+                   VerticalContentAlignment="Center" HorizontalContentAlignment="Center" TextElement.FontWeight="Bold"
+                   ItemsSource="{Binding Source={x:Static detals:ScoseTypes.Descriptions}, Mode=OneTime}"
+                   SelectedItem="{Binding Path=ScoseType, Converter={StaticResource EnumDescriptionConverter}, ConverterParameter={x:Type detals:ScoseTypes}, Mode=TwoWay}"
+                   SelectedIndex="0">
+
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="Aqua">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Path Grid.Column="0" Stretch="Uniform">
+                                    <Path.Style>
+                                        <Style TargetType="{x:Type Path}">
+                                            <Setter Property="Fill" Value="Black"/>
+
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Path=Text, ElementName=scoseT}" Value="Прямоугольник">
+                                                    <Setter Property="Data" Value="{DynamicResource RectangularPathGeometry}"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding Path=Text, ElementName=scoseT}" Value="С наклоном влево">
+                                                    <Setter Property="Data" Value="{DynamicResource ParallelogramLeftPathGeometry}"/>
+                                                    <Setter Property="Fill" Value="Transparent"/>
+                                                    <Setter Property="Stroke" Value="Black"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding Path=Text, ElementName=scoseT}" Value="С наклоном вправо">
+                                                    <Setter Property="Data" Value="{DynamicResource ParallelogramRightPathGeometry}"/>
+                                                    <Setter Property="Fill" Value="Transparent"/>
+                                                    <Setter Property="Stroke" Value="Black"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding Path=Text, ElementName=scoseT}" Value="Трапеция">
+                                                    <Setter Property="Data" Value="{DynamicResource TrapezoidTopPathGeometry}"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding Path=Text, ElementName=scoseT}" Value="Перевёрнутая трапеция">
+                                                    <Setter Property="Data" Value="{DynamicResource TrapezoidTopPathGeometry}"/>
+                                                    <Setter Property="LayoutTransform">
+                                                        <Setter.Value>
+                                                            <ScaleTransform ScaleY="-1.0"/>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Path.Style>
+                                </Path>
+
+                                <TextBlock x:Name="scoseT" Grid.Column="1" Text="{Binding}" TextWrapping="Wrap" VerticalAlignment="Center" Padding="0, 4"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Форма настила"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Длина настила, мм."/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Ширина настила, мм."/>
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Расстояние до осевой линии первого ребра сверху, мм." Style="{StaticResource TextBlockDiferentDistance}"/>
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="Расстояние до торца ребра слева, мм." Style="{StaticResource TextBlockDiferentDistance}"/>
+            <TextBlock Grid.Row="6" Grid.Column="0" Text="Расстояние до торца ребра справа, мм." Style="{StaticResource TextBlockDiferentDistance}"/>
+            <TextBlock Grid.Row="9" Grid.Column="0" Text="Скос слева, мм."/>
+            <TextBlock Grid.Row="10" Grid.Column="0" Text="Скос справа, мм."/>
+            <TextBlock Grid.Row="11" Grid.Column="0" Text="Количество ребер, шт."/>
+
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=PlateLength, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+
+            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Path=PlateWidth, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"
+                  IsEnabled="{Binding Path=ScoseType, Converter={StaticResource NotEqualsConverter}, ConverterParameter={x:Static detals:ScoseTypes.Rect}, TargetNullValue=True}"/>
+
+            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Path=DistanceToFirstRib, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"
+                  Style="{StaticResource TextBoxDiferentDistance}"/>
+
+            <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding Path=RibsIdentToLeft,  Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"
+                  Style="{StaticResource TextBoxDiferentDistance}"/>
+
+            <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding Path=RibsIdentToRight, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"
+                  Style="{StaticResource TextBoxDiferentDistance}"/>
+
+            <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding Path=PlateBevelToLeft, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"
+                  IsEnabled="{Binding Path=ScoseType, Converter={StaticResource NotEqualsConverter}, ConverterParameter={x:Static detals:ScoseTypes.Rect}, TargetNullValue=True}"/>
+
+            <TextBox Grid.Row="10" Grid.Column="1" Text="{Binding Path=PlateBevelToRight, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"
+                  IsEnabled="{Binding Path=ScoseType, Converter={StaticResource NotEqualsConverter}, ConverterParameter={x:Static detals:ScoseTypes.Rect}, TargetNullValue=True}"/>
+
+            <TextBox Grid.Row="11" Grid.Column="1" Text="{Binding Path=RibsCount, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
+
+            <GroupBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Header="Расстояние между осевыми линиями рёбер, мм.">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <RadioButton Grid.Row="0" Grid.Column="0" Content="Одинаковое"
+                              IsChecked="{Binding Path=DiferentDistance, Converter={StaticResource ResourceKey=EqualsConverter}, ConverterParameter={StaticResource False}, Mode=TwoWay, TargetNullValue={StaticResource False}, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <RadioButton Grid.Row="0" Grid.Column="1" Content="Разное"
+                              IsChecked="{Binding Path=DiferentDistance, Converter={StaticResource ResourceKey=EqualsConverter}, ConverterParameter={StaticResource True}, Mode=TwoWay, TargetNullValue={StaticResource False}, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <GroupBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Header="Рёбра">
+                        <GroupBox.Style>
+                            <Style TargetType="{x:Type GroupBox}" BasedOn="{StaticResource GroupBoxBase}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=DiferentDistance}" Value="{StaticResource False}">
+                                        <Setter Property="Height" Value="0"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </GroupBox.Style>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+
+                            <RadioButton Grid.Column="0" Content="Параллельны"
+                                      IsChecked="{Binding Path=ParalleleRibs, Converter={StaticResource ResourceKey=EqualsConverter}, ConverterParameter={StaticResource True}, Mode=TwoWay, TargetNullValue={StaticResource False}}"/>
+
+                            <RadioButton Grid.Column="1" Content="Не параллельны"
+                                      IsChecked="{Binding Path=ParalleleRibs, Converter={StaticResource ResourceKey=EqualsConverter}, ConverterParameter={StaticResource False}, Mode=TwoWay, TargetNullValue={StaticResource False}}"/>
+                        </Grid>
+                    </GroupBox>
+
+                    <ContentControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                        <ContentControl.Style>
+                            <Style TargetType="ContentControl">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=DiferentDistance}" Value="{StaticResource False}">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ContentControl">
+                                                    <TextBox Text="{Binding Path=DistanceBetweenRibs, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}" Margin="5"/>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding Path=DiferentDistance}" Value="{StaticResource True}"/>
+                                            <Condition Binding="{Binding Path=ParalleleRibs}" Value="{StaticResource True}"/>
+                                        </MultiDataTrigger.Conditions>
+
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type ContentControl}">
+                                                    <DataGrid ItemsSource="{Binding Path=RibsCollection, Mode=OneWay}">
+                                                        <DataGrid.Columns>
+                                                            <DataGridTextColumn Header="Расстояние до следующего ребра, мм." Width="*"
+                                                                                Binding="{Binding Path=DistanceLeft, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+                                                            <DataGridTextColumn Header="Отступ слева, мм." Width="*"
+                                                                                Binding="{Binding Path=IdentToLeft, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+                                                            <DataGridTextColumn Header="Отступ справа, мм." Width="*"
+                                                                                Binding="{Binding Path=IdentToRight, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+                                                            <!--<DataGridTemplateColumn Header="Расстояние до следующего ребра, мм." Width="*">
+                                                                <DataGridTemplateColumn.CellTemplate>
+                                                                    <DataTemplate>
+                                                                        <TextBox Text="{Binding Path=DistanceLeft, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+                                                                    </DataTemplate>
+                                                                </DataGridTemplateColumn.CellTemplate>
+                                                            </DataGridTemplateColumn>
+
+                                                            <DataGridTemplateColumn Header="Отступ слева, мм." Width="*">
+                                                                <DataGridTemplateColumn.CellTemplate>
+                                                                    <DataTemplate>
+                                                                        <TextBox Text="{Binding Path=IdentToLeft, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+                                                                    </DataTemplate>
+                                                                </DataGridTemplateColumn.CellTemplate>
+                                                            </DataGridTemplateColumn>
+
+                                                            <DataGridTemplateColumn Header="Отступ справа, мм." Width="*">
+                                                                <DataGridTemplateColumn.CellTemplate>
+                                                                    <DataTemplate>
+                                                                        <TextBox Text="{Binding Path=IdentToRight, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+                                                                    </DataTemplate>
+                                                                </DataGridTemplateColumn.CellTemplate>
+                                                            </DataGridTemplateColumn>-->
+                                                        </DataGrid.Columns>
+                                                    </DataGrid>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </MultiDataTrigger>
+
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding Path=DiferentDistance}" Value="{StaticResource True}"/>
+                                            <Condition Binding="{Binding Path=ParalleleRibs}" Value="{StaticResource False}"/>
+                                        </MultiDataTrigger.Conditions>
+
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type ContentControl}">
+                                                    <DataGrid ItemsSource="{Binding Path=RibsCollection, Mode=OneWay}">
+                                                        <DataGrid.Columns>
+                                                            <DataGridTextColumn Header="Расстояние до ребра слева, мм." Width="*"
+                                                                                Binding="{Binding Path=DistanceLeft, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+                                                            <DataGridTextColumn Header="Расстояние до ребра справа, мм." Width="*"
+                                                                                Binding="{Binding Path=DistanceRight, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+                                                            <DataGridTextColumn Header="Отступ слева, мм." Width="*"
+                                                                                Binding="{Binding Path=IdentToLeft, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+                                                            <DataGridTextColumn Header="Отступ справа, мм." Width="*"
+                                                                                Binding="{Binding Path=IdentToRight, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+                                                            <!--<DataGridTemplateColumn Header="Расстояние до ребра слева, мм." Width="*">
+                                                                <DataGridTemplateColumn.CellTemplate>
+                                                                    <DataTemplate>
+                                                                        <TextBox Text="{Binding Path=DistanceLeft, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+                                                                    </DataTemplate>
+                                                                </DataGridTemplateColumn.CellTemplate>
+                                                            </DataGridTemplateColumn>
+
+                                                            <DataGridTemplateColumn Header="Расстояние до ребра справа, мм." Width="*">
+                                                                <DataGridTemplateColumn.CellTemplate>
+                                                                    <DataTemplate>
+                                                                        <TextBox Text="{Binding Path=DistanceRight, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+                                                                    </DataTemplate>
+                                                                </DataGridTemplateColumn.CellTemplate>
+                                                            </DataGridTemplateColumn>
+
+                                                            <DataGridTemplateColumn Header="Отступ слева, мм." Width="*">
+                                                                <DataGridTemplateColumn.CellTemplate>
+                                                                    <DataTemplate>
+                                                                        <TextBox Text="{Binding Path=IdentToLeft, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+                                                                    </DataTemplate>
+                                                                </DataGridTemplateColumn.CellTemplate>
+                                                            </DataGridTemplateColumn>
+
+                                                            <DataGridTemplateColumn Header="Отступ справа, мм." Width="*">
+                                                                <DataGridTemplateColumn.CellTemplate>
+                                                                    <DataTemplate>
+                                                                        <TextBox Text="{Binding Path=IdentToRight, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+                                                                    </DataTemplate>
+                                                                </DataGridTemplateColumn.CellTemplate>
+                                                            </DataGridTemplateColumn>-->
+                                                        </DataGrid.Columns>
+                                                    </DataGrid>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ContentControl.Style>
+                    </ContentControl>
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Header="Роспуск слева, мм.">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <RadioButton Grid.Row="0" Grid.Column="0" Content="Одинаковый"
+                              IsChecked="{Binding Path=WeldingProperties.DiferentDissolutionLeft, Converter={StaticResource ResourceKey=EqualsConverter}, ConverterParameter={StaticResource False}, Mode=TwoWay, TargetNullValue={StaticResource False}}"/>
+                    <RadioButton Grid.Row="0" Grid.Column="1" Content="Разный"
+                              IsChecked="{Binding Path=WeldingProperties.DiferentDissolutionLeft, Converter={StaticResource ResourceKey=EqualsConverter}, ConverterParameter={StaticResource True}, Mode=TwoWay, TargetNullValue={StaticResource False}}"/>
+
+                    <ContentControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+                        <ContentControl.Resources>
+                            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxBase}">
+                                <Setter Property="TextElement.FontWeight" Value="Normal"/>
+                                <Setter Property="Margin" Value="0"/>
+                            </Style>
+
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="Height" Value="0"/>
+                            </Style>
+                        </ContentControl.Resources>
+
+                        <ContentControl.Style>
+                            <Style TargetType="{x:Type ContentControl}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=WeldingProperties.DiferentDissolutionLeft}" Value="{StaticResource False}">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ContentControl">
+                                                    <TextBox Text="{Binding Path=WeldingProperties.WeldsDissolutionLeft, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+
+                                    <DataTrigger Binding="{Binding Path=WeldingProperties.DiferentDissolutionLeft}" Value="{StaticResource True}">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type ContentControl}">
+                                                    <DataGrid ItemsSource="{Binding Path=WeldingProperties.Welds, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                                                        <DataGrid.Columns>
+                                                            <DataGridTemplateColumn Width="*">
+                                                                <DataGridTemplateColumn.CellTemplate>
+                                                                    <DataTemplate>
+                                                                        <TextBox Text="{Binding Path=DissolutionLeft, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+                                                                    </DataTemplate>
+                                                                </DataGridTemplateColumn.CellTemplate>
+                                                            </DataGridTemplateColumn>
+                                                        </DataGrid.Columns>
+                                                    </DataGrid>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ContentControl.Style>
+                    </ContentControl>
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Header="Роспуск справа, мм.">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <RadioButton Grid.Row="0" Grid.Column="0" Content="Одинаковый"
+                              IsChecked="{Binding Path=WeldingProperties.DiferentDissolutionRight, Converter={StaticResource ResourceKey=EqualsConverter}, ConverterParameter={StaticResource False}, Mode=TwoWay, TargetNullValue={StaticResource False}}"/>
+                    <RadioButton Grid.Row="0" Grid.Column="1" Content="Разный"
+                              IsChecked="{Binding Path=WeldingProperties.DiferentDissolutionRight, Converter={StaticResource ResourceKey=EqualsConverter}, ConverterParameter={StaticResource True}, Mode=TwoWay, TargetNullValue={StaticResource False}}"/>
+
+                    <ContentControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+                        <ContentControl.Resources>
+                            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxBase}">
+                                <Setter Property="TextElement.FontWeight" Value="Normal"/>
+                                <Setter Property="Margin" Value="0"/>
+                            </Style>
+
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="Height" Value="0"/>
+                            </Style>
+                        </ContentControl.Resources>
+
+                        <ContentControl.Style>
+                            <Style TargetType="{x:Type ContentControl}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=WeldingProperties.DiferentDissolutionRight}" Value="{StaticResource False}">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ContentControl">
+                                                    <TextBox Text="{Binding Path=WeldingProperties.WeldsDissolutionRight, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+
+                                    <DataTrigger Binding="{Binding Path=WeldingProperties.DiferentDissolutionRight}" Value="{StaticResource True}">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type ContentControl}">
+                                                    <DataGrid ItemsSource="{Binding Path=WeldingProperties.Welds, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                                                        <DataGrid.Columns>
+                                                            <DataGridTemplateColumn Width="*">
+                                                                <DataGridTemplateColumn.CellTemplate>
+                                                                    <DataTemplate>
+                                                                        <TextBox Text="{Binding Path=DissolutionRight, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+                                                                    </DataTemplate>
+                                                                </DataGridTemplateColumn.CellTemplate>
+                                                            </DataGridTemplateColumn>
+                                                        </DataGrid.Columns>
+                                                    </DataGrid>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ContentControl.Style>
+                    </ContentControl>
+                </Grid>
+            </GroupBox>
+        </Grid>
+    </DataTemplate>
+
+    <!--Доп. параметры (настила с ребром)-->
+    <DataTemplate x:Key="PlateAddParametrsTemplate" DataType="{x:Type ContentControl}">
+        <Grid Width="{Binding Path=Parent.ActualWidth, RelativeSource={RelativeSource Self}}"
+              DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}, Mode=FindAncestor}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" MaxWidth="180"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Толщина настила, мм."/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Толщина ребра, мм."/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Высота ребра, мм."/>
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Отступ поиска в начале, мм."/>
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Отступ поиска в конце, мм."/>
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="Перекрытие швов, мм."/>
+            <TextBlock Grid.Row="6" Grid.Column="0" Text="Технологический отступ начала шва, мм."/>
+            <TextBlock Grid.Row="7" Grid.Column="0" Text="Технологический отступ конца шва, мм."/>
+            <TextBlock Grid.Row="8" Grid.Column="0" Text="Дистанция до позиционера для сварки, мм."/>
+            <TextBlock Grid.Row="9" Grid.Column="0" Text="Дистанция до позиционера для поиска, мм."/>
+            <TextBlock Grid.Row="10" Grid.Column="0" Text="Смещение детали от 0 точки по оси X, мм."/>
+            <TextBlock Grid.Row="11" Grid.Column="0" Text="Смещение детали от 0 точки по оси Y, мм."/>
+            <TextBlock Grid.Row="12" Grid.Column="0" Text="Обратный прогиб, мм."/>
+
+            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=PlateThickness, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=RibsThickness, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Path=RibsHeight, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"
+                     ToolTip="Отклонение до 40 мм. можно игнорировать"/>
+
+            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Path=WeldingProperties.SearchOffsetStart, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Path=WeldingProperties.SearchOffsetEnd, Mode=TwoWay, TargetNullValue=00.00, FallbackValue=00.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding Path=WeldingProperties.SeamsOverlap, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding Path=WeldingProperties.TechOffsetSeamStart, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding Path=WeldingProperties.TechOffsetSeamEnd, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding Path=WeldingProperties.DistanceForWelding, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding Path=WeldingProperties.DistanceForSearch, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="10" Grid.Column="1" Text="{Binding Path=LocalPositionX, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="11" Grid.Column="1" Text="{Binding Path=LocalPositionY, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="12" Grid.Column="1" Text="{Binding Path=ReverseDeflection, Mode=TwoWay, TargetNullValue=0.00, FallbackValue=0.00, ConverterCulture='en-us', StringFormat=F2, UpdateSourceTrigger=LostFocus}"/>
+        </Grid>
+    </DataTemplate>
+
+    <!--Параметры сварки (настила с ребром)-->
+    <DataTemplate x:Key="PlateWeldingParametrsTemplate">
+        <Grid x:Name="MainGrid" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}, Mode=FindAncestor}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" MaxWidth="180"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Скорость сварки, см/м"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Номер сварочной программы"/>
+
+            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=WeldingProperties.WeldingSpead, Mode=TwoWay, ConverterCulture='en-us', StringFormat=F0, UpdateSourceTrigger=LostFocus}"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=WeldingProperties.ProgramNom, Mode=TwoWay, ConverterCulture='en-us', StringFormat=F0, UpdateSourceTrigger=LostFocus}"/>
+
+            <GroupBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Header="Схема сварки" FontWeight="Bold" Padding="4" Margin="0,4,0,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <ComboBox Grid.Row="0" Margin="0, 10"
+                           ItemsSource="{x:Static welding:WeldingSchema.WeldingSchemasCollection}"
+                           SelectedItem="{Binding Path=WeldingProperties.SelectedWeldingSchema, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource WeldingSchemaConverter}}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" TextWrapping="Wrap" Padding="0, 6"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+
+                        <!--<ComboBox.ItemContainerStyle>
+                         <Style TargetType="{x:Type ComboBoxItem}">
+                             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                             <Setter Property="TextBlock.Padding" Value="10,6"/>
+                             <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                             <Setter Property="TextBlock.VerticalAlignment" Value="Center"/>
+                         </Style>
+                     </ComboBox.ItemContainerStyle>-->
+                    </ComboBox>
+
+                    <DataGrid Grid.Row="1"
+                           ItemsSource="{Binding Path=DataContext.WeldingProperties.WeldingSchema, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged}"
+                           HorizontalAlignment="Stretch">
+                        <DataGrid.Resources>
+                            <Style TargetType="{x:Type ComboBox}">
+                                <Setter Property="ItemsSource" Value="{Binding Path=., RelativeSource={RelativeSource AncestorType=DataGrid, Mode=FindAncestor}, Converter={StaticResource NumbersForWeldingSchemaConvert}}"/>
+                                <Setter Property="VerticalAlignment" Value="Stretch"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+
+                                <Setter Property="ItemTemplate">
+                                    <Setter.Value>
+                                        <DataTemplate>
+                                            <TextBlock TextAlignment="Center" Padding="0, 6"
+                                                    Text="{Binding Path=., Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='({0})'}"
+                                                    Foreground="{TemplateBinding Property=TextElement.Foreground}"/>
+                                        </DataTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </DataGrid.Resources>
+
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="Слева" Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox SelectedItem="{Binding Path=LeftSide, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                               Foreground="{Binding Source={x:Static local:Colors.LeftSideWeldColor}, Converter={StaticResource ColorToBrushConverter}}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTextColumn Header="№ ребра"
+                                             Binding="{Binding Path=., Mode=OneWay, RelativeSource={RelativeSource AncestorType=DataGridRow}, Converter={StaticResource RowNumberConvert}}"/>
+
+                            <DataGridTemplateColumn Header="Справа" Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox SelectedItem="{Binding Path=RightSide, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                               Foreground="{Binding Source={x:Static local:Colors.RightSideWeldColor}, Converter={StaticResource ColorToBrushConverter}}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </GroupBox>
+        </Grid>
+    </DataTemplate>
+
+    <!--******************************Настройки******************************-->
+
+    <!--Вкладка "Общии"-->
+    <DataTemplate x:Key="GeneralProperiesTemplate" DataType="{x:Type ContentControl}">
+        <Grid Background="Transparent" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <GroupBox Grid.Row="0" Header="Обновление">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <CheckBox Grid.Column="0" Content="Автообновление" IsChecked="{Binding Path=Settings.AutoUpdate, Mode=TwoWay}"/>
+                        <CheckBox Grid.Column="2" Content="Уведомлять пользователя перед обновлением" IsChecked="{Binding Path=Settings.InformUser, Mode=TwoWay}"
+                                  IsEnabled="{Binding Path=Settings.AutoUpdate}"/>
+                    </Grid>
+
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox Grid.Column="0" Text="{Binding Path=UpdatePath, Mode=OneWay, Source={x:Static properties:Settings.Default}}" IsEnabled="False"/>
+
+                        <Button Grid.Column="2" Content="Изменить" Padding="10, 5" 
+                                Command="{Binding Path=EditPathForUpdateCommand}"/>
+                    </Grid>
+                </Grid>
+            </GroupBox>
+
+            <CheckBox Grid.Row="1" Content="Вход в интерфейс по пин-коду" IsChecked="{Binding Path=Settings.LoginByPINCode, Mode=TwoWay}"
+                      attached:SelectAttachedProperties.PreventSelect="True"/>
+
+            <GroupBox Grid.Row="2" Header="Начальный файл для генерации">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <CheckBox Grid.Row="0" Content="При запуске приложения создавать файл детали"
+                              IsChecked="{Binding Path=Settings.CreatedDetalFile, Mode=TwoWay}"/>
+
+                    <CheckBox Grid.Row="1" Content="Сохранять параметры детали перед закрытием"
+                              IsChecked="{Binding Path=Settings.SaveDetalProperties, Mode=TwoWay}"
+                              IsEnabled="{Binding Path=Settings.CreatedDetalFile}"/>
+
+                    <ComboBox Grid.Row="2"
+                              IsEnabled="{Binding Path=Settings.CreatedDetalFile}"
+                              ItemsSource="{Binding Path=DetalTypesCollection, Mode=OneWay}"
+                              SelectedItem="{Binding Path=Settings.StartedDetalType, Converter={StaticResource EnumDescriptionConverter}, Mode=TwoWay}"
+                              SelectedIndex="0"/>
+                </Grid>
+            </GroupBox>
+
+            <Button Grid.Row="3" Content="Изменить пин-код" Margin="15" Command="{Binding Path=EditPinCodeCommand}" 
+                    VerticalAlignment="Bottom"/>
+        </Grid>
+    </DataTemplate>
+
+    <!--Вкладка "Навигация"-->
+    <DataTemplate x:Key="NavigationTreeProperiesTemplate" DataType="{x:Type ContentControl}">
+        <Grid Background="Transparent" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <GroupBox Grid.Row="0" Header="Видимость папок">
+                <Grid>
+                    <ListBox SelectionMode="Single" FontSize="13" Padding="0" Margin="3"
+                             Background="{x:Null}" BorderBrush="{x:Null}" BorderThickness="0"
+                             ItemsSource="{Binding Path=Settings.AvailableFolders}">
+
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding Path=Value, Mode=TwoWay}" Content="{Binding Path=Key}"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </GroupBox>
+
+            <CheckBox Grid.Row="1" Margin="0, 5" Content="Доступны файлы с расширением .dat" IsChecked="{Binding Path=Settings.AccessDataFile, Mode=TwoWay}"/>
+        </Grid>
+    </DataTemplate>
+
+    <!--Вкладка "Соединение"-->
+    <DataTemplate x:Key="ConnectionProperiesTemplate" DataType="{x:Type ContentControl}">
+        <Grid Background="Transparent" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <CheckBox Grid.Row="0" Content="Ограничивать время ожидания ответа от сервера"
+                      IsChecked="{Binding Path=Settings.LimitedConnectionTimeOut, Mode=TwoWay}"/>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="Время ожидания, сек."/>
+                <Slider Grid.Column="1" Value="{Binding Path=Settings.ConnectionTimeOut, Mode=TwoWay}" Minimum="3" Maximum="20" TickPlacement="BottomRight" TickFrequency="0.5" IsSnapToTickEnabled="True"
+                        Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ColumnDefinition}, Mode=FindAncestor}}"/>
+                <TextBlock Grid.Column="2" Text="{Binding Path=Settings.ConnectionTimeOut, Mode=OneWay, StringFormat='{}{0:0.0}'}"/>
+            </Grid>
+        </Grid>
+    </DataTemplate>
+
+    <!--Вкладка "Интерфейс"-->
+    <DataTemplate x:Key="InterfaceProperiesTemplate" DataType="{x:Type ContentControl}">
+        <Grid DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="Цветовая тема"/>
+
+                <ComboBox Grid.Column="1" Margin="4"
+                          DisplayMemberPath="Item1"
+                          ItemsSource="{Binding Path=Settings.Themes, Mode=OneWay}"
+                          SelectedItem="{Binding Path=Settings.SelectedTheme, Mode=TwoWay}"
+                          VerticalContentAlignment="Center">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=Item1}" Padding="5"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </Grid>
+
+            <GroupBox Grid.Row="1" Header="Панели интерфейса">
+                <Grid>
+                    <ListBox SelectionMode="Single"
+                             Background="{x:Null}" BorderBrush="{x:Null}" BorderThickness="0"
+                             ItemsSource="{Binding Path=AnchorablesCollection, Mode=OneWay}">
+
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <ToggleButton IsChecked="{Binding Path=IsVisible}" Height="25" Width="25">
+                                        <ToggleButton.Template>
+                                            <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                                <Path Fill="Black" Stretch="Uniform" StrokeThickness="1">
+                                                    <Path.Style>
+                                                        <Style TargetType="{x:Type Path}">
+                                                            <Setter Property="Data" Value="{DynamicResource EyePathGeometry}"/>
+
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Path=IsChecked, RelativeSource={RelativeSource AncestorType={x:Type ToggleButton}, Mode=FindAncestor}}" Value="False">
+                                                                    <Setter Property="Data" Value="{DynamicResource EyeOffPathGeometry}"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Path.Style>
+                                                </Path>
+                                            </ControlTemplate>
+                                        </ToggleButton.Template>
+                                    </ToggleButton>
+
+                                    <TextBlock Text="{Binding Path=Title}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </GroupBox>
+
+            <Button Grid.Row="2" Content="Удалить изменения интерфейса" Margin="10" Command="{Binding Path=DeleteAvalonConfigFileCommand}"/>
+        </Grid>
+    </DataTemplate>
+
+    <!--Вкладка "3D сцена"-->
+    <DataTemplate x:Key="3DViewProperiesTemplate" DataType="{x:Type ContentControl}">
+        <Grid Background="Transparent" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Маштаб 3д модели 1:"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=Settings.ScaleFactor, StringFormat={}{0:D}, Converter={StaticResource ScaleFactorConvert}, Mode=TwoWay}"
+                         HorizontalContentAlignment="Left"/>
+
+                <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0, 5">
+                    <TextBlock Text="Толщина шва"/>
+                    <Slider Value="{Binding Path=Settings.WeldsThickness, Mode=TwoWay}" Minimum="1" Maximum="8" TickPlacement="BottomRight" TickFrequency="0.5" IsSnapToTickEnabled="True" Width="300"/>
+                    <TextBlock Text="{Binding Path=Settings.WeldsThickness, Mode=OneWay, StringFormat='{}{0:0.0}'}"/>
+                </StackPanel>
+            </Grid>
+
+            <GroupBox Grid.Row="1" Header="Отображение параметров">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <CheckBox Grid.Row="0" Content="Видимость" IsChecked="{Binding Path=Settings.ParamsIsVisibale, Mode=TwoWay}"/>
+
+                    <StackPanel Grid.Row="1" Orientation="Horizontal">
+                        <TextBlock Text="Размер шрифта"/>
+                        <Slider Value="{Binding Path=Settings.ParamsFontSize, Mode=TwoWay}" Minimum="6" Maximum="52" TickPlacement="BottomRight" TickFrequency="2" IsSnapToTickEnabled="True" Width="300"/>
+                        <TextBlock Text="{Binding Path=Settings.ParamsFontSize, Mode=OneWay, StringFormat='{}{0:0}'}"/>
+                    </StackPanel>
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Grid.Row="2" Header="Система координат">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <CheckBox Grid.Row="0" Grid.ColumnSpan="2" Content="Видимость" IsChecked="{Binding Path=Settings.ShowCoordinateSystem, Mode=TwoWay}"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Вертикальное расположение"/>
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Горизонтальное расположение"/>
+
+                    <ComboBox Grid.Row="1" Grid.Column="1" 
+                              ItemsSource="{Binding Path=VerticalAlignments, Mode=OneWay}"
+                              SelectedItem="{Binding Path=Settings.CoordinateSystemVerticalPosition, Mode=TwoWay}"/>
+
+                    <ComboBox Grid.Row="2" Grid.Column="1"
+                              ItemsSource="{Binding Path=HorizontalAlignments, Mode=OneWay}"
+                              SelectedItem="{Binding Path=Settings.CoordinateSystemHorizontalPosition, Mode=TwoWay}"/>
+                </Grid>
+            </GroupBox>
+
+            <CheckBox Grid.Row="3" Content="Пространственный куб" IsChecked="{Binding Path=Settings.ShowViewCube, Mode=TwoWay}"/>
+            <CheckBox Grid.Row="4" Content="Доступности нажатия рёбер пространственного куба" IsChecked="{Binding Path=Settings.IsViewCubeEdgeClicksEnabled, Mode=TwoWay}"/>
+            <CheckBox Grid.Row="5" Content="Количество полигонов" IsChecked="{Binding Path=Settings.ShowTriangleCountInfo, Mode=TwoWay}"/>
+            <CheckBox Grid.Row="6" Content="Количество кадров" IsChecked="{Binding Path=Settings.ShowFrameRate, Mode=TwoWay}"/>
+
+            <GroupBox Grid.Row="7" Header="Камера">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <CheckBox Grid.Row="0" Content="Включена ли ортоганальная камера" IsChecked="{Binding Path=Settings.Orthographic, Mode=TwoWay}"/>
+                    <CheckBox Grid.Row="1" Content="Демонстрация информации о камере" IsChecked="{Binding Path=Settings.ShowCameraInfo, Mode=TwoWay}"/>
+                    <CheckBox Grid.Row="2" Content="Демонстрация курсора камеры" IsChecked="{Binding Path=Settings.ShowCameraTarget, Mode=TwoWay}"/>
+                    <CheckBox Grid.Row="3" Content="Поворот камеры осуществляется вокруг курсора мыши" IsChecked="{Binding Path=Settings.RotateAroundMouseDownPoint, Mode=TwoWay}"/>
+                    <CheckBox Grid.Row="4" Content="Приближение камеры осуществляется в месте курсора мыши" IsChecked="{Binding Path=Settings.ZoomAroundMouseDownPoint, Mode=TwoWay}"/>
+                    <CheckBox Grid.Row="5" Content="Инерция камеры" IsChecked="{Binding Path=Settings.IsInertiaEnabled, Mode=TwoWay}"/>
+                    <CheckBox Grid.Row="6" Content="Включено ли панорамирование" IsChecked="{Binding Path=Settings.IsPanEnabled, Mode=TwoWay}"/>
+                    <CheckBox Grid.Row="7" Content="Включено ли перемещение" IsChecked="{Binding Path=Settings.IsMoveEnabled, Mode=TwoWay}"/>
+                    <CheckBox Grid.Row="8" Content="Включено ли вращение" IsChecked="{Binding Path=Settings.IsRotationEnabled, Mode=TwoWay}"/>
+                    <CheckBox Grid.Row="9" Content="Включено ли маштабирование" IsChecked="{Binding Path=Settings.IsZoomEnabled, Mode=TwoWay}"/>
+
+                    <StackPanel Grid.Row="10" Orientation="Horizontal">
+                        <TextBlock Text="Чувствительность вращения"/>
+                        <Slider Value="{Binding Path=Settings.RotationSensitivity, Mode=TwoWay}" Minimum="0.1" Maximum="5" Width="200"/>
+                        <TextBlock Text="{Binding Path=Settings.RotationSensitivity, Mode=OneWay, StringFormat='{}{0:0.0}'}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="11" Orientation="Horizontal">
+                        <TextBlock Text="Чувствительность маштабирования"/>
+                        <Slider Value="{Binding Path=Settings.ZoomSensitivity, Mode=TwoWay}" Minimum="0.1" Maximum="5" Width="200"/>
+                        <TextBlock Text="{Binding Path=Settings.ZoomSensitivity, Mode=OneWay, StringFormat='{}{0:0.0}'}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="12" Orientation="Horizontal">
+                        <TextBlock Text="Степень инерции камеры"/>
+                        <Slider Value="{Binding Path=Settings.CameraInertiaFactor, Mode=TwoWay}" Minimum="0.7" Maximum="1" Width="200"/>
+                        <TextBlock Text="{Binding Path=Settings.CameraInertiaFactor, Mode=OneWay, StringFormat='{}{0:0.0}'}"/>
+                    </StackPanel>
+
+                    <GroupBox Grid.Row="13" Header="Режим поворота камеры">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <RadioButton Grid.Column="0" GroupName="CameraRotation" Content="Turntable" IsChecked="{Binding Path=Settings.CameraRotationMode,
+                                                                                                                         Converter={StaticResource ResourceKey=EqualsConverter}, 
+                                                                                                                         ConverterParameter=Turntable, Mode=TwoWay,
+                                                                                                                         TargetNullValue={StaticResource False}, FallbackValue={StaticResource False}}"/>
+
+                            <RadioButton Grid.Column="1" GroupName="CameraRotation" Content="Turnball" IsChecked="{Binding Path=Settings.CameraRotationMode,
+                                                                                                                         Converter={StaticResource ResourceKey=EqualsConverter}, 
+                                                                                                                         ConverterParameter=Turnball, Mode=TwoWay,
+                                                                                                                         TargetNullValue={StaticResource False}, FallbackValue={StaticResource False}}"/>
+
+                            <RadioButton Grid.Column="2" GroupName="CameraRotation" Content="Trackball" IsChecked="{Binding Path=Settings.CameraRotationMode,
+                                                                                                                         Converter={StaticResource ResourceKey=EqualsConverter}, 
+                                                                                                                         ConverterParameter=Trackball, Mode=TwoWay,
+                                                                                                                         TargetNullValue={StaticResource False}, FallbackValue={StaticResource False}}"/>
+                        </Grid>
+                    </GroupBox>
+
+                    <GroupBox Grid.Row="14" Header="Режим работы камеры">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <RadioButton Grid.Column="0" GroupName="CameraMode" Content="Inspect" IsChecked="{Binding Path=Settings.CameraMode,
+                                                                                                                         Converter={StaticResource ResourceKey=EqualsConverter}, 
+                                                                                                                         ConverterParameter=Inspect, Mode=TwoWay,
+                                                                                                                         TargetNullValue={StaticResource False}, FallbackValue={StaticResource False}}"/>
+
+                            <RadioButton Grid.Column="1" GroupName="CameraMode" Content="CameraMode" IsChecked="{Binding Path=Settings.CameraMode,
+                                                                                                                         Converter={StaticResource ResourceKey=EqualsConverter}, 
+                                                                                                                         ConverterParameter=WalkAround, Mode=TwoWay,
+                                                                                                                         TargetNullValue={StaticResource False}, FallbackValue={StaticResource False}}"/>
+
+                            <RadioButton Grid.Column="2" GroupName="CameraMode" Content="WalkAround" IsChecked="{Binding Path=Settings.CameraMode,
+                                                                                                                         Converter={StaticResource ResourceKey=EqualsConverter}, 
+                                                                                                                         ConverterParameter=FixedPosition, Mode=TwoWay,
+                                                                                                                         TargetNullValue={StaticResource False}, FallbackValue={StaticResource False}}"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Grid.Row="8" Header="Цветовое обозначение">
+                <Grid TextElement.FontWeight="Normal">
+                    <ListBox SelectionMode="Single"
+                             Background="{x:Null}" BorderBrush="{x:Null}" BorderThickness="0" HorizontalContentAlignment="Stretch"
+                             ItemsSource="{Binding Path=Settings.Colors, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DictionaryToBindableCollectionConvert}}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Grid.Column="0">
+                                        <TextBlock x:Name="PropertyNameTextBlock" Text="{Binding Path=PropertyName}" VerticalAlignment="Center"/>
+                                    </Border>
+
+                                    <pt:ColorPicker Grid.Column="2" HorizontalContentAlignment="Right" Padding="5" Margin="5"
+                                                    SelectedColor="{Binding Path=Color, Mode=TwoWay,
+                                                                            Converter={StaticResource ColorSaveConvert}, 
+                                                                            ConverterParameter={x:Reference PropertyNameTextBlock}}"
+                                                    Height="{Binding Path=ActualHeight, RelativeSource={RelativeSource AncestorType={x:Type StackPanel}, Mode=FindAncestor}}"
+                                                    Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type StackPanel}, Mode=FindAncestor}}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </GroupBox>
+        </Grid>
+    </DataTemplate>
+
+    <!--Вкладка "Генерация"-->
+    <DataTemplate x:Key="GenerationProperiesTemplate" DataType="{x:Type ContentControl}">
+        <Grid Background="Transparent" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <CheckBox Grid.Row="0" Content="Запрашивать имя файла при каждой генерации" IsChecked="{Binding Path=Settings.AskNameFile, Mode=TwoWay}"/>
+
+            <GroupBox Grid.Row="1" Header="Стандартное наименование итогового файла от типа детали:"
+                      IsEnabled="{Binding Path=Settings.AskNameFile, Converter={StaticResource InvertBooleanConverter}}">
+                <Grid TextElement.FontWeight="Normal">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="200"/>
+                    </Grid.ColumnDefinitions>
+
+                    <ComboBox Grid.Column="0"
+                              ItemsSource="{Binding Path=Settings.DetalsProgramNames, Source={x:Static Application.Current}, Mode=OneWay}"
+                              SelectedItem="{Binding Path=SelectedTumpleProgramName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+
+                        <!--<ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Key, Converter={StaticResource EnumDescriptionConverter}}" Padding="5"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>-->
+                    </ComboBox>
+
+                    <TextBox x:Name="NameFile" Grid.Column="1" Text="{Binding Path=SelectedTumpleProgramName.Value, Mode=TwoWay}"
+                             attached:SelectAttachedProperties.PreventSelect="True"/>
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Grid.Row="2" Header="Стандартный скрипт-генератор деталей:">
+                <Grid TextElement.FontWeight="Normal">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="200"/>
+                    </Grid.ColumnDefinitions>
+
+                    <ComboBox Grid.Column="0"
+                              ItemsSource="{Binding Path=Settings.DetalsScriptNames, Source={x:Static Application.Current}, Mode=OneWay}"
+                              SelectedItem="{Binding Path=SelectedTumpleScriptsName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Key, Converter={StaticResource EnumDescriptionConverter}}" Padding="5"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <!--<TextBox x:Name="NameScript" Grid.Column="1" Text="{Binding Path=SelectedTumpleScriptsName.Value, Mode=TwoWay}"
+                             attached:SelectAttachedProperties.PreventSelect="True"/>-->
+                </Grid>
+            </GroupBox>
+
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <CheckBox Grid.Column="0" Content="Выбор скрипта перед запуском" IsChecked="{Binding Path=Settings.AskScriptFile, Source={x:Static Application.Current}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                <Button Grid.Column="1" Content="Изменить"
+                        ToolTip="Изменение перечня скриптов"
+                        Command="{Binding OpenScriptsSelectorCommand}"/>
+            </Grid>
+
+            <CheckBox Grid.Row="4" Content="Копирование сгенерированной программы на контроллер" IsChecked="{Binding Path=Settings.SendingGeneratedFiles, Source={x:Static Application.Current}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </Grid>
+    </DataTemplate>
+</ResourceDictionary>

@@ -60,11 +60,11 @@
                             <Path>
                                 <Path.Style>
                                     <Style TargetType="{x:Type Path}" BasedOn="{StaticResource PathBase}">
-                                        <Setter Property="Data" Value="{DynamicResource EyePathGeomerty}"/>
+                                        <Setter Property="Data" Value="{DynamicResource EyePathGeometry}"/>
 
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Path=IsChecked, RelativeSource={RelativeSource AncestorType={x:Type ToggleButton}, Mode=FindAncestor}}" Value="False">
-                                                <Setter Property="Data" Value="{DynamicResource EyeOffPathGeomerty}"/>
+                                                <Setter Property="Data" Value="{DynamicResource EyeOffPathGeometry}"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -80,12 +80,12 @@
                             <Style.Triggers>
                                 <!--Lights-->
                                 <DataTrigger Binding="{Binding Path=GenericTypeName}" Value="Light">
-                                    <Setter Property="Data" Value="{StaticResource LightGeomerty}"/>
+                                    <Setter Property="Data" Value="{StaticResource LightGeometry}"/>
                                 </DataTrigger>
 
                                 <!--CoordinateSystem-->
                                 <DataTrigger Binding="{Binding Path=GenericTypeName}" Value="CoordinateSystem">
-                                    <Setter Property="Data" Value="{StaticResource AxistPathGeomerty}"/>
+                                    <Setter Property="Data" Value="{StaticResource AxistPathGeometry}"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>

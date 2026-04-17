@@ -4,36 +4,40 @@ using System.Windows.Data;
 namespace ForRobot.Libr.Converters
 {
     /// <summary>
-    /// Класс-преобразователь для свойства 'IsChecked' <see cref="System.Windows.Controls.RadioButton"/>
+    /// Конвертер для проверки неравенства двух значений.
+    /// Возвращает true, если значение не равно параметру.
     /// </summary>
-    public class RadioButtonConverter : IValueConverter
+    public class NotEqualsConverter : IValueConverter
     {
         /// <summary>
-        /// Преобразует значение в boolean для установки состояния RadioButton
+        /// Преобразует значение в boolean путем сравнения с параметром на неравенство
         /// </summary>
         /// <param name="value">Текущее значение привязанного свойства</param>
         /// <param name="targetType">Тип целевого свойства (должен быть boolean)</param>
         /// <param name="parameter">Передаваемый параметр. Должен совпадать по типу с <paramref name="value"/></param>
         /// <param name="culture"></param>
-        /// <returns>True если значение совпадает с параметром, иначе False</returns>
+        /// <returns>True если значение не совпадает с параметром, иначе False</returns>
         /// <exception cref="ArgumentNullException">Когда value или parameter равны null</exception>
         /// <exception cref="ArgumentException">Когда типы value и parameter несовместимы</exception>
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            if (value == null)
-                throw new ArgumentNullException("value");
+            //if (value == null)
+            //    throw new ArgumentNullException("value");
 
-            if (parameter == null)
-                throw new ArgumentNullException("parametr");
-
+            //if (parameter == null)
+            //    throw new ArgumentNullException("parametr");
 
             if (value is bool boolValue && parameter is bool boolParameter)
             {
-                return boolValue == boolParameter;
+                return boolValue != boolParameter;
+            }
+            else if (value == null || parameter == null)
+            {
+                return !value?.Equals(parameter);
             }
             else if (value.GetType() == parameter.GetType())
             {
-                return value.Equals(parameter);
+                return !value.Equals(parameter);
             }
             else if (targetType != typeof(object))
             {
@@ -41,7 +45,7 @@ namespace ForRobot.Libr.Converters
                 {
                     var valueStr = value.ToString();
                     var paramStr = parameter.ToString();
-                    return valueStr?.Equals(paramStr) ?? false;
+                    return !(valueStr?.Equals(paramStr) ?? false);
                 }
                 catch (Exception ex)
                 {
@@ -49,21 +53,25 @@ namespace ForRobot.Libr.Converters
                 }
             }
             else
-                return parameter.ToString() == value.ToString();
+                return parameter.ToString() != value.ToString();
         }
 
         /// <summary>
-        /// Преобразует состояние RadioButton обратно в значение
+        /// Преобразует boolean значение обратно в параметр
         /// </summary>
-        /// <param name="value">Значение свойства 'IsChecked' <see cref="System.Windows.Controls.RadioButton"/></param>
+        /// <param name="value">Boolean значение</param>
         /// <param name="targetType">Целевой тип значения</param>
         /// <param name="parameter">Параметр, представляющий значение для возврата</param>
         /// <param name="culture"></param>
-        /// <returns></returns>
+        /// <returns>Параметр, если value равно true, иначе DependencyProperty.UnsetValue</returns>
+        /// <exception cref="ArgumentNullException">Когда невозможно преобразовать параметр типа parameter в целевой тип targetType</exception>
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if (value is bool isChecked && isChecked)
             {
+                if (value == null || parameter == null)
+                    return !value?.Equals(parameter);
+
                 if (parameter != null && (targetType.IsAssignableFrom(parameter.GetType()) || targetType == typeof(object)))
                 {
                     return parameter;

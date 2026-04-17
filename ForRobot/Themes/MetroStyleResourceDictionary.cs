@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace ForRobot.Themes
 {
@@ -67,6 +68,22 @@ namespace ForRobot.Themes
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Обработчик события закрытия/открытия содержимого <see cref="Expander"/>, т.е. сведений строки
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Expander_ExpandedOrCollapsed(object sender, RoutedEventArgs e)
+        {
+            for (var vis = sender as Visual; vis != null; vis = VisualTreeHelper.GetParent(vis) as Visual)
+                if (vis is DataGridRow)
+                {
+                    var row = (DataGridRow)vis;
+                    row.DetailsVisibility = row.DetailsVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+                    break;
+                }
         }
     }
 }

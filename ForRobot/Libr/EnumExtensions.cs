@@ -11,6 +11,44 @@ namespace ForRobot.Libr
     /// </summary>
     public static class EnumExtensions
     {
+        ///// <summary>
+        ///// Вывод элемента перечисления по его
+        ///// </summary>
+        ///// <typeparam name="T"></typeparam>
+        ///// <param name="enumValue"></param>
+        ///// <param name="description"></param>
+        ///// <returns></returns>
+        //public static T GetByDescription<T>(this T enumValue, string description)
+        //{
+        //    if (string.IsNullOrEmpty(description))
+        //        return default(T);
+
+        //    if(typeof(T).IsEnum)
+        //}
+
+        ///// <summary>
+        ///// Вывод элемента перечисления по его
+        ///// </summary>
+        ///// <typeparam name="T"></typeparam>
+        ///// <param name="enumValue"></param>
+        ///// <param name="description"></param>
+        ///// <returns></returns>
+        //public static Enum GetByDescription<Enum>(this Enum enumValue, string description)
+        //{
+        //    if (string.IsNullOrEmpty(description))
+        //        return default(Enum);
+
+        //    foreach (System Enum value in System.Enum.GetValues(enumValue.GetType()))
+        //    {
+        //        if (string.Equals(value.GetDescription(), description, StringComparison.Ordinal))
+        //        {
+        //            return value;
+        //        }
+        //    }
+        //    return default(enumValue);
+        //    //return Enum.GetValues(typeof(T)).Cast<T>().Where(item => item.GetDescription() == description).FirstOrDefault();
+        //}
+
 
         /// <summary>
         /// Вывод элемента перечисления по его
@@ -19,7 +57,7 @@ namespace ForRobot.Libr
         /// <param name="enumValue"></param>
         /// <param name="description"></param>
         /// <returns></returns>
-        public static T GetByDescription<T>(this T enumValue, string description) where T : Enum 
+        public static T GetByDescription<T>(this T enumValue, string description) where T : Enum
         {
             if (string.IsNullOrEmpty(description))
                 return default(T);
@@ -101,7 +139,7 @@ namespace ForRobot.Libr
                 throw new ArgumentNullException(nameof(type));
 
             if (string.IsNullOrEmpty(description))
-                return default(type);
+                return type.IsValueType ? Activator.CreateInstance(type) : null;
 
             var fields = type.GetFields().Where(field => (field.GetCustomAttributes(typeof(DescriptionAttribute), false).SingleOrDefault() as DescriptionAttribute).Description == description);
             return fields.First().GetValue(null);

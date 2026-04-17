@@ -9,9 +9,9 @@
              xmlns:conv="clr-namespace:ForRobot.Libr.Converters"
              mc:Ignorable="d">
 
-    <UserControl.DataContext>
+    <!--<UserControl.DataContext>
         <vm:NavigationTreeViewModel/>
-    </UserControl.DataContext>
+    </UserControl.DataContext>-->
 
     <UserControl.Resources>
         <!--Colors-->
@@ -22,7 +22,6 @@
         <Color x:Key="Yellow">#FFBF1C</Color>
 
         <!--SolidColorBrushs-->
-        <SolidColorBrush x:Key="WhiteBrush" Color="White"/>
         <SolidColorBrush x:Key="NotActiveBorderBrush" Color="{DynamicResource DarkGrayColor}"/>
         <SolidColorBrush x:Key="ActiveBackround" Color="{DynamicResource LightBlue}"/>
         <SolidColorBrush x:Key="IsSelectedBackround" Color="{DynamicResource LightMediumBlue}"/>
@@ -59,6 +58,8 @@
         <Style x:Key="PathBase" TargetType="{x:Type Path}">
             <Setter Property="Stretch" Value="Uniform"/>
             <Setter Property="Fill" Value="{StaticResource IconFillBrush}"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
         </Style>
 
         <Style TargetType="{x:Type Path}" BasedOn="{StaticResource PathBase}"/>
@@ -397,7 +398,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <ComboBox Grid.Row="0" Focusable="False"
+        <ComboBox Grid.Row="0" Focusable="False" Margin="0"
                   FontSize="{Binding Path=FontSize, RelativeSource={RelativeSource AncestorType={x:Type local:NavigationTreeView}, Mode=FindAncestor}}" 
                   BorderBrush="{Binding Path=BorderBrush, RelativeSource={RelativeSource AncestorType={x:Type local:NavigationTreeView}, Mode=FindAncestor}}" BorderThickness="1"
                   Background="{Binding Path=Background, RelativeSource={RelativeSource AncestorType={x:Type local:NavigationTreeView}, Mode=FindAncestor}}"
@@ -552,7 +553,7 @@
                                                         <Setter Property="Template">
                                                             <Setter.Value>
                                                                 <ControlTemplate TargetType="{x:Type ContentControl}">
-                                                                    <TextBox Text="{Binding Path=RobotSource.PathControllerFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource AncestorType={x:Type local:NavigationTreeView}, Mode=FindAncestor}}"
+                                                                    <TextBox Text="{Binding Path=RobotSource.SelectedControllerPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource AncestorType={x:Type local:NavigationTreeView}, Mode=FindAncestor}}"
                                                                              Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
                                                                              Foreground="{TemplateBinding Foreground}" FontSize="{TemplateBinding FontSize}"
                                                                              VerticalContentAlignment="Center" HorizontalContentAlignment="Left"/>

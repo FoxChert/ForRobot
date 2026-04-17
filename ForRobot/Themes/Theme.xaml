@@ -1,0 +1,88 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!--Data Types-->
+    <!--Control Content property -->
+    <!--M => minus  P=> plus-->
+    <!-- more font choice http://www.microsoft.com/typography/fonts/family.aspx?FID=331-->
+    <FontFamily x:Key="DefaultFont">Segoe UI</FontFamily>
+    <FontFamily x:Key="FontFamilyTitle">Segoe UI Light</FontFamily>
+    <FontFamily x:Key="DefaultFontFamily">SegoeUI Regular</FontFamily>
+
+    <!--Font size key value-->
+    <sys:Double x:Key="FontSizeNM4">8</sys:Double>
+    <sys:Double x:Key="FontSizeNM3">9</sys:Double>
+    <sys:Double x:Key="FontSizeNM2">10</sys:Double>
+    <sys:Double x:Key="FontSizeNM1">11</sys:Double>
+    <sys:Double x:Key="FontSizeN"  >12</sys:Double>
+    <sys:Double x:Key="FontSizeNP1">13</sys:Double>
+    <sys:Double x:Key="FontSizeNP2">14</sys:Double>
+    <sys:Double x:Key="FontSizeNP3">15</sys:Double>
+    <sys:Double x:Key="FontSizeNP4">16</sys:Double>
+    <sys:Double x:Key="FontSizeNP5">17</sys:Double>
+    <sys:Double x:Key="FontSizeNP6">18</sys:Double>
+    <sys:Double x:Key="FontSizeNP7">19</sys:Double>
+    <sys:Double x:Key="FontSizeNP8">20</sys:Double>
+
+    <!--Colors-->
+    <!--Controls colors-->
+    <Color x:Key="ThemeBgM2Color">#ffffff</Color>
+    <Color x:Key="ThemeBgM1Color">#f2f2f2</Color>
+    <Color x:Key="ThemeBgColor"  >#eaeaea</Color>
+    <Color x:Key="ThemeBgP1Color">#dadada</Color>
+    <Color x:Key="ThemeBgP2Color">#FF919191</Color>
+    <Color x:Key="ThemeBgP3Color">#333333</Color>
+
+    <Color x:Key="ThemeFgM3Color">#ffffff</Color>
+    <Color x:Key="ThemeFgM2Color">#aaaaaa</Color>
+    <Color x:Key="ThemeFgM1Color">#777777</Color>
+    <Color x:Key="ThemeFgColor"  >#393939</Color>
+    <Color x:Key="ThemeFgP1Color">#141414</Color>
+    <Color x:Key="ThemeFgP2Color">#000000</Color>
+
+    <Color x:Key="ButtonIsMouseOverBackground">#FFC1C1C1</Color>
+    <Color x:Key="ButtonIsPressedBackground"  >#FF008AD8</Color>
+
+    <Color x:Key="ToggleButtonIsMouseOverBackground" >#FFC1C1C1</Color>
+    <Color x:Key="ToggleButtonIsMouseOverBorderBrush">#FF919191</Color>
+    <Color x:Key="ToggleButtonIsPressedBackground"   >#FF008AD8</Color>
+    <Color x:Key="ToggleButtonIsPressedBorderBrush"  >#FF209BFF</Color>
+    <Color x:Key="ToggleButtonIsCheckedBackground"   >#FF45D7FF</Color>
+    <Color x:Key="ToggleButtonIsCheckedBorderBrush"  >#FF209BFF</Color>
+
+    <Color x:Key="ToolTipBackground">#FF68DDFF</Color>
+
+    <Color x:Key="NavigationTreeViewBorderBrush">#FF919191</Color>
+
+    <Color x:Key="BottomMenuDockPanelBackground">#FF1680C9</Color>
+
+    <!--Icons colors-->
+    <Color x:Key="DefaultIconsFillColor"    >#FF000000</Color>
+    <Color x:Key="DefaultIconsStrokeColor"  >#FF000000</Color>
+    <Color x:Key="IconRectangularColor"     >#000000</Color>
+    <Color x:Key="IconNewFileColor"         >#FF03A436</Color>
+    <Color x:Key="IconOpenFileColor"        >#FFFFBA01</Color>
+    <Color x:Key="IconSaveColor"            >#FF3E3E3E</Color>
+    <Color x:Key="IconSaveAsColor"          >#FF3E3E3E</Color>
+    <Color x:Key="IconBackColor"            >#FF00C5FF</Color>
+    <Color x:Key="IconReturnColor"          >#FF00C5FF</Color>
+    <Color x:Key="IconGenerateColor"        >#000000</Color>
+    <Color x:Key="IconCleanColor"           >#000000</Color>
+    <Color x:Key="IconDecreaseColor"        >#FF002EFF</Color>
+    <Color x:Key="IconIncreaseColor"        >#FF002EFF</Color>
+    <Color x:Key="IconExportColor"          >#000000</Color>
+    <Color x:Key="IconImportColor"          >#000000</Color>
+    <Color x:Key="IconAxistColor"           >#000000</Color>
+    <Color x:Key="IconDeleteColor"          >#000000</Color>
+    <Color x:Key="IconUpDateColor"          >#000000</Color>
+    <Color x:Key="IconAddColor"             >#000000</Color>
+    <Color x:Key="IconEditColor"            >#000000</Color>
+    <Color x:Key="IconDisconnectColor"      >#FF4682B4</Color>
+    <Color x:Key="IconRunProgramColor"      >#FF20B500</Color>
+    <Color x:Key="IconRestartProgramColor"  >#3b88c3</Color>
+    <Color x:Key="IconStopProgramColor"     >#FFFF0000</Color>
+    <Color x:Key="IconCancelProgramColor"   >#FFFF0000</Color>
+    <Color x:Key="IconSelectGenProgramColor">#FF008AD8</Color>
+    <Color x:Key="IconSceneItemColor"       >#2b2b2b</Color>
+</ResourceDictionary>

@@ -73,7 +73,7 @@
                             </Button.Style>
 
                             <Path Fill="{StaticResource IconDeleteBrush}"
-                                  Data="{StaticResource DeletePathGeomerty}"
+                                  Data="{StaticResource DeletePathGeometry}"
                                   Stretch="Uniform"/>
                         </Button>
                     </Grid>

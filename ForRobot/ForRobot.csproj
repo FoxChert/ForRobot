@@ -313,6 +313,7 @@
     <Compile Include="Libr\AttachedProperties\AttemptSelectedEventArgs.cs" />
     <Compile Include="Libr\AttachedProperties\AttemptSelectedEventHandler.cs" />
     <Compile Include="Libr\AttachedProperties\SelectAttachedProperties.cs" />
+    <Compile Include="Libr\AttachedProperties\TreeViewAttachedProperties.cs" />
     <Compile Include="Libr\Attributes\PropertyCameraAttribute.cs" />
     <Compile Include="Libr\Attributes\PropertyNameAttribute.cs" />
     <Compile Include="Libr\AttachedProperties\BehaviorAttacher.cs" />
@@ -323,7 +324,9 @@
     <Compile Include="Libr\Collections\RobotCollection.cs" />
     <Compile Include="Libr\Collections\RobotPropertyChangedEventArgs.cs" />
     <Compile Include="Libr\Converters\AssimpConverter.cs" />
+    <Compile Include="Libr\Converters\BooleanAndConverter.cs" />
     <Compile Include="Libr\Converters\InvertBooleanConverter.cs" />
+    <Compile Include="Libr\Converters\NotEqualsConverter.cs" />
     <Compile Include="Libr\DependencyObjectExtensions.cs" />
     <Compile Include="Libr\Messages\LayoutAnchorableMessage.cs" />
     <Compile Include="Libr\Behavior\DataGridAutoSizeColumns.cs" />
@@ -475,8 +478,8 @@
     <Compile Include="Views\Controls\CustomAttributes.cs" />
     <Compile Include="Views\Controls\Image2D.cs" />
     <Compile Include="Views\Controls\PanesTemplateSelector.cs" />
-    <Compile Include="Views\Controls\ParamsTreeView.xaml.cs">
-      <DependentUpon>ParamsTreeView.xaml</DependentUpon>
+    <Compile Include="Views\Controls\ParametrTreeView.xaml.cs">
+      <DependentUpon>ParametrTreeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\SceneItemsTreeView.xaml.cs">
       <DependentUpon>SceneItemsTreeView.xaml</DependentUpon>
@@ -499,11 +502,19 @@
     <Compile Include="Views\Windows\SelectWindow.xaml.cs">
       <DependentUpon>SelectWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Themes\PropertiesWindowStyleDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\TabControlStyleResourceDictionary.xaml">
+    <Page Include="Themes\Templates.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Theme.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -511,7 +522,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Controls\ParamsTreeView.xaml">
+    <Page Include="Views\Controls\ParametrTreeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -545,7 +556,7 @@
     <Compile Include="Libr\Converters\NullBooleanConverter.cs" />
     <Compile Include="Libr\Converters\SelectProgramConverter.cs" />
     <Compile Include="Libr\Converters\JsonCommentConverter.cs" />
-    <Compile Include="Libr\Converters\RadioButtonConverter.cs" />
+    <Compile Include="Libr\Converters\EqualsConverter.cs" />
     <Compile Include="Libr\Converters\ThicknessConverter.cs" />
     <Compile Include="Libr\Collections\FileCollection.cs" />
     <Compile Include="Libr\Collections\FullyObservableCollection.cs" />

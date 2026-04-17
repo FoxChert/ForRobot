@@ -20,6 +20,7 @@ namespace ForRobot.ViewModels
         #region Private variables
 
         private object _activeContent;
+        private bool _isVisibleGridLinesVisual3D = true;
         private Models.File3D.File3D _selectedFile;
         private ObservableCollection<ForRobot.Models.Message> _messagesCollection = new ObservableCollection<ForRobot.Models.Message>();
 
@@ -31,6 +32,11 @@ namespace ForRobot.ViewModels
         /// Имя выбранного робота для генерации
         /// </summary>
         public string SelectedRobotName { get; set; }
+
+        /// <summary>
+        /// Видимы ли линии сетки, <see cref="HelixToolkit.Wpf.GridLinesVisual3D"/>
+        /// </summary>
+        public bool IsVisibleGridLinesVisual3D { get => this._isVisibleGridLinesVisual3D; set => Set(ref this._isVisibleGridLinesVisual3D, value); }
 
         public object ActiveContent { get => this._activeContent; set => this.SetActiveContent(value); }
 
